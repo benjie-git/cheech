@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>cheechweb: Chinese Checkers</title>
+		<link rel='stylesheet' href='cheech.css'/>
+	</head>
+
+	<body>
+
+
+<h1>Chinese Checkers</h1>
+
+<h2>Rules:</h2>
+
+The object of the game is to get all 10 of your pieces from your starting triangle
+into the triangle opposite.  Players take turns moving one piece at a time.  On
+each move you can:
+<ul>
+	<li/>move a piece to any adjacent position (which must be empty)
+	<li/>hop a piece over an adjacent piece into the next position 
+		in the same direction (which must be empty)
+	<li/>chain together multiple hops
+</ul>
+
+<h2>Variations:</h2>
+cheech currently supports 3 rule variations.
+<ul>
+	<li/><b>Long Jumps</b>: with this rule variation enabled, each hop can 
+	be longer.  Normally, hops always move from one position, over an adjacent
+	position to the next position in the same direction (which must be empty).
+	With Long Jumps, you can hop from one position, over any number (0 or more)
+	of empty positions, followed by a piece, followed by the same number of empty
+	positions again, and into the next position (which must be empty).  Multiple 
+	hops of different-lengths can be chained together in one move.
+
+	<li/><b>Hopping Through Other Players' Triangles</b>: If this is disabled, 
+		then you're not allowed to end a move in, or pass through any other player's
+		starting or ending triangle.
+
+	<li/><b>Stopping In Other Players' Triangles</b>: If this is disabled, 
+		then you're not allowed to end a move in any other player's
+		starting or ending triangle.
+</ul>
+
+
+<br/>
+For a more detailed discussion of the rules (including diagrams!), check out the 
+<a href="http://en.wikipedia.org/wiki/Chinese_checkers">Wikipedia entry on
+Chinese Checkers</a>.  (Note that the Wikipedia article's 'Fast Paced' variation
+is the same as cheech's 'Long Jumps' variation.)
+
+
+	</body>
+</html>

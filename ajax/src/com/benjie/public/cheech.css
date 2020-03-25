@@ -1,0 +1,80 @@
+body { 
+	background-color: #EEEEEE;
+	color: black;
+	font-family: Arial, sans-serif;
+	font-size: small;
+	margin: 8px;
+	margin-top: 3px;
+}
+
+a {	
+	color: darkblue;
+}
+
+a:visited {	
+	color: darkblue; 
+}
+
+.hilighted{
+	font-weight: bold
+}
+
+.gwt-MenuBar {
+	background-color: #C3D9FF;
+	cursor: default;
+}
+
+.gwt-MenuItem {
+	font-size: 80%;
+	font-weight: bold;
+	margin: 3px;
+	padding-right: 12px;
+	cursor: default;
+}
+
+.gwt-MenuItem-selected {
+	background-color: #E8EEF7;
+}
+
+.gwt-DialogBox {
+	border: 2px solid #AAAAAA;
+	background-color: #E0E0E0;
+}
+
+.gwt-DialogBox .Caption {
+	background-color: #C3D9FF;
+	padding: 4px;
+	font-weight: bold;
+	cursor: default;
+}
+
+/*----------------------------------------------------------------------------*/
+
+.cheech-SidePanel {
+	font-size: 90%;
+}
+
+.cheech-GameInfo {
+	padding-left:1em
+}
+
+.cheech-PlayerList {
+	padding-left:1em
+}
+
+.cheech-MoveCount {
+	padding-left:1em
+}
+
+.cheech-Board {
+	padding: 4px;
+}
+
+.cheech-ChatBox {
+	padding: 4px;
+}
+
+.cheech-ChatArea {
+	background-color: white;
+	padding: 4px;
+}

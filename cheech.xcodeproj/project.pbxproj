@@ -1,0 +1,382 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXFileReference section */
+		B9F08319242B282E003DA361 /* ajax_server_conn.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server_conn.cc; path = src/ajax_server_conn.cc; sourceTree = "<group>"; };
+		B9F0831A242B282E003DA361 /* utility.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = utility.hh; path = src/utility.hh; sourceTree = "<group>"; };
+		B9F0831B242B282E003DA361 /* name_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = name_win_glade.cc; path = src/name_win_glade.cc; sourceTree = "<group>"; };
+		B9F0831C242B282E003DA361 /* name_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = name_win_glade.hh; path = src/name_win_glade.hh; sourceTree = "<group>"; };
+		B9F0831D242B282E003DA361 /* new_game_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = new_game_win.cc; path = src/new_game_win.cc; sourceTree = "<group>"; };
+		B9F0831E242B282E003DA361 /* game_client.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_client.cc; path = src/game_client.cc; sourceTree = "<group>"; };
+		B9F0831F242B282E003DA361 /* color_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = color_win_glade.cc; path = src/color_win_glade.cc; sourceTree = "<group>"; };
+		B9F08320242B282E003DA361 /* game_board.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_board.cc; path = src/game_board.cc; sourceTree = "<group>"; };
+		B9F08321242B282E003DA361 /* color_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = color_win.hh; path = src/color_win.hh; sourceTree = "<group>"; };
+		B9F08322242B282E003DA361 /* bot_random.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_random.cc; path = src/bot_random.cc; sourceTree = "<group>"; };
+		B9F08323242B282E003DA361 /* main_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main_win.cc; path = src/main_win.cc; sourceTree = "<group>"; };
+		B9F08324242B282E003DA361 /* help_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = help_win_glade.cc; path = src/help_win_glade.cc; sourceTree = "<group>"; };
+		B9F08325242B282E003DA361 /* main_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = main_win.hh; path = src/main_win.hh; sourceTree = "<group>"; };
+		B9F08326242B282E003DA361 /* new_game_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = new_game_win.hh; path = src/new_game_win.hh; sourceTree = "<group>"; };
+		B9F08327242B282E003DA361 /* gnet_server.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = gnet_server.hh; path = src/gnet_server.hh; sourceTree = "<group>"; };
+		B9F08328242B282E003DA361 /* cheechd.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = cheechd.cc; path = src/cheechd.cc; sourceTree = "<group>"; };
+		B9F08329242B282E003DA361 /* help_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = help_win.cc; path = src/help_win.cc; sourceTree = "<group>"; };
+		B9F0832A242B282E003DA361 /* gnet_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = gnet_server.cc; path = src/gnet_server.cc; sourceTree = "<group>"; };
+		B9F0832B242B282E003DA361 /* bot_simple.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_simple.cc; path = src/bot_simple.cc; sourceTree = "<group>"; };
+		B9F0832C242B282E003DA361 /* setup_bot_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = setup_bot_win.cc; path = src/setup_bot_win.cc; sourceTree = "<group>"; };
+		B9F0832D242B282E003DA361 /* ajax_server_conn.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ajax_server_conn.hh; path = src/ajax_server_conn.hh; sourceTree = "<group>"; };
+		B9F0832E242B282E003DA361 /* game_server.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_server.hh; path = src/game_server.hh; sourceTree = "<group>"; };
+		B9F0832F242B282E003DA361 /* setup_game_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = setup_game_win.hh; path = src/setup_game_win.hh; sourceTree = "<group>"; };
+		B9F08330242B282E003DA361 /* about_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = about_win_glade.hh; path = src/about_win_glade.hh; sourceTree = "<group>"; };
+		B9F08331242B282E003DA361 /* setup_bot_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = setup_bot_win_glade.hh; path = src/setup_bot_win_glade.hh; sourceTree = "<group>"; };
+		B9F08332242B282E003DA361 /* setup_game_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = setup_game_win_glade.cc; path = src/setup_game_win_glade.cc; sourceTree = "<group>"; };
+		B9F08333242B282E003DA361 /* bot_random.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bot_random.hh; path = src/bot_random.hh; sourceTree = "<group>"; };
+		B9F08334242B282E003DA361 /* utility.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = utility.cc; path = src/utility.cc; sourceTree = "<group>"; };
+		B9F08335242B282E003DA361 /* cheechbot.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = cheechbot.cc; path = src/cheechbot.cc; sourceTree = "<group>"; };
+		B9F08336242B282E003DA361 /* game_hole.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_hole.hh; path = src/game_hole.hh; sourceTree = "<group>"; };
+		B9F08337242B282F003DA361 /* game_view.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_view.hh; path = src/game_view.hh; sourceTree = "<group>"; };
+		B9F08338242B282F003DA361 /* bot_mean.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bot_mean.hh; path = src/bot_mean.hh; sourceTree = "<group>"; };
+		B9F08339242B282F003DA361 /* GtkComboBoxText.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = GtkComboBoxText.hh; path = src/GtkComboBoxText.hh; sourceTree = "<group>"; };
+		B9F0833A242B282F003DA361 /* name_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = name_win.hh; path = src/name_win.hh; sourceTree = "<group>"; };
+		B9F0833B242B282F003DA361 /* about_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = about_win.cc; path = src/about_win.cc; sourceTree = "<group>"; };
+		B9F0833C242B282F003DA361 /* game_view_hole.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_view_hole.hh; path = src/game_view_hole.hh; sourceTree = "<group>"; };
+		B9F0833D242B282F003DA361 /* GtkImage.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = GtkImage.hh; path = src/GtkImage.hh; sourceTree = "<group>"; };
+		B9F0833E242B282F003DA361 /* game_client.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_client.hh; path = src/game_client.hh; sourceTree = "<group>"; };
+		B9F0833F242B282F003DA361 /* setup_game_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = setup_game_win_glade.hh; path = src/setup_game_win_glade.hh; sourceTree = "<group>"; };
+		B9F08340242B282F003DA361 /* help_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = help_win.hh; path = src/help_win.hh; sourceTree = "<group>"; };
+		B9F08341242B282F003DA361 /* game_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = src/game_server.cc; sourceTree = "<group>"; };
+		B9F08342242B282F003DA361 /* new_game_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = new_game_win_glade.cc; path = src/new_game_win_glade.cc; sourceTree = "<group>"; };
+		B9F08343242B282F003DA361 /* bot_base.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bot_base.hh; path = src/bot_base.hh; sourceTree = "<group>"; };
+		B9F08344242B282F003DA361 /* cheechwebd.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = cheechwebd.cc; path = src/cheechwebd.cc; sourceTree = "<group>"; };
+		B9F08345242B282F003DA361 /* game_board.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_board.hh; path = src/game_board.hh; sourceTree = "<group>"; };
+		B9F08346242B282F003DA361 /* color_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = color_win_glade.hh; path = src/color_win_glade.hh; sourceTree = "<group>"; };
+		B9F08347242B282F003DA361 /* bot_friendly.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_friendly.cc; path = src/bot_friendly.cc; sourceTree = "<group>"; };
+		B9F08348242B282F003DA361 /* game_view.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_view.cc; path = src/game_view.cc; sourceTree = "<group>"; };
+		B9F08349242B282F003DA361 /* game_images.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_images.cc; path = src/game_images.cc; sourceTree = "<group>"; };
+		B9F0834A242B282F003DA361 /* ajax_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server.cc; path = src/ajax_server.cc; sourceTree = "<group>"; };
+		B9F0834B242B282F003DA361 /* game_view_hole.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_view_hole.cc; path = src/game_view_hole.cc; sourceTree = "<group>"; };
+		B9F0834C242B282F003DA361 /* ajax_server.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = ajax_server.hh; path = src/ajax_server.hh; sourceTree = "<group>"; };
+		B9F0834D242B282F003DA361 /* help_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = help_win_glade.hh; path = src/help_win_glade.hh; sourceTree = "<group>"; };
+		B9F0834E242B282F003DA361 /* prefs.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = prefs.hh; path = src/prefs.hh; sourceTree = "<group>"; };
+		B9F0834F242B282F003DA361 /* bot_lookahead.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_lookahead.cc; path = src/bot_lookahead.cc; sourceTree = "<group>"; };
+		B9F08350242B282F003DA361 /* bot_lookahead.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bot_lookahead.hh; path = src/bot_lookahead.hh; sourceTree = "<group>"; };
+		B9F08351242B282F003DA361 /* bot_simple.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bot_simple.hh; path = src/bot_simple.hh; sourceTree = "<group>"; };
+		B9F08352242B282F003DA361 /* color_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = color_win.cc; path = src/color_win.cc; sourceTree = "<group>"; };
+		B9F08353242B2830003DA361 /* bot_mean.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_mean.cc; path = src/bot_mean.cc; sourceTree = "<group>"; };
+		B9F08354242B2830003DA361 /* main_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = main_win_glade.hh; path = src/main_win_glade.hh; sourceTree = "<group>"; };
+		B9F08355242B2830003DA361 /* Makefile.in */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.in; path = src/Makefile.in; sourceTree = "<group>"; };
+		B9F08356242B2830003DA361 /* prefs.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = prefs.cc; path = src/prefs.cc; sourceTree = "<group>"; };
+		B9F08357242B2830003DA361 /* gnet_conn.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = gnet_conn.hh; path = src/gnet_conn.hh; sourceTree = "<group>"; };
+		B9F08358242B2830003DA361 /* main_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main_win_glade.cc; path = src/main_win_glade.cc; sourceTree = "<group>"; };
+		B9F08359242B2830003DA361 /* gnet_conn.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = gnet_conn.cc; path = src/gnet_conn.cc; sourceTree = "<group>"; };
+		B9F0835A242B2830003DA361 /* about_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = about_win_glade.cc; path = src/about_win_glade.cc; sourceTree = "<group>"; };
+		B9F0835B242B2830003DA361 /* name_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = name_win.cc; path = src/name_win.cc; sourceTree = "<group>"; };
+		B9F0835C242B2830003DA361 /* game_images.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = game_images.hh; path = src/game_images.hh; sourceTree = "<group>"; };
+		B9F0835D242B2830003DA361 /* game_hole.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_hole.cc; path = src/game_hole.cc; sourceTree = "<group>"; };
+		B9F0835E242B2830003DA361 /* bot_friendly.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = bot_friendly.hh; path = src/bot_friendly.hh; sourceTree = "<group>"; };
+		B9F0835F242B2830003DA361 /* setup_bot_win_glade.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = setup_bot_win_glade.cc; path = src/setup_bot_win_glade.cc; sourceTree = "<group>"; };
+		B9F08360242B2830003DA361 /* new_game_win_glade.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = new_game_win_glade.hh; path = src/new_game_win_glade.hh; sourceTree = "<group>"; };
+		B9F08361242B2830003DA361 /* bot_base.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_base.cc; path = src/bot_base.cc; sourceTree = "<group>"; };
+		B9F08362242B2830003DA361 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; name = Makefile.am; path = src/Makefile.am; sourceTree = "<group>"; };
+		B9F08363242B2830003DA361 /* setup_bot_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = setup_bot_win.hh; path = src/setup_bot_win.hh; sourceTree = "<group>"; };
+		B9F08364242B2830003DA361 /* setup_game_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = setup_game_win.cc; path = src/setup_game_win.cc; sourceTree = "<group>"; };
+		B9F08365242B2830003DA361 /* cheech.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = cheech.cc; path = src/cheech.cc; sourceTree = "<group>"; };
+		B9F08366242B2830003DA361 /* about_win.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = about_win.hh; path = src/about_win.hh; sourceTree = "<group>"; };
+		B9F08367242B2830003DA361 /* GtkComboBoxEntryText.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = GtkComboBoxEntryText.hh; path = src/GtkComboBoxEntryText.hh; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		B980DD25242B1D2A002425F2 = {
+			isa = PBXGroup;
+			children = (
+				B9F0835A242B2830003DA361 /* about_win_glade.cc */,
+				B9F08330242B282E003DA361 /* about_win_glade.hh */,
+				B9F0833B242B282F003DA361 /* about_win.cc */,
+				B9F08366242B2830003DA361 /* about_win.hh */,
+				B9F08319242B282E003DA361 /* ajax_server_conn.cc */,
+				B9F0832D242B282E003DA361 /* ajax_server_conn.hh */,
+				B9F0834A242B282F003DA361 /* ajax_server.cc */,
+				B9F0834C242B282F003DA361 /* ajax_server.hh */,
+				B9F08361242B2830003DA361 /* bot_base.cc */,
+				B9F08343242B282F003DA361 /* bot_base.hh */,
+				B9F08347242B282F003DA361 /* bot_friendly.cc */,
+				B9F0835E242B2830003DA361 /* bot_friendly.hh */,
+				B9F0834F242B282F003DA361 /* bot_lookahead.cc */,
+				B9F08350242B282F003DA361 /* bot_lookahead.hh */,
+				B9F08353242B2830003DA361 /* bot_mean.cc */,
+				B9F08338242B282F003DA361 /* bot_mean.hh */,
+				B9F08322242B282E003DA361 /* bot_random.cc */,
+				B9F08333242B282E003DA361 /* bot_random.hh */,
+				B9F0832B242B282E003DA361 /* bot_simple.cc */,
+				B9F08351242B282F003DA361 /* bot_simple.hh */,
+				B9F08365242B2830003DA361 /* cheech.cc */,
+				B9F08335242B282E003DA361 /* cheechbot.cc */,
+				B9F08328242B282E003DA361 /* cheechd.cc */,
+				B9F08344242B282F003DA361 /* cheechwebd.cc */,
+				B9F0831F242B282E003DA361 /* color_win_glade.cc */,
+				B9F08346242B282F003DA361 /* color_win_glade.hh */,
+				B9F08352242B282F003DA361 /* color_win.cc */,
+				B9F08321242B282E003DA361 /* color_win.hh */,
+				B9F08320242B282E003DA361 /* game_board.cc */,
+				B9F08345242B282F003DA361 /* game_board.hh */,
+				B9F0831E242B282E003DA361 /* game_client.cc */,
+				B9F0833E242B282F003DA361 /* game_client.hh */,
+				B9F0835D242B2830003DA361 /* game_hole.cc */,
+				B9F08336242B282E003DA361 /* game_hole.hh */,
+				B9F08349242B282F003DA361 /* game_images.cc */,
+				B9F0835C242B2830003DA361 /* game_images.hh */,
+				B9F08341242B282F003DA361 /* game_server.cc */,
+				B9F0832E242B282E003DA361 /* game_server.hh */,
+				B9F0834B242B282F003DA361 /* game_view_hole.cc */,
+				B9F0833C242B282F003DA361 /* game_view_hole.hh */,
+				B9F08348242B282F003DA361 /* game_view.cc */,
+				B9F08337242B282F003DA361 /* game_view.hh */,
+				B9F08359242B2830003DA361 /* gnet_conn.cc */,
+				B9F08357242B2830003DA361 /* gnet_conn.hh */,
+				B9F0832A242B282E003DA361 /* gnet_server.cc */,
+				B9F08327242B282E003DA361 /* gnet_server.hh */,
+				B9F08367242B2830003DA361 /* GtkComboBoxEntryText.hh */,
+				B9F08339242B282F003DA361 /* GtkComboBoxText.hh */,
+				B9F0833D242B282F003DA361 /* GtkImage.hh */,
+				B9F08324242B282E003DA361 /* help_win_glade.cc */,
+				B9F0834D242B282F003DA361 /* help_win_glade.hh */,
+				B9F08329242B282E003DA361 /* help_win.cc */,
+				B9F08340242B282F003DA361 /* help_win.hh */,
+				B9F08358242B2830003DA361 /* main_win_glade.cc */,
+				B9F08354242B2830003DA361 /* main_win_glade.hh */,
+				B9F08323242B282E003DA361 /* main_win.cc */,
+				B9F08325242B282E003DA361 /* main_win.hh */,
+				B9F08362242B2830003DA361 /* Makefile.am */,
+				B9F08355242B2830003DA361 /* Makefile.in */,
+				B9F0831B242B282E003DA361 /* name_win_glade.cc */,
+				B9F0831C242B282E003DA361 /* name_win_glade.hh */,
+				B9F0835B242B2830003DA361 /* name_win.cc */,
+				B9F0833A242B282F003DA361 /* name_win.hh */,
+				B9F08342242B282F003DA361 /* new_game_win_glade.cc */,
+				B9F08360242B2830003DA361 /* new_game_win_glade.hh */,
+				B9F0831D242B282E003DA361 /* new_game_win.cc */,
+				B9F08326242B282E003DA361 /* new_game_win.hh */,
+				B9F08356242B2830003DA361 /* prefs.cc */,
+				B9F0834E242B282F003DA361 /* prefs.hh */,
+				B9F0835F242B2830003DA361 /* setup_bot_win_glade.cc */,
+				B9F08331242B282E003DA361 /* setup_bot_win_glade.hh */,
+				B9F0832C242B282E003DA361 /* setup_bot_win.cc */,
+				B9F08363242B2830003DA361 /* setup_bot_win.hh */,
+				B9F08332242B282E003DA361 /* setup_game_win_glade.cc */,
+				B9F0833F242B282F003DA361 /* setup_game_win_glade.hh */,
+				B9F08364242B2830003DA361 /* setup_game_win.cc */,
+				B9F0832F242B282E003DA361 /* setup_game_win.hh */,
+				B9F08334242B282E003DA361 /* utility.cc */,
+				B9F0831A242B282E003DA361 /* utility.hh */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		B980DD2A242B1D2A002425F2 /* cheech */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = B980DD2D242B1D2A002425F2 /* Build configuration list for PBXLegacyTarget "cheech" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = .;
+			dependencies = (
+			);
+			name = cheech;
+			passBuildSettingsInEnvironment = 1;
+			productName = cheech;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		B980DD26242B1D2A002425F2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = "Ben Levitt";
+				TargetAttributes = {
+					B980DD2A242B1D2A002425F2 = {
+						CreatedOnToolsVersion = 11.4;
+					};
+				};
+			};
+			buildConfigurationList = B980DD29242B1D2A002425F2 /* Build configuration list for PBXProject "cheech" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B980DD25242B1D2A002425F2;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B980DD2A242B1D2A002425F2 /* cheech */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		B980DD2B242B1D2A002425F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		B980DD2C242B1D2A002425F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+			};
+			name = Release;
+		};
+		B980DD2E242B1D2A002425F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B980DD2F242B1D2A002425F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = WKVW8863DQ;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B980DD29242B1D2A002425F2 /* Build configuration list for PBXProject "cheech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B980DD2B242B1D2A002425F2 /* Debug */,
+				B980DD2C242B1D2A002425F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B980DD2D242B1D2A002425F2 /* Build configuration list for PBXLegacyTarget "cheech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B980DD2E242B1D2A002425F2 /* Debug */,
+				B980DD2F242B1D2A002425F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B980DD26242B1D2A002425F2 /* Project object */;
+}
