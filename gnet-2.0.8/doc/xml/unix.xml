@@ -1,0 +1,290 @@
+<refentry id="gnet-unix">
+<refmeta>
+<refentrytitle role="top_of_page">Unix</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Unix</refname>
+<refpurpose>Unix socket</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+                    <link linkend="GUnixSocket">GUnixSocket</link>;
+<link linkend="GUnixSocket">GUnixSocket</link>*        <link linkend="gnet-unix-socket-new">gnet_unix_socket_new</link>                (const <link linkend="gchar">gchar</link> *path);
+<link linkend="GUnixSocket">GUnixSocket</link>*        <link linkend="gnet-unix-socket-new-abstract">gnet_unix_socket_new_abstract</link>       (const <link linkend="gchar">gchar</link> *path);
+<link linkend="void">void</link>                <link linkend="gnet-unix-socket-delete">gnet_unix_socket_delete</link>             (<link linkend="GUnixSocket">GUnixSocket</link> *socket);
+<link linkend="void">void</link>                <link linkend="gnet-unix-socket-ref">gnet_unix_socket_ref</link>                (<link linkend="GUnixSocket">GUnixSocket</link> *socket);
+<link linkend="void">void</link>                <link linkend="gnet-unix-socket-unref">gnet_unix_socket_unref</link>              (<link linkend="GUnixSocket">GUnixSocket</link> *socket);
+<link linkend="GIOChannel">GIOChannel</link>*         <link linkend="gnet-unix-socket-get-io-channel">gnet_unix_socket_get_io_channel</link>     (<link linkend="GUnixSocket">GUnixSocket</link> *socket);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-unix-socket-get-path">gnet_unix_socket_get_path</link>           (const <link linkend="GUnixSocket">GUnixSocket</link> *socket);
+<link linkend="GUnixSocket">GUnixSocket</link>*        <link linkend="gnet-unix-socket-server-new">gnet_unix_socket_server_new</link>         (const <link linkend="gchar">gchar</link> *path);
+<link linkend="GUnixSocket">GUnixSocket</link>*        <link linkend="gnet-unix-socket-server-new-abstract">gnet_unix_socket_server_new_abstract</link>
+                                                        (const <link linkend="gchar">gchar</link> *path);
+<link linkend="GUnixSocket">GUnixSocket</link>*        <link linkend="gnet-unix-socket-server-accept">gnet_unix_socket_server_accept</link>      (const <link linkend="GUnixSocket">GUnixSocket</link> *socket);
+<link linkend="GUnixSocket">GUnixSocket</link>*        <link linkend="gnet-unix-socket-server-accept-nonblock">gnet_unix_socket_server_accept_nonblock</link>
+                                                        (const <link linkend="GUnixSocket">GUnixSocket</link> *socket);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+The Unix module provides support for Unix sockets.  Unix sockets are
+used to communicate between processes.  Unix sockets are for Unix
+operating systems only and are not supported in Windows.  GNet's Unix
+sockets are stream-based (like TCP), not datagram-based (like UDP).
+Unix socket addresses are file names, like "/tmp/my_unix_socket".
+</para>
+
+<para>
+To connect to a existing Unix socket, call <link linkend="gnet-unix-socket-new"><function>gnet_unix_socket_new()</function></link>.  To
+create a new Unix socket other processes will connect to, call
+<link linkend="gnet-unix-socket-server-new"><function>gnet_unix_socket_server_new()</function></link>.
+</para>
+
+<para>
+The functions in this module are similar to those in the TCP module.
+See the documentation on TCP sockets for more information.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GUnixSocket" role="struct"/>GUnixSocket</title>
+<indexterm><primary>GUnixSocket</primary></indexterm><programlisting>typedef struct _GUnixSocket GUnixSocket;</programlisting>
+<para>
+A <link linkend="GUnixSocket"><type>GUnixSocket</type></link> structure represents a Unix socket.  The
+ implementation is hidden.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-new" role="function"/>gnet_unix_socket_new ()</title>
+<indexterm><primary>gnet_unix_socket_new</primary></indexterm><programlisting><link linkend="GUnixSocket">GUnixSocket</link>*        gnet_unix_socket_new                (const <link linkend="gchar">gchar</link> *path);</programlisting>
+<para>
+Creates a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> and connects to <parameter>path</parameter>.  This function will
+ block to connect.  Use this constructor to create a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+ for a client.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>path</parameter>&nbsp;:</term>
+<listitem><simpara> path
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GUnixSocket"><type>GUnixSocket</type></link>; NULL on failure.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-new-abstract" role="function" condition="since:2.0.8"/>gnet_unix_socket_new_abstract ()</title>
+<indexterm role="2.0.8"><primary>gnet_unix_socket_new_abstract</primary></indexterm><programlisting><link linkend="GUnixSocket">GUnixSocket</link>*        gnet_unix_socket_new_abstract       (const <link linkend="gchar">gchar</link> *path);</programlisting>
+<para>
+Creates a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> and connects to <parameter>path</parameter> in the abstract
+ unix socket domain. This function will block to connect.  Use this
+ constructor to create a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> for a client.
+</para>
+<para>
+ If the abstract unix sockets are not available on the platform in use,
+ this function will behave like <link linkend="gnet-unix-socket-new"><function>gnet_unix_socket_new()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>path</parameter>&nbsp;:</term>
+<listitem><simpara> path
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GUnixSocket"><type>GUnixSocket</type></link>, or NULL on failure.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-delete" role="function"/>gnet_unix_socket_delete ()</title>
+<indexterm><primary>gnet_unix_socket_delete</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_unix_socket_delete             (<link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Deletes a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-ref" role="function"/>gnet_unix_socket_ref ()</title>
+<indexterm><primary>gnet_unix_socket_ref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_unix_socket_ref                (<link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Adds a reference to a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-unref" role="function"/>gnet_unix_socket_unref ()</title>
+<indexterm><primary>gnet_unix_socket_unref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_unix_socket_unref              (<link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Removes a reference from a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>.  A <link linkend="GUnixSocket"><type>GUnixSocket</type></link> is
+ deleted when the reference count reaches 0.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-get-io-channel" role="function"/>gnet_unix_socket_get_io_channel ()</title>
+<indexterm><primary>gnet_unix_socket_get_io_channel</primary></indexterm><programlisting><link linkend="GIOChannel">GIOChannel</link>*         gnet_unix_socket_get_io_channel     (<link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Gets the <link linkend="GIOChannel"><type>GIOChannel</type></link> of a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>.
+</para>
+<para>
+ For a client socket, the <link linkend="GIOChannel"><type>GIOChannel</type></link> represents the data stream.
+ Use it like you would any other <link linkend="GIOChannel"><type>GIOChannel</type></link>.
+</para>
+<para>
+ For a server socket, however, the <link linkend="GIOChannel"><type>GIOChannel</type></link> represents the
+ listening socket.  When it's readable, there's a connection
+ waiting to be accepted.
+</para>
+<para>
+ Every <link linkend="GUnixSocket"><type>GUnixSocket</type></link> has one and only one <link linkend="GIOChannel"><type>GIOChannel</type></link>.  If you ref
+ the channel, then you must unref it eventually.  Do not close the
+ channel.  The channel is closed by GNet when the socket is
+ deleted.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GIOChannel"><type>GIOChannel</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-get-path" role="function"/>gnet_unix_socket_get_path ()</title>
+<indexterm><primary>gnet_unix_socket_get_path</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_unix_socket_get_path           (const <link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Gets the path of a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the path.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-server-new" role="function"/>gnet_unix_socket_server_new ()</title>
+<indexterm><primary>gnet_unix_socket_server_new</primary></indexterm><programlisting><link linkend="GUnixSocket">GUnixSocket</link>*        gnet_unix_socket_server_new         (const <link linkend="gchar">gchar</link> *path);</programlisting>
+<para>
+Creates a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> bound to <parameter>path</parameter>.  Use this constructor to
+ create a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> for a server.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>path</parameter>&nbsp;:</term>
+<listitem><simpara> path
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GUnixSocket"><type>GUnixSocket</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-server-new-abstract" role="function" condition="since:2.0.8"/>gnet_unix_socket_server_new_abstract ()</title>
+<indexterm role="2.0.8"><primary>gnet_unix_socket_server_new_abstract</primary></indexterm><programlisting><link linkend="GUnixSocket">GUnixSocket</link>*        gnet_unix_socket_server_new_abstract
+                                                        (const <link linkend="gchar">gchar</link> *path);</programlisting>
+<para>
+Creates a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> bound to <parameter>path</parameter> in the abstract unix socket
+ domain.  Use this constructor to create a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> for a
+ server.
+</para>
+<para>
+ If the abstract unix sockets are not available on the platform in use,
+ this function will behave the same as <link linkend="gnet-unix-socket-server-new"><function>gnet_unix_socket_server_new()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>path</parameter>&nbsp;:</term>
+<listitem><simpara> path
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GUnixSocket"><type>GUnixSocket</type></link>, or NULL on error.
+
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-server-accept" role="function"/>gnet_unix_socket_server_accept ()</title>
+<indexterm><primary>gnet_unix_socket_server_accept</primary></indexterm><programlisting><link linkend="GUnixSocket">GUnixSocket</link>*        gnet_unix_socket_server_accept      (const <link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Accepts a connection from a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>.  The socket must have
+ been created using <link linkend="gnet-unix-socket-server-new"><function>gnet_unix_socket_server_new()</function></link>. This function
+ will block.  Even if the socket's <link linkend="GIOChannel"><type>GIOChannel</type></link> is readable, the
+ function may still block.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GUnixSocket"><type>GUnixSocket</type></link> representing a new connection; NULL on
+ error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unix-socket-server-accept-nonblock" role="function"/>gnet_unix_socket_server_accept_nonblock ()</title>
+<indexterm><primary>gnet_unix_socket_server_accept_nonblock</primary></indexterm><programlisting><link linkend="GUnixSocket">GUnixSocket</link>*        gnet_unix_socket_server_accept_nonblock
+                                                        (const <link linkend="GUnixSocket">GUnixSocket</link> *socket);</programlisting>
+<para>
+Accepts a connection from a <link linkend="GUnixSocket"><type>GUnixSocket</type></link> without blocking.  The
+ socket must have been created using <link linkend="gnet-unix-socket-server-new"><function>gnet_unix_socket_server_new()</function></link>.
+</para>
+<para>
+ Note that if the socket's <link linkend="GIOChannel"><type>GIOChannel</type></link> is readable, then there is
+ PROBABLY a new connection.  It is possible for the connection
+ to close by the time this function is called, so it may return
+ NULL.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GUnixSocket"><type>GUnixSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GUnixSocket"><type>GUnixSocket</type></link> representing a new connection; NULL
+ otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

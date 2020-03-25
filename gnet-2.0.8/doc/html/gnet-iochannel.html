@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>IOChannel</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-server.html" title="Server">
+<link rel="next" href="gnet-uri.html" title="URI">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-server.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-uri.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id379149" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id379672" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-iochannel"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id379149"></a><span class="refentrytitle">IOChannel</span>
+</h2>
+<p>IOChannel &#8212; GIOChannel utility functions</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+GIOError            <a href="gnet-iochannel.html#gnet-io-channel-writen">gnet_io_channel_writen</a>              (GIOChannel *channel,
+                                                         gpointer buffer,
+                                                         gsize length,
+                                                         gsize *bytes_writtenp);
+GIOError            <a href="gnet-iochannel.html#gnet-io-channel-readn">gnet_io_channel_readn</a>               (GIOChannel *channel,
+                                                         gpointer buffer,
+                                                         gsize length,
+                                                         gsize *bytes_readp);
+GIOError            <a href="gnet-iochannel.html#gnet-io-channel-readline">gnet_io_channel_readline</a>            (GIOChannel *channel,
+                                                         gchar *buffer,
+                                                         gsize length,
+                                                         gsize *bytes_readp);
+GIOError            <a href="gnet-iochannel.html#gnet-io-channel-readline-strdup">gnet_io_channel_readline_strdup</a>     (GIOChannel *channel,
+                                                         gchar **bufferp,
+                                                         gsize *bytes_readp);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id379672"></a><h2>Description</h2>
+<p>
+The IOChannel module provides utility functions for reading from and
+writing to GIOChannels.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id379688"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id379698"></a><h3>
+<a name="gnet-io-channel-writen"></a>gnet_io_channel_writen ()</h3>
+<a class="indexterm" name="id379710"></a><pre class="programlisting">GIOError            gnet_io_channel_writen              (GIOChannel *channel,
+                                                         gpointer buffer,
+                                                         gsize length,
+                                                         gsize *bytes_writtenp);</pre>
+<p>
+Writes all <em class="parameter"><code>length</code></em> bytes in <em class="parameter"><code>buffer</code></em> to <em class="parameter"><code>channel</code></em>.  If
+<em class="parameter"><code>bytes_writtenp</code></em> is set, the number of bytes written is stored in
+the integer it points to.  <em class="parameter"><code>bytes_writtenp</code></em> will be less than
+<em class="parameter"><code>length</code></em> if the connection closed or an error occured.
+</p>
+<p>
+This function is essentially a wrapper around <code class="function">g_io_channel_write()</code>.
+The problem with <code class="function">g_io_channel_write()</code> is that it may not write all
+the bytes and will return a short count even when there was not an
+error.  This is rare, but possible, and often difficult to detect
+when it does happen.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>channel</code></em>&#160;:</span></td>
+<td> channel to write to
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer to read from
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of <em class="parameter"><code>buffer</code></em>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>bytes_writtenp</code></em>&#160;:</span></td>
+<td> pointer to integer in which to store the
+  number of bytes written
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">G_IO_ERROR_NONE</code> if successful; something else otherwise.
+The number of bytes written is stored in the integer pointed to by
+<em class="parameter"><code>bytes_writtenp</code></em>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id379921"></a><h3>
+<a name="gnet-io-channel-readn"></a>gnet_io_channel_readn ()</h3>
+<a class="indexterm" name="id379933"></a><pre class="programlisting">GIOError            gnet_io_channel_readn               (GIOChannel *channel,
+                                                         gpointer buffer,
+                                                         gsize length,
+                                                         gsize *bytes_readp);</pre>
+<p>
+Read exactly <em class="parameter"><code>length</code></em> bytes from <em class="parameter"><code>channel</code></em> into <em class="parameter"><code>buffer</code></em>.  If
+<em class="parameter"><code>bytes_readp</code></em> is set, the number of bytes read is stored in the
+integer it points to.  <em class="parameter"><code>bytes_readp</code></em> will be less than <em class="parameter"><code>length</code></em> if the
+end-of-file was reached or an error occured.
+</p>
+<p>
+This function is essentially a wrapper around <code class="function">g_io_channel_read()</code>.
+The problem with <code class="function">g_io_channel_read()</code> is that it may not read all
+the bytes requested and will return a short count even when there
+was not an error (this is rare, but it can happen and is often
+difficult to detect when it does).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>channel</code></em>&#160;:</span></td>
+<td> channel to read from
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer to write to
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of the buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>bytes_readp</code></em>&#160;:</span></td>
+<td> pointer to integer for the function to store the 
+number of of bytes read
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">G_IO_ERROR_NONE</code> if everything is ok; something else
+otherwise.  Also, returns the number of bytes read by modifying the
+integer pointed to by <em class="parameter"><code>bytes_readp</code></em>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id380136"></a><h3>
+<a name="gnet-io-channel-readline"></a>gnet_io_channel_readline ()</h3>
+<a class="indexterm" name="id380149"></a><pre class="programlisting">GIOError            gnet_io_channel_readline            (GIOChannel *channel,
+                                                         gchar *buffer,
+                                                         gsize length,
+                                                         gsize *bytes_readp);</pre>
+<p>
+Read a line from the channel.  The line will be NULL-terminated and
+include the newline character.  If there is not enough room for the
+line, the line is truncated to fit in the buffer.
+</p>
+<p>
+Warnings:
+</p>
+<p>
+1. If the buffer is full and the last character is not a newline,
+the line was truncated.  Do not assume the buffer ends with a
+newline.
+</p>
+<p>
+2. <em class="parameter"><code>bytes_readp</code></em> is the number of bytes put in the buffer.  It
+includes the terminating NULL character.
+</p>
+<p>
+3. NULL characters can appear in the line before the terminating
+NULL (e.g., "Hello world\0\n").  If this matters,
+check the string length of the buffer against the bytes read.
+</p>
+<p>
+I hope this isn't too confusing.  Usually the function works as you
+expect it to if you have a big enough buffer.  If you have the
+Stevens book, you should be familiar with the semantics.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>channel</code></em>&#160;:</span></td>
+<td> channel to read from
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer to write to
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of the buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>bytes_readp</code></em>&#160;:</span></td>
+<td> pointer to integer in which to store the 
+  number of of bytes read
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">G_IO_ERROR_NONE</code> if everything is ok; something else
+otherwise.  The number of bytes read is stored in the integer
+pointed to by <em class="parameter"><code>bytes_readp</code></em> (this number includes the newline).  If
+an error is returned, the contents of <em class="parameter"><code>buffer</code></em> and <em class="parameter"><code>bytes_readp</code></em> are
+undefined.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id380331"></a><h3>
+<a name="gnet-io-channel-readline-strdup"></a>gnet_io_channel_readline_strdup ()</h3>
+<a class="indexterm" name="id380344"></a><pre class="programlisting">GIOError            gnet_io_channel_readline_strdup     (GIOChannel *channel,
+                                                         gchar **bufferp,
+                                                         gsize *bytes_readp);</pre>
+<p>
+Read a line from the channel.  The line will be null-terminated and
+include the newline character.  Similarly to g_strdup_printf, a
+buffer large enough to hold the string will be allocated.
+</p>
+<p>
+Warnings:
+</p>
+<p>
+1. If the last character of the buffer is not a newline, the line
+was truncated by EOF.  Do not assume the buffer ends with a
+newline.
+</p>
+<p>
+2. <em class="parameter"><code>bytes_readp</code></em> is actually the number of bytes put in the buffer.
+It includes the terminating NULL character.
+</p>
+<p>
+3. NULL characters can appear in the line before the terminating
+null (e.g., "Hello world\0\n").  If this matters, check the string
+length of the buffer against the bytes read.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>channel</code></em>&#160;:</span></td>
+<td> channel to read from
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>bufferp</code></em>&#160;:</span></td>
+<td> pointer to gchar* in which to store the new buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>bytes_readp</code></em>&#160;:</span></td>
+<td> pointer to integer in which to store the 
+  number of of bytes read
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">G_IO_ERROR_NONE</code> if everything is ok; something else
+otherwise.  The number of bytes read is stored in the integer
+pointed to by <em class="parameter"><code>bytes_readp</code></em> (this number includes the newline).  The
+data pointer is stored in the pointer pointed to by <em class="parameter"><code>bufferp</code></em>.  This
+data is caller-owned.  If an error is returned, the contents of
+<em class="parameter"><code>bufferp</code></em> and <em class="parameter"><code>bytes_readp</code></em> are undefined.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

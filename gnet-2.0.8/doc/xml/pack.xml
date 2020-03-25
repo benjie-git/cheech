@@ -1,0 +1,414 @@
+<refentry id="gnet-pack">
+<refmeta>
+<refentrytitle role="top_of_page">Pack</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Pack</refname>
+<refpurpose>Byte packing and unpacking functions</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+<link linkend="gint">gint</link>                <link linkend="gnet-pack">gnet_pack</link>                           (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         const <link linkend="gint">gint</link> length,
+                                                         ...);
+<link linkend="gint">gint</link>                <link linkend="gnet-pack-strdup">gnet_pack_strdup</link>                    (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="gchar">gchar</link> **bufferp,
+                                                         ...);
+<link linkend="gint">gint</link>                <link linkend="gnet-vpack">gnet_vpack</link>                          (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         const <link linkend="gint">gint</link> length,
+                                                         <link linkend="va-list">va_list</link> args);
+<link linkend="gint">gint</link>                <link linkend="gnet-calcsize">gnet_calcsize</link>                       (const <link linkend="gchar">gchar</link> *format,
+                                                         ...);
+<link linkend="gint">gint</link>                <link linkend="gnet-vcalcsize">gnet_vcalcsize</link>                      (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="va-list">va_list</link> args);
+<link linkend="gint">gint</link>                <link linkend="gnet-unpack">gnet_unpack</link>                         (const <link linkend="gchar">gchar</link> *format,
+                                                         const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length,
+                                                         ...);
+<link linkend="gint">gint</link>                <link linkend="gnet-vunpack">gnet_vunpack</link>                        (const <link linkend="gchar">gchar</link> *format,
+                                                         const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length,
+                                                         <link linkend="va-list">va_list</link> args);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+The pack module provides functions for converting data into bytes
+("packing") and converting bytes to data ("unpacking").  For example,
+two integers and a string may be packed into a buffer to be transfered
+over the network.  These functions are similar to the ones in Python
+and Perl.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="gnet-pack" role="function"/>gnet_pack ()</title>
+<indexterm><primary>gnet_pack</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_pack                           (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         const <link linkend="gint">gint</link> length,
+                                                         ...);</programlisting>
+<para>
+Writes <parameter>Varargs</parameter> to <parameter>buffer</parameter>.  <parameter>format</parameter> is a string that describes
+ the <parameter>Varargs</parameter> and how they are to be packed.  This string is a list
+ of characters, each describing the type of an argument in
+ <parameter>Varargs</parameter>.
+</para>
+<para>
+ An example:
+</para>
+<para>
+ <informalexample>
+ <programlisting>
+ char buf[5];
+ int myint = 42;
+ int mybyte = 23;
+ &space;
+ gnet_pack("!ib", buf, sizeof(buf), myint, mybyte);
+ &comstart; Now buf is { 42, 0, 0, 0, 23 }; &comend;
+ </programlisting>
+ </informalexample>
+</para>
+<para>
+ As a shortcut, most types can be prefixed by an integer to specify
+ how many times the type is repeated.  For example, "4i2b" is
+ equivalent to "iiiibb".  This repeat argument is refered below to
+ as REPEAT.
+</para>
+<para>
+ Native byte order and sizes are used by default.  If the first
+ character of <parameter>format</parameter> is &lt; then little endian order and standard
+ sizes are used.  If the first character is &gt; or !, then big endian
+ (or network) order and standard size are used.  Standard sizes are
+ 1 byte for chars, 2 bytes for shorts, and 4 bytes for ints and
+ longs.
+</para>
+<para>
+ The types:
+</para>
+<para>
+ x is a NULL character.  It can be used for padding.  It does not
+ correspond to an argument in <parameter>Varargs</parameter>.
+</para>
+<para>
+ b/B is a signed/unsigned char.
+</para>
+<para>
+ h/H is a signed/unsigned short.
+</para>
+<para>
+ i/I is a signed/unsigned int.
+</para>
+<para>
+ l/L is a signed/unsigned long.
+</para>
+<para>
+ f/D is a float/double (always native order/size).
+</para>
+<para>
+ v is a void pointer (always native size).
+</para>
+<para>
+ s is a zero-terminated string.
+</para>
+<para>
+ S is a zero-padded string of maximum length REPEAT.  We write
+ up-to a NULL character or REPEAT characters, whichever comes
+ first.  We then write NULL characters up to a total of REPEAT
+ characters.  Special case: if REPEAT is not specified, we write
+ the string as a non-NULL-terminated string (note that it can't be
+ unpacked easily then).
+</para>
+<para>
+ r is a byte array of NEXT bytes.  NEXT is the next argument passed
+ to <link linkend="gnet-pack"><function>gnet_pack()</function></link> and is a gint.
+</para>
+<para>
+ R is a byte array of REPEAT bytes.  REPEAT must be specified.
+</para>
+<para>
+ p is a Pascal string.  The string passed is a NULL-termiated
+ string of less than 256 character.  The string writen is a
+ non-NULL-terminated string with a byte before the string storing
+ the string length.  REPEAT is repeat.
+</para>
+<para>
+ Mnemonics: (B)yte, s(H)ort, (I)nteger, (F)loat, (D)ouble, (V)oid
+ pointer, (S)tring, (R)aw
+</para>
+<para>
+ Pack was inspired by Python's and Perl's pack.  It is more like
+ Python's than Perl's.  Note that in GNet, a repeat of 0 does not
+ align the data (as in Python).</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> pack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to pack to
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>...</parameter>&nbsp;:</term>
+<listitem><simpara> variables to pack from
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> number of bytes packed; -1 on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-pack-strdup" role="function"/>gnet_pack_strdup ()</title>
+<indexterm><primary>gnet_pack_strdup</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_pack_strdup                    (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="gchar">gchar</link> **bufferp,
+                                                         ...);</programlisting>
+<para>
+Writes <parameter>Varargs</parameter> into a buffer pointed to by <parameter>bufferp</parameter>.  The buffer
+ is allocated by the function and is caller owned.  See <link linkend="gnet-pack"><function>gnet_pack()</function></link>
+ for more information.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> pack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>bufferp</parameter>&nbsp;:</term>
+<listitem><simpara> pointer to a buffer (buffer is caller owned)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>...</parameter>&nbsp;:</term>
+<listitem><simpara> variables to pack from
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> bytes packed; -1 on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-vpack" role="function"/>gnet_vpack ()</title>
+<indexterm><primary>gnet_vpack</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_vpack                          (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         const <link linkend="gint">gint</link> length,
+                                                         <link linkend="va-list">va_list</link> args);</programlisting>
+<para>
+Var arg interface to <link linkend="gnet-pack"><function>gnet_pack()</function></link>.  See <link linkend="gnet-pack"><function>gnet_pack()</function></link> for more
+ information.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> pack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to pack to
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>args</parameter>&nbsp;:</term>
+<listitem><simpara> var args
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> bytes packed; -1 on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-calcsize" role="function"/>gnet_calcsize ()</title>
+<indexterm><primary>gnet_calcsize</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_calcsize                       (const <link linkend="gchar">gchar</link> *format,
+                                                         ...);</programlisting>
+<para>
+Calculates the size of the buffer needed to pack <parameter>Varargs</parameter> by the
+ given format.  See <link linkend="gnet-pack"><function>gnet_pack()</function></link> for more information.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> pack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>...</parameter>&nbsp;:</term>
+<listitem><simpara> variables
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> number of bytes required to pack; -1 on error.
+ 
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-vcalcsize" role="function"/>gnet_vcalcsize ()</title>
+<indexterm><primary>gnet_vcalcsize</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_vcalcsize                      (const <link linkend="gchar">gchar</link> *format,
+                                                         <link linkend="va-list">va_list</link> args);</programlisting>
+<para>
+Var arg interface to <link linkend="gnet-calcsize"><function>gnet_calcsize()</function></link>.  See <link linkend="gnet-calcsize"><function>gnet_calcsize()</function></link> for
+ additional information.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> pack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>args</parameter>&nbsp;:</term>
+<listitem><simpara> var args
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> number of bytes required to pack; -1 on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-unpack" role="function"/>gnet_unpack ()</title>
+<indexterm><primary>gnet_unpack</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_unpack                         (const <link linkend="gchar">gchar</link> *format,
+                                                         const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length,
+                                                         ...);</programlisting>
+<para>
+Reads the data in <parameter>buffer</parameter> into <parameter>Varargs</parameter>.  <parameter>format</parameter> is a string that
+ describes the <parameter>Varargs</parameter> and how they are to be packed.  This string
+ is a list of characters, each describing the type of an argument
+ in <parameter>Varargs</parameter>.
+</para>
+<para>
+ An example:
+</para>
+<para>
+ <informalexample>
+ <programlisting>
+ char buf[5] = { 42, 0, 0, 0, 23 };
+ int myint;
+ int mybyte;
+ &space;
+ gnet_unpack("!ib", buf, sizeof(buf), &amp;myint, &amp;mybyte);
+ &comstart; Now myint is 42 and mybyte is 23 &comend;
+ </programlisting>
+ </informalexample>
+</para>
+<para>
+ In unpack, the arguments must be pointers to the appropriate type.
+ Strings and byte arrays are allocated dynamicly (by <link linkend="g-new"><function>g_new()</function></link>).  The
+ caller is responsible for <link linkend="g-free"><function>g_free()</function></link>-ing it.
+</para>
+<para>
+ As a shortcut, most types can be prefixed by an integer to specify
+ how many times the type is repeated.  For example, "4i2b" is
+ equivalent to "iiiibb".  This repeat argument is refered below to
+ as REPEAT.
+</para>
+<para>
+ The types:
+</para>
+<para>
+ x is a pad byte.  The byte is skipped and not stored.  We do not
+ check its value.
+</para>
+<para>
+ b/B is a signed/unsigned char.
+</para>
+<para>
+ h/H is a signed/unsigned short.
+</para>
+<para>
+ i/I is a signed/unsigned int.
+</para>
+<para>
+ l/L is a signed/unsigned long.
+</para>
+<para>
+ f/D is a float/double (always native order/size).
+ 
+ v is a void pointer (always native size).
+</para>
+<para>
+ s is a zero-terminated string.
+</para>
+<para>
+ S is a zero-padded string of length REPEAT.  We read REPEAT
+ characters or until a NULL character.  Any remaining characters
+ are filled in with 0's.  REPEAT must be specified.
+</para>
+<para>
+ r is a byte array of NEXT bytes.  NEXT is the next argument and is
+ a gint.  REPEAT is repeat.
+</para>
+<para>
+ R is a byte array of REPEAT bytes.  REPEAT must be specified.
+</para>
+<para>
+ p is a Pascal string.  The first byte read is the length of the
+ string and the string follows.  The unpacked string will be a
+ normal, NULL-terminated string.  REPEAT is repeat.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> unpack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to unpack from
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>...</parameter>&nbsp;:</term>
+<listitem><simpara> addresses of variables to unpack to
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> number of bytes unpacked; -1 on error.  The bytes are
+ unpacked to the variables pointed to by the <parameter>Varargs</parameter>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-vunpack" role="function"/>gnet_vunpack ()</title>
+<indexterm><primary>gnet_vunpack</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_vunpack                        (const <link linkend="gchar">gchar</link> *format,
+                                                         const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length,
+                                                         <link linkend="va-list">va_list</link> args);</programlisting>
+<para>
+Var arg interface to <link linkend="gnet-unpack"><function>gnet_unpack()</function></link>.  See <link linkend="gnet-unpack"><function>gnet_unpack()</function></link> for more
+ information.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>format</parameter>&nbsp;:</term>
+<listitem><simpara> unpack data format
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to unpack from
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>args</parameter>&nbsp;:</term>
+<listitem><simpara> var args
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> number of bytes packed; -1 on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

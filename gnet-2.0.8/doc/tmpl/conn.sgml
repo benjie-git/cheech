@@ -1,0 +1,314 @@
+<!-- ##### SECTION Title ##### -->
+Conn
+
+<!-- ##### SECTION Short_Description ##### -->
+TCP connection object
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+A #GConn represents a TCP connection.  A #GConn is usually created directly by
+the user by calling gnet_conn_new() or gnet_conn_new_inetaddr().  To connect to
+the remote host, call gnet_conn_connect() and to disconnect call
+gnet_conn_disconnect().  You may use the same #GConn to connect again to the
+host after you disconnected.  Free the #GConn with gnet_conn_unref() or
+gnet_conn_delete() when no longer needed.
+</para>
+
+<para>
+#GConn<!-- -->s are also created by a #GServer when a client connects.  You
+will need to call gnet_conn_set_callback() to set the #GConn callback after
+it is created by the #GServer.  A #GConn that has been created by a #GServer
+is already connect, you don't have to call gnet_conn_connect() in this case.
+Call gnet_conn_unref() or gnet_conn_delete() to disconnect the remote client
+and free the #GConn.
+</para>
+
+<para>
+The iochannel field and #GIOChannel functions can be used to read from
+or write to the socket.  #GIOChannel functions block.  To make an
+asynchronous read call gnet_conn_read() and to make an asynchronous
+write call gnet_conn_write().  The callback is called whenever a read
+or write completes.
+</para>
+
+<para>
+Special use cases (you usually do not need this): use
+gnet_conn_set_watch_error() to get an event if an error occurs.
+Use gnet_conn_set_watch_readable() and gnet_conn_set_watch_writable()
+to get events when the connection is readable or writable.  These can
+be used to implement custom I/O handling for cases where gnet_conn_read(),
+gnet_conn_write() and gnet_conn_write_direct() are not suitable.  For example,
+consider writing from a mmap()'ed file.  gnet_conn_write() will allocate memory
+for a buffer and copy part of the file into the buffer.  To avoid the
+copy, use gnet_conn_set_watch_writable() to catch the writable event
+and then write directly from memory to the socket (note: this is obsolete, you
+can now use gnet_conn_write_direct() for this).
+</para>
+
+<para>
+gnet_conn_timeout() sets a timeout on the GConn.  The
+%GNET_CONN_TIMEOUT event occurs when the timer expires.  For example,
+the timer may be set before connecting to the host.  If the connection
+is made, the %GNET_CONN_CONNECT event occurs. The timer can then be
+reset by setting the timeout to 0.  Otherwise, the %GNET_CONN_TIMEOUT
+event will eventually occur.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+See also GServer and the echoclient-gconn example.
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GConn ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@iochannel: 
+@socket: 
+@inetaddr: 
+@ref_count: 
+@ref_count_internal: 
+@connect_id: 
+@new_id: 
+@write_queue: 
+@bytes_written: 
+@buffer: 
+@length: 
+@bytes_read: 
+@read_eof: 
+@read_queue: 
+@process_buffer_timeout: 
+@watch_readable: 
+@watch_writable: 
+@watch_flags: 
+@watch: 
+@timer: 
+@func: 
+@user_data: 
+@context: 
+@priority: 
+
+<!-- ##### STRUCT GConnEvent ##### -->
+<para>
+
+</para>
+
+@type: 
+@buffer: 
+@length: 
+
+<!-- ##### ENUM GConnEventType ##### -->
+<para>
+
+</para>
+
+@GNET_CONN_ERROR: 
+@GNET_CONN_CONNECT: 
+@GNET_CONN_CLOSE: 
+@GNET_CONN_TIMEOUT: 
+@GNET_CONN_READ: 
+@GNET_CONN_WRITE: 
+@GNET_CONN_READABLE: 
+@GNET_CONN_WRITABLE: 
+
+<!-- ##### USER_FUNCTION GConnFunc ##### -->
+<para>
+
+</para>
+
+@conn: 
+@event: 
+@user_data: 
+
+
+<!-- ##### FUNCTION gnet_conn_new ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_conn_new_inetaddr ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@func: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_conn_new_socket ##### -->
+<para>
+
+</para>
+
+@socket: 
+@func: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_conn_delete ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_ref ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_unref ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_set_callback ##### -->
+<para>
+
+</para>
+
+@conn: 
+@func: 
+@user_data: 
+
+
+<!-- ##### FUNCTION gnet_conn_set_main_context ##### -->
+<para>
+
+</para>
+
+@conn: 
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_conn_connect ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_disconnect ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_is_connected ##### -->
+<para>
+
+</para>
+
+@conn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_conn_read ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_readn ##### -->
+<para>
+
+</para>
+
+@conn: 
+@length: 
+
+
+<!-- ##### FUNCTION gnet_conn_readline ##### -->
+<para>
+
+</para>
+
+@conn: 
+
+
+<!-- ##### FUNCTION gnet_conn_write ##### -->
+<para>
+
+</para>
+
+@conn: 
+@buffer: 
+@length: 
+
+
+<!-- ##### FUNCTION gnet_conn_write_direct ##### -->
+<para>
+
+</para>
+
+@conn: 
+@buffer: 
+@length: 
+@buffer_destroy_cb: 
+
+
+<!-- ##### FUNCTION gnet_conn_set_watch_error ##### -->
+<para>
+
+</para>
+
+@conn: 
+@enable: 
+
+
+<!-- ##### FUNCTION gnet_conn_set_watch_readable ##### -->
+<para>
+
+</para>
+
+@conn: 
+@enable: 
+
+
+<!-- ##### FUNCTION gnet_conn_set_watch_writable ##### -->
+<para>
+
+</para>
+
+@conn: 
+@enable: 
+
+
+<!-- ##### FUNCTION gnet_conn_timeout ##### -->
+<para>
+
+</para>
+
+@conn: 
+@timeout: 
+
+

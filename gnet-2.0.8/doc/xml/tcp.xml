@@ -1,0 +1,897 @@
+<refentry id="gnet-tcp">
+<refmeta>
+<refentrytitle role="top_of_page">TCP</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>TCP</refname>
+<refpurpose>TCP socket</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+                    <link linkend="GTcpSocket">GTcpSocket</link>;
+typedef             <link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link>;
+enum                <link linkend="GTcpSocketConnectAsyncStatus">GTcpSocketConnectAsyncStatus</link>;
+<link linkend="void">void</link>                (<link linkend="GTcpSocketConnectAsyncFunc">*GTcpSocketConnectAsyncFunc</link>)       (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GTcpSocketConnectAsyncStatus">GTcpSocketConnectAsyncStatus</link> status,
+                                                         <link linkend="gpointer">gpointer</link> data);
+typedef             <link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link>;
+<link linkend="void">void</link>                (<link linkend="GTcpSocketNewAsyncFunc">*GTcpSocketNewAsyncFunc</link>)           (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-connect">gnet_tcp_socket_connect</link>             (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);
+<link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link> <link linkend="gnet-tcp-socket-connect-async">gnet_tcp_socket_connect_async</link>  (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GTcpSocketConnectAsyncFunc">GTcpSocketConnectAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link> <link linkend="gnet-tcp-socket-connect-async-full">gnet_tcp_socket_connect_async_full</link>
+                                                        (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GTcpSocketConnectAsyncFunc">GTcpSocketConnectAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-connect-async-cancel">gnet_tcp_socket_connect_async_cancel</link>
+                                                        (<link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link> id);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-new">gnet_tcp_socket_new</link>                 (const <link linkend="GInetAddr">GInetAddr</link> *addr);
+<link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> <link linkend="gnet-tcp-socket-new-async">gnet_tcp_socket_new_async</link>          (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> <link linkend="gnet-tcp-socket-new-async-full">gnet_tcp_socket_new_async_full</link>     (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-new-async-cancel">gnet_tcp_socket_new_async_cancel</link>    (<link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> id);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-delete">gnet_tcp_socket_delete</link>              (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-ref">gnet_tcp_socket_ref</link>                 (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-unref">gnet_tcp_socket_unref</link>               (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="GIOChannel">GIOChannel</link>*         <link linkend="gnet-tcp-socket-get-io-channel">gnet_tcp_socket_get_io_channel</link>      (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-tcp-socket-get-remote-inetaddr">gnet_tcp_socket_get_remote_inetaddr</link> (const <link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-tcp-socket-get-local-inetaddr">gnet_tcp_socket_get_local_inetaddr</link>  (const <link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="gint">gint</link>                <link linkend="gnet-tcp-socket-get-port">gnet_tcp_socket_get_port</link>            (const <link linkend="GTcpSocket">GTcpSocket</link> *socket);
+enum                <link linkend="GNetTOS">GNetTOS</link>;
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-set-tos">gnet_tcp_socket_set_tos</link>             (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GNetTOS">GNetTOS</link> tos);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-server-new">gnet_tcp_socket_server_new</link>          (void);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-server-new-with-port">gnet_tcp_socket_server_new_with_port</link>
+                                                        (<link linkend="gint">gint</link> port);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-server-new-full">gnet_tcp_socket_server_new_full</link>     (const <link linkend="GInetAddr">GInetAddr</link> *iface,
+                                                         <link linkend="gint">gint</link> port);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-server-accept">gnet_tcp_socket_server_accept</link>       (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-server-accept-nonblock">gnet_tcp_socket_server_accept_nonblock</link>
+                                                        (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="void">void</link>                (<link linkend="GTcpSocketAcceptFunc">*GTcpSocketAcceptFunc</link>)             (<link linkend="GTcpSocket">GTcpSocket</link> *server,
+                                                         <link linkend="GTcpSocket">GTcpSocket</link> *client,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-server-accept-async">gnet_tcp_socket_server_accept_async</link> (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GTcpSocketAcceptFunc">GTcpSocketAcceptFunc</link> accept_func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);
+<link linkend="void">void</link>                <link linkend="gnet-tcp-socket-server-accept-async-cancel">gnet_tcp_socket_server_accept_async_cancel</link>
+                                                        (<link linkend="GTcpSocket">GTcpSocket</link> *socket);
+<link linkend="GTcpSocket">GTcpSocket</link>*         <link linkend="gnet-tcp-socket-new-direct">gnet_tcp_socket_new_direct</link>          (const <link linkend="GInetAddr">GInetAddr</link> *addr);
+<link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> <link linkend="gnet-tcp-socket-new-async-direct">gnet_tcp_socket_new_async_direct</link>   (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> <link linkend="gnet-tcp-socket-new-async-direct-full">gnet_tcp_socket_new_async_direct_full</link>
+                                                        (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+TCP is an internet protocol that transfers data reliably and in-order.
+This module provides support for TCP sockets.
+</para>
+
+<para>
+To create a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connect to a host, call
+<link linkend="gnet-tcp-socket-new"><function>gnet_tcp_socket_new()</function></link>.  This function will block.  The asynchronous
+version is <link linkend="gnet-tcp-socket-new-async"><function>gnet_tcp_socket_new_async()</function></link>.
+</para>
+
+<para>
+Each TCP socket has a <link linkend="GIOChannel"><type>GIOChannel</type></link> which can be used to read and write
+from the socket.  A watch can be set on the <link linkend="GIOChannel"><type>GIOChannel</type></link> by calling
+<link linkend="g-io-add-watch"><function>g_io_add_watch()</function></link> (a GLib function).
+</para>
+
+<para>
+To create a TCP server, call <link linkend="gnet-tcp-socket-server-new"><function>gnet_tcp_socket_server_new()</function></link>.  The socket
+will be bound to all interfaces.  To bind to a specific interface,
+call <link linkend="gnet-tcp-socket-server-new-interface"><function>gnet_tcp_socket_server_new_interface()</function></link>.  To accept a new
+connection, call <link linkend="gnet-tcp-socket-server-accept"><function>gnet_tcp_socket_server_accept()</function></link>.  This function
+returns a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> representing the client connection.  This
+function can block.  To prevent blocking, call either
+<link linkend="gnet-tcp-socket-server-accept-nonblock"><function>gnet_tcp_socket_server_accept_nonblock()</function></link> or
+<link linkend="gnet-tcp-socket-server-accept-async"><function>gnet_tcp_socket_server_accept_async()</function></link>.  The former returns NULL
+immediately if there is no new connection.  The latter calls a
+callback whenever there is a new connection.  We recommend this
+function.
+</para>
+
+<para>
+This module will use SOCKS if enabled.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GTcpSocket" role="struct"/>GTcpSocket</title>
+<indexterm><primary>GTcpSocket</primary></indexterm><programlisting>typedef struct _GTcpSocket GTcpSocket;</programlisting>
+<para>
+A <link linkend="GTcpSocket"><type>GTcpSocket</type></link> structure represents a TCP socket.  The
+ implementation is hidden.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GTcpSocketConnectAsyncID" role="typedef"/>GTcpSocketConnectAsyncID</title>
+<indexterm><primary>GTcpSocketConnectAsyncID</primary></indexterm><programlisting>typedef struct _GTcpSocketConnectState * GTcpSocketConnectAsyncID;
+</programlisting>
+<para>
+ID of an asynchronous connection started with
+ <link linkend="gnet-tcp-socket-connect-async"><function>gnet_tcp_socket_connect_async()</function></link>.  The connection can be canceled
+ by calling <link linkend="gnet-tcp-socket-connect-async-cancel"><function>gnet_tcp_socket_connect_async_cancel()</function></link> with the ID.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GTcpSocketConnectAsyncStatus" role="enum"/>enum GTcpSocketConnectAsyncStatus</title>
+<indexterm><primary>GTcpSocketConnectAsyncStatus</primary></indexterm><programlisting>typedef enum {
+  GTCP_SOCKET_CONNECT_ASYNC_STATUS_OK,
+  GTCP_SOCKET_CONNECT_ASYNC_STATUS_INETADDR_ERROR,
+  GTCP_SOCKET_CONNECT_ASYNC_STATUS_TCP_ERROR
+} GTcpSocketConnectAsyncStatus;
+</programlisting>
+<para>
+Status for connecting via <link linkend="gnet-tcp-socket-connect-async"><function>gnet_tcp_socket_connect_async()</function></link>, passed
+ by GTcpSocketConnectAsyncFunc.  More errors may be added in the
+ future, so it's best to compare against
+ <link linkend="GTCP-SOCKET-CONNECT-ASYNC-STATUS-OK:CAPS"><literal>GTCP_SOCKET_CONNECT_ASYNC_STATUS_OK</literal></link>.</para>
+<para>
+
+</para><variablelist role="enum">
+<varlistentry>
+<term><anchor id="GTCP-SOCKET-CONNECT-ASYNC-STATUS-OK:CAPS" role="constant"/><literal>GTCP_SOCKET_CONNECT_ASYNC_STATUS_OK</literal></term>
+<listitem><simpara> Connection succeeded
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GTCP-SOCKET-CONNECT-ASYNC-STATUS-INETADDR-ERROR:CAPS" role="constant"/><literal>GTCP_SOCKET_CONNECT_ASYNC_STATUS_INETADDR_ERROR</literal></term>
+<listitem><simpara> Error, address lookup failed
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GTCP-SOCKET-CONNECT-ASYNC-STATUS-TCP-ERROR:CAPS" role="constant"/><literal>GTCP_SOCKET_CONNECT_ASYNC_STATUS_TCP_ERROR</literal></term>
+<listitem><simpara> Error, could not connect
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GTcpSocketConnectAsyncFunc" role="function"/>GTcpSocketConnectAsyncFunc ()</title>
+<indexterm><primary>GTcpSocketConnectAsyncFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GTcpSocketConnectAsyncFunc)       (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GTcpSocketConnectAsyncStatus">GTcpSocketConnectAsyncStatus</link> status,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Callback for <link linkend="gnet-tcp-socket-connect-async"><function>gnet_tcp_socket_connect_async()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> TcpSocket that was connecting (callee owned)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>status</parameter>&nbsp;:</term>
+<listitem><simpara> Status of the connection
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> User data
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GTcpSocketNewAsyncID" role="typedef"/>GTcpSocketNewAsyncID</title>
+<indexterm><primary>GTcpSocketNewAsyncID</primary></indexterm><programlisting>typedef struct _GTcpSocketAsyncState * GTcpSocketNewAsyncID;
+</programlisting>
+<para>
+ID of an asynchronous tcp socket creation started with
+ <link linkend="gnet-tcp-socket-new-async"><function>gnet_tcp_socket_new_async()</function></link>.  The creation can be canceled by
+ calling <link linkend="gnet-tcp-socket-new-async-cancel"><function>gnet_tcp_socket_new_async_cancel()</function></link> with the ID.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GTcpSocketNewAsyncFunc" role="function"/>GTcpSocketNewAsyncFunc ()</title>
+<indexterm><primary>GTcpSocketNewAsyncFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GTcpSocketNewAsyncFunc)           (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Callback for <link linkend="gnet-tcp-socket-new-async"><function>gnet_tcp_socket_new_async()</function></link>.  The socket will be
+ NULL if the connection failed.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> Socket that was connecting
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> User data
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-connect" role="function"/>gnet_tcp_socket_connect ()</title>
+<indexterm><primary>gnet_tcp_socket_connect</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_connect             (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);</programlisting>
+<para>
+Creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>hostname</parameter>:<parameter>port</parameter>.  This
+ function blocks (while <link linkend="gnet-tcp-socket-connect-async"><function>gnet_tcp_socket_connect_async()</function></link> does not).
+ To get the <link linkend="GInetAddr"><type>GInetAddr</type></link> of the <link linkend="GTcpSocket"><type>GTcpSocket</type></link>, call
+ <link linkend="gnet-tcp-socket-get-remote-inetaddr"><function>gnet_tcp_socket_get_remote_inetaddr()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link>; NULL on error.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-connect-async" role="function"/>gnet_tcp_socket_connect_async ()</title>
+<indexterm><primary>gnet_tcp_socket_connect_async</primary></indexterm><programlisting><link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link> gnet_tcp_socket_connect_async  (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GTcpSocketConnectAsyncFunc">GTcpSocketConnectAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to
+ <parameter>hostname</parameter>:<parameter>port</parameter>.  The callback is called when the connection is
+ made or an error occurs.  The callback will not be called during
+ the call to this function.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the connection; NULL on failure.  The ID can be
+ used with <link linkend="gnet-tcp-socket-connect-async-cancel"><function>gnet_tcp_socket_connect_async_cancel()</function></link> to cancel the
+ connection.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-connect-async-full" role="function" condition="since:2.0.8"/>gnet_tcp_socket_connect_async_full ()</title>
+<indexterm role="2.0.8"><primary>gnet_tcp_socket_connect_async_full</primary></indexterm><programlisting><link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link> gnet_tcp_socket_connect_async_full
+                                                        (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GTcpSocketConnectAsyncFunc">GTcpSocketConnectAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to
+ <parameter>hostname</parameter>:<parameter>port</parameter>.  The callback is called when the connection is
+ made or an error occurs.  The callback will not be called during
+ the call to this function.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>notify</parameter>&nbsp;:</term>
+<listitem><simpara> function to call to free <parameter>data</parameter>, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> the <link linkend="GMainContext"><type>GMainContext</type></link> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>priority</parameter>&nbsp;:</term>
+<listitem><simpara> the priority with which to schedule notifications in the
+     main context, e.g. <link linkend="G-PRIORITY-DEFAULT:CAPS"><type>G_PRIORITY_DEFAULT</type></link> or <link linkend="G-PRIORITY-HIGH:CAPS"><type>G_PRIORITY_HIGH</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the connection; NULL on failure.  The ID can be
+ used with <link linkend="gnet-tcp-socket-connect-async-cancel"><function>gnet_tcp_socket_connect_async_cancel()</function></link> to cancel the
+ connection.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-connect-async-cancel" role="function"/>gnet_tcp_socket_connect_async_cancel ()</title>
+<indexterm><primary>gnet_tcp_socket_connect_async_cancel</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_connect_async_cancel
+                                                        (<link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link> id);</programlisting>
+<para>
+Cancels an asynchronous connection that was started with
+ <link linkend="gnet-tcp-socket-connect-async"><function>gnet_tcp_socket_connect_async()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>id</parameter>&nbsp;:</term>
+<listitem><simpara> ID of the connection
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new" role="function"/>gnet_tcp_socket_new ()</title>
+<indexterm><primary>gnet_tcp_socket_new</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_new                 (const <link linkend="GInetAddr">GInetAddr</link> *addr);</programlisting>
+<para>
+Creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>addr</parameter>.  This function
+ blocks.  SOCKS is used if SOCKS is enabled.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>addr</parameter>&nbsp;:</term>
+<listitem><simpara> address
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new-async" role="function"/>gnet_tcp_socket_new_async ()</title>
+<indexterm><primary>gnet_tcp_socket_new_async</primary></indexterm><programlisting><link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> gnet_tcp_socket_new_async          (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>addr</parameter>.  The
+ callback is called once the connection is made or an error occurs.
+ The callback will not be called during the call to this function.
+</para>
+<para>
+ SOCKS is used if SOCKS is enabled.  The SOCKS negotiation will
+ block.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>addr</parameter>&nbsp;:</term>
+<listitem><simpara> address
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the connection; NULL on failure.  The ID can be
+ used with <link linkend="gnet-tcp-socket-new-async-cancel"><function>gnet_tcp_socket_new_async_cancel()</function></link> to cancel the
+ connection.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new-async-full" role="function" condition="since:2.0.8"/>gnet_tcp_socket_new_async_full ()</title>
+<indexterm role="2.0.8"><primary>gnet_tcp_socket_new_async_full</primary></indexterm><programlisting><link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> gnet_tcp_socket_new_async_full     (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>addr</parameter>.  The
+ callback is called once the connection is made or an error occurs.
+ The callback will not be called during the call to this function.
+</para>
+<para>
+ SOCKS is used if SOCKS is enabled.  The SOCKS negotiation will
+ block.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>addr</parameter>&nbsp;:</term>
+<listitem><simpara> address
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>notify</parameter>&nbsp;:</term>
+<listitem><simpara> function to call to free <parameter>data</parameter>, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> the <link linkend="GMainContext"><type>GMainContext</type></link> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>priority</parameter>&nbsp;:</term>
+<listitem><simpara> the priority with which to schedule notifications in the
+     main context, e.g. <link linkend="G-PRIORITY-DEFAULT:CAPS"><type>G_PRIORITY_DEFAULT</type></link> or <link linkend="G-PRIORITY-HIGH:CAPS"><type>G_PRIORITY_HIGH</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the connection; NULL on failure.  The ID can be
+ used with <link linkend="gnet-tcp-socket-new-async-cancel"><function>gnet_tcp_socket_new_async_cancel()</function></link> to cancel the
+ connection.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new-async-cancel" role="function"/>gnet_tcp_socket_new_async_cancel ()</title>
+<indexterm><primary>gnet_tcp_socket_new_async_cancel</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_new_async_cancel    (<link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> id);</programlisting>
+<para>
+Cancels an asynchronous <link linkend="GTcpSocket"><type>GTcpSocket</type></link> creation that was started with
+ <link linkend="gnet-tcp-socket-new-async"><function>gnet_tcp_socket_new_async()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>id</parameter>&nbsp;:</term>
+<listitem><simpara> ID of the connection
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-delete" role="function"/>gnet_tcp_socket_delete ()</title>
+<indexterm><primary>gnet_tcp_socket_delete</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_delete              (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Deletes a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-ref" role="function"/>gnet_tcp_socket_ref ()</title>
+<indexterm><primary>gnet_tcp_socket_ref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_ref                 (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Adds a reference to a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-unref" role="function"/>gnet_tcp_socket_unref ()</title>
+<indexterm><primary>gnet_tcp_socket_unref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_unref               (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Removes a reference from a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.  A <link linkend="GTcpSocket"><type>GTcpSocket</type></link> is deleted
+ when the reference count reaches 0.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> to unreference
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-get-io-channel" role="function"/>gnet_tcp_socket_get_io_channel ()</title>
+<indexterm><primary>gnet_tcp_socket_get_io_channel</primary></indexterm><programlisting><link linkend="GIOChannel">GIOChannel</link>*         gnet_tcp_socket_get_io_channel      (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Gets the <link linkend="GIOChannel"><type>GIOChannel</type></link> of a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.
+</para>
+<para>
+ For a client socket, the <link linkend="GIOChannel"><type>GIOChannel</type></link> represents the data stream.
+ Use it like you would any other <link linkend="GIOChannel"><type>GIOChannel</type></link>.
+</para>
+<para>
+ For a server socket however, the <link linkend="GIOChannel"><type>GIOChannel</type></link> represents the
+ listening socket.  When it's readable, there's a connection
+ waiting to be accepted.  However, using
+ <link linkend="gnet-tcp-socket-server-accept-async"><function>gnet_tcp_socket_server_accept_async()</function></link> is more elegant than
+ watching the <link linkend="GIOChannel"><type>GIOChannel</type></link>.
+</para>
+<para>
+ Every <link linkend="GTcpSocket"><type>GTcpSocket</type></link> has one and only one <link linkend="GIOChannel"><type>GIOChannel</type></link>.  If you ref
+ the channel, then you must unref it eventually.  Do not close the
+ channel.  The channel is closed by GNet when the socket is
+ deleted.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GIOChannel"><type>GIOChannel</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-get-remote-inetaddr" role="function"/>gnet_tcp_socket_get_remote_inetaddr ()</title>
+<indexterm><primary>gnet_tcp_socket_get_remote_inetaddr</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_tcp_socket_get_remote_inetaddr (const <link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Gets the address of the remote host from a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.  This
+ function does not work on server sockets.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-get-local-inetaddr" role="function"/>gnet_tcp_socket_get_local_inetaddr ()</title>
+<indexterm><primary>gnet_tcp_socket_get_local_inetaddr</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_tcp_socket_get_local_inetaddr  (const <link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Gets the local host's address from a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>, or NULL on error.  Unref with <link linkend="gnet-inetaddr-unref"><function>gnet_inetaddr_unref()</function></link>
+ when no longer needed.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-get-port" role="function"/>gnet_tcp_socket_get_port ()</title>
+<indexterm><primary>gnet_tcp_socket_get_port</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_tcp_socket_get_port            (const <link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Gets the port a server <link linkend="GTcpSocket"><type>GTcpSocket</type></link> is bound to.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the port number.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GNetTOS" role="enum"/>enum GNetTOS</title>
+<indexterm><primary>GNetTOS</primary></indexterm><programlisting>typedef enum
+{
+  GNET_TOS_NONE,
+  GNET_TOS_LOWDELAY,
+  GNET_TOS_THROUGHPUT,
+  GNET_TOS_RELIABILITY,
+  GNET_TOS_LOWCOST
+
+} GNetTOS;
+</programlisting>
+<para>
+Type-of-service.</para>
+<para>
+
+</para><variablelist role="enum">
+<varlistentry>
+<term><anchor id="GNET-TOS-NONE:CAPS" role="constant"/><literal>GNET_TOS_NONE</literal></term>
+<listitem><simpara> Unspecified
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-TOS-LOWDELAY:CAPS" role="constant"/><literal>GNET_TOS_LOWDELAY</literal></term>
+<listitem><simpara> Low delay
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-TOS-THROUGHPUT:CAPS" role="constant"/><literal>GNET_TOS_THROUGHPUT</literal></term>
+<listitem><simpara> High throughput
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-TOS-RELIABILITY:CAPS" role="constant"/><literal>GNET_TOS_RELIABILITY</literal></term>
+<listitem><simpara> High reliability
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-TOS-LOWCOST:CAPS" role="constant"/><literal>GNET_TOS_LOWCOST</literal></term>
+<listitem><simpara> Low cost
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-set-tos" role="function"/>gnet_tcp_socket_set_tos ()</title>
+<indexterm><primary>gnet_tcp_socket_set_tos</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_set_tos             (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GNetTOS">GNetTOS</link> tos);</programlisting>
+<para>
+Sets the type-of-service (TOS) of the socket.  TOS theoretically
+ controls the connection's quality of service, but most routers
+ ignore it.  Some systems don't even support this function.  The
+ function does nothing if the operating system does not support it.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>tos</parameter>&nbsp;:</term>
+<listitem><simpara> type of service
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-new" role="function"/>gnet_tcp_socket_server_new ()</title>
+<indexterm><primary>gnet_tcp_socket_server_new</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_server_new          (void);</programlisting>
+<para>
+Creates a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link> bound to all interfaces and an arbitrary
+ port.  SOCKS is used if SOCKS is enabled.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-new-with-port" role="function"/>gnet_tcp_socket_server_new_with_port ()</title>
+<indexterm><primary>gnet_tcp_socket_server_new_with_port</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_server_new_with_port
+                                                        (<link linkend="gint">gint</link> port);</programlisting>
+<para>
+Creates a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link> bound to all interfaces and port <parameter>port</parameter>.
+ If <parameter>port</parameter> is 0, an arbitrary port will be used.  SOCKS is used if
+ SOCKS is enabled.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port to bind to (0 for an arbitrary port)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-new-full" role="function"/>gnet_tcp_socket_server_new_full ()</title>
+<indexterm><primary>gnet_tcp_socket_server_new_full</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_server_new_full     (const <link linkend="GInetAddr">GInetAddr</link> *iface,
+                                                         <link linkend="gint">gint</link> port);</programlisting>
+<para>
+Creates and new <link linkend="GTcpSocket"><type>GTcpSocket</type></link> bound to interface <parameter>iface</parameter> and port
+ <parameter>port</parameter>.  If <parameter>iface</parameter> is NULL, the socket is bound to all interfaces.
+ If <parameter>port</parameter> is 0, the socket is bound to an arbitrary port.  SOCKS is
+ used if SOCKS is enabled and the interface is NULL.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>iface</parameter>&nbsp;:</term>
+<listitem><simpara> Interface to bind to (NULL for all interfaces)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> Port to bind to (0 for an arbitrary port)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-accept" role="function"/>gnet_tcp_socket_server_accept ()</title>
+<indexterm><primary>gnet_tcp_socket_server_accept</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_server_accept       (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Accepts a connection from a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.  The socket must have
+ been created using <link linkend="gnet-tcp-socket-server-new"><function>gnet_tcp_socket_server_new()</function></link> (or equivalent).
+ Even if the socket's <link linkend="GIOChannel"><type>GIOChannel</type></link> is readable, the function may
+ still block.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link> representing a new connection; NULL on
+ error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-accept-nonblock" role="function"/>gnet_tcp_socket_server_accept_nonblock ()</title>
+<indexterm><primary>gnet_tcp_socket_server_accept_nonblock</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_server_accept_nonblock
+                                                        (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Accepts a connection from a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> without blocking.  The
+ socket must have been created using <link linkend="gnet-tcp-socket-server-new"><function>gnet_tcp_socket_server_new()</function></link>
+ (or equivalent).
+</para>
+<para>
+ Note that if the socket's <link linkend="GIOChannel"><type>GIOChannel</type></link> is readable, then there is
+ PROBABLY a new connection.  It is possible for the connection
+ to close by the time this function is called, so it may return
+ NULL.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link> representing a new connection; NULL
+ otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GTcpSocketAcceptFunc" role="function"/>GTcpSocketAcceptFunc ()</title>
+<indexterm><primary>GTcpSocketAcceptFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GTcpSocketAcceptFunc)             (<link linkend="GTcpSocket">GTcpSocket</link> *server,
+                                                         <link linkend="GTcpSocket">GTcpSocket</link> *client,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Callback for <link linkend="gnet-tcp-socket-server-accept-async"><function>gnet_tcp_socket_server_accept_async()</function></link>.  The socket
+  had an irrecoverable error if client_socket is NULL.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>server</parameter>&nbsp;:</term>
+<listitem><simpara> Server socket
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>client</parameter>&nbsp;:</term>
+<listitem><simpara> Client socket
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> User data
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-accept-async" role="function"/>gnet_tcp_socket_server_accept_async ()</title>
+<indexterm><primary>gnet_tcp_socket_server_accept_async</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_server_accept_async (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GTcpSocketAcceptFunc">GTcpSocketAcceptFunc</link> accept_func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);</programlisting>
+<para>
+Asynchronously accepts a connection from a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.  The
+ callback is called when a new client has connected or an error
+ occurs.  The socket must have been created using
+ <link linkend="gnet-tcp-socket-server-new"><function>gnet_tcp_socket_server_new()</function></link> (or equivalent).</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>accept_func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>user_data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-server-accept-async-cancel" role="function"/>gnet_tcp_socket_server_accept_async_cancel ()</title>
+<indexterm><primary>gnet_tcp_socket_server_accept_async_cancel</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_tcp_socket_server_accept_async_cancel
+                                                        (<link linkend="GTcpSocket">GTcpSocket</link> *socket);</programlisting>
+<para>
+Stops asynchronously accepting connections for a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>.  The
+ socket is not closed.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GTcpSocket"><type>GTcpSocket</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new-direct" role="function"/>gnet_tcp_socket_new_direct ()</title>
+<indexterm><primary>gnet_tcp_socket_new_direct</primary></indexterm><programlisting><link linkend="GTcpSocket">GTcpSocket</link>*         gnet_tcp_socket_new_direct          (const <link linkend="GInetAddr">GInetAddr</link> *addr);</programlisting>
+<para>
+Creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>addr</parameter> without using SOCKS.
+ This function blocks.  Most users should use
+ <link linkend="gnet-tcp-socket-new"><function>gnet_tcp_socket_new()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>addr</parameter>&nbsp;:</term>
+<listitem><simpara> address
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GTcpSocket"><type>GTcpSocket</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new-async-direct" role="function"/>gnet_tcp_socket_new_async_direct ()</title>
+<indexterm><primary>gnet_tcp_socket_new_async_direct</primary></indexterm><programlisting><link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> gnet_tcp_socket_new_async_direct   (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>addr</parameter> without
+ using SOCKS.  Most users should use <link linkend="gnet-tcp-socket-new-async"><function>gnet_tcp_socket_new_async()</function></link>
+ instead.  The callback is called once the connection is made or an
+ error occurs.  The callback will not be called during the call to
+ this function.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>addr</parameter>&nbsp;:</term>
+<listitem><simpara> address
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the connection; NULL on failure.  The ID can be
+ used with <link linkend="gnet-tcp-socket-new-async-cancel"><function>gnet_tcp_socket_new_async_cancel()</function></link> to cancel the
+ connection.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-tcp-socket-new-async-direct-full" role="function" condition="since:2.0.8"/>gnet_tcp_socket_new_async_direct_full ()</title>
+<indexterm role="2.0.8"><primary>gnet_tcp_socket_new_async_direct_full</primary></indexterm><programlisting><link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link> gnet_tcp_socket_new_async_direct_full
+                                                        (const <link linkend="GInetAddr">GInetAddr</link> *addr,
+                                                         <link linkend="GTcpSocketNewAsyncFunc">GTcpSocketNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GTcpSocket"><type>GTcpSocket</type></link> and connects to <parameter>addr</parameter> without
+ using SOCKS.  Most users should use <link linkend="gnet-tcp-socket-new-async"><function>gnet_tcp_socket_new_async()</function></link>
+ instead.  The callback is called once the connection is made or an
+ error occurs.  The callback will not be called during the call to
+ this function.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>addr</parameter>&nbsp;:</term>
+<listitem><simpara> address
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>notify</parameter>&nbsp;:</term>
+<listitem><simpara> function to call to free <parameter>data</parameter>, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> the <link linkend="GMainContext"><type>GMainContext</type></link> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>priority</parameter>&nbsp;:</term>
+<listitem><simpara> the priority with which to schedule notifications in the
+     main context, e.g. <link linkend="G-PRIORITY-DEFAULT:CAPS"><type>G_PRIORITY_DEFAULT</type></link> or <link linkend="G-PRIORITY-HIGH:CAPS"><type>G_PRIORITY_HIGH</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the connection; NULL on failure.  The ID can be
+ used with <link linkend="gnet-tcp-socket-new-async-cancel"><function>gnet_tcp_socket_new_async_cancel()</function></link> to cancel the
+ connection.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

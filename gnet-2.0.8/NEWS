@@ -1,0 +1,338 @@
+GNet NEWS
+---------
+
+Changes in GNet
+
+2.0.8
+-----
+* New API:
+  gnet_conn_set_main_context
+  gnet_conn_http_set_main_context
+  gnet_inetaddr_new_async_full
+  gnet_inetaddr_new_list_async_full
+  gnet_inetaddr_get_name_async_full
+  gnet_tcp_socket_connect_async_full
+  gnet_tcp_socket_new_async_full
+  gnet_tcp_socket_new_async_direct_full
+  gnet_unix_socket_new_abstract
+  gnet_unix_socket_server_new_abstract
+  gnet_uri_parse_inplace
+* GConnHttp API is no longer marked as experimental
+* Fix major memory leak in GConnHttp
+* gnet_init() can now safely be called
+  more than once now
+* Fix crash when gnet_conn_http_delete()
+  is called from within the user callback.
+* GConnHttp: do not emit data events for
+  pages that are being redirected to a
+  new location.
+* GConnHttp: add gnet_conn_http_set_escaped_uri()
+  (Samuel Cormier-Iijima)
+* Eliminate direct pthread usage on unix
+  and use GLib GThreads instead (also
+  fixes problems with gdb and valgrind)
+  (Andreas Rottmann)
+* Dropped support for GLib-1.2
+* Fix build on old systems that have
+  a __ss_family member in struct 
+  sockaddr_storage instead of 
+  ss_family (Jeremy Denise)
+* GConnHttp: Documentation fixes
+* Fix compilation with --enable-debug
+  on some 64-bit architectures like
+  amd64 (Daniel Gryniewicz)
+* GConnHttp: fix several timeout issues
+  (Steve Morris, Tim Muller).
+* GConnHttp: fix parsing of POST method
+  response when there are optional headers
+  after the 100-Continue response (#459895).
+* Relicense source code in examples/
+  directory from GPL to LGPL.
+* Add 'extern "C"' guards to pack.h to
+  make things work with c++ compilers
+  (thanks to Adriano Winter Bess).
+* New API: gnet_conn_write_direct() to
+  write buffers asynchroneously without
+  copying them (Jeff Garzik)
+* Fix for race condition and subsequent
+  crash in asynchroneous DNS lookup
+  (Steve Morris, Tim Müller)
+* Pass correct size parameters to bind()
+  and connect() when creating unix sockets
+  (Zeeshan Ali, #403197)
+* New API: gnet_unix_socket_new_abstract()
+  and gnet_unix_socket_server_new_abstract()
+  add support for abstract unix sockets on
+  systems where this is supported
+  (Zeeshan Ali, #404583)
+* Remove unused and pointless fork() fallback
+  for asynchronous DNS lookups in cases where
+  GLib has been compiled without threading
+  support.  It's 2007 - I think it's in order
+  to require threading to be present; even my
+  wrist watch can do that.  Removs lots of
+  unmaintained code and ugly #ifdefs.
+(Released Feb 3, 2008)
+
+2.0.7
+-----
+* Ship API documentation pre-built as HTML
+* Build fixes for mingw on win32 (Gisle Vanem)
+(Released Feb 23, 2005)
+
+2.0.6
+-----
+* New experimental HTTP Conn module (Tim Muller)
+* Misc bug fixes:
+   - pthread detection
+   - escaping of high Latin-1 characters
+   - base64 encoding
+   - doc fixes (gnet_base64_encode)
+   - fix crash when doing dns lookup on ipv6-enabled
+     win32 systems (only if gnet has been built
+     using configure/autotools)
+(Released Feb 18, 2005)
+
+2.0.5
+-----
+* Many Win32 fixes (thanks Andy Lanoix, Hans Petter Jansson, Tor 
+			Lillqvist, Tim Muller!)
+* Desciptor leak fixed in TCP sockets (thanks Hans!)
+* GConn 100% CPU bug fix (thanks Andreas Rottmann!)
+* Bug fix for URIs with high Latin-1 characters (thanks Emmanuel Saracco!)
+* IPv6 fix for inetaddr_get_canonical_name()
+* New echoserver-partyline example (thanks Andy!)
+* Miscellaneous clean-ups (thanks Michael Alger, Tim Muller, 
+		Stephane Loeuillet!)
+(Released March 1, 2004)
+
+2.0.4
+-----
+* Minor memory leak fixed in internet addresses
+* Win32 fixes
+* Compile and regression test fixes for 64-bit systems
+* Compile fix for Solaris
+(Released July 28, 2003)
+
+2.0.3
+-----
+* Minor bug fix in TCP connect
+* Win32 compile/bug fixes (note: additional work still needed)
+
+2.0.2
+-----
+* RPM fixes (thanks Bas Mevissen!)
+* Compile fixes for Sun compiler (thanks Ives Aerts!)
+
+2.0.1
+-----
+* Compile fixes for Solaris and systems with no IPv6 support
+(Released April 21, 2003)
+
+2.0.0
+-----
+* Stable release of 1.3 series
+(Released April 13, 2003)
+
+
+1.3.2 ("Sacrilicious" DEVELOPERS release)
+-----
+* DNS bug fixes
+* FreeBSD compile fixes and UDP send bug fix
+* New functions: gnet_{udp,mcast}_socket_get_local_inetaddr
+* Build improvements: library is now named libglib-MAJOR.MINOR,
+    favors GLib 2 over GLib 1.2
+
+
+1.3.1 ("Tomacco 2" DEVELOPERS release)
+-----
+* New Base64 module (by Alfred Reibenschuh)
+* Major documentation improvements
+* Some minor API renaming in Inetaddr and TcpSocket
+
+
+1.3.0 ("Tomacco" DEVELOPERS release)
+-----
+* IPv6 support
+* Server, Conn, URI, and Unix modules are no longer "experimental"
+* Header files are now in gnet-1.3
+* gnet-config removed.  Use pkg-config.
+* Many API changes
+* gnet_server_new() changed, but the prototype is the same.  Make sure
+	you are using the new version correctly.
+
+
+
+1.1.9 (UNRELEASED)
+-----
+* RPM compile fix
+* Minor leak fixed in the server module
+
+
+1.1.8 ("Square meal 3" release)
+-----
+* Compile fixes
+
+
+1.1.7 ("Square meal 2" release)
+-----
+* Fixed major bug in IO channel code from 1.1.6
+
+
+1.1.6 ("Square meal" release)
+-----
+* IOChannels are non-buffering, non-encoded by default (for GLib 2.0)
+* examples are now build by default
+* gnet_inetaddr_list_interfaces() bug fix
+* FreeBSD compile fix (affected gnet_inetaddr_list_interfaces())
+
+
+1.1.5 ("Bonemeal" release)
+-----
+* New gnet_init() function.  This should be called in main(). [1]
+* GNet now properly links to libgthread (if necessary)
+* More automated test cases
+* Several compile fixes and small bug fixes
+
+
+1.1.4 ("Inchmeal" release)
+-----
+* Several bugs fixed in the asynchronous DNS module
+* Objective C compile fixes
+
+
+1.1.3 ("Fishmeal" release)
+-----
+* Several small bugs and memory leaks fixed
+* HP compile fix
+
+
+1.1.2 ("Cornmeal 2" release)
+-----
+* gnet_inetaddr_get_name_async has pthread implementation
+* Asynchronous DNS bug fixes
+
+
+1.1.1 ("Cornmeal" release)
+-----
+* Experimental Unix sockets support
+* Experimental SOCKS support
+* URLs support username, password, query, and fragment 
+* New gnet_tcp_socket_server_accept_async function
+* gnet_inetaddr_new_async has pthread implementation,
+    no longer succeeds immediately
+* New gnet_{sha,md5}_clone functions
+* MacOSX port
+* read_async and write_async performance fixes
+* Various small compile and configuration fixes
+* Updated best-current-practice examples
+
+
+1.1.0 ("Oatmeal" release)
+-----
+* UDP supports broadcast
+* TCP/UDP supports multiple interfaces
+* Various new internet address helper functions
+    (e.g. autodetect_internet_interface, list_interfaces) 
+* New SHA and MD5 hash modules
+* New Perl/Python-style pack/unpack module
+* New experimental URL, "Server", and "Conn" modules
+* Full Windows port
+* Bug fixes in gnet_io_channel_readn, gnet_io_channel_readline_strdup, 
+    thread-safe DNS lookup
+
+1.0.4
+-----
+* Small bug fixes
+* Partial Windows port
+
+1.0.3
+-----
+* Fixed bug in gnet_inetaddr_new_async
+
+1.0.2
+-----
+* Fixed bugs in Inetaddr async functions
+* Fixed memory leaks in inetaddr and tcp async functions
+* Portability fixes for OpenBSD and FreeBSD 4.0
+
+1.0.1
+-----
+* Fixed bug in readline_strdup
+
+1.0.0
+-----
+* Some renaming
+* Upgrade to libtool 1.3.4
+* First stable release
+
+0.1.9
+-----
+* async functions now cancelable
+* Added *_ref and *_unref functions
+* Added gnet_iochannel_readline_strdup
+* "nonblock" functions renamed to "async"
+* Jacques Fortier added to AUTHORS for gnet_iochannel_readline_strdup
+* Not binary compatable with 0.1.8
+
+0.1.8
+-----
+* HP-UX and other portability fixes.
+* Fixed bug in gnet_inetaddr_new_nonblock where dotted decimal
+    address caused a seg fault.
+* Fixed bug in Solaris version of gnet_inetaddr_get_name.
+* Deleting a NULL object is now allowed.
+* IOChannel semantics have changed - see documentation.
+
+0.1.7
+-----
+* Fixed bugs in gnet_iochannel_{readn, writen, readline}.
+* Fixed bug in gnet_tcp_socket_server_accept (took up all CPU time in loop)
+* Fixed bug in echoserver (blocking) and hfetch example.  We now close
+    and unref the iochannel.
+* Portability fix - use g_snprintf, not snprintf
+* Binary compatable with 0.1.4
+
+0.1.6
+-----
+* Fixed header files for C++
+* Fixed header files for multiple inclusion
+* Binary compatable with 0.1.4
+
+0.1.5
+-----
+* Library now reentrant (including calls to gethostbyname)
+* Portability fixes
+* Now build RPMS and DEBS
+* Xavier Nicolovici added to AUTHORS
+* Binary compatable with 0.1.4
+
+0.1.4
+-----
+* Portability fixes
+* Fixed potential bugs in gnet_udp_socket_get_mcast_ttl and
+    gnet_mcast_socket_is_loopback
+* Removed gnet_udp_socket_get_MTU until we can fix it and port it to
+    Solaris. (It's commented out in gnet-private for now)
+
+0.1.3
+-----
+* Added gnet_tcp_socket_connect and gnet_tcp_socket_connect_nonblock
+* Added gnet_inetaddr_get_name_nonblock
+* Added gnet_udp_socket_get_iochannel
+* Added ljoust (Network Llama Joust) example
+* Improved and cleaned-up inetaddr_new_nonblock
+
+0.1.2
+-----
+* Functions now prefixed with "gnet_"
+* Some interfaces now hidden in gnet-private.[ch]
+* Added gnet.m4 and gnet-config files
+
+0.1.1
+-----
+* Added inetaddr_new_nonblock, an asynchronous DNS lookup function.
+
+0.1.0
+-----
+* Initial release

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GNet Network Library Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<meta name="description" content="This manual documents GNet, a network library. It gives an overview of GNet, discusses examples that come with GNet, and includes detailed documentation of the GNet API.">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="next" href="gnet-overview.html" title="GNet Overview">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en">
+<div class="titlepage">
+<div>
+<div><table class="navigation" id="top" width="100%" cellpadding="2" cellspacing="0"><tr><th valign="middle"><p class="title">GNet Network Library Reference Manual</p></th></tr></table></div>
+<div><div class="authorgroup"><div class="author">
+<h3 class="author">
+<span class="firstname">David</span> <span class="surname">Helder</span>
+</h3>
+<div class="affiliation"><div class="address"><p><br>
+	&#160;&#160;&#160;&#160;<code class="email">&lt;<a href="mailto:dhelder@umich.edu">dhelder@umich.edu</a>&gt;</code><br>
+	&#160;&#160;</p></div></div>
+</div></div></div>
+<div><p class="releaseinfo">for GNet 2.0.8
+</p></div>
+<div><p class="copyright">Copyright &#169; 2000-2005 David Helder</p></div>
+<div><div class="legalnotice">
+<a name="id317369"></a><p>
+	Permission is granted to make and distribute verbatim copies
+	of this manual provided the copyright notice and this
+	permission notice are preserved on all copies.
+      </p>
+<p>
+	Permission is granted to copy and distribute modified versions
+	of this manual under the conditions for verbatim copying,
+	provided also that the entire resulting derived work is
+	distributed under the terms of a permission notice identical
+	to this one.
+      </p>
+<p>
+	Permission is granted to copy and distribute translations of
+	this manual into another language, under the above conditions
+	for modified versions.
+      </p>
+</div></div>
+<div><div class="abstract">
+<p class="title"><b>Abstract</b></p>
+<p>
+	This manual documents GNet, a network library.  It gives an
+	overview of GNet, discusses examples that come with GNet, and
+	includes detailed documentation of the GNet API.
+      </p>
+</div></div>
+</div>
+<hr>
+</div>
+<div class="toc"><dl>
+<dt><span class="chapter"><a href="gnet-overview.html">GNet Overview</a></span></dt>
+<dt><span class="chapter"><a href="gnet-developers.html">GNet for developers</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="gnet-developers.html#gnet-developers-compiling">Compiling programs with GNet</a></span></dt>
+<dt><span class="sect1"><a href="gnet-developers-tips.html">Tips and tricks</a></span></dt>
+<dt><span class="sect1"><a href="gnet-developers-async.html">Hiding blocking</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="gnet-examples.html">GNet Examples</a></span></dt>
+<dd><dl>
+<dt><span class="sect1"><a href="gnet-examples.html#gnet-examples-echo">echoclient and echoserver</a></span></dt>
+<dt><span class="sect1"><a href="gnet-examples-other.html">dnslookup, hash, hfetch, hostinfo, and SDR</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="libgnet-reference.html">GNet Library Reference</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="gnet-gnet.html">GNet</a></span><span class="refpurpose"> &#8212; GNet utility functions and macros</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-inetaddr.html">InetAddr</a></span><span class="refpurpose"> &#8212; Internet Address</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-tcp.html">TCP</a></span><span class="refpurpose"> &#8212; TCP socket</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-udp.html">UDP</a></span><span class="refpurpose"> &#8212; UDP socket</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-mcast.html">Mcast</a></span><span class="refpurpose"> &#8212; IP Multicast socket</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-conn-http.html">GConnHttp</a></span><span class="refpurpose"> &#8212; HTTP connection object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-conn.html">Conn</a></span><span class="refpurpose"> &#8212; TCP connection object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-server.html">Server</a></span><span class="refpurpose"> &#8212; TCP server object</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-iochannel.html">IOChannel</a></span><span class="refpurpose"> &#8212; GIOChannel utility functions</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-uri.html">URI</a></span><span class="refpurpose"> &#8212; Uniform Resource Identifier (URI)</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-base64.html">Base64</a></span><span class="refpurpose"> &#8212; Base64 encoding and decoding</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-pack.html">Pack</a></span><span class="refpurpose"> &#8212; Byte packing and unpacking functions</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-md5.html">MD5</a></span><span class="refpurpose"> &#8212; MD5 hash</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-sha.html">SHA</a></span><span class="refpurpose"> &#8212; SHA hash</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-unix.html">Unix</a></span><span class="refpurpose"> &#8212; Unix socket</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-ipv6.html">IPv6</a></span><span class="refpurpose"> &#8212; IPv6 policy functions</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gnet-socks.html">SOCKS</a></span><span class="refpurpose"> &#8212; SOCKS proxy</span>
+</dt>
+</dl></dd>
+</dl></div>
+</div></body>
+</html>

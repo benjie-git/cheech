@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>SHA</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-md5.html" title="MD5">
+<link rel="next" href="gnet-unix.html" title="Unix">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-md5.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-unix.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id394518" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id395181" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-sha"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id394518"></a><span class="refentrytitle">SHA</span>
+</h2>
+<p>SHA &#8212; SHA hash</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+                    <a href="gnet-sha.html#GSHA:CAPS">GSHA</a>;
+#define             <a href="gnet-sha.html#GNET-SHA-HASH-LENGTH:CAPS">GNET_SHA_HASH_LENGTH</a>
+<a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               <a href="gnet-sha.html#gnet-sha-new">gnet_sha_new</a>                        (const gchar *buffer,
+                                                         guint length);
+<a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               <a href="gnet-sha.html#gnet-sha-new-string">gnet_sha_new_string</a>                 (const gchar *str);
+<a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               <a href="gnet-sha.html#gnet-sha-clone">gnet_sha_clone</a>                      (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);
+void                <a href="gnet-sha.html#gnet-sha-delete">gnet_sha_delete</a>                     (<a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);
+<a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               <a href="gnet-sha.html#gnet-sha-new-incremental">gnet_sha_new_incremental</a>            (void);
+void                <a href="gnet-sha.html#gnet-sha-update">gnet_sha_update</a>                     (<a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha,
+                                                         const gchar *buffer,
+                                                         guint length);
+void                <a href="gnet-sha.html#gnet-sha-final">gnet_sha_final</a>                      (<a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);
+gboolean            <a href="gnet-sha.html#gnet-sha-equal">gnet_sha_equal</a>                      (gconstpointer p1,
+                                                         gconstpointer p2);
+guint               <a href="gnet-sha.html#gnet-sha-hash">gnet_sha_hash</a>                       (gconstpointer p);
+gchar*              <a href="gnet-sha.html#gnet-sha-get-digest">gnet_sha_get_digest</a>                 (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);
+gchar*              <a href="gnet-sha.html#gnet-sha-get-string">gnet_sha_get_string</a>                 (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);
+void                <a href="gnet-sha.html#gnet-sha-copy-string">gnet_sha_copy_string</a>                (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha,
+                                                         gchar *buffer);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id395181"></a><h2>Description</h2>
+<p>
+The SHA module provide support for computing and manipulating SHA
+hashes.  SHA is a hash function with a very low probability of
+collision.  SHA is considered stronger than MD5.
+</p>
+<p>
+A SHA can be calculated at one time or incrementally.  To create a SHA
+at one time, call <a href="gnet-sha.html#gnet-sha-new"><code class="function">gnet_sha_new()</code></a> with the data.  To create a SHA
+incrementally, call <a href="gnet-sha.html#gnet-sha-new-incremental"><code class="function">gnet_sha_new_incremental()</code></a> to create the SHA
+object, then <a href="gnet-sha.html#gnet-sha-update"><code class="function">gnet_sha_update()</code></a> one or more times with data to hash,
+and finally call <a href="gnet-sha.html#gnet-sha-final"><code class="function">gnet_sha_final()</code></a>.
+</p>
+<p>
+To get the digest, or hash value, call <a href="gnet-sha.html#gnet-sha-get-digest"><code class="function">gnet_sha_get_digest()</code></a>.  This
+returns the raw digest as an array of <a href="gnet-sha.html#GNET-SHA-HASH-LENGTH:CAPS"><code class="literal">GNET_SHA_HASH_LENGTH</code></a> bytes.  To
+get the digest as a human-readable string, call <a href="gnet-sha.html#gnet-sha-get-string"><code class="function">gnet_sha_get_string()</code></a>
+or <a href="gnet-sha.html#gnet-sha-copy-string"><code class="function">gnet_sha_copy_string()</code></a>.
+</p>
+<p>
+</p>
+<div class="informalexample"><pre class="programlisting">
+gchar buffer[] = "Hello world!";
+gchar buffer2[] = "Second line";
+GSHA*  sha;
+gchar* sha_str;
+
+/* Compute an SHA at one time */
+sha = gnet_sha_new (buffer, strlen(buffer));
+
+sha_str = gnet_sha_get_string (sha);
+g_print ("The SHA of %s is %s\n", buffer, sha_str);
+
+/* Use SHA... */
+
+g_free (sha_str);
+gnet_sha_delete (sha);
+
+/* Compute an SHA incrementally */
+sha = gnet_sha_new_incremental ();
+gnet_sha_update (sha, buffer, strlen(buffer));
+gnet_sha_update (sha, buffer2, strlen(buffer2));
+gnet_sha_final (sha);
+
+/* Use SHA... */
+
+gnet_sha_delete (sha);
+</pre></div>
+<p>
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id395307"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id395316"></a><h3>
+<a name="GSHA:CAPS"></a>GSHA</h3>
+<a class="indexterm" name="id395328"></a><pre class="programlisting">typedef struct _GSHA GSHA;</pre>
+<p>
+GSHA is a SHA hash.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395346"></a><h3>
+<a name="GNET-SHA-HASH-LENGTH:CAPS"></a>GNET_SHA_HASH_LENGTH</h3>
+<a class="indexterm" name="id395359"></a><pre class="programlisting">#define GNET_SHA_HASH_LENGTH	20
+</pre>
+<p>
+Length of the SHA hash in bytes.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395377"></a><h3>
+<a name="gnet-sha-new"></a>gnet_sha_new ()</h3>
+<a class="indexterm" name="id395390"></a><pre class="programlisting"><a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               gnet_sha_new                        (const gchar *buffer,
+                                                         guint length);</pre>
+<p>
+Creates a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a> from <em class="parameter"><code>buffer</code></em>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer to hash
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of <em class="parameter"><code>buffer</code></em>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a new <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395497"></a><h3>
+<a name="gnet-sha-new-string"></a>gnet_sha_new_string ()</h3>
+<a class="indexterm" name="id395510"></a><pre class="programlisting"><a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               gnet_sha_new_string                 (const gchar *str);</pre>
+<p>
+Createss a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a> from <em class="parameter"><code>str</code></em>.  <em class="parameter"><code>str</code></em> is a hexidecimal string
+ representing the digest.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>str</code></em>&#160;:</span></td>
+<td> hexidecimal string
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a new <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395596"></a><h3>
+<a name="gnet-sha-clone"></a>gnet_sha_clone ()</h3>
+<a class="indexterm" name="id395609"></a><pre class="programlisting"><a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               gnet_sha_clone                      (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);</pre>
+<p>
+Copies a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a copy of <em class="parameter"><code>sha</code></em>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395689"></a><h3>
+<a name="gnet-sha-delete"></a>gnet_sha_delete ()</h3>
+<a class="indexterm" name="id395701"></a><pre class="programlisting">void                gnet_sha_delete                     (<a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);</pre>
+<p>
+Deletes a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395765"></a><h3>
+<a name="gnet-sha-new-incremental"></a>gnet_sha_new_incremental ()</h3>
+<a class="indexterm" name="id395778"></a><pre class="programlisting"><a href="gnet-sha.html#GSHA:CAPS">GSHA</a>*               gnet_sha_new_incremental            (void);</pre>
+<p>
+Creates a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a> incrementally.  After creating a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>, call
+ <a href="gnet-sha.html#gnet-sha-update"><code class="function">gnet_sha_update()</code></a> one or more times to hash data.  Finally, call
+ <a href="gnet-sha.html#gnet-sha-final"><code class="function">gnet_sha_final()</code></a> to compute the final hash value.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a new <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id395862"></a><h3>
+<a name="gnet-sha-update"></a>gnet_sha_update ()</h3>
+<a class="indexterm" name="id395875"></a><pre class="programlisting">void                gnet_sha_update                     (<a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha,
+                                                         const gchar *buffer,
+                                                         guint length);</pre>
+<p>
+Updates the hash with <em class="parameter"><code>buffer</code></em>.  This may be called several times
+ on a hash created by <a href="gnet-sha.html#gnet-sha-new-incremental"><code class="function">gnet_sha_new_incremental()</code></a> before being
+ finalized by calling <a href="gnet-sha.html#gnet-sha-final"><code class="function">gnet_sha_final()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer to add
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of <em class="parameter"><code>buffer</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id396006"></a><h3>
+<a name="gnet-sha-final"></a>gnet_sha_final ()</h3>
+<a class="indexterm" name="id396018"></a><pre class="programlisting">void                gnet_sha_final                      (<a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);</pre>
+<p>
+Calcuates the final hash value of a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.  This should only be
+ called on a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a> created by <a href="gnet-sha.html#gnet-sha-new-incremental"><code class="function">gnet_sha_new_incremental()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id396101"></a><h3>
+<a name="gnet-sha-equal"></a>gnet_sha_equal ()</h3>
+<a class="indexterm" name="id396113"></a><pre class="programlisting">gboolean            gnet_sha_equal                      (gconstpointer p1,
+                                                         gconstpointer p2);</pre>
+<p>
+Compares two <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>'s for equality.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>p1</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>p2</code></em>&#160;:</span></td>
+<td> another <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if they are equal; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id396217"></a><h3>
+<a name="gnet-sha-hash"></a>gnet_sha_hash ()</h3>
+<a class="indexterm" name="id396229"></a><pre class="programlisting">guint               gnet_sha_hash                       (gconstpointer p);</pre>
+<p>
+Creates a hash code for a <a href="gnet-md5.html#GMD5:CAPS"><span class="type">GMD5</span></a> for use with GHashTable.  This
+ hash value is not the same as the MD5 digest.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>p</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the hash code for <em class="parameter"><code>p</code></em>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id396310"></a><h3>
+<a name="gnet-sha-get-digest"></a>gnet_sha_get_digest ()</h3>
+<a class="indexterm" name="id396323"></a><pre class="programlisting">gchar*              gnet_sha_get_digest                 (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);</pre>
+<p>
+Gets the raw SHA digest.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a callee-owned buffer containing the SHA hash digest.
+ The buffer is <a href="gnet-sha.html#GNET-SHA-HASH-LENGTH:CAPS"><code class="literal">GNET_SHA_HASH_LENGTH</code></a> bytes long.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id396401"></a><h3>
+<a name="gnet-sha-get-string"></a>gnet_sha_get_string ()</h3>
+<a class="indexterm" name="id396413"></a><pre class="programlisting">gchar*              gnet_sha_get_string                 (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha);</pre>
+<p>
+Get the digest represented a human-readable string.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a hexadecimal string representing the digest.  The string
+ is 2 * <a href="gnet-sha.html#GNET-SHA-HASH-LENGTH:CAPS"><code class="literal">GNET_SHA_HASH_LENGTH</code></a> bytes long and NULL terminated.  The
+ string is caller owned.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id396491"></a><h3>
+<a name="gnet-sha-copy-string"></a>gnet_sha_copy_string ()</h3>
+<a class="indexterm" name="id396504"></a><pre class="programlisting">void                gnet_sha_copy_string                (const <a href="gnet-sha.html#GSHA:CAPS">GSHA</a> *sha,
+                                                         gchar *buffer);</pre>
+<p>
+Copies the digest, represented as a string, into <em class="parameter"><code>buffer</code></em>.  The
+string is not NULL terminated.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>sha</code></em>&#160;:</span></td>
+<td> a <a href="gnet-sha.html#GSHA:CAPS"><span class="type">GSHA</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer at least 2 * <a href="gnet-sha.html#GNET-SHA-HASH-LENGTH:CAPS"><code class="literal">GNET_SHA_HASH_LENGTH</code></a> bytes long
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

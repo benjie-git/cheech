@@ -1,0 +1,90 @@
+<refentry id="gnet-gnet">
+<refmeta>
+<refentrytitle role="top_of_page">GNet</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>GNet</refname>
+<refpurpose>GNet utility functions and macros</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+#define             <link linkend="GNET-EXPORT:CAPS">GNET_EXPORT</link>
+#define             <link linkend="GNET-CHECK-VERSION:CAPS">GNET_CHECK_VERSION</link>                  (major,minor,micro)
+<link linkend="void">void</link>                <link linkend="gnet-init">gnet_init</link>                           (void);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+The main GNet module provides the function <link linkend="gnet-init"><function>gnet_init()</function></link>.  This function
+should be called at the beginning of any GNet program.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GNET-EXPORT:CAPS" role="macro"/>GNET_EXPORT</title>
+<indexterm><primary>GNET_EXPORT</primary></indexterm><programlisting>#define             GNET_EXPORT</programlisting>
+<para>
+Declares a variable exported.  Used interally.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GNET-CHECK-VERSION:CAPS" role="macro"/>GNET_CHECK_VERSION()</title>
+<indexterm><primary>GNET_CHECK_VERSION</primary></indexterm><programlisting>#define             GNET_CHECK_VERSION(major,minor,micro)</programlisting>
+<para>
+Checks if the version given is compatable with this version of the
+ library.  For example, GNET_CHECK_VERSION(1.2.3) would return TRUE
+ if the version is 1.2.5, and FALSE if 1.1.0.  This can be used in
+ build tests.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>major</parameter>&nbsp;:</term>
+<listitem><simpara> Major version number
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>minor</parameter>&nbsp;:</term>
+<listitem><simpara> Minor version number
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>micro</parameter>&nbsp;:</term>
+<listitem><simpara> Micro version number
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-init" role="function"/>gnet_init ()</title>
+<indexterm><primary>gnet_init</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_init                           (void);</programlisting>
+<para>
+Initializes the GNet library.  This should be called at the
+ beginning of any GNet program and before any call to <link linkend="gtk-init"><function>gtk_init()</function></link>.</para>
+<para>
+
+</para></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

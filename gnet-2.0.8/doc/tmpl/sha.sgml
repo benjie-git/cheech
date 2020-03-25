@@ -1,0 +1,189 @@
+<!-- ##### SECTION Title ##### -->
+SHA
+
+<!-- ##### SECTION Short_Description ##### -->
+SHA hash
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The SHA module provide support for computing and manipulating SHA
+hashes.  SHA is a hash function with a very low probability of
+collision.  SHA is considered stronger than MD5.
+</para>
+
+<para>
+A SHA can be calculated at one time or incrementally.  To create a SHA
+at one time, call gnet_sha_new() with the data.  To create a SHA
+incrementally, call gnet_sha_new_incremental() to create the SHA
+object, then gnet_sha_update() one or more times with data to hash,
+and finally call gnet_sha_final().
+</para>
+
+<para>
+To get the digest, or hash value, call gnet_sha_get_digest().  This
+returns the raw digest as an array of %GNET_SHA_HASH_LENGTH bytes.  To
+get the digest as a human-readable string, call gnet_sha_get_string()
+or gnet_sha_copy_string().
+</para>
+
+<para>
+<informalexample>
+<programlisting>
+gchar buffer[] = "Hello world!";
+gchar buffer2[] = "Second line";
+GSHA*  sha;
+gchar* sha_str;
+
+&comstart; Compute an SHA at one time &comend;
+sha = gnet_sha_new (buffer, strlen(buffer));
+
+sha_str = gnet_sha_get_string (sha);
+g_print ("The SHA of %s is %s\n", buffer, sha_str);
+
+&comstart; Use SHA... &comend;
+
+g_free (sha_str);
+gnet_sha_delete (sha);
+
+&comstart; Compute an SHA incrementally &comend;
+sha = gnet_sha_new_incremental ();
+gnet_sha_update (sha, buffer, strlen(buffer));
+gnet_sha_update (sha, buffer2, strlen(buffer2));
+gnet_sha_final (sha);
+
+&comstart; Use SHA... &comend;
+
+gnet_sha_delete (sha);
+</programlisting>
+</informalexample>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GSHA ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GNET_SHA_HASH_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnet_sha_new ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_new_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_clone ##### -->
+<para>
+
+</para>
+
+@sha: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_delete ##### -->
+<para>
+
+</para>
+
+@sha: 
+
+
+<!-- ##### FUNCTION gnet_sha_new_incremental ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_update ##### -->
+<para>
+
+</para>
+
+@sha: 
+@buffer: 
+@length: 
+
+
+<!-- ##### FUNCTION gnet_sha_final ##### -->
+<para>
+
+</para>
+
+@sha: 
+
+
+<!-- ##### FUNCTION gnet_sha_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_hash ##### -->
+<para>
+
+</para>
+
+@p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_get_digest ##### -->
+<para>
+
+</para>
+
+@sha: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_get_string ##### -->
+<para>
+
+</para>
+
+@sha: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_sha_copy_string ##### -->
+<para>
+
+</para>
+
+@sha: 
+@buffer: 
+
+

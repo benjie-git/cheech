@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Base64</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-uri.html" title="URI">
+<link rel="next" href="gnet-pack.html" title="Pack">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-uri.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-pack.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id387042" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id387478" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-base64"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id387042"></a><span class="refentrytitle">Base64</span>
+</h2>
+<p>Base64 &#8212; Base64 encoding and decoding</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+gchar*              <a href="gnet-base64.html#gnet-base64-encode">gnet_base64_encode</a>                  (const gchar *src,
+                                                         gint srclen,
+                                                         gint *dstlenp,
+                                                         gboolean strict);
+gchar*              <a href="gnet-base64.html#gnet-base64-decode">gnet_base64_decode</a>                  (const gchar *src,
+                                                         gint srclen,
+                                                         gint *dstlenp);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id387478"></a><h2>Description</h2>
+<p>
+</p>
+<div class="informalexample"><pre class="programlisting">
+gchar* binary_stream = "Hello World!";
+gchar* base64_stream;
+gint   base64_len;
+gchar* newbin_stream;
+gint   newbin_len;
+
+base64_stream = gnet_base64_encode(binary_stream,strlen(binary_stream), &amp;base64_len, FALSE);
+newbin_stream = gnet_base64_decode(base64_stream, base64_len, &amp;newbin_len);
+</pre></div>
+<p>
+</p>
+<p>
+This module provides functions to encode and decode strings into the
+Base64 encoding specified in "RFC 2045 - MIME (Multipurpose Internet
+Mail Extensions)".  The Base64 encoding is designed to represent
+arbitrary sequences of octets in a form that need not be humanly
+readable. A 65-character subset ([A-Za-z0-9+/=]) of US-ASCII is used,
+enabling 6 bits to be represented per printable character.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id387511"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id387521"></a><h3>
+<a name="gnet-base64-encode"></a>gnet_base64_encode ()</h3>
+<a class="indexterm" name="id387534"></a><pre class="programlisting">gchar*              gnet_base64_encode                  (const gchar *src,
+                                                         gint srclen,
+                                                         gint *dstlenp,
+                                                         gboolean strict);</pre>
+<p>
+Convert a buffer from binary to base64 representation.  Set
+ <em class="parameter"><code>strict</code></em> to TRUE to insert a newline every 72th character.  This is
+ required by RFC 2045, but some applications don't require this.
+</p>
+<p>
+ If <em class="parameter"><code>srclen</code></em> is 0, an empty string will be returned (not NULL).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>src</code></em>&#160;:</span></td>
+<td> source buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>srclen</code></em>&#160;:</span></td>
+<td> length of the source buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>dstlenp</code></em>&#160;:</span></td>
+<td> length of the buffer returned (including the terminating \0)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>strict</code></em>&#160;:</span></td>
+<td> insert new lines as required by RFC 2045
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a newly-allocated and NUL-terminated string containing the
+ input data in base64 coding. Free with <code class="function">g_free()</code> when no longer needed.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id387685"></a><h3>
+<a name="gnet-base64-decode"></a>gnet_base64_decode ()</h3>
+<a class="indexterm" name="id387698"></a><pre class="programlisting">gchar*              gnet_base64_decode                  (const gchar *src,
+                                                         gint srclen,
+                                                         gint *dstlenp);</pre>
+<p>
+Convert a buffer from base64 to binary representation.  This
+ function is liberal in what it will accept.  It ignores non-base64
+ symbols.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>src</code></em>&#160;:</span></td>
+<td> the source buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>srclen</code></em>&#160;:</span></td>
+<td> the length of the source buffer, or -1 for strlen(<em class="parameter"><code>src</code></em>).
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>dstlenp</code></em>&#160;:</span></td>
+<td> where to return the length of the returned output buffer
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> newly-allocated buffer. Free with <code class="function">g_free()</code> when no longer
+ needed. The integer pointed to by <em class="parameter"><code>dstlenp</code></em> is set to the length of
+ that buffer. 
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!-- ##### SECTION Title ##### -->
+url
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gnet_url_new ##### -->
+<para>
+
+</para>
+
+@url: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_url_new_fields ##### -->
+<para>
+
+</para>
+
+@protocol: 
+@hostname: 
+@port: 
+@resource: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_url_new_fields_all ##### -->
+<para>
+
+</para>
+
+@protocol: 
+@user: 
+@password: 
+@hostname: 
+@port: 
+@resource: 
+@query: 
+@fragment: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_url_clone ##### -->
+<para>
+
+</para>
+
+@url: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_url_delete ##### -->
+<para>
+
+</para>
+
+@url: 
+
+
+<!-- ##### FUNCTION gnet_url_hash ##### -->
+<para>
+
+</para>
+
+@p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_url_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_url_set_protocol ##### -->
+<para>
+
+</para>
+
+@url: 
+@protocol: 
+
+
+<!-- ##### FUNCTION gnet_url_set_user ##### -->
+<para>
+
+</para>
+
+@url: 
+@user: 
+
+
+<!-- ##### FUNCTION gnet_url_set_password ##### -->
+<para>
+
+</para>
+
+@url: 
+@password: 
+
+
+<!-- ##### FUNCTION gnet_url_set_hostname ##### -->
+<para>
+
+</para>
+
+@url: 
+@hostname: 
+
+
+<!-- ##### FUNCTION gnet_url_set_port ##### -->
+<para>
+
+</para>
+
+@url: 
+@port: 
+
+
+<!-- ##### FUNCTION gnet_url_set_resource ##### -->
+<para>
+
+</para>
+
+@url: 
+@resource: 
+
+
+<!-- ##### FUNCTION gnet_url_set_query ##### -->
+<para>
+
+</para>
+
+@url: 
+@query: 
+
+
+<!-- ##### FUNCTION gnet_url_set_fragment ##### -->
+<para>
+
+</para>
+
+@url: 
+@fragment: 
+
+
+<!-- ##### FUNCTION gnet_url_get_nice_string ##### -->
+<para>
+
+</para>
+
+@url: 
+@Returns: 
+
+

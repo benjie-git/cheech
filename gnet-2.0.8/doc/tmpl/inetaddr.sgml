@@ -1,0 +1,538 @@
+<!-- ##### SECTION Title ##### -->
+InetAddr
+
+<!-- ##### SECTION Short_Description ##### -->
+Internet Address
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+A #GInetAddr represents an internet address.  This module provides
+functions for making DNS and reverse DNS lookups (blocking and
+asynchronously) and for working with #GInetAddr's.
+</para>
+
+<para>
+Create a #GInetAddr by calling gnet_inetaddr_new().  This function
+will perform a DNS lookup and creates a #GInetAddr representing the
+address.  This function blocks.  The function
+gnet_inetaddr_new_async() performs the lookup asynchronously and calls
+a callback with the #GInetAddr when the lookup completes.  An
+asynchronous lookup can be canceled by calling
+gnet_inetaddr_new_async_cancel().
+</para>
+
+<para>
+Technically a DNS lookup can map a name to several addresses.  Use
+gnet_inetaddr_new_list() or gnet_inetaddr_new_list_async() to get this
+list.  Use gnet_inetaddr_delete_list() to delete the list.
+</para>
+
+<para>
+This module can also make reverse DNS lookups (i.e., map an address to
+a hostname).  Call gnet_inetaddr_get_name() to get the hostname from
+an address.  This function blocks.  Its asynchronous counterpart is
+gnet_inetadr_get_name_async().  To get the canonical name, or dotted
+decimal address, call gnet_inetaddr_get_canonical_name().
+</para>
+
+<para>
+To get the host's address, call gnet_inetaddr_gethostaddr().  This
+creates a #GInetAddr by performing a DNS lookup on the host's name.
+To get the list of all the host's interfaces, call
+gnet_inetaddr_list_interfaces().  The function
+gnet_inetaddr_autodetect_internet_interface() uses this function and
+heuristics to find an interface connected to the internet.  This can
+be used to automatically configure peer-to-peer applications.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GInetAddr ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@Returns: 
+
+
+<!-- ##### TYPEDEF GInetAddrNewAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GInetAddrNewAsyncFunc ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@data: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_async ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_async_full ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@data: 
+@notify: 
+@context: 
+@priority: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_list ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_delete_list ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### TYPEDEF GInetAddrNewListAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GInetAddrNewListAsyncFunc ##### -->
+<para>
+
+</para>
+
+@list: 
+@data: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_list_async ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_list_async_full ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@data: 
+@notify: 
+@context: 
+@priority: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_list_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_nonblock ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_new_bytes ##### -->
+<para>
+
+</para>
+
+@bytes: 
+@length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_clone ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_delete ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_ref ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_unref ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_name ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_name_nonblock ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### TYPEDEF GInetAddrGetNameAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GInetAddrGetNameAsyncFunc ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@data: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_name_async ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_name_async_full ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@func: 
+@data: 
+@notify: 
+@context: 
+@priority: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_name_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+
+
+<!-- ##### MACRO GNET_INETADDR_MAX_LEN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_length ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_bytes ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@buffer: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_set_bytes ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@bytes: 
+@length: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_canonical_name ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_port ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_set_port ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@port: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_canonical ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_internet ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_private ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_reserved ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_loopback ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_multicast ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_broadcast ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_ipv4 ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_ipv6 ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_hash ##### -->
+<para>
+
+</para>
+
+@p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_noport_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_host_name ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_host_addr ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_autodetect_internet_interface ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_interface_to ##### -->
+<para>
+
+</para>
+
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_get_internet_interface ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_is_internet_domainname ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_inetaddr_list_interfaces ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

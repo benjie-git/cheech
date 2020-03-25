@@ -1,0 +1,1193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GConnHttp</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-mcast.html" title="Mcast">
+<link rel="next" href="gnet-conn.html" title="Conn">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-mcast.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-conn.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id359655" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id360608" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-conn-http"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id359655"></a><span class="refentrytitle">GConnHttp</span>
+</h2>
+<p>GConnHttp &#8212; HTTP connection object</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+                    <a href="gnet-conn-http.html#GConnHttp">GConnHttp</a>;
+enum                <a href="gnet-conn-http.html#GConnHttpMethod">GConnHttpMethod</a>;
+enum                <a href="gnet-conn-http.html#GConnHttpError">GConnHttpError</a>;
+enum                <a href="gnet-conn-http.html#GConnHttpEventType">GConnHttpEventType</a>;
+                    <a href="gnet-conn-http.html#GConnHttpEvent">GConnHttpEvent</a>;
+                    <a href="gnet-conn-http.html#GConnHttpEventResolved">GConnHttpEventResolved</a>;
+                    <a href="gnet-conn-http.html#GConnHttpEventResponse">GConnHttpEventResponse</a>;
+                    <a href="gnet-conn-http.html#GConnHttpEventRedirect">GConnHttpEventRedirect</a>;
+                    <a href="gnet-conn-http.html#GConnHttpEventData">GConnHttpEventData</a>;
+                    <a href="gnet-conn-http.html#GConnHttpEventError">GConnHttpEventError</a>;
+void                (<a href="gnet-conn-http.html#GConnHttpFunc">*GConnHttpFunc</a>)                    (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpEvent">GConnHttpEvent</a> *event,
+                                                         gpointer user_data);
+enum                <a href="gnet-conn-http.html#GConnHttpHeaderFlags">GConnHttpHeaderFlags</a>;
+<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a>*          <a href="gnet-conn-http.html#gnet-conn-http-new">gnet_conn_http_new</a>                  (void);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-set-uri">gnet_conn_http_set_uri</a>              (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *uri);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-set-escaped-uri">gnet_conn_http_set_escaped_uri</a>      (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *uri);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-set-header">gnet_conn_http_set_header</a>           (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *field,
+                                                         const gchar *value,
+                                                         <a href="gnet-conn-http.html#GConnHttpHeaderFlags">GConnHttpHeaderFlags</a> flags);
+void                <a href="gnet-conn-http.html#gnet-conn-http-set-max-redirects">gnet_conn_http_set_max_redirects</a>    (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         guint num);
+void                <a href="gnet-conn-http.html#gnet-conn-http-set-timeout">gnet_conn_http_set_timeout</a>          (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         guint timeout);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-set-user-agent">gnet_conn_http_set_user_agent</a>       (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *agent);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-set-method">gnet_conn_http_set_method</a>           (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpMethod">GConnHttpMethod</a> method,
+                                                         const gchar *post_data,
+                                                         gsize post_data_len);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-set-main-context">gnet_conn_http_set_main_context</a>     (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         GMainContext *context);
+void                <a href="gnet-conn-http.html#gnet-conn-http-run-async">gnet_conn_http_run_async</a>            (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpFunc">GConnHttpFunc</a> func,
+                                                         gpointer user_data);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-run">gnet_conn_http_run</a>                  (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpFunc">GConnHttpFunc</a> func,
+                                                         gpointer user_data);
+gboolean            <a href="gnet-conn-http.html#gnet-conn-http-steal-buffer">gnet_conn_http_steal_buffer</a>         (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         gchar **buffer,
+                                                         gsize *length);
+void                <a href="gnet-conn-http.html#gnet-conn-http-cancel">gnet_conn_http_cancel</a>               (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn);
+void                <a href="gnet-conn-http.html#gnet-conn-http-delete">gnet_conn_http_delete</a>               (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn);
+gboolean            <a href="gnet-conn-http.html#gnet-http-get">gnet_http_get</a>                       (const gchar *url,
+                                                         gchar **buffer,
+                                                         gsize *length,
+                                                         guint *response);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id360608"></a><h2>Description</h2>
+<p>
+A <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a> represents a HTTP client connection. A <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+is created directly by calling <a href="gnet-conn-http.html#gnet-conn-http-new"><code class="function">gnet_conn_http_new()</code></a>. After
+that set the URI to retrieve using <a href="gnet-conn-http.html#gnet-conn-http-set-uri"><code class="function">gnet_conn_http_set_uri()</code></a>. 
+A connection is made and the HTTP request sent only once 
+either <a href="gnet-conn-http.html#gnet-conn-http-run-async"><code class="function">gnet_conn_http_run_async()</code></a> or <a href="gnet-conn-http.html#gnet-conn-http-run"><code class="function">gnet_conn_http_run()</code></a>
+is called. Use the asynchroneous variant if you want the
+function to return immediately and prefer to receive data
+and status information in the background via the callback
+function. <a href="gnet-conn-http.html#gnet-conn-http-run-async"><code class="function">gnet_conn_http_run_async()</code></a> assumes that there is
+already a GLib main loop running (e.g. the Gtk main loop).
+</p>
+<p>
+You can decide for yourself how much information you would
+like to receive during the HTTP operation. All status 
+information is communicated to the caller via the optional
+callback function.
+</p>
+<p>
+The easiest way to just retrieve some data via HTTP is to
+use the convenience function <a href="gnet-conn-http.html#gnet-http-get"><code class="function">gnet_http_get()</code></a>.
+</p>
+<p>
+Here is a small example how to retrieve a file with the
+least amount of effort and error checking (this is 
+more or less what <a href="gnet-conn-http.html#gnet-http-get"><code class="function">gnet_http_get()</code></a> does internally):
+</p>
+<div class="example">
+<a name="id360726"></a><p class="title"><b>Example&#160;1.&#160;Simple <span class="structname">GConnHttp</span> usage.</b></p>
+<div class="example-contents"><pre class="programlisting">
+#define GNET_EXPERIMENTAL
+#include &lt;gnet.h&gt;
+
+void
+fetch_and_print_url (const gchar *url)
+{
+  GConnHttp  *conn;
+  
+  conn = gnet_conn_http_new();
+  
+  gnet_conn_http_set_uri(conn, url);
+  
+  if (gnet_conn_http_run(conn, NULL, NULL))
+  {
+    gchar *buf;
+    gsize  buflen;
+    
+    if (gnet_conn_http_steal_buffer(conn, &amp;buf, &amp;buflen))
+    {
+      g_print ("Received %%u bytes of data:\n%%s\n", buflen, buf);
+      g_free(buf);
+    }
+  }
+  
+  gnet_conn_http_delete(conn);
+}
+
+  ...
+
+  fetch_and_print_url ("http://www.google.com");
+  
+  ...
+
+</pre></div>
+</div>
+<p><br class="example-break">
+</p>
+<p>
+<a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a> is still considered less mature than other parts of GNet, even
+though it should generall work just fine. It just has not received as much
+testing as other parts of GNet yet. You should not use it in production
+level code without thoroughly testing it for your purposes. Because of that,
+you need to define GNET_EXPERIMENTAL in your source code before including the
+GNet headers (otherwise you will get compiler errors when trying to use it).
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id360765"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id360778"></a><h3>
+<a name="GConnHttp"></a>GConnHttp</h3>
+<a class="indexterm" name="id360789"></a><pre class="programlisting">typedef struct _GConnHttp GConnHttp;</pre>
+<p>
+HTTP Connection. The entire GConnHttp struct is opaque and private.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id360807"></a><h3>
+<a name="GConnHttpMethod"></a>enum GConnHttpMethod</h3>
+<a class="indexterm" name="id360819"></a><pre class="programlisting">typedef enum
+{
+ GNET_CONN_HTTP_METHOD_GET,
+ GNET_CONN_HTTP_METHOD_POST
+} GConnHttpMethod;
+</pre>
+<p>
+HTTP request method.  Use with <a href="gnet-conn-http.html#gnet-conn-http-set-method"><code class="function">gnet_conn_http_set_method()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-METHOD-GET:CAPS"></a><code class="literal">GNET_CONN_HTTP_METHOD_GET</code></span></td>
+<td> HTTP GET method
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-METHOD-POST:CAPS"></a><code class="literal">GNET_CONN_HTTP_METHOD_POST</code></span></td>
+<td> HTTP POST method
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id360897"></a><h3>
+<a name="GConnHttpError"></a>enum GConnHttpError</h3>
+<a class="indexterm" name="id360909"></a><pre class="programlisting">typedef enum
+{
+ GNET_CONN_HTTP_ERROR_UNSPECIFIED,
+ GNET_CONN_HTTP_ERROR_PROTOCOL_UNSUPPORTED,
+ GNET_CONN_HTTP_ERROR_HOSTNAME_RESOLUTION
+} GConnHttpError;
+</pre>
+<p>
+Error codes.  Used by <a href="gnet-conn-http.html#GConnHttpEventError"><span class="type">GConnHttpEventError</span></a>.  Note that 
+   errors by the HTTP server will be communicated to the
+   client via the <a href="gnet-conn-http.html#GConnHttpEventResponse"><span class="type">GConnHttpEventResponse</span></a> event.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-ERROR-UNSPECIFIED:CAPS"></a><code class="literal">GNET_CONN_HTTP_ERROR_UNSPECIFIED</code></span></td>
+<td> connection error
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-ERROR-PROTOCOL-UNSUPPORTED:CAPS"></a><code class="literal">GNET_CONN_HTTP_ERROR_PROTOCOL_UNSUPPORTED</code></span></td>
+<td> unsupported protocol (ie. not http)
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-ERROR-HOSTNAME-RESOLUTION:CAPS"></a><code class="literal">GNET_CONN_HTTP_ERROR_HOSTNAME_RESOLUTION</code></span></td>
+<td> the hostname could not be resolved
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361016"></a><h3>
+<a name="GConnHttpEventType"></a>enum GConnHttpEventType</h3>
+<a class="indexterm" name="id361028"></a><pre class="programlisting">typedef enum
+{
+ GNET_CONN_HTTP_RESOLVED,           /* resolved host name           */
+ GNET_CONN_HTTP_CONNECTED,          /* connected to host            */
+ GNET_CONN_HTTP_RESPONSE,           /* got response (incl. headers) */
+ GNET_CONN_HTTP_REDIRECT,           /* got redirect                 */
+ GNET_CONN_HTTP_DATA_PARTIAL,       /* we got some data             */
+ GNET_CONN_HTTP_DATA_COMPLETE,      /* we got all data              */
+ GNET_CONN_HTTP_TIMEOUT,            /* the connection timed out     */
+ GNET_CONN_HTTP_ERROR               /* GConnHttp problem            */
+} GConnHttpEventType;
+</pre>
+<p>
+GConnHttp event type.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-RESOLVED:CAPS"></a><code class="literal">GNET_CONN_HTTP_RESOLVED</code></span></td>
+<td> the host name has been 
+  resolved or host name resolution failed. The event
+  structure will be a <a href="gnet-conn-http.html#GConnHttpEventResolved"><span class="type">GConnHttpEventResolved</span></a> structure
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-CONNECTED:CAPS"></a><code class="literal">GNET_CONN_HTTP_CONNECTED</code></span></td>
+<td> the TCP connection to 
+  the HTTP server has been established
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-RESPONSE:CAPS"></a><code class="literal">GNET_CONN_HTTP_RESPONSE</code></span></td>
+<td> the HTTP server has sent 
+  a response and response headers. The event
+  structure will be a <a href="gnet-conn-http.html#GConnHttpEventResponse"><span class="type">GConnHttpEventResponse</span></a> structure
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-REDIRECT:CAPS"></a><code class="literal">GNET_CONN_HTTP_REDIRECT</code></span></td>
+<td> the HTTP server has sent 
+  a redirect response. The event structure will be a
+  <a href="gnet-conn-http.html#GConnHttpEventRedirect"><span class="type">GConnHttpEventRedirect</span></a> structure
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-DATA-PARTIAL:CAPS"></a><code class="literal">GNET_CONN_HTTP_DATA_PARTIAL</code></span></td>
+<td> data has been received.
+  The buffer is caller-owned (ie. owned by GNet), but 
+  may be emptied using <a href="gnet-conn-http.html#gnet-conn-http-steal-buffer"><code class="function">gnet_conn_http_steal_buffer()</code></a>. The
+  event structure will be a <a href="gnet-conn-http.html#GConnHttpEventData"><span class="type">GConnHttpEventData</span></a> structure
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-DATA-COMPLETE:CAPS"></a><code class="literal">GNET_CONN_HTTP_DATA_COMPLETE</code></span></td>
+<td> data has been received
+  in full.  The buffer is caller-owned (ie. owned by GNet), 
+  but may be emptied using <a href="gnet-conn-http.html#gnet-conn-http-steal-buffer"><code class="function">gnet_conn_http_steal_buffer()</code></a>. The
+  event structure will be a <a href="gnet-conn-http.html#GConnHttpEventData"><span class="type">GConnHttpEventData</span></a> structure
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-TIMEOUT:CAPS"></a><code class="literal">GNET_CONN_HTTP_TIMEOUT</code></span></td>
+<td> the connection timed out
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-ERROR:CAPS"></a><code class="literal">GNET_CONN_HTTP_ERROR</code></span></td>
+<td> <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a> problem (not a server 
+  error response). The event structure will be a 
+  <a href="gnet-conn-http.html#GConnHttpEventError"><span class="type">GConnHttpEventError</span></a> structure
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361312"></a><h3>
+<a name="GConnHttpEvent"></a>GConnHttpEvent</h3>
+<a class="indexterm" name="id361324"></a><pre class="programlisting">typedef struct {
+ GConnHttpEventType   type;           /* type of event (see above)         */
+} GConnHttpEvent;
+</pre>
+<p>
+GConnHttp Base Event.  Check event-&gt;type and then cast the event
+  structure into the corresponding specialised event structure.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><a href="gnet-conn-http.html#GConnHttpEventType">GConnHttpEventType</a>&#160;<em class="structfield"><code>type</code></em>;</span></td>
+<td> event type
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361368"></a><h3>
+<a name="GConnHttpEventResolved"></a>GConnHttpEventResolved</h3>
+<a class="indexterm" name="id361380"></a><pre class="programlisting">typedef struct {
+ GInetAddr           *ia;             /* GInetAddr of the host name        */
+} GConnHttpEventResolved;
+</pre>
+<p>
+GConnHttp Host Name Resolved Event.  Emitted when the host name has 
+  been resolved to an IP address, primarily to give progress feedback 
+  to the user. <em class="parameter"><code>ia</code></em> will be NULL if the host name could not be resolved.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>&#160;*<em class="structfield"><code>ia</code></em>;</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> of the resolved host name.
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361439"></a><h3>
+<a name="GConnHttpEventResponse"></a>GConnHttpEventResponse</h3>
+<a class="indexterm" name="id361452"></a><pre class="programlisting">typedef struct {
+ guint                response_code;  /* response code, e.g. 200, or 404   */
+ gchar              **header_fields;  /* NULL-terminated array of strings  */
+ gchar              **header_values;  /* NULL-terminated array of strings  */
+} GConnHttpEventResponse;
+</pre>
+<p>
+Emitted when the server has sent a response and response headers.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term">guint&#160;<em class="structfield"><code>response_code</code></em>;</span></td>
+<td> response code from the HTTP server (e.g. 200 or 404)
+</td>
+</tr>
+<tr>
+<td><span class="term">gchar&#160;**<em class="structfield"><code>header_fields</code></em>;</span></td>
+<td> array of header field strings, NULL-terminated
+</td>
+</tr>
+<tr>
+<td><span class="term">gchar&#160;**<em class="structfield"><code>header_values</code></em>;</span></td>
+<td> array of header value strings, NULL-terminated
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361538"></a><h3>
+<a name="GConnHttpEventRedirect"></a>GConnHttpEventRedirect</h3>
+<a class="indexterm" name="id361551"></a><pre class="programlisting">typedef struct {
+ guint                num_redirects;  /* number of redirects so far        */
+ guint                max_redirects;  /* max. num. of redirects allowed    */
+ gchar               *new_location;   /* redirect location if provided     */
+ gboolean             auto_redirect;  /* FALSE if action is needed         */
+} GConnHttpEventRedirect;
+</pre>
+<p>
+Emitted when the server sends a redirect response.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term">guint&#160;<em class="structfield"><code>num_redirects</code></em>;</span></td>
+<td> number of redirects so far
+</td>
+</tr>
+<tr>
+<td><span class="term">guint&#160;<em class="structfield"><code>max_redirects</code></em>;</span></td>
+<td> maximum number of redirects allowed
+</td>
+</tr>
+<tr>
+<td><span class="term">gchar&#160;*<em class="structfield"><code>new_location</code></em>;</span></td>
+<td> redirect location, or NULL if not provided
+</td>
+</tr>
+<tr>
+<td><span class="term">gboolean&#160;<em class="structfield"><code>auto_redirect</code></em>;</span></td>
+<td> FALSE if action by the client is needed. Set 
+                 to FALSE to prevent automatic redirection
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361727"></a><h3>
+<a name="GConnHttpEventData"></a>GConnHttpEventData</h3>
+<a class="indexterm" name="id361740"></a><pre class="programlisting">typedef struct {
+ guint64              content_length; /* set if available, otherwise 0     */
+ guint64              data_received;  /* bytes received so far             */
+ const gchar         *buffer;         /* buffer                            */
+ gsize                buffer_length;  /* buffer length                     */
+} GConnHttpEventData;
+</pre>
+<p>
+Emitted when data has been received. Useful for progress feedback 
+  to the user or to process data before all of it has been received.
+  The client is responsible for emptying the buffer regularly when the 
+  amount of data received or expected is larger than the amount that
+  should be kept in memory (e.g. in the case of large binary files).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term">guint64&#160;<em class="structfield"><code>content_length</code></em>;</span></td>
+<td> set if available, otherwise 0
+</td>
+</tr>
+<tr>
+<td><span class="term">guint64&#160;<em class="structfield"><code>data_received</code></em>;</span></td>
+<td> total amount of data received so far
+</td>
+</tr>
+<tr>
+<td><span class="term">const&#160;gchar&#160;*<em class="structfield"><code>buffer</code></em>;</span></td>
+<td> buffer with data received so far. Use 
+ <a href="gnet-conn-http.html#gnet-conn-http-steal-buffer"><code class="function">gnet_conn_http_steal_buffer()</code></a> to empty the buffer.
+</td>
+</tr>
+<tr>
+<td><span class="term">gsize&#160;<em class="structfield"><code>buffer_length</code></em>;</span></td>
+<td> buffer length
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361862"></a><h3>
+<a name="GConnHttpEventError"></a>GConnHttpEventError</h3>
+<a class="indexterm" name="id361874"></a><pre class="programlisting">typedef struct {
+ GConnHttpError       code;           /* error code                        */
+ gchar               *message;        /* message (use for debugging only)  */
+} GConnHttpEventError;
+</pre>
+<p>
+Emitted when an error has occured. Note that HTTP server errors are
+  communicated to the client by means of a <a href="gnet-conn-http.html#GConnHttpEventResponse"><span class="type">GConnHttpEventResponse</span></a> event.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a href="gnet-conn-http.html#GConnHttpError">GConnHttpError</a>&#160;<em class="structfield"><code>code</code></em>;</span></td>
+<td> one of the <a href="gnet-conn-http.html#GConnHttpError"><span class="type">GConnHttpError</span></a> codes
+</td>
+</tr>
+<tr>
+<td><span class="term">gchar&#160;*<em class="structfield"><code>message</code></em>;</span></td>
+<td> clear-text error message (for debugging purposes only)
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id361956"></a><h3>
+<a name="GConnHttpFunc"></a>GConnHttpFunc ()</h3>
+<a class="indexterm" name="id361968"></a><pre class="programlisting">void                (*GConnHttpFunc)                    (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpEvent">GConnHttpEvent</a> *event,
+                                                         gpointer user_data);</pre>
+<p>
+Callback for <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>.
+</p>
+<p>
+ Check event-&gt;type and then cast the event into the appropriate
+  event structure. event-&gt;type will be one of
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-RESOLVED:CAPS"><code class="literal">GNET_CONN_HTTP_RESOLVED</code></a>: this event occurs when the host name
+ has been resolved or host name resolution failed
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-CONNECTED:CAPS"><code class="literal">GNET_CONN_HTTP_CONNECTED</code></a>: the TCP connection to the 
+ HTTP server has been established
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-RESPONSE:CAPS"><code class="literal">GNET_CONN_HTTP_RESPONSE</code></a>: the HTTP server has sent a response
+ and response headers
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-REDIRECT:CAPS"><code class="literal">GNET_CONN_HTTP_REDIRECT</code></a>: the HTTP server has sent a redirect
+ response
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-DATA-PARTIAL:CAPS"><code class="literal">GNET_CONN_HTTP_DATA_PARTIAL</code></a>: data has been read. The buffer is
+ owned by GNet and you must not modify it or free it. You can
+ take ownership of the buffer with <a href="gnet-conn-http.html#gnet-conn-http-steal-buffer"><code class="function">gnet_conn_http_steal_buffer()</code></a>
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-DATA-COMPLETE:CAPS"><code class="literal">GNET_CONN_HTTP_DATA_COMPLETE</code></a>: data has been received in full.
+ The buffer is owned by GNet and you must not modify it or free 
+ it. You can acquire ownership of the buffer by calling 
+ <a href="gnet-conn-http.html#gnet-conn-http-steal-buffer"><code class="function">gnet_conn_http_steal_buffer()</code></a>
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-TIMEOUT:CAPS"><code class="literal">GNET_CONN_HTTP_TIMEOUT</code></a>: the connection timed out
+</p>
+<p>
+ <a href="gnet-conn-http.html#GNET-CONN-HTTP-ERROR:CAPS"><code class="literal">GNET_CONN_HTTP_ERROR</code></a>: <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a> problem (not a server error response)</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>event</code></em>&#160;:</span></td>
+<td> event (caller-owned, do not free)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
+<td> user data specified in <a href="gnet-conn-http.html#gnet-conn-http-run"><code class="function">gnet_conn_http_run()</code></a> 
+             or <a href="gnet-conn-http.html#gnet-conn-http-run-async"><code class="function">gnet_conn_http_run_async()</code></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362249"></a><h3>
+<a name="GConnHttpHeaderFlags"></a>enum GConnHttpHeaderFlags</h3>
+<a class="indexterm" name="id362261"></a><pre class="programlisting">typedef enum
+{
+  GNET_CONN_HTTP_FLAG_SKIP_HEADER_CHECK  = 1
+} GConnHttpHeaderFlags;
+</pre>
+<p>
+Flags for <a href="gnet-conn-http.html#gnet-conn-http-set-header"><code class="function">gnet_conn_http_set_header()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><a name="GNET-CONN-HTTP-FLAG-SKIP-HEADER-CHECK:CAPS"></a><code class="literal">GNET_CONN_HTTP_FLAG_SKIP_HEADER_CHECK</code></span></td>
+<td> do not check whether
+  the header is a standard header
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362317"></a><h3>
+<a name="gnet-conn-http-new"></a>gnet_conn_http_new ()</h3>
+<a class="indexterm" name="id362329"></a><pre class="programlisting"><a href="gnet-conn-http.html#GConnHttp">GConnHttp</a>*          gnet_conn_http_new                  (void);</pre>
+<p>
+Creates a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362383"></a><h3>
+<a name="gnet-conn-http-set-uri"></a>gnet_conn_http_set_uri ()</h3>
+<a class="indexterm" name="id362396"></a><pre class="programlisting">gboolean            gnet_conn_http_set_uri              (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *uri);</pre>
+<p>
+Sets the URI to GET or POST, e.g. http://www.foo.com/bar.html. <em class="parameter"><code>uri</code></em> is
+ assumed to be unescaped, so all special URI characters will be escaped.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>uri</code></em>&#160;:</span></td>
+<td> URI string
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if the URI has been accepted.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362491"></a><h3>
+<a name="gnet-conn-http-set-escaped-uri"></a>gnet_conn_http_set_escaped_uri ()</h3>
+<a class="indexterm" name="id362503"></a><pre class="programlisting">gboolean            gnet_conn_http_set_escaped_uri      (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *uri);</pre>
+<p>
+Sets the URI to GET or POST, e.g. http://www.foo.com/My%<code class="literal">20Documents</code>/bar.txt</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>uri</code></em>&#160;:</span></td>
+<td> URI string with special characters already escaped
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if the URI has been accepted.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362603"></a><h3>
+<a name="gnet-conn-http-set-header"></a>gnet_conn_http_set_header ()</h3>
+<a class="indexterm" name="id362615"></a><pre class="programlisting">gboolean            gnet_conn_http_set_header           (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *field,
+                                                         const gchar *value,
+                                                         <a href="gnet-conn-http.html#GConnHttpHeaderFlags">GConnHttpHeaderFlags</a> flags);</pre>
+<p>
+Set header field to send with the HTTP request.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>field</code></em>&#160;:</span></td>
+<td> a header field, e.g. "Accept"
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>value</code></em>&#160;:</span></td>
+<td> the header field value, e.g. "text/html"
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>flags</code></em>&#160;:</span></td>
+<td> one or more flags of <a href="gnet-conn-http.html#GConnHttpHeaderFlags"><span class="type">GConnHttpHeaderFlags</span></a>, or 0
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if the header field has been set or changed
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362754"></a><h3>
+<a name="gnet-conn-http-set-max-redirects"></a>gnet_conn_http_set_max_redirects ()</h3>
+<a class="indexterm" name="id362767"></a><pre class="programlisting">void                gnet_conn_http_set_max_redirects    (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         guint num);</pre>
+<p>
+Sets the maximum allowed number of automatic redirects.
+  Note that the HTTP protocol specification (RFC2616) specifies 
+  occasions where the client must not redirect automatically 
+  without user intervention. In those cases, no automatic redirect
+  will be performed, even if the limit has not been reached yet.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>num</code></em>&#160;:</span></td>
+<td> the maximum number of allowed automatic redirects
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362848"></a><h3>
+<a name="gnet-conn-http-set-timeout"></a>gnet_conn_http_set_timeout ()</h3>
+<a class="indexterm" name="id362860"></a><pre class="programlisting">void                gnet_conn_http_set_timeout          (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         guint timeout);</pre>
+<p>
+Sets a timeout on the http connection.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>timeout</code></em>&#160;:</span></td>
+<td> timeout in milliseconds
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id362938"></a><h3>
+<a name="gnet-conn-http-set-user-agent"></a>gnet_conn_http_set_user_agent ()</h3>
+<a class="indexterm" name="id362951"></a><pre class="programlisting">gboolean            gnet_conn_http_set_user_agent       (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         const gchar *agent);</pre>
+<p>
+Convenience function. Wraps <a href="gnet-conn-http.html#gnet-conn-http-set-header"><code class="function">gnet_conn_http_set_header()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>agent</code></em>&#160;:</span></td>
+<td> the user agent string to send (will be supplemented by a GNet
+         version number comment)
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if the user agent string has been changed.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363051"></a><h3>
+<a name="gnet-conn-http-set-method"></a>gnet_conn_http_set_method ()</h3>
+<a class="indexterm" name="id363063"></a><pre class="programlisting">gboolean            gnet_conn_http_set_method           (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpMethod">GConnHttpMethod</a> method,
+                                                         const gchar *post_data,
+                                                         gsize post_data_len);</pre>
+<p>
+Sets the HTTP request method. Default is the GET method.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>method</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttpMethod"><span class="type">GConnHttpMethod</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>post_data</code></em>&#160;:</span></td>
+<td> post data to send with POST method, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>post_data_len</code></em>&#160;:</span></td>
+<td> the length of the post data to send with POST method, or 0
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if the method has been changed successfully.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363202"></a><h3>
+<a name="gnet-conn-http-set-main-context"></a>gnet_conn_http_set_main_context ()</h3>
+<a class="indexterm" name="id363217"></a><pre class="programlisting">gboolean            gnet_conn_http_set_main_context     (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         GMainContext *context);</pre>
+<p>
+Sets the GLib <span class="type">GMainContext</span> to use for asynchronous operations. You should
+ call this function right after you create <em class="parameter"><code>conn</code></em>. You must not call this
+ function after the actual connection process has started.
+</p>
+<p>
+ You are very unlikely to ever need this function.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>context</code></em>&#160;:</span></td>
+<td> a <span class="type">GMainContext</span>, or NULL to use the default GLib main context
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE on success, FALSE on failure.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since  2.0.8
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363339"></a><h3>
+<a name="gnet-conn-http-run-async"></a>gnet_conn_http_run_async ()</h3>
+<a class="indexterm" name="id363352"></a><pre class="programlisting">void                gnet_conn_http_run_async            (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpFunc">GConnHttpFunc</a> func,
+                                                         gpointer user_data);</pre>
+<p>
+Starts connecting and sending the specified http request. Will 
+  return immediately. Assumes there is an existing and running 
+  default Gtk/GLib/Gnome main loop.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function to communicate progress and errors, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
+<td> user data to pass to callback function, or NULL
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363452"></a><h3>
+<a name="gnet-conn-http-run"></a>gnet_conn_http_run ()</h3>
+<a class="indexterm" name="id363465"></a><pre class="programlisting">gboolean            gnet_conn_http_run                  (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         <a href="gnet-conn-http.html#GConnHttpFunc">GConnHttpFunc</a> func,
+                                                         gpointer user_data);</pre>
+<p>
+Starts connecting and sending the specified http request. Will 
+  return once the operation has finished and either an error has 
+  occured, or the data has been received in full.
+</p>
+<p>
+  This function will run its own main loop in the default GLib main context
+  (or the user-specified main context, if one was specified with
+  <a href="gnet-conn-http.html#gnet-conn-http-set-main-context"><code class="function">gnet_conn_http_set_main_context()</code></a>), which means that if your application
+  is based on Gtk+ or sets up GLib timeouts or idle callbacks, it is
+  possible that those callback functions are invoked while you are waiting
+  for <a href="gnet-conn-http.html#gnet-conn-http-run"><code class="function">gnet_conn_http_run()</code></a> to return. This means you shouldn't make
+  assumptions about any state you set up before calling this function,
+  because it might have been changed again from within a callback in the
+  mean time (if this can happen or not depends on your callbacks and what
+  they do of course).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function to communicate progress and errors, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
+<td> user data to pass to callback function, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if no error occured before connecting
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363605"></a><h3>
+<a name="gnet-conn-http-steal-buffer"></a>gnet_conn_http_steal_buffer ()</h3>
+<a class="indexterm" name="id363618"></a><pre class="programlisting">gboolean            gnet_conn_http_steal_buffer         (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn,
+                                                         gchar **buffer,
+                                                         gsize *length);</pre>
+<p>
+Empties the current buffer and returns the contents. The 
+  main purpose of this function is to make it possible to 
+  just use <a href="gnet-conn-http.html#gnet-conn-http-run"><code class="function">gnet_conn_http_run()</code></a>, check its return value, and 
+  then get the buffer data without having to install a 
+  callback function. Also needed to empty the buffer regularly
+  while receiving large amounts of data.
+</p>
+<p>
+ The caller (you) needs to free the buffer with <code class="function">g_free()</code> when done.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> where to store a pointer to the buffer data
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> where to store the length of the buffer data
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if buffer and length have been set
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363755"></a><h3>
+<a name="gnet-conn-http-cancel"></a>gnet_conn_http_cancel ()</h3>
+<a class="indexterm" name="id363768"></a><pre class="programlisting">void                gnet_conn_http_cancel               (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn);</pre>
+<p>
+Cancels the current http transfer (if any) and makes
+  <a href="gnet-conn-http.html#gnet-conn-http-run"><code class="function">gnet_conn_http_run()</code></a> return immediately. Will do nothing
+  if the transfer was started with <a href="gnet-conn-http.html#gnet-conn-http-run-async"><code class="function">gnet_conn_http_run_async()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363846"></a><h3>
+<a name="gnet-conn-http-delete"></a>gnet_conn_http_delete ()</h3>
+<a class="indexterm" name="id363858"></a><pre class="programlisting">void                gnet_conn_http_delete               (<a href="gnet-conn-http.html#GConnHttp">GConnHttp</a> *conn);</pre>
+<p>
+Deletes a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a> and frees all associated resources.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>conn</code></em>&#160;:</span></td>
+<td> a <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id363923"></a><h3>
+<a name="gnet-http-get"></a>gnet_http_get ()</h3>
+<a class="indexterm" name="id363936"></a><pre class="programlisting">gboolean            gnet_http_get                       (const gchar *url,
+                                                         gchar **buffer,
+                                                         gsize *length,
+                                                         guint *response);</pre>
+<p>
+Convenience function that just retrieves
+  the provided URI without the need to 
+  set up a full <a href="gnet-conn-http.html#GConnHttp"><span class="type">GConnHttp</span></a>. Uses 
+  <a href="gnet-conn-http.html#gnet-conn-http-run"><code class="function">gnet_conn_http_run()</code></a> internally.
+</p>
+<p>
+ Caller (you) needs to free the buffer with <code class="function">g_free()</code> when
+  no longer needed.
+</p>
+<p>
+ This function will run its own main loop in the default GLib main context,
+  which means that if your application is based on Gtk+ or sets up GLib
+  timeouts or idle callbacks, it is possible that those callback functions
+  are invoked while you are waiting for <a href="gnet-conn-http.html#gnet-http-get"><code class="function">gnet_http_get()</code></a> to return. This
+  means you shouldn't make assumptions about any state you set up before
+  calling this function, because it might have been changed again from
+  within a callback in the mean time (if this can happen or not depends on
+  your callbacks and what they do of course).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>url</code></em>&#160;:</span></td>
+<td> a URI, e.g. http://www.foo.com
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> where to store a pointer to the data retrieved
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> where to store the length of the data retrieved
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>response</code></em>&#160;:</span></td>
+<td> where to store the last HTTP response code 
+ received from the HTTP server, or NULL.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>buffer</code></em>, <em class="parameter"><code>length</code></em> and <em class="parameter"><code>response</code></em> are set,
+  otherwise FALSE.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

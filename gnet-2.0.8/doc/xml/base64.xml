@@ -1,0 +1,135 @@
+<refentry id="gnet-base64">
+<refmeta>
+<refentrytitle role="top_of_page">Base64</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Base64</refname>
+<refpurpose>Base64 encoding and decoding</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-base64-encode">gnet_base64_encode</link>                  (const <link linkend="gchar">gchar</link> *src,
+                                                         <link linkend="gint">gint</link> srclen,
+                                                         <link linkend="gint">gint</link> *dstlenp,
+                                                         <link linkend="gboolean">gboolean</link> strict);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-base64-decode">gnet_base64_decode</link>                  (const <link linkend="gchar">gchar</link> *src,
+                                                         <link linkend="gint">gint</link> srclen,
+                                                         <link linkend="gint">gint</link> *dstlenp);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+<informalexample>
+<programlisting>
+gchar* binary_stream = "Hello World!";
+gchar* base64_stream;
+gint   base64_len;
+gchar* newbin_stream;
+gint   newbin_len;
+
+base64_stream = gnet_base64_encode(binary_stream,strlen(binary_stream), &amp;base64_len, FALSE);
+newbin_stream = gnet_base64_decode(base64_stream, base64_len, &amp;newbin_len);
+</programlisting>
+</informalexample>
+</para>
+
+<para>
+This module provides functions to encode and decode strings into the
+Base64 encoding specified in "RFC 2045 - MIME (Multipurpose Internet
+Mail Extensions)".  The Base64 encoding is designed to represent
+arbitrary sequences of octets in a form that need not be humanly
+readable. A 65-character subset ([A-Za-z0-9+/=]) of US-ASCII is used,
+enabling 6 bits to be represented per printable character.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="gnet-base64-encode" role="function"/>gnet_base64_encode ()</title>
+<indexterm><primary>gnet_base64_encode</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_base64_encode                  (const <link linkend="gchar">gchar</link> *src,
+                                                         <link linkend="gint">gint</link> srclen,
+                                                         <link linkend="gint">gint</link> *dstlenp,
+                                                         <link linkend="gboolean">gboolean</link> strict);</programlisting>
+<para>
+Convert a buffer from binary to base64 representation.  Set
+ <parameter>strict</parameter> to TRUE to insert a newline every 72th character.  This is
+ required by RFC 2045, but some applications don't require this.
+</para>
+<para>
+ If <parameter>srclen</parameter> is 0, an empty string will be returned (not NULL).</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>src</parameter>&nbsp;:</term>
+<listitem><simpara> source buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>srclen</parameter>&nbsp;:</term>
+<listitem><simpara> length of the source buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>dstlenp</parameter>&nbsp;:</term>
+<listitem><simpara> length of the buffer returned (including the terminating \0)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>strict</parameter>&nbsp;:</term>
+<listitem><simpara> insert new lines as required by RFC 2045
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a newly-allocated and NUL-terminated string containing the
+ input data in base64 coding. Free with <link linkend="g-free"><function>g_free()</function></link> when no longer needed.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-base64-decode" role="function"/>gnet_base64_decode ()</title>
+<indexterm><primary>gnet_base64_decode</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_base64_decode                  (const <link linkend="gchar">gchar</link> *src,
+                                                         <link linkend="gint">gint</link> srclen,
+                                                         <link linkend="gint">gint</link> *dstlenp);</programlisting>
+<para>
+Convert a buffer from base64 to binary representation.  This
+ function is liberal in what it will accept.  It ignores non-base64
+ symbols.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>src</parameter>&nbsp;:</term>
+<listitem><simpara> the source buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>srclen</parameter>&nbsp;:</term>
+<listitem><simpara> the length of the source buffer, or -1 for strlen(<parameter>src</parameter>).
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>dstlenp</parameter>&nbsp;:</term>
+<listitem><simpara> where to return the length of the returned output buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> newly-allocated buffer. Free with <link linkend="g-free"><function>g_free()</function></link> when no longer
+ needed. The integer pointed to by <parameter>dstlenp</parameter> is set to the length of
+ that buffer. 
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

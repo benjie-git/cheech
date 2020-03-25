@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Hiding blocking</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="gnet-developers.html" title="GNet for developers">
+<link rel="prev" href="gnet-developers-tips.html" title="Tips and tricks">
+<link rel="next" href="gnet-examples.html" title="GNet Examples">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gnet-developers-tips.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="gnet-developers.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-examples.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="sect1" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="gnet-developers-async"></a>Hiding blocking</h2></div></div></div>
+<p>
+	Many GNet functions block.  That is, they do not return
+	immediately.  For example
+	<code class="function">gnet_inetaddr_new</code> performs a DNS lookup
+	that may take several seconds.  This is acceptable for many
+	programs.  But, it is not tolerable in interactive GUI
+	programs or high-performance servers.  
+      </p>
+<p>
+	There are two ways to hide blocking.  The first is to use
+	threads.  GLib 2.0 includes thread support (GThread).  The
+	second method is to use asynchronous functions.  Asynchronous
+	functions return immediately and call a callback when the
+	operation is completed.  For example,
+	<code class="function">gnet_inetaddr_new_async</code> begins an
+	asynchronous DNS lookup and returns immediately.  When the
+	lookup is complete, a callback is called with the GInetAddr.
+	Most blocking function in GNet have an asynchronous
+	counterpart.
+      </p>
+<p>
+	To use GNet's asynchronous functions, you must also use the
+	GLib main event loop.  Most GTK and Gnome program already do
+	this.
+      </p>
+<p>
+	Another common blocking operation is reading or writing to a
+	GIOChannel (a GLib object).
+	<code class="function">g_io_channel_read</code> blocks until there is
+	data available to read.
+	<code class="function">g_io_channel_write</code> blocks until there is
+	OS buffer space to write to.  To determine when a GIOChannel
+	can be read to or written from without blocking, use GLib's
+	<code class="function">g_io_add_watch</code> to set a watch.  A
+	callback is called when the GIOChannel becomes readable or
+	writable.  See the GLib documentation for more information and
+	GNet's echoclient-async and echoserver-async for an example.
+      </p>
+</div>
+</body>
+</html>

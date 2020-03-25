@@ -1,0 +1,860 @@
+<refentry id="gnet-conn">
+<refmeta>
+<refentrytitle role="top_of_page">Conn</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>Conn</refname>
+<refpurpose>TCP connection object</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+                    <link linkend="GConn">GConn</link>;
+                    <link linkend="GConnEvent">GConnEvent</link>;
+enum                <link linkend="GConnEventType">GConnEventType</link>;
+<link linkend="void">void</link>                (<link linkend="GConnFunc">*GConnFunc</link>)                        (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="GConnEvent">GConnEvent</link> *event,
+                                                         <link linkend="gpointer">gpointer</link> user_data);
+<link linkend="GConn">GConn</link>*              <link linkend="gnet-conn-new">gnet_conn_new</link>                       (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);
+<link linkend="GConn">GConn</link>*              <link linkend="gnet-conn-new-inetaddr">gnet_conn_new_inetaddr</link>              (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);
+<link linkend="GConn">GConn</link>*              <link linkend="gnet-conn-new-socket">gnet_conn_new_socket</link>                (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);
+<link linkend="void">void</link>                <link linkend="gnet-conn-delete">gnet_conn_delete</link>                    (<link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-ref">gnet_conn_ref</link>                       (<link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-unref">gnet_conn_unref</link>                     (<link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-set-callback">gnet_conn_set_callback</link>              (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-conn-set-main-context">gnet_conn_set_main_context</link>          (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="GMainContext">GMainContext</link> *context);
+<link linkend="void">void</link>                <link linkend="gnet-conn-connect">gnet_conn_connect</link>                   (<link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-disconnect">gnet_conn_disconnect</link>                (<link linkend="GConn">GConn</link> *conn);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-conn-is-connected">gnet_conn_is_connected</link>              (const <link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-read">gnet_conn_read</link>                      (<link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-readn">gnet_conn_readn</link>                     (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gint">gint</link> length);
+<link linkend="void">void</link>                <link linkend="gnet-conn-readline">gnet_conn_readline</link>                  (<link linkend="GConn">GConn</link> *conn);
+<link linkend="void">void</link>                <link linkend="gnet-conn-write">gnet_conn_write</link>                     (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length);
+<link linkend="void">void</link>                <link linkend="gnet-conn-write-direct">gnet_conn_write_direct</link>              (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> buffer_destroy_cb);
+<link linkend="void">void</link>                <link linkend="gnet-conn-set-watch-error">gnet_conn_set_watch_error</link>           (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gboolean">gboolean</link> enable);
+<link linkend="void">void</link>                <link linkend="gnet-conn-set-watch-readable">gnet_conn_set_watch_readable</link>        (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gboolean">gboolean</link> enable);
+<link linkend="void">void</link>                <link linkend="gnet-conn-set-watch-writable">gnet_conn_set_watch_writable</link>        (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gboolean">gboolean</link> enable);
+<link linkend="void">void</link>                <link linkend="gnet-conn-timeout">gnet_conn_timeout</link>                   (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="guint">guint</link> timeout);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+A <link linkend="GConn"><type>GConn</type></link> represents a TCP connection.  A <link linkend="GConn"><type>GConn</type></link> is usually created directly by
+the user by calling <link linkend="gnet-conn-new"><function>gnet_conn_new()</function></link> or <link linkend="gnet-conn-new-inetaddr"><function>gnet_conn_new_inetaddr()</function></link>.  To connect to
+the remote host, call <link linkend="gnet-conn-connect"><function>gnet_conn_connect()</function></link> and to disconnect call
+<link linkend="gnet-conn-disconnect"><function>gnet_conn_disconnect()</function></link>.  You may use the same <link linkend="GConn"><type>GConn</type></link> to connect again to the
+host after you disconnected.  Free the <link linkend="GConn"><type>GConn</type></link> with <link linkend="gnet-conn-unref"><function>gnet_conn_unref()</function></link> or
+<link linkend="gnet-conn-delete"><function>gnet_conn_delete()</function></link> when no longer needed.
+</para>
+
+<para>
+<link linkend="GConn"><type>GConn</type></link><!-- -->s are also created by a <link linkend="GServer"><type>GServer</type></link> when a client connects.  You
+will need to call <link linkend="gnet-conn-set-callback"><function>gnet_conn_set_callback()</function></link> to set the <link linkend="GConn"><type>GConn</type></link> callback after
+it is created by the <link linkend="GServer"><type>GServer</type></link>.  A <link linkend="GConn"><type>GConn</type></link> that has been created by a <link linkend="GServer"><type>GServer</type></link>
+is already connect, you don't have to call <link linkend="gnet-conn-connect"><function>gnet_conn_connect()</function></link> in this case.
+Call <link linkend="gnet-conn-unref"><function>gnet_conn_unref()</function></link> or <link linkend="gnet-conn-delete"><function>gnet_conn_delete()</function></link> to disconnect the remote client
+and free the <link linkend="GConn"><type>GConn</type></link>.
+</para>
+
+<para>
+The iochannel field and <link linkend="GIOChannel"><type>GIOChannel</type></link> functions can be used to read from
+or write to the socket.  <link linkend="GIOChannel"><type>GIOChannel</type></link> functions block.  To make an
+asynchronous read call <link linkend="gnet-conn-read"><function>gnet_conn_read()</function></link> and to make an asynchronous
+write call <link linkend="gnet-conn-write"><function>gnet_conn_write()</function></link>.  The callback is called whenever a read
+or write completes.
+</para>
+
+<para>
+Special use cases (you usually do not need this): use
+<link linkend="gnet-conn-set-watch-error"><function>gnet_conn_set_watch_error()</function></link> to get an event if an error occurs.
+Use <link linkend="gnet-conn-set-watch-readable"><function>gnet_conn_set_watch_readable()</function></link> and <link linkend="gnet-conn-set-watch-writable"><function>gnet_conn_set_watch_writable()</function></link>
+to get events when the connection is readable or writable.  These can
+be used to implement custom I/O handling for cases where <link linkend="gnet-conn-read"><function>gnet_conn_read()</function></link>,
+<link linkend="gnet-conn-write"><function>gnet_conn_write()</function></link> and <link linkend="gnet-conn-write-direct"><function>gnet_conn_write_direct()</function></link> are not suitable.  For example,
+consider writing from a <link linkend="mmap"><function>mmap()</function></link>'ed file.  <link linkend="gnet-conn-write"><function>gnet_conn_write()</function></link> will allocate memory
+for a buffer and copy part of the file into the buffer.  To avoid the
+copy, use <link linkend="gnet-conn-set-watch-writable"><function>gnet_conn_set_watch_writable()</function></link> to catch the writable event
+and then write directly from memory to the socket (note: this is obsolete, you
+can now use <link linkend="gnet-conn-write-direct"><function>gnet_conn_write_direct()</function></link> for this).
+</para>
+
+<para>
+<link linkend="gnet-conn-timeout"><function>gnet_conn_timeout()</function></link> sets a timeout on the GConn.  The
+<link linkend="GNET-CONN-TIMEOUT:CAPS"><literal>GNET_CONN_TIMEOUT</literal></link> event occurs when the timer expires.  For example,
+the timer may be set before connecting to the host.  If the connection
+is made, the <link linkend="GNET-CONN-CONNECT:CAPS"><literal>GNET_CONN_CONNECT</literal></link> event occurs. The timer can then be
+reset by setting the timeout to 0.  Otherwise, the <link linkend="GNET-CONN-TIMEOUT:CAPS"><literal>GNET_CONN_TIMEOUT</literal></link>
+event will eventually occur.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GConn" role="struct"/>GConn</title>
+<indexterm><primary>GConn</primary></indexterm><programlisting>typedef struct {
+  /* Public */
+  gchar*			hostname;
+  gint				port;
+
+  GIOChannel* 			iochannel;
+  GTcpSocket* 			socket;
+  GInetAddr*			inetaddr;
+
+
+  /* Private */
+  guint				ref_count;
+  guint				ref_count_internal;
+
+  /* Connect */
+  GTcpSocketConnectAsyncID 	connect_id;
+  GTcpSocketNewAsyncID 		new_id;
+
+  /* Write */
+  GList*			write_queue;
+  guint				bytes_written;
+
+  /* Read */
+  gchar* 			buffer;
+  guint 			length;
+  guint 			bytes_read;
+  gboolean			read_eof;
+  GList*			read_queue;
+  guint				process_buffer_timeout;
+
+  /* Readable/writable */
+  gboolean			watch_readable;
+  gboolean			watch_writable;
+
+  /* IO watch */
+  guint				watch_flags;
+  guint				watch;
+
+  /* Timer */
+  guint				timer;
+
+  /* User data */
+  GConnFunc			func;
+  gpointer			user_data;
+
+  GMainContext                * context;
+  gint                          priority;
+} GConn;
+</programlisting>
+<para>
+TCP Connection.  Some of the fields are public, but do not set
+ these fields.</para>
+<para>
+
+</para><variablelist role="struct">
+<varlistentry>
+<term><link linkend="gchar">gchar</link>&nbsp;*<structfield>hostname</structfield>;</term>
+<listitem><simpara> host name
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gint">gint</link>&nbsp;<structfield>port</structfield>;</term>
+<listitem><simpara> port
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GIOChannel">GIOChannel</link>&nbsp;*<structfield>iochannel</structfield>;</term>
+<listitem><simpara> IO channel
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GTcpSocket">GTcpSocket</link>&nbsp;*<structfield>socket</structfield>;</term>
+<listitem><simpara> socket
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GInetAddr">GInetAddr</link>&nbsp;*<structfield>inetaddr</structfield>;</term>
+<listitem><simpara> address
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>ref_count</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>ref_count_internal</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GTcpSocketConnectAsyncID">GTcpSocketConnectAsyncID</link>&nbsp;<structfield>connect_id</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GTcpSocketNewAsyncID">GTcpSocketNewAsyncID</link>&nbsp;<structfield>new_id</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GList">GList</link>&nbsp;*<structfield>write_queue</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>bytes_written</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gchar">gchar</link>&nbsp;*<structfield>buffer</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>length</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>bytes_read</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gboolean">gboolean</link>&nbsp;<structfield>read_eof</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GList">GList</link>&nbsp;*<structfield>read_queue</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>process_buffer_timeout</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gboolean">gboolean</link>&nbsp;<structfield>watch_readable</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gboolean">gboolean</link>&nbsp;<structfield>watch_writable</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>watch_flags</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>watch</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="guint">guint</link>&nbsp;<structfield>timer</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GConnFunc">GConnFunc</link>&nbsp;<structfield>func</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gpointer">gpointer</link>&nbsp;<structfield>user_data</structfield>;</term>
+<listitem><simpara> [private]
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="GMainContext">GMainContext</link>&nbsp;*<structfield>context</structfield>;</term>
+<listitem><simpara>
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gint">gint</link>&nbsp;<structfield>priority</structfield>;</term>
+<listitem><simpara>
+
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GConnEvent" role="struct"/>GConnEvent</title>
+<indexterm><primary>GConnEvent</primary></indexterm><programlisting>typedef struct {
+  GConnEventType type;
+  gchar*	 buffer;
+  gint		 length;
+} GConnEvent;
+</programlisting>
+<para>
+GConn Event.  <parameter>buffer</parameter> and <parameter>length</parameter> are set only on <link linkend="GNET-CONN-READ:CAPS"><type>GNET_CONN_READ</type></link>
+ events.  The buffer is caller-owned.</para>
+<para>
+
+</para><variablelist role="struct">
+<varlistentry>
+<term><link linkend="GConnEventType">GConnEventType</link>&nbsp;<structfield>type</structfield>;</term>
+<listitem><simpara> event type
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gchar">gchar</link>&nbsp;*<structfield>buffer</structfield>;</term>
+<listitem><simpara> buffer
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><link linkend="gint">gint</link>&nbsp;<structfield>length</structfield>;</term>
+<listitem><simpara> buffer length
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GConnEventType" role="enum"/>enum GConnEventType</title>
+<indexterm><primary>GConnEventType</primary></indexterm><programlisting>typedef enum {
+  GNET_CONN_ERROR,
+  GNET_CONN_CONNECT,
+  GNET_CONN_CLOSE,
+  GNET_CONN_TIMEOUT,
+  GNET_CONN_READ,
+  GNET_CONN_WRITE,
+  GNET_CONN_READABLE,
+  GNET_CONN_WRITABLE
+} GConnEventType;
+</programlisting>
+<para>
+Event type.  Used by <link linkend="GConnEvent"><type>GConnEvent</type></link>.</para>
+<para>
+
+</para><variablelist role="enum">
+<varlistentry>
+<term><anchor id="GNET-CONN-ERROR:CAPS" role="constant"/><literal>GNET_CONN_ERROR</literal></term>
+<listitem><simpara> Connection error
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-CONNECT:CAPS" role="constant"/><literal>GNET_CONN_CONNECT</literal></term>
+<listitem><simpara> Connection complete
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-CLOSE:CAPS" role="constant"/><literal>GNET_CONN_CLOSE</literal></term>
+<listitem><simpara> Connection closed
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-TIMEOUT:CAPS" role="constant"/><literal>GNET_CONN_TIMEOUT</literal></term>
+<listitem><simpara> Timeout
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-READ:CAPS" role="constant"/><literal>GNET_CONN_READ</literal></term>
+<listitem><simpara> Read complete
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-WRITE:CAPS" role="constant"/><literal>GNET_CONN_WRITE</literal></term>
+<listitem><simpara> Write complete
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-READABLE:CAPS" role="constant"/><literal>GNET_CONN_READABLE</literal></term>
+<listitem><simpara> Connection is readable
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="GNET-CONN-WRITABLE:CAPS" role="constant"/><literal>GNET_CONN_WRITABLE</literal></term>
+<listitem><simpara> Connection is writable
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GConnFunc" role="function"/>GConnFunc ()</title>
+<indexterm><primary>GConnFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GConnFunc)                        (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="GConnEvent">GConnEvent</link> *event,
+                                                         <link linkend="gpointer">gpointer</link> user_data);</programlisting>
+<para>
+Callback for <link linkend="GConn"><type>GConn</type></link>.  
+</para>
+<para>
+ Possible events:
+</para>
+<para>
+ <link linkend="GNET-CONN-ERROR:CAPS"><literal>GNET_CONN_ERROR</literal></link>: <link linkend="GConn"><type>GConn</type></link> error.  The event occurs if the connection
+ fails somehow.  The connection is closed before this event occurs.
+</para>
+<para>
+ <link linkend="GNET-CONN-CONNECT:CAPS"><literal>GNET_CONN_CONNECT</literal></link>: Completion of <link linkend="gnet-conn-connect"><function>gnet_conn_connect()</function></link>.
+</para>
+<para>
+ <link linkend="GNET-CONN-CLOSE:CAPS"><literal>GNET_CONN_CLOSE</literal></link>: Connection has been closed.  The event does not
+ occur as a result of calling <link linkend="gnet-conn-disconnect"><function>gnet_conn_disconnect()</function></link>,
+ <link linkend="gnet-conn-unref"><function>gnet_conn_unref()</function></link>, or <link linkend="gnet-conn-delete"><function>gnet_conn_delete()</function></link>.
+</para>
+<para>
+ <link linkend="GNET-CONN-TIMEOUT:CAPS"><literal>GNET_CONN_TIMEOUT</literal></link>: Timer set by <link linkend="gnet-conn-timeout"><function>gnet_conn_timeout()</function></link> expires.
+</para>
+<para>
+ <link linkend="GNET-CONN-READ:CAPS"><literal>GNET_CONN_READ</literal></link>: Data has been read.  This event occurs as a result
+ of calling <link linkend="gnet-conn-read"><function>gnet_conn_read()</function></link>, <link linkend="gnet-conn-readn"><function>gnet_conn_readn()</function></link>, or
+ <link linkend="gnet-conn-readline"><function>gnet_conn_readline()</function></link>.  buffer and length are set in the event
+ object.  The buffer is caller owned.
+</para>
+<para>
+ <link linkend="GNET-CONN-WRITE:CAPS"><literal>GNET_CONN_WRITE</literal></link>: Data has been written.  This event occurs as a
+ result of calling <link linkend="gnet-conn-write"><function>gnet_conn_write()</function></link> or <link linkend="gnet-conn-write-direct"><function>gnet_conn_write_direct()</function></link>.
+</para>
+<para>
+ <link linkend="GNET-CONN-READABLE:CAPS"><literal>GNET_CONN_READABLE</literal></link>: The connection is readable.
+</para>
+<para>
+ <link linkend="GNET-CONN-WRITABLE:CAPS"><literal>GNET_CONN_WRITABLE</literal></link>: The connection is writable.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>event</parameter>&nbsp;:</term>
+<listitem><simpara> event (caller owned)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>user_data</parameter>&nbsp;:</term>
+<listitem><simpara> user data specified in <link linkend="gnet-conn-new"><function>gnet_conn_new()</function></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-new" role="function"/>gnet_conn_new ()</title>
+<indexterm><primary>gnet_conn_new</primary></indexterm><programlisting><link linkend="GConn">GConn</link>*              gnet_conn_new                       (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);</programlisting>
+<para>
+Creates a <link linkend="GConn"><type>GConn</type></link>.  A connection is not made until
+ <link linkend="gnet-conn-connect"><function>gnet_conn_connect()</function></link> is called.  The callback <parameter>func</parameter> is called when
+ events occur.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> name of host to connect to
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port to connect to
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> function to call on <link linkend="GConn"><type>GConn</type></link> events
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>user_data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callbacks
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-new-inetaddr" role="function"/>gnet_conn_new_inetaddr ()</title>
+<indexterm><primary>gnet_conn_new_inetaddr</primary></indexterm><programlisting><link linkend="GConn">GConn</link>*              gnet_conn_new_inetaddr              (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);</programlisting>
+<para>
+Creates a <link linkend="GConn"><type>GConn</type></link>.  A connection is not made until
+ <link linkend="gnet-conn-connect"><function>gnet_conn_connect()</function></link> is called.  The callback <parameter>func</parameter> is called when
+ events occur.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> address of host to connect to
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> function to call on <link linkend="GConn"><type>GConn</type></link> events
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>user_data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callbacks
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-new-socket" role="function"/>gnet_conn_new_socket ()</title>
+<indexterm><primary>gnet_conn_new_socket</primary></indexterm><programlisting><link linkend="GConn">GConn</link>*              gnet_conn_new_socket                (<link linkend="GTcpSocket">GTcpSocket</link> *socket,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);</programlisting>
+<para>
+Creates a <link linkend="GConn"><type>GConn</type></link>.  The <link linkend="GConn"><type>GConn</type></link> is created from the <parameter>socket</parameter>.  The
+ socket is callee owned - do not delete it (meaning: <link linkend="GConn"><type>GConn</type></link> will take
+ ownership of the socket).  The callback is called when events occur.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>socket</parameter>&nbsp;:</term>
+<listitem><simpara> TCP Socket (callee owned)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> function to call on <link linkend="GConn"><type>GConn</type></link> events
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>user_data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callbacks
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-delete" role="function" condition="deprecated:Use g_conn_unref(), which does the same."/>gnet_conn_delete ()</title>
+<indexterm role="deprecated"><primary>gnet_conn_delete</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_delete                    (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<warning><para><literal>gnet_conn_delete</literal> is deprecated and should not be used in newly-written code. Use <link linkend="g-conn-unref"><function>g_conn_unref()</function></link>, which does the same.</para></warning>
+<para>
+Deletes a <link linkend="GConn"><type>GConn</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-ref" role="function"/>gnet_conn_ref ()</title>
+<indexterm><primary>gnet_conn_ref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_ref                       (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Adds a reference to a <link linkend="GConn"><type>GConn</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-unref" role="function"/>gnet_conn_unref ()</title>
+<indexterm><primary>gnet_conn_unref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_unref                     (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Removes a reference from a <link linkend="GConn"><type>GConn</type></link>.  A <link linkend="GConn"><type>GConn</type></link> is deleted when the
+ reference count reaches 0.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-set-callback" role="function"/>gnet_conn_set_callback ()</title>
+<indexterm><primary>gnet_conn_set_callback</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_set_callback              (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="GConnFunc">GConnFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> user_data);</programlisting>
+<para>
+Sets the <link linkend="GConnEvent"><type>GConnEvent</type></link> callback for a <link linkend="GConn"><type>GConn</type></link>.  The callback <parameter>func</parameter> is
+ called when events occur.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> function to call on <link linkend="GConn"><type>GConn</type></link> events
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>user_data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on callbacks
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-set-main-context" role="function" condition="since:2.0.8"/>gnet_conn_set_main_context ()</title>
+<indexterm role="2.0.8"><primary>gnet_conn_set_main_context</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_conn_set_main_context          (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="GMainContext">GMainContext</link> *context);</programlisting>
+<para>
+Sets the GLib <link linkend="GMainContext"><type>GMainContext</type></link> to use for asynchronous operations. You should
+ call this function right after you create <parameter>conn</parameter>. You must not call this
+ function after the actual connection process has started or watches have
+ been set up (e.g. for reading, writing or errors).
+</para>
+<para>
+ You are very unlikely to ever need this function.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMainContext"><type>GMainContext</type></link>, or NULL to use the default GLib main context
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE on success, FALSE on failure.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-connect" role="function"/>gnet_conn_connect ()</title>
+<indexterm><primary>gnet_conn_connect</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_connect                   (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Establishes a connection.  If the connection is pending or already
+ established, this function does nothing.  The callback is called
+ when the connection is established or an error occurs.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-disconnect" role="function"/>gnet_conn_disconnect ()</title>
+<indexterm><primary>gnet_conn_disconnect</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_disconnect                (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Closes the connection.  The connection can later be reestablished
+ by calling <link linkend="gnet-conn-connect"><function>gnet_conn_connect()</function></link> again.  If the connection was not
+ established, this function does nothing.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-is-connected" role="function"/>gnet_conn_is_connected ()</title>
+<indexterm><primary>gnet_conn_is_connected</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_conn_is_connected              (const <link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Checks if the connection is established.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if the connection is established, FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-read" role="function"/>gnet_conn_read ()</title>
+<indexterm><primary>gnet_conn_read</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_read                      (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Begins an asynchronous read.  The connection callback is called
+ when any data has been read.  This function may be called again
+ before the asynchronous read completes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-readn" role="function"/>gnet_conn_readn ()</title>
+<indexterm><primary>gnet_conn_readn</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_readn                     (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gint">gint</link> length);</programlisting>
+<para>
+Begins an asynchronous read of exactly <parameter>length</parameter> bytes.  The
+ connection callback is called when the data has been read.  This
+ function may be called again before the asynchronous read
+ completes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> Number of bytes to read
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-readline" role="function"/>gnet_conn_readline ()</title>
+<indexterm><primary>gnet_conn_readline</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_readline                  (<link linkend="GConn">GConn</link> *conn);</programlisting>
+<para>
+Begins an asynchronous line read.  The connection callback is
+ called when a line has been read.  Lines are terminated with \n,
+ \r, \r\n, or \0.  The terminator is \0'ed out in the buffer.  The
+ terminating \0 is accounted for in the buffer length.  This
+ function may be called again before the asynchronous read
+ completes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-write" role="function"/>gnet_conn_write ()</title>
+<indexterm><primary>gnet_conn_write</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_write                     (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length);</programlisting>
+<para>
+Sets up an asynchronous write to <parameter>conn</parameter> from <parameter>buffer</parameter>.  The buffer is
+ copied, so it may be deleted by the caller.  This function can be
+ called again before the asynchronous write completes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to write from
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-write-direct" role="function"/>gnet_conn_write_direct ()</title>
+<indexterm><primary>gnet_conn_write_direct</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_write_direct              (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="gint">gint</link> length,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> buffer_destroy_cb);</programlisting>
+<para>
+Sets up an asynchronous write to <parameter>conn</parameter> from <parameter>buffer</parameter>.  The buffer is
+ created by the caller and will not be copied.  The caller needs to
+ make sure the buffer stays valid until <parameter>buffer_destroy_cb</parameter> is called.
+ This function can be called again before the asynchronous write
+ completes.  <parameter>buffer_destroy_cb</parameter> may be <link linkend="NULL:CAPS"><literal>NULL</literal></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to write from
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer_destroy_cb</parameter>&nbsp;:</term>
+<listitem><simpara> function to call when buffer is no longer needed
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-set-watch-error" role="function"/>gnet_conn_set_watch_error ()</title>
+<indexterm><primary>gnet_conn_set_watch_error</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_set_watch_error           (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gboolean">gboolean</link> enable);</programlisting>
+<para>
+Enables (or disables) the <link linkend="GNET-CONN-ERROR:CAPS"><literal>GNET_CONN_ERROR</literal></link> event for a <link linkend="GConn"><type>GConn</type></link>.  If
+enabled, the <link linkend="GNET-CONN-ERROR:CAPS"><literal>GNET_CONN_ERROR</literal></link> event occurs when an error occurs.
+The <parameter>conn</parameter> is disconnected before the callback is made.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>enable</parameter>&nbsp;:</term>
+<listitem><simpara> enable the <link linkend="GNET-CONN-READABLE:CAPS"><literal>GNET_CONN_READABLE</literal></link> event?
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-set-watch-readable" role="function"/>gnet_conn_set_watch_readable ()</title>
+<indexterm><primary>gnet_conn_set_watch_readable</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_set_watch_readable        (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gboolean">gboolean</link> enable);</programlisting>
+<para>
+Enables (or disables) the <link linkend="GNET-CONN-READABLE:CAPS"><literal>GNET_CONN_READABLE</literal></link> event for a <link linkend="GConn"><type>GConn</type></link>.
+If enabled, the <link linkend="GNET-CONN-READABLE:CAPS"><literal>GNET_CONN_READABLE</literal></link> event occurs when data can be
+read from the socket.  Read from the iochannel member of the <parameter>conn</parameter>.
+Do not enable this while using <link linkend="gnet-conn-read"><function>gnet_conn_read()</function></link>, <link linkend="gnet-conn-readn"><function>gnet_conn_readn()</function></link>,
+or <link linkend="gnet-conn-readline"><function>gnet_conn_readline()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>enable</parameter>&nbsp;:</term>
+<listitem><simpara> enable the <link linkend="GNET-CONN-READABLE:CAPS"><literal>GNET_CONN_READABLE</literal></link> event?
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-set-watch-writable" role="function"/>gnet_conn_set_watch_writable ()</title>
+<indexterm><primary>gnet_conn_set_watch_writable</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_set_watch_writable        (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="gboolean">gboolean</link> enable);</programlisting>
+<para>
+Enables (or disables) the <link linkend="GNET-CONN-WRITABLE:CAPS"><literal>GNET_CONN_WRITABLE</literal></link> event for a <link linkend="GConn"><type>GConn</type></link>.
+If enabled, the <link linkend="GNET-CONN-WRITABLE:CAPS"><type>GNET_CONN_WRITABLE</type></link> event occurs when data can be
+written to the socket.  Write to the iochannel member of the <parameter>conn</parameter>.
+Do not enable this while using <link linkend="gnet-conn-write"><function>gnet_conn_write()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>enable</parameter>&nbsp;:</term>
+<listitem><simpara> enable the <link linkend="GNET-CONN-WRITABLE:CAPS"><type>GNET_CONN_WRITABLE</type></link> event?
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-conn-timeout" role="function"/>gnet_conn_timeout ()</title>
+<indexterm><primary>gnet_conn_timeout</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_conn_timeout                   (<link linkend="GConn">GConn</link> *conn,
+                                                         <link linkend="guint">guint</link> timeout);</programlisting>
+<para>
+Sets a timeout on a <link linkend="GConn"><type>GConn</type></link>.  When the timer expires, the
+ <link linkend="GNET-CONN-STATUS-TIMEOUT:CAPS"><literal>GNET_CONN_STATUS_TIMEOUT</literal></link> event occurs.  If there already is a
+ timeout set on <parameter>conn</parameter>, the old timeout is canceled.  Set <parameter>timeout</parameter>
+ to 0 to cancel the current timeout.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>conn</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GConn"><type>GConn</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>timeout</parameter>&nbsp;:</term>
+<listitem><simpara> Timeout (in milliseconds)
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+<refsect1>
+<title>See Also</title>
+<para>
+See also GServer and the echoclient-gconn example.
+</para>
+</refsect1>
+
+</refentry>

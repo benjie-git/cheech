@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Tips and tricks</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="gnet-developers.html" title="GNet for developers">
+<link rel="prev" href="gnet-developers.html" title="GNet for developers">
+<link rel="next" href="gnet-developers-async.html" title="Hiding blocking">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gnet-developers.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="gnet-developers.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-developers-async.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="sect1" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="gnet-developers-tips"></a>Tips and tricks</h2></div></div></div>
+<p>
+	GNet was designed so that most of the implementation is hidden
+	from the programmer.  You should not have to include any
+	network header files other than
+	<code class="filename">gnet.h</code>.
+      </p>
+<p>
+	By convention, integers are usually transfered in big-endian,
+	or network-byte, order.  GLib has conversion functions for
+	shorts and ints: <code class="function">g_ntohs</code> (network-to-host
+	short), <code class="function">g_htons</code> (host-to network short),
+	<code class="function">g_ntohl</code> (network-to-host long), and
+	<code class="function">g_htonl</code> (host-to-network long).
+      </p>
+</div>
+</body>
+</html>

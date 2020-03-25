@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GNet for developers</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="prev" href="gnet-overview.html" title="GNet Overview">
+<link rel="next" href="gnet-developers-tips.html" title="Tips and tricks">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gnet-overview.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td>&#160;</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-developers-tips.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="chapter" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="gnet-developers"></a>GNet for developers</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="sect1"><a href="gnet-developers.html#gnet-developers-compiling">Compiling programs with GNet</a></span></dt>
+<dt><span class="sect1"><a href="gnet-developers-tips.html">Tips and tricks</a></span></dt>
+<dt><span class="sect1"><a href="gnet-developers-async.html">Hiding blocking</a></span></dt>
+</dl></div>
+<div class="sect1" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="gnet-developers-compiling"></a>Compiling programs with GNet</h2></div></div></div>
+<p>
+	If you are a developer and you want to use GNet in your
+	program, you can use the pkg-config script to figure out
+	which flags need to set when compiling.  For example, type
+	<strong class="userinput"><code>gcc main.c `pkg-config --cflags --libs gnet-2.0`</code></strong>
+	to compile the program main.c with GNet and link it to GNet. Note that
+	those are backticks, not apostrophes. 
+      </p>
+<p>
+	If you use autoconf and automake, you can the pkg-config
+	macros to set the appropriate variables.  Just add this to
+	your configure.in:
+      
+	</p>
+<pre class="programlisting">
+PKG_CHECK_MODULES(GNET, gnet-2.0 &gt; 2.0.0,
+  [LIBS="$LIBS $GNET_LIBS" CFLAGS="$CFLAGS $GNET_CFLAGS"],
+  AC_MSG_ERROR(Cannot find GNet: do you have the GNet development packages installed?))
+	</pre>
+<p>
+
+      </p>
+</div>
+</div>
+</body>
+</html>

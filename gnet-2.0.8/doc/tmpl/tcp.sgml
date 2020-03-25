@@ -1,0 +1,370 @@
+<!-- ##### SECTION Title ##### -->
+TCP
+
+<!-- ##### SECTION Short_Description ##### -->
+TCP socket
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+TCP is an internet protocol that transfers data reliably and in-order.
+This module provides support for TCP sockets.
+</para>
+
+<para>
+To create a #GTcpSocket and connect to a host, call
+gnet_tcp_socket_new().  This function will block.  The asynchronous
+version is gnet_tcp_socket_new_async().
+</para>
+
+<para>
+Each TCP socket has a #GIOChannel which can be used to read and write
+from the socket.  A watch can be set on the #GIOChannel by calling
+g_io_add_watch() (a GLib function).
+</para>
+
+<para>
+To create a TCP server, call gnet_tcp_socket_server_new().  The socket
+will be bound to all interfaces.  To bind to a specific interface,
+call gnet_tcp_socket_server_new_interface().  To accept a new
+connection, call gnet_tcp_socket_server_accept().  This function
+returns a #GTcpSocket representing the client connection.  This
+function can block.  To prevent blocking, call either
+gnet_tcp_socket_server_accept_nonblock() or
+gnet_tcp_socket_server_accept_async().  The former returns NULL
+immediately if there is no new connection.  The latter calls a
+callback whenever there is a new connection.  We recommend this
+function.
+</para>
+
+<para>
+This module will use SOCKS if enabled.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GTcpSocket ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF GTcpSocketConnectAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GTcpSocketConnectAsyncStatus ##### -->
+<para>
+
+</para>
+
+@GTCP_SOCKET_CONNECT_ASYNC_STATUS_OK: 
+@GTCP_SOCKET_CONNECT_ASYNC_STATUS_INETADDR_ERROR: 
+@GTCP_SOCKET_CONNECT_ASYNC_STATUS_TCP_ERROR: 
+
+<!-- ##### USER_FUNCTION GTcpSocketConnectAsyncFunc ##### -->
+<para>
+
+</para>
+
+@socket: 
+@status: 
+@data: 
+
+
+<!-- ##### TYPEDEF GTcpSocketNewAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GTcpSocketNewAsyncFunc ##### -->
+<para>
+
+</para>
+
+@socket: 
+@data: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_connect ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_connect_async ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_connect_async_full ##### -->
+<para>
+
+</para>
+
+@hostname: 
+@port: 
+@func: 
+@data: 
+@notify: 
+@context: 
+@priority: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_connect_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new_async ##### -->
+<para>
+
+</para>
+
+@addr: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new_async_full ##### -->
+<para>
+
+</para>
+
+@addr: 
+@func: 
+@data: 
+@notify: 
+@context: 
+@priority: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_delete ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_ref ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_unref ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_get_io_channel ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_get_remote_inetaddr ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_get_local_inetaddr ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_get_port ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### ENUM GNetTOS ##### -->
+<para>
+
+</para>
+
+@GNET_TOS_NONE: 
+@GNET_TOS_LOWDELAY: 
+@GNET_TOS_THROUGHPUT: 
+@GNET_TOS_RELIABILITY: 
+@GNET_TOS_LOWCOST: 
+
+<!-- ##### FUNCTION gnet_tcp_socket_set_tos ##### -->
+<para>
+
+</para>
+
+@socket: 
+@tos: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_new_with_port ##### -->
+<para>
+
+</para>
+
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_new_full ##### -->
+<para>
+
+</para>
+
+@iface: 
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_accept ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_accept_nonblock ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION GTcpSocketAcceptFunc ##### -->
+<para>
+
+</para>
+
+@server: 
+@client: 
+@data: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_accept_async ##### -->
+<para>
+
+</para>
+
+@socket: 
+@accept_func: 
+@user_data: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_accept_async_cancel ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new_direct ##### -->
+<para>
+
+</para>
+
+@addr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new_async_direct ##### -->
+<para>
+
+</para>
+
+@addr: 
+@func: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_tcp_socket_new_async_direct_full ##### -->
+<para>
+
+</para>
+
+@addr: 
+@func: 
+@data: 
+@notify: 
+@context: 
+@priority: 
+@Returns: 
+
+

@@ -1,0 +1,6 @@
+#ifndef _GNET_CONFIG_H
+#define _GNET_CONFIG_H
+
+#define GNET_WIN32
+
+#endif

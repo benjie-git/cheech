@@ -1,0 +1,180 @@
+
+GNet HACKING
+------------
+
+Information for potential GNet hackers
+
+
+What to do (in general)
+-----------------------
+
+We will always accept bug and portability fixes.  If you are
+interested in doing something more major, please write
+gnet-dev@gnetlibrary.net first.  This is so we know what people are
+doing and can offer advice.  Also see the TODO file for ideas on the
+direction we want to take GNet.  We _strongly_ recommend, if you are
+contributing a feature, that you fully implement and test the feature
+in your own program before submitting a patch.  This ensures that the
+feature is tested the interface is reasonably mature.
+
+
+Mailing list
+------------
+
+gnet-dev@gnetlibrary.org is the development mailing list.  See the
+README for information on how to subscribe.
+
+
+How to check out GNet anonymously
+---------------------------------
+
+  > cd <directory I want GNet to go in>
+  > setenv CVSROOT :pserver:anonymous@anoncvs.gnome.org:/cvs/gnome
+  > cvs login	[there is no password, hit return if it asks]
+  > cvs -z3 checkout gnet
+
+Be warned that the repository version of GNet may be instable or may
+not even compile.
+
+
+Building GNet from CVS
+----------------------
+
+AUTOCONF 1.6 IS RECOMMENDED.  It's the future, whether we like it or
+not.
+
+Run autogen.sh in the gnet directory to build GNet.  This script
+requires aclocal, autoheader, libtoolize, automake, and autoconf.
+
+If aclocal isn't finding certain macros, use the environment variable
+ACLOCAL_FLAGS to included the needed directory.  For example, if it's
+not picking up macros in /usr/local/share/aclocal, set ACLOCAL_FLAGS
+to "-I /usr/local/share/aclocal".  Multiple include directories can be
+used.
+
+MIGRATING TO AUTOCONF 1.6 HINT.  Create a macros directory and put the
+old glib.m4, libtool.m4, and pkg.m4 in it (from where ever those were
+before).
+
+
+How to make code contributions
+------------------------------
+
+We only accept code contributions in the form of a unified diff
+against the latest released version and, preferably, the version in
+CVS.  If you have added to the API, you _must_ provide complete gtkdoc
+style comments in the source.  When appropriate, you should also
+submit a test/example program.
+            
+To make a unified diff, please follow these instructions:
+   
+1. Remove temporary files:
+    make distclean
+
+2. Rename your source tree:
+    cd ..
+    mv gnet-0.1.4 gnet-0.1.4-snazzy-feature
+
+3. Unpack the original gnet library source alongside it:
+    tar zxf /tmp/gnet-0.1.4.tar.gz
+
+4. Generate the diffs:
+   diff -urNb gnet-0.1.4 gnet-0.1.4-snazzy-feature > /tmp/gnet.patch
+
+5. Check the patch and remove any unnecessary patches from the file.
+
+6. If you've added several features, it's best to send them as
+   several independent patches if you can.
+
+7. Don't forget to add your name and email address to AUTHORS so that
+   you assert copyright over GNet and help to keep GNet free!
+
+
+If you have just patched one or two files, then making patches is even
+easier. For each file, just do:
+
+  cp file.c file.c.orig
+   [Make changes to file.c ...]
+  diff -u file.c.orig file.c > /tmp/file.c.patch
+
+and just send us the patch: /tmp/file.c.patch.
+
+
+Testing GNet
+------------
+
+Before submitting a patch, run the regression tests and make sure they
+pass.  It's easy:
+
+  > cd tests
+  > make check
+  [tests will compile and you will see something like this:]
+  PASS: hash
+  PASS: pack
+  PASS: unpack
+  PASS: inetaddr_test
+  PASS: uri_test
+  PASS: ipv6_test
+  ==================
+  All 6 tests passed
+  ==================
+
+The above tests do not use the network.  There are some tests that do
+use the network.  To enable them, either run autogen.sh or pass
+--enable-network-tests=yes to configure.
+
+Please write automated tests for new modules when appropriate.  Place
+the test in the tests directory and add it to the Makefile.am.  Test
+programs should exit(0) if successful and exit(1) otherwise.  Tests
+that use the network should
+
+
+
+Fork vs. Pthread in asynchronous DNS lookup
+-------------------------------------------
+
+Running a simple benchmark on a Dual Pentium II running Linux 2.4.4,
+shows that pthreads outperforms forking slightly.  The benchmark
+performs an asynchronous lookup of www.microsoft.com asynchronously
+100 times in sequence.  Results below.
+
+time ./dnstest www.microsoft.com async 100 > /dev/null
+
+Pthread
+4.850u 0.490s 0:05.07 105.3%	0+0k 0+0io 1179pf+0w
+4.840u 0.540s 0:05.08 105.9%	0+0k 0+0io 1179pf+0w
+4.820u 0.420s 0:05.04 103.9%	0+0k 0+0io 1179pf+0w
+
+Fork
+5.090u 0.810s 0:03.52 167.6%	0+0k 0+0io 6013pf+0w
+4.750u 0.840s 0:03.24 172.5%	0+0k 0+0io 5492pf+0w
+4.690u 0.890s 0:03.38 165.0%	0+0k 0+0io 5492pf+0w
+
+Pthread
+4.810u 0.680s 0:05.30 103.5%	0+0k 0+0io 1700pf+0w
+4.830u 0.550s 0:05.07 106.1%	0+0k 0+0io 1179pf+0w
+4.880u 0.400s 0:05.03 104.9%	0+0k 0+0io 1179pf+0w
+
+Fork
+5.050u 0.890s 0:03.50 169.7%	0+0k 0+0io 6013pf+0w
+4.850u 0.910s 0:03.24 177.7%	0+0k 0+0io 5492pf+0w
+5.160u 0.680s 0:03.30 176.9%	0+0k 0+0io 5492pf+0w
+
+
+In a different benchmark, where './dnstest www.microsoft.com async 1'
+is run 100 times, fork outperforms pthreads.  I would hypothesize that
+the pthread library has an expensive initialization step.
+
+time ./dnsbench > /dev/null
+
+Fork
+6.810u 6.080s 0:17.05 75.6%	0+0k 0+0io 113543pf+0w
+6.120u 6.740s 0:17.11 75.1%	0+0k 0+0io 113543pf+0w
+6.530u 6.490s 0:17.08 76.2%	0+0k 0+0io 113543pf+0w
+6.180u 6.440s 0:17.09 73.8%	0+0k 0+0io 113543pf+0w
+
+Pthread
+11.510u 6.920s 0:17.32 106.4%	0+0k 0+0io 118564pf+0w
+11.370u 6.500s 0:17.10 104.5%	0+0k 0+0io 118043pf+0w
+10.850u 7.290s 0:16.95 107.0%	0+0k 0+0io 118043pf+0w
+10.810u 7.010s 0:17.08 104.3%	0+0k 0+0io 118043pf+0w

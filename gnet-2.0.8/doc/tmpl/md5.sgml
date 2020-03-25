@@ -1,0 +1,189 @@
+<!-- ##### SECTION Title ##### -->
+MD5
+
+<!-- ##### SECTION Short_Description ##### -->
+MD5 hash
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The MD5 module provide support for computing and manipulating MD5
+hashes.  MD5 is a hash function with a very low probability of
+collision.  MD5 is considered weaker than SHA.
+</para>
+
+<para>
+An MD5 can be calculated at one time or incrementally.  To create a
+MD5 at one time, call gnet_md5_new() with the data.  To create a MD5
+incrementally, call gnet_md5_new_incremental() to create the MD5
+object, then gnet_md5_update() one or more times with data to hash,
+and finally call gnet_md5_final().
+</para>
+
+<para>
+To get the digest, or hash value, call gnet_md5_get_digest().  This
+returns the raw digest as an array of %GNET_MD5_HASH_LENGTH bytes.  To
+get the digest as a human-readable hexidecimal string, call
+gnet_md5_get_string() or gnet_md5_copy_string().
+</para>
+
+<para>
+<informalexample>
+<programlisting>
+gchar buffer[] = "Hello world!";
+gchar buffer2[] = "Second line";
+GMD5*  md5;
+gchar* md5_str;
+
+&comstart; Compute an MD5 at one time &comend;
+md5 = gnet_md5_new (buffer, strlen(buffer));
+
+md5_str = gnet_md5_get_string (md5);
+g_print ("The MD5 of %s is %s\n", buffer, md5_str);
+
+&comstart; Use MD5... &comend;
+
+g_free (md5_str);
+gnet_md5_delete (md5);
+
+&comstart; Compute an MD5 incrementally &comend;
+md5 = gnet_md5_new_incremental ();
+gnet_md5_update (md5, buffer, strlen(buffer));
+gnet_md5_update (md5, buffer2, strlen(buffer2));
+gnet_md5_final (md5);
+
+&comstart; Use MD5... &comend;
+
+gnet_md5_delete (md5);
+</programlisting>
+</informalexample>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GMD5 ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GNET_MD5_HASH_LENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnet_md5_new ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_new_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_clone ##### -->
+<para>
+
+</para>
+
+@md5: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_delete ##### -->
+<para>
+
+</para>
+
+@md5: 
+
+
+<!-- ##### FUNCTION gnet_md5_new_incremental ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_update ##### -->
+<para>
+
+</para>
+
+@md5: 
+@buffer: 
+@length: 
+
+
+<!-- ##### FUNCTION gnet_md5_final ##### -->
+<para>
+
+</para>
+
+@md5: 
+
+
+<!-- ##### FUNCTION gnet_md5_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_hash ##### -->
+<para>
+
+</para>
+
+@p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_get_digest ##### -->
+<para>
+
+</para>
+
+@md5: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_get_string ##### -->
+<para>
+
+</para>
+
+@md5: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_md5_copy_string ##### -->
+<para>
+
+</para>
+
+@md5: 
+@buffer: 
+
+

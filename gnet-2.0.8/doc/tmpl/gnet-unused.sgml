@@ -1,0 +1,586 @@
+<!-- ##### SECTION ./tmpl/gnet-private.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gnet-private.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gnet-private.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gnet-private.sgml:Title ##### -->
+gnet-private
+
+
+<!-- ##### SECTION ./tmpl/scheduler.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/scheduler.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/scheduler.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/scheduler.sgml:Title ##### -->
+scheduler
+
+
+<!-- ##### SECTION ./tmpl/socks-private.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/socks-private.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/socks-private.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/socks-private.sgml:Title ##### -->
+socks-private
+
+
+<!-- ##### SECTION ./tmpl/url.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/url.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/url.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/url.sgml:Title ##### -->
+url
+
+
+<!-- ##### ENUM GConnStatus ##### -->
+<para>
+
+</para>
+
+@GNET_CONN_STATUS_CONNECT: 
+@GNET_CONN_STATUS_CLOSE: 
+@GNET_CONN_STATUS_READ: 
+@GNET_CONN_STATUS_WRITE: 
+@GNET_CONN_STATUS_TIMEOUT: 
+@GNET_CONN_STATUS_ERROR: 
+
+<!-- ##### ENUM GInetAddrAsyncStatus ##### -->
+<para>
+
+</para>
+
+@GINETADDR_ASYNC_STATUS_OK: 
+@GINETADDR_ASYNC_STATUS_ERROR: 
+
+<!-- ##### USER_FUNCTION GNetIOChannelReadAsyncCheckFunc ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@length: 
+@user_data: 
+@Returns: 
+
+<!-- ##### USER_FUNCTION GNetIOChannelReadAsyncFunc ##### -->
+<para>
+
+</para>
+
+@iochannel: 
+@status: 
+@buffer: 
+@length: 
+@user_data: 
+@Returns: 
+
+<!-- ##### TYPEDEF GNetIOChannelReadAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GNetIOChannelReadAsyncStatus ##### -->
+<para>
+
+</para>
+
+@GNET_IOCHANNEL_READ_ASYNC_STATUS_OK: 
+@GNET_IOCHANNEL_READ_ASYNC_STATUS_TIMEOUT: 
+@GNET_IOCHANNEL_READ_ASYNC_STATUS_ERROR: 
+
+<!-- ##### USER_FUNCTION GNetIOChannelWriteAsyncFunc ##### -->
+<para>
+
+</para>
+
+@iochannel: 
+@buffer: 
+@length: 
+@bytes_writen: 
+@status: 
+@user_data: 
+
+<!-- ##### TYPEDEF GNetIOChannelWriteAsyncID ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GNetIOChannelWriteAsyncStatus ##### -->
+<para>
+
+</para>
+
+@GNET_IOCHANNEL_WRITE_ASYNC_STATUS_OK: 
+@GNET_IOCHANNEL_WRITE_ASYNC_STATUS_TIMEOUT: 
+@GNET_IOCHANNEL_WRITE_ASYNC_STATUS_ERROR: 
+
+<!-- ##### ENUM GServerStatus ##### -->
+<para>
+
+</para>
+
+@GNET_SERVER_STATUS_CONNECT: 
+@GNET_SERVER_STATUS_ERROR: 
+
+<!-- ##### ENUM GTcpSocketNewAsyncStatus ##### -->
+<para>
+
+</para>
+
+@GTCP_SOCKET_NEW_ASYNC_STATUS_OK: 
+@GTCP_SOCKET_NEW_ASYNC_STATUS_ERROR: 
+
+<!-- ##### STRUCT GUdpPacket ##### -->
+<para>
+
+</para>
+
+@data: 
+@length: 
+@addr: 
+
+<!-- ##### FUNCTION gnet_conn_readany ##### -->
+<para>
+
+</para>
+
+@conn: 
+@buffer: 
+@length: 
+@timeout: 
+
+<!-- ##### FUNCTION gnet_conn_set_watch_writeable ##### -->
+<para>
+
+</para>
+
+@conn: 
+@enable: 
+
+<!-- ##### FUNCTION gnet_inetaddr_gethostaddr ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION gnet_inetaddr_gethostname ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION gnet_inetaddr_new_any ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION gnet_io_channel_read_async ##### -->
+<para>
+
+</para>
+
+@iochannel: 
+@buffer: 
+@length: 
+@timeout: 
+@read_one_byte_at_a_time: 
+@check_func: 
+@check_user_data: 
+@func: 
+@user_data: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_io_channel_read_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+
+<!-- ##### MACRO gnet_io_channel_readany_async ##### -->
+<para>
+
+</para>
+
+@IO: 
+@BUF: 
+@LEN: 
+@TO: 
+@FUNC: 
+@UD: 
+
+<!-- ##### FUNCTION gnet_io_channel_readany_check_func ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@length: 
+@data: 
+@Returns: 
+
+<!-- ##### MACRO gnet_io_channel_readline_async ##### -->
+<para>
+
+</para>
+
+@IO: 
+@BUF: 
+@LEN: 
+@TO: 
+@FUNC: 
+@UD: 
+
+<!-- ##### FUNCTION gnet_io_channel_readline_check_func ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@length: 
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_io_channel_write_async ##### -->
+<para>
+
+</para>
+
+@iochannel: 
+@buffer: 
+@length: 
+@timeout: 
+@func: 
+@user_data: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_io_channel_write_async_cancel ##### -->
+<para>
+
+</para>
+
+@id: 
+@delete_buffer: 
+
+<!-- ##### FUNCTION gnet_mcast_socket_inetaddr_new ##### -->
+<para>
+
+</para>
+
+@ia: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_mcast_socket_port_new ##### -->
+<para>
+
+</para>
+
+@port: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_tcp_socket_get_inetaddr ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_tcp_socket_get_iochannel ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_tcp_socket_server_new_interface ##### -->
+<para>
+
+</para>
+
+@iface: 
+@port: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_packet_delete ##### -->
+<para>
+
+</para>
+
+@packet: 
+
+<!-- ##### FUNCTION gnet_udp_packet_receive_new ##### -->
+<para>
+
+</para>
+
+@data: 
+@length: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_packet_send_new ##### -->
+<para>
+
+</para>
+
+@data: 
+@length: 
+@addr: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_socket_get_iochannel ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_socket_get_mcast_ttl ##### -->
+<para>
+
+</para>
+
+@us: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_socket_new_interface ##### -->
+<para>
+
+</para>
+
+@iface: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_socket_port_new ##### -->
+<para>
+
+</para>
+
+@port: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_udp_socket_set_mcast_ttl ##### -->
+<para>
+
+</para>
+
+@us: 
+@val: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_unix_socket_connect ##### -->
+<para>
+
+</para>
+
+@path: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_unix_socket_get_iochannel ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_uri_get_nice_string ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_clone ##### -->
+<para>
+
+</para>
+
+@url: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_delete ##### -->
+<para>
+
+</para>
+
+@url: 
+
+<!-- ##### FUNCTION gnet_url_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_get_nice_string ##### -->
+<para>
+
+</para>
+
+@url: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_hash ##### -->
+<para>
+
+</para>
+
+@p: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_new ##### -->
+<para>
+
+</para>
+
+@url: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_new_fields ##### -->
+<para>
+
+</para>
+
+@protocol: 
+@hostname: 
+@port: 
+@resource: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_new_fields_all ##### -->
+<para>
+
+</para>
+
+@protocol: 
+@user: 
+@password: 
+@hostname: 
+@port: 
+@resource: 
+@query: 
+@fragment: 
+@Returns: 
+
+<!-- ##### FUNCTION gnet_url_set_fragment ##### -->
+<para>
+
+</para>
+
+@url: 
+@fragment: 
+
+<!-- ##### FUNCTION gnet_url_set_hostname ##### -->
+<para>
+
+</para>
+
+@url: 
+@hostname: 
+
+<!-- ##### FUNCTION gnet_url_set_password ##### -->
+<para>
+
+</para>
+
+@url: 
+@password: 
+
+<!-- ##### FUNCTION gnet_url_set_port ##### -->
+<para>
+
+</para>
+
+@url: 
+@port: 
+
+<!-- ##### FUNCTION gnet_url_set_protocol ##### -->
+<para>
+
+</para>
+
+@url: 
+@protocol: 
+
+<!-- ##### FUNCTION gnet_url_set_query ##### -->
+<para>
+
+</para>
+
+@url: 
+@query: 
+
+<!-- ##### FUNCTION gnet_url_set_resource ##### -->
+<para>
+
+</para>
+
+@url: 
+@resource: 
+
+<!-- ##### FUNCTION gnet_url_set_user ##### -->
+<para>
+
+</para>
+
+@url: 
+@user: 
+

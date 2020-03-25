@@ -1,0 +1,215 @@
+<!-- ##### SECTION Title ##### -->
+URI
+
+<!-- ##### SECTION Short_Description ##### -->
+Uniform Resource Identifier (URI)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+A URI is a Uniform Resource Identifier, similar to a URL.  This module
+provides functions for creating and manipulating URIs.  A URI is
+represented by #GURI.  All fields in the #GURI structure are publicly
+readable.
+</para>
+
+<para>
+Create a URI from a string by calling gnet_uri_new().  To get the
+string representation back, call gnet_uri_get_string().  To escape a
+URI call gnet_uri_escape(), and to unescape it call
+gnet_uri_unescape().  Network protocols use escaped URIs.  People use
+unescaped URIs.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GURI ##### -->
+<para>
+
+</para>
+
+@scheme: 
+@userinfo: 
+@hostname: 
+@port: 
+@path: 
+@query: 
+@fragment: 
+
+<!-- ##### FUNCTION gnet_uri_new ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_new_fields ##### -->
+<para>
+
+</para>
+
+@scheme: 
+@hostname: 
+@port: 
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_new_fields_all ##### -->
+<para>
+
+</para>
+
+@scheme: 
+@userinfo: 
+@hostname: 
+@port: 
+@path: 
+@query: 
+@fragment: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_clone ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_delete ##### -->
+<para>
+
+</para>
+
+@uri: 
+
+
+<!-- ##### FUNCTION gnet_uri_escape ##### -->
+<para>
+
+</para>
+
+@uri: 
+
+
+<!-- ##### FUNCTION gnet_uri_unescape ##### -->
+<para>
+
+</para>
+
+@uri: 
+
+
+<!-- ##### FUNCTION gnet_uri_get_string ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_scheme ##### -->
+<para>
+
+</para>
+
+@uri: 
+@scheme: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_userinfo ##### -->
+<para>
+
+</para>
+
+@uri: 
+@userinfo: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_hostname ##### -->
+<para>
+
+</para>
+
+@uri: 
+@hostname: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_port ##### -->
+<para>
+
+</para>
+
+@uri: 
+@port: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_path ##### -->
+<para>
+
+</para>
+
+@uri: 
+@path: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_query ##### -->
+<para>
+
+</para>
+
+@uri: 
+@query: 
+
+
+<!-- ##### FUNCTION gnet_uri_set_fragment ##### -->
+<para>
+
+</para>
+
+@uri: 
+@fragment: 
+
+
+<!-- ##### FUNCTION gnet_uri_hash ##### -->
+<para>
+
+</para>
+
+@p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_equal ##### -->
+<para>
+
+</para>
+
+@p1: 
+@p2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_uri_parse_inplace ##### -->
+<para>
+
+</para>
+
+@guri: 
+@uri: 
+@hostname: 
+@len: 
+@Returns: 
+
+

@@ -1,0 +1,136 @@
+<!-- ##### SECTION Title ##### -->
+Unix
+
+<!-- ##### SECTION Short_Description ##### -->
+Unix socket
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Unix module provides support for Unix sockets.  Unix sockets are
+used to communicate between processes.  Unix sockets are for Unix
+operating systems only and are not supported in Windows.  GNet's Unix
+sockets are stream-based (like TCP), not datagram-based (like UDP).
+Unix socket addresses are file names, like "/tmp/my_unix_socket".
+</para>
+
+<para>
+To connect to a existing Unix socket, call gnet_unix_socket_new().  To
+create a new Unix socket other processes will connect to, call
+gnet_unix_socket_server_new().
+</para>
+
+<para>
+The functions in this module are similar to those in the TCP module.
+See the documentation on TCP sockets for more information.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GUnixSocket ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gnet_unix_socket_new ##### -->
+<para>
+
+</para>
+
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_new_abstract ##### -->
+<para>
+
+</para>
+
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_delete ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_ref ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_unref ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_get_io_channel ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_get_path ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_server_new ##### -->
+<para>
+
+</para>
+
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_server_new_abstract ##### -->
+<para>
+
+</para>
+
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_server_accept ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unix_socket_server_accept_nonblock ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+

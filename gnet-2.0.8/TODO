@@ -1,0 +1,97 @@
+
+GNet TODO
+---------
+
+Below are features we are interested in adding.  Please see HACKING if
+you can help.
+
+
+Features
+--------
+
+- Include more protocols
+
+    The goal here is to add basic implementations of popular file
+    transfer protocols (eg, HTTP, FTP).  Just the basics - nothing
+    fancy.
+
+    I'm hesitant to include more complex protocols (eg, NNTP, SMTP,
+    IRC) because they are more application-focused and have limited
+    use outside their specific application.  For example, someone who
+    wants NNTP is probably implementing a new reader and would be
+    better off implementing it from scratch for finer control
+    of the protocol.  On the other hand, if someone had a good
+    implementation of NNTP with a good interface and there were demand
+    for it, I would probably accept it.  (An alternative would be
+    start a gnet-protocol library which would include more complex
+    protocols).
+
+    I would also be more inclined to accept implementations that are
+    in existing, working programs as opposed to from-scratch
+    implementations (for complex protocols).  This is because existing
+    implementations have been tested both in functionality and in
+    interface design.  Moreover, we would be guaranteed at least one
+    user.
+
+- Bindings for other languages
+
+    The GTK doc folks are working on a new standard for describing
+    interfaces.  Use this when it's done.
+
+- Add gnet_tcp_socket_sendfile(GTcpSocket*, GIOChannel*).  sendfile is
+    available on Linux and Windows, but I'm sure the semantics are
+    different (that's why having this function would be handy).
+
+- Consider adding gnet_io_channel_{readv/writev}.  This is on most
+    systems, but should support systems without.
+
+
+Internal Improvements
+---------------------
+
+- 64-bit MDA/SHA.  These modules cannot handle buffers longer than 4G.
+
+- Better asynchronous DNS
+    * Add option to use GNU ADNS? (and update license)
+    * Consider modifying glibc/BIND code?
+
+- use thread pools for async DNS stuff?
+
+- gnet_inetaddr_new will give you localhost if you give it an hostname
+    of "" in Linux.  Is this true on all systems?  If not, we should
+    do a return-on-fail when we get an empty string.
+
+
+Other
+-----
+
+- More documentation and examples
+
+    Add a beginners guide/tutorial.  Show more code examples.
+
+
+Undecided (things discussed, but not decided on)
+---------
+
+- Add more error types
+
+- Clean up GIOChannel usage.  
+
+    Seeking on a socket should raise an error.  Reading/writing to a
+    UDP socket should raise an error.  Etc.
+
+    We'd also like to support UDP/Mcast better.  We use a channel for
+    a UDP socket, though it's not really a channel.  One solution
+    would be to add a GIOMessageSource which supports descrete
+    messages and has all the functions GIOChannel has.  Another
+    solution is to add a send_msg and recv_msg function to GIOChannel
+    (or replace the vtable in GIOChannel with one that also includes
+    these functions).
+
+- Support out-of-band data.  How useful is this?  How portable?
+
+
+Never (things that will probably never become part of GNet)
+-----
+
+- Raw or low-level IP (use libpcap, libnet)

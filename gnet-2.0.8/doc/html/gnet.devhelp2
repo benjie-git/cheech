@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="GNet Network Library Reference Manual" link="index.html" author="David Helder" name="gnet" version="2">
+  <chapters>
+    <sub name="GNet Overview" link="gnet-overview.html"/>
+    <sub name="GNet for developers" link="gnet-developers.html">
+      <sub name="Compiling programs with GNet" link="gnet-developers.html#gnet-developers-compiling"/>
+      <sub name="Tips and tricks" link="gnet-developers-tips.html"/>
+      <sub name="Hiding blocking" link="gnet-developers-async.html"/>
+    </sub>
+    <sub name="GNet Examples" link="gnet-examples.html">
+      <sub name="echoclient and echoserver" link="gnet-examples.html#gnet-examples-echo"/>
+      <sub name="dnslookup, hash, hfetch, hostinfo, and SDR" link="gnet-examples-other.html"/>
+    </sub>
+    <sub name="GNet Library Reference" link="libgnet-reference.html">
+      <sub name="GNet" link="gnet-gnet.html"/>
+      <sub name="InetAddr" link="gnet-inetaddr.html"/>
+      <sub name="TCP" link="gnet-tcp.html"/>
+      <sub name="UDP" link="gnet-udp.html"/>
+      <sub name="Mcast" link="gnet-mcast.html"/>
+      <sub name="GConnHttp" link="gnet-conn-http.html"/>
+      <sub name="Conn" link="gnet-conn.html"/>
+      <sub name="Server" link="gnet-server.html"/>
+      <sub name="IOChannel" link="gnet-iochannel.html"/>
+      <sub name="URI" link="gnet-uri.html"/>
+      <sub name="Base64" link="gnet-base64.html"/>
+      <sub name="Pack" link="gnet-pack.html"/>
+      <sub name="MD5" link="gnet-md5.html"/>
+      <sub name="SHA" link="gnet-sha.html"/>
+      <sub name="Unix" link="gnet-unix.html"/>
+      <sub name="IPv6" link="gnet-ipv6.html"/>
+      <sub name="SOCKS" link="gnet-socks.html"/>
+    </sub>
+  </chapters>
+  <functions>
+    <keyword type="macro" name="GNET_EXPORT" link="gnet-gnet.html#GNET-EXPORT:CAPS"/>
+    <keyword type="macro" name="GNET_CHECK_VERSION()" link="gnet-gnet.html#GNET-CHECK-VERSION:CAPS"/>
+    <keyword type="function" name="gnet_init ()" link="gnet-gnet.html#gnet-init"/>
+    <keyword type="struct" name="GInetAddr" link="gnet-inetaddr.html#GInetAddr"/>
+    <keyword type="function" name="gnet_inetaddr_new ()" link="gnet-inetaddr.html#gnet-inetaddr-new"/>
+    <keyword type="typedef" name="GInetAddrNewAsyncID" link="gnet-inetaddr.html#GInetAddrNewAsyncID"/>
+    <keyword type="function" name="GInetAddrNewAsyncFunc ()" link="gnet-inetaddr.html#GInetAddrNewAsyncFunc"/>
+    <keyword type="function" name="gnet_inetaddr_new_async ()" link="gnet-inetaddr.html#gnet-inetaddr-new-async"/>
+    <keyword type="function" name="gnet_inetaddr_new_async_full ()" link="gnet-inetaddr.html#gnet-inetaddr-new-async-full" since="2.0.8"/>
+    <keyword type="function" name="gnet_inetaddr_new_async_cancel ()" link="gnet-inetaddr.html#gnet-inetaddr-new-async-cancel"/>
+    <keyword type="function" name="gnet_inetaddr_new_list ()" link="gnet-inetaddr.html#gnet-inetaddr-new-list"/>
+    <keyword type="function" name="gnet_inetaddr_delete_list ()" link="gnet-inetaddr.html#gnet-inetaddr-delete-list"/>
+    <keyword type="typedef" name="GInetAddrNewListAsyncID" link="gnet-inetaddr.html#GInetAddrNewListAsyncID"/>
+    <keyword type="function" name="GInetAddrNewListAsyncFunc ()" link="gnet-inetaddr.html#GInetAddrNewListAsyncFunc"/>
+    <keyword type="function" name="gnet_inetaddr_new_list_async ()" link="gnet-inetaddr.html#gnet-inetaddr-new-list-async"/>
+    <keyword type="function" name="gnet_inetaddr_new_list_async_full ()" link="gnet-inetaddr.html#gnet-inetaddr-new-list-async-full" since="2.0.8"/>
+    <keyword type="function" name="gnet_inetaddr_new_list_async_cancel ()" link="gnet-inetaddr.html#gnet-inetaddr-new-list-async-cancel"/>
+    <keyword type="function" name="gnet_inetaddr_new_nonblock ()" link="gnet-inetaddr.html#gnet-inetaddr-new-nonblock"/>
+    <keyword type="function" name="gnet_inetaddr_new_bytes ()" link="gnet-inetaddr.html#gnet-inetaddr-new-bytes"/>
+    <keyword type="function" name="gnet_inetaddr_clone ()" link="gnet-inetaddr.html#gnet-inetaddr-clone"/>
+    <keyword type="function" name="gnet_inetaddr_delete ()" link="gnet-inetaddr.html#gnet-inetaddr-delete"/>
+    <keyword type="function" name="gnet_inetaddr_ref ()" link="gnet-inetaddr.html#gnet-inetaddr-ref"/>
+    <keyword type="function" name="gnet_inetaddr_unref ()" link="gnet-inetaddr.html#gnet-inetaddr-unref"/>
+    <keyword type="function" name="gnet_inetaddr_get_name ()" link="gnet-inetaddr.html#gnet-inetaddr-get-name"/>
+    <keyword type="function" name="gnet_inetaddr_get_name_nonblock ()" link="gnet-inetaddr.html#gnet-inetaddr-get-name-nonblock"/>
+    <keyword type="typedef" name="GInetAddrGetNameAsyncID" link="gnet-inetaddr.html#GInetAddrGetNameAsyncID"/>
+    <keyword type="function" name="GInetAddrGetNameAsyncFunc ()" link="gnet-inetaddr.html#GInetAddrGetNameAsyncFunc"/>
+    <keyword type="function" name="gnet_inetaddr_get_name_async ()" link="gnet-inetaddr.html#gnet-inetaddr-get-name-async"/>
+    <keyword type="function" name="gnet_inetaddr_get_name_async_full ()" link="gnet-inetaddr.html#gnet-inetaddr-get-name-async-full" since="2.0.8"/>
+    <keyword type="function" name="gnet_inetaddr_get_name_async_cancel ()" link="gnet-inetaddr.html#gnet-inetaddr-get-name-async-cancel"/>
+    <keyword type="macro" name="GNET_INETADDR_MAX_LEN" link="gnet-inetaddr.html#GNET-INETADDR-MAX-LEN:CAPS"/>
+    <keyword type="function" name="gnet_inetaddr_get_length ()" link="gnet-inetaddr.html#gnet-inetaddr-get-length"/>
+    <keyword type="function" name="gnet_inetaddr_get_bytes ()" link="gnet-inetaddr.html#gnet-inetaddr-get-bytes"/>
+    <keyword type="function" name="gnet_inetaddr_set_bytes ()" link="gnet-inetaddr.html#gnet-inetaddr-set-bytes"/>
+    <keyword type="function" name="gnet_inetaddr_get_canonical_name ()" link="gnet-inetaddr.html#gnet-inetaddr-get-canonical-name"/>
+    <keyword type="function" name="gnet_inetaddr_get_port ()" link="gnet-inetaddr.html#gnet-inetaddr-get-port"/>
+    <keyword type="function" name="gnet_inetaddr_set_port ()" link="gnet-inetaddr.html#gnet-inetaddr-set-port"/>
+    <keyword type="function" name="gnet_inetaddr_is_canonical ()" link="gnet-inetaddr.html#gnet-inetaddr-is-canonical"/>
+    <keyword type="function" name="gnet_inetaddr_is_internet ()" link="gnet-inetaddr.html#gnet-inetaddr-is-internet"/>
+    <keyword type="function" name="gnet_inetaddr_is_private ()" link="gnet-inetaddr.html#gnet-inetaddr-is-private"/>
+    <keyword type="function" name="gnet_inetaddr_is_reserved ()" link="gnet-inetaddr.html#gnet-inetaddr-is-reserved"/>
+    <keyword type="function" name="gnet_inetaddr_is_loopback ()" link="gnet-inetaddr.html#gnet-inetaddr-is-loopback"/>
+    <keyword type="function" name="gnet_inetaddr_is_multicast ()" link="gnet-inetaddr.html#gnet-inetaddr-is-multicast"/>
+    <keyword type="function" name="gnet_inetaddr_is_broadcast ()" link="gnet-inetaddr.html#gnet-inetaddr-is-broadcast"/>
+    <keyword type="function" name="gnet_inetaddr_is_ipv4 ()" link="gnet-inetaddr.html#gnet-inetaddr-is-ipv4"/>
+    <keyword type="function" name="gnet_inetaddr_is_ipv6 ()" link="gnet-inetaddr.html#gnet-inetaddr-is-ipv6"/>
+    <keyword type="function" name="gnet_inetaddr_hash ()" link="gnet-inetaddr.html#gnet-inetaddr-hash"/>
+    <keyword type="function" name="gnet_inetaddr_equal ()" link="gnet-inetaddr.html#gnet-inetaddr-equal"/>
+    <keyword type="function" name="gnet_inetaddr_noport_equal ()" link="gnet-inetaddr.html#gnet-inetaddr-noport-equal"/>
+    <keyword type="function" name="gnet_inetaddr_get_host_name ()" link="gnet-inetaddr.html#gnet-inetaddr-get-host-name"/>
+    <keyword type="function" name="gnet_inetaddr_get_host_addr ()" link="gnet-inetaddr.html#gnet-inetaddr-get-host-addr"/>
+    <keyword type="function" name="gnet_inetaddr_autodetect_internet_interface ()" link="gnet-inetaddr.html#gnet-inetaddr-autodetect-internet-interface"/>
+    <keyword type="function" name="gnet_inetaddr_get_interface_to ()" link="gnet-inetaddr.html#gnet-inetaddr-get-interface-to"/>
+    <keyword type="function" name="gnet_inetaddr_get_internet_interface ()" link="gnet-inetaddr.html#gnet-inetaddr-get-internet-interface"/>
+    <keyword type="function" name="gnet_inetaddr_is_internet_domainname ()" link="gnet-inetaddr.html#gnet-inetaddr-is-internet-domainname"/>
+    <keyword type="function" name="gnet_inetaddr_list_interfaces ()" link="gnet-inetaddr.html#gnet-inetaddr-list-interfaces"/>
+    <keyword type="struct" name="GTcpSocket" link="gnet-tcp.html#GTcpSocket"/>
+    <keyword type="typedef" name="GTcpSocketConnectAsyncID" link="gnet-tcp.html#GTcpSocketConnectAsyncID"/>
+    <keyword type="enum" name="enum GTcpSocketConnectAsyncStatus" link="gnet-tcp.html#GTcpSocketConnectAsyncStatus"/>
+    <keyword type="function" name="GTcpSocketConnectAsyncFunc ()" link="gnet-tcp.html#GTcpSocketConnectAsyncFunc"/>
+    <keyword type="typedef" name="GTcpSocketNewAsyncID" link="gnet-tcp.html#GTcpSocketNewAsyncID"/>
+    <keyword type="function" name="GTcpSocketNewAsyncFunc ()" link="gnet-tcp.html#GTcpSocketNewAsyncFunc"/>
+    <keyword type="function" name="gnet_tcp_socket_connect ()" link="gnet-tcp.html#gnet-tcp-socket-connect"/>
+    <keyword type="function" name="gnet_tcp_socket_connect_async ()" link="gnet-tcp.html#gnet-tcp-socket-connect-async"/>
+    <keyword type="function" name="gnet_tcp_socket_connect_async_full ()" link="gnet-tcp.html#gnet-tcp-socket-connect-async-full" since="2.0.8"/>
+    <keyword type="function" name="gnet_tcp_socket_connect_async_cancel ()" link="gnet-tcp.html#gnet-tcp-socket-connect-async-cancel"/>
+    <keyword type="function" name="gnet_tcp_socket_new ()" link="gnet-tcp.html#gnet-tcp-socket-new"/>
+    <keyword type="function" name="gnet_tcp_socket_new_async ()" link="gnet-tcp.html#gnet-tcp-socket-new-async"/>
+    <keyword type="function" name="gnet_tcp_socket_new_async_full ()" link="gnet-tcp.html#gnet-tcp-socket-new-async-full" since="2.0.8"/>
+    <keyword type="function" name="gnet_tcp_socket_new_async_cancel ()" link="gnet-tcp.html#gnet-tcp-socket-new-async-cancel"/>
+    <keyword type="function" name="gnet_tcp_socket_delete ()" link="gnet-tcp.html#gnet-tcp-socket-delete"/>
+    <keyword type="function" name="gnet_tcp_socket_ref ()" link="gnet-tcp.html#gnet-tcp-socket-ref"/>
+    <keyword type="function" name="gnet_tcp_socket_unref ()" link="gnet-tcp.html#gnet-tcp-socket-unref"/>
+    <keyword type="function" name="gnet_tcp_socket_get_io_channel ()" link="gnet-tcp.html#gnet-tcp-socket-get-io-channel"/>
+    <keyword type="function" name="gnet_tcp_socket_get_remote_inetaddr ()" link="gnet-tcp.html#gnet-tcp-socket-get-remote-inetaddr"/>
+    <keyword type="function" name="gnet_tcp_socket_get_local_inetaddr ()" link="gnet-tcp.html#gnet-tcp-socket-get-local-inetaddr"/>
+    <keyword type="function" name="gnet_tcp_socket_get_port ()" link="gnet-tcp.html#gnet-tcp-socket-get-port"/>
+    <keyword type="enum" name="enum GNetTOS" link="gnet-tcp.html#GNetTOS"/>
+    <keyword type="function" name="gnet_tcp_socket_set_tos ()" link="gnet-tcp.html#gnet-tcp-socket-set-tos"/>
+    <keyword type="function" name="gnet_tcp_socket_server_new ()" link="gnet-tcp.html#gnet-tcp-socket-server-new"/>
+    <keyword type="function" name="gnet_tcp_socket_server_new_with_port ()" link="gnet-tcp.html#gnet-tcp-socket-server-new-with-port"/>
+    <keyword type="function" name="gnet_tcp_socket_server_new_full ()" link="gnet-tcp.html#gnet-tcp-socket-server-new-full"/>
+    <keyword type="function" name="gnet_tcp_socket_server_accept ()" link="gnet-tcp.html#gnet-tcp-socket-server-accept"/>
+    <keyword type="function" name="gnet_tcp_socket_server_accept_nonblock ()" link="gnet-tcp.html#gnet-tcp-socket-server-accept-nonblock"/>
+    <keyword type="function" name="GTcpSocketAcceptFunc ()" link="gnet-tcp.html#GTcpSocketAcceptFunc"/>
+    <keyword type="function" name="gnet_tcp_socket_server_accept_async ()" link="gnet-tcp.html#gnet-tcp-socket-server-accept-async"/>
+    <keyword type="function" name="gnet_tcp_socket_server_accept_async_cancel ()" link="gnet-tcp.html#gnet-tcp-socket-server-accept-async-cancel"/>
+    <keyword type="function" name="gnet_tcp_socket_new_direct ()" link="gnet-tcp.html#gnet-tcp-socket-new-direct"/>
+    <keyword type="function" name="gnet_tcp_socket_new_async_direct ()" link="gnet-tcp.html#gnet-tcp-socket-new-async-direct"/>
+    <keyword type="function" name="gnet_tcp_socket_new_async_direct_full ()" link="gnet-tcp.html#gnet-tcp-socket-new-async-direct-full" since="2.0.8"/>
+    <keyword type="struct" name="GUdpSocket" link="gnet-udp.html#GUdpSocket"/>
+    <keyword type="function" name="gnet_udp_socket_new ()" link="gnet-udp.html#gnet-udp-socket-new"/>
+    <keyword type="function" name="gnet_udp_socket_new_with_port ()" link="gnet-udp.html#gnet-udp-socket-new-with-port"/>
+    <keyword type="function" name="gnet_udp_socket_new_full ()" link="gnet-udp.html#gnet-udp-socket-new-full"/>
+    <keyword type="function" name="gnet_udp_socket_delete ()" link="gnet-udp.html#gnet-udp-socket-delete"/>
+    <keyword type="function" name="gnet_udp_socket_ref ()" link="gnet-udp.html#gnet-udp-socket-ref"/>
+    <keyword type="function" name="gnet_udp_socket_unref ()" link="gnet-udp.html#gnet-udp-socket-unref"/>
+    <keyword type="function" name="gnet_udp_socket_send ()" link="gnet-udp.html#gnet-udp-socket-send"/>
+    <keyword type="function" name="gnet_udp_socket_receive ()" link="gnet-udp.html#gnet-udp-socket-receive"/>
+    <keyword type="function" name="gnet_udp_socket_has_packet ()" link="gnet-udp.html#gnet-udp-socket-has-packet"/>
+    <keyword type="function" name="gnet_udp_socket_get_io_channel ()" link="gnet-udp.html#gnet-udp-socket-get-io-channel"/>
+    <keyword type="function" name="gnet_udp_socket_get_local_inetaddr ()" link="gnet-udp.html#gnet-udp-socket-get-local-inetaddr"/>
+    <keyword type="function" name="gnet_udp_socket_get_ttl ()" link="gnet-udp.html#gnet-udp-socket-get-ttl"/>
+    <keyword type="function" name="gnet_udp_socket_set_ttl ()" link="gnet-udp.html#gnet-udp-socket-set-ttl"/>
+    <keyword type="struct" name="GMcastSocket" link="gnet-mcast.html#GMcastSocket"/>
+    <keyword type="function" name="gnet_mcast_socket_new ()" link="gnet-mcast.html#gnet-mcast-socket-new"/>
+    <keyword type="function" name="gnet_mcast_socket_new_with_port ()" link="gnet-mcast.html#gnet-mcast-socket-new-with-port"/>
+    <keyword type="function" name="gnet_mcast_socket_new_full ()" link="gnet-mcast.html#gnet-mcast-socket-new-full"/>
+    <keyword type="function" name="gnet_mcast_socket_delete ()" link="gnet-mcast.html#gnet-mcast-socket-delete"/>
+    <keyword type="function" name="gnet_mcast_socket_ref ()" link="gnet-mcast.html#gnet-mcast-socket-ref"/>
+    <keyword type="function" name="gnet_mcast_socket_unref ()" link="gnet-mcast.html#gnet-mcast-socket-unref"/>
+    <keyword type="function" name="gnet_mcast_socket_get_io_channel ()" link="gnet-mcast.html#gnet-mcast-socket-get-io-channel"/>
+    <keyword type="function" name="gnet_mcast_socket_get_local_inetaddr ()" link="gnet-mcast.html#gnet-mcast-socket-get-local-inetaddr"/>
+    <keyword type="function" name="gnet_mcast_socket_join_group ()" link="gnet-mcast.html#gnet-mcast-socket-join-group"/>
+    <keyword type="function" name="gnet_mcast_socket_leave_group ()" link="gnet-mcast.html#gnet-mcast-socket-leave-group"/>
+    <keyword type="function" name="gnet_mcast_socket_get_ttl ()" link="gnet-mcast.html#gnet-mcast-socket-get-ttl"/>
+    <keyword type="function" name="gnet_mcast_socket_set_ttl ()" link="gnet-mcast.html#gnet-mcast-socket-set-ttl"/>
+    <keyword type="function" name="gnet_mcast_socket_send ()" link="gnet-mcast.html#gnet-mcast-socket-send"/>
+    <keyword type="function" name="gnet_mcast_socket_receive ()" link="gnet-mcast.html#gnet-mcast-socket-receive"/>
+    <keyword type="function" name="gnet_mcast_socket_has_packet ()" link="gnet-mcast.html#gnet-mcast-socket-has-packet"/>
+    <keyword type="function" name="gnet_mcast_socket_is_loopback ()" link="gnet-mcast.html#gnet-mcast-socket-is-loopback"/>
+    <keyword type="function" name="gnet_mcast_socket_set_loopback ()" link="gnet-mcast.html#gnet-mcast-socket-set-loopback"/>
+    <keyword type="macro" name="gnet_mcast_socket_to_udp_socket()" link="gnet-mcast.html#gnet-mcast-socket-to-udp-socket"/>
+    <keyword type="struct" name="GConnHttp" link="gnet-conn-http.html#GConnHttp"/>
+    <keyword type="enum" name="enum GConnHttpMethod" link="gnet-conn-http.html#GConnHttpMethod"/>
+    <keyword type="enum" name="enum GConnHttpError" link="gnet-conn-http.html#GConnHttpError"/>
+    <keyword type="enum" name="enum GConnHttpEventType" link="gnet-conn-http.html#GConnHttpEventType"/>
+    <keyword type="struct" name="GConnHttpEvent" link="gnet-conn-http.html#GConnHttpEvent"/>
+    <keyword type="struct" name="GConnHttpEventResolved" link="gnet-conn-http.html#GConnHttpEventResolved"/>
+    <keyword type="struct" name="GConnHttpEventResponse" link="gnet-conn-http.html#GConnHttpEventResponse"/>
+    <keyword type="struct" name="GConnHttpEventRedirect" link="gnet-conn-http.html#GConnHttpEventRedirect"/>
+    <keyword type="struct" name="GConnHttpEventData" link="gnet-conn-http.html#GConnHttpEventData"/>
+    <keyword type="struct" name="GConnHttpEventError" link="gnet-conn-http.html#GConnHttpEventError"/>
+    <keyword type="function" name="GConnHttpFunc ()" link="gnet-conn-http.html#GConnHttpFunc"/>
+    <keyword type="enum" name="enum GConnHttpHeaderFlags" link="gnet-conn-http.html#GConnHttpHeaderFlags"/>
+    <keyword type="function" name="gnet_conn_http_new ()" link="gnet-conn-http.html#gnet-conn-http-new"/>
+    <keyword type="function" name="gnet_conn_http_set_uri ()" link="gnet-conn-http.html#gnet-conn-http-set-uri"/>
+    <keyword type="function" name="gnet_conn_http_set_escaped_uri ()" link="gnet-conn-http.html#gnet-conn-http-set-escaped-uri"/>
+    <keyword type="function" name="gnet_conn_http_set_header ()" link="gnet-conn-http.html#gnet-conn-http-set-header"/>
+    <keyword type="function" name="gnet_conn_http_set_max_redirects ()" link="gnet-conn-http.html#gnet-conn-http-set-max-redirects"/>
+    <keyword type="function" name="gnet_conn_http_set_timeout ()" link="gnet-conn-http.html#gnet-conn-http-set-timeout"/>
+    <keyword type="function" name="gnet_conn_http_set_user_agent ()" link="gnet-conn-http.html#gnet-conn-http-set-user-agent"/>
+    <keyword type="function" name="gnet_conn_http_set_method ()" link="gnet-conn-http.html#gnet-conn-http-set-method"/>
+    <keyword type="function" name="gnet_conn_http_set_main_context ()" link="gnet-conn-http.html#gnet-conn-http-set-main-context" since="2.0.8"/>
+    <keyword type="function" name="gnet_conn_http_run_async ()" link="gnet-conn-http.html#gnet-conn-http-run-async"/>
+    <keyword type="function" name="gnet_conn_http_run ()" link="gnet-conn-http.html#gnet-conn-http-run"/>
+    <keyword type="function" name="gnet_conn_http_steal_buffer ()" link="gnet-conn-http.html#gnet-conn-http-steal-buffer"/>
+    <keyword type="function" name="gnet_conn_http_cancel ()" link="gnet-conn-http.html#gnet-conn-http-cancel"/>
+    <keyword type="function" name="gnet_conn_http_delete ()" link="gnet-conn-http.html#gnet-conn-http-delete"/>
+    <keyword type="function" name="gnet_http_get ()" link="gnet-conn-http.html#gnet-http-get"/>
+    <keyword type="struct" name="GConn" link="gnet-conn.html#GConn"/>
+    <keyword type="struct" name="GConnEvent" link="gnet-conn.html#GConnEvent"/>
+    <keyword type="enum" name="enum GConnEventType" link="gnet-conn.html#GConnEventType"/>
+    <keyword type="function" name="GConnFunc ()" link="gnet-conn.html#GConnFunc"/>
+    <keyword type="function" name="gnet_conn_new ()" link="gnet-conn.html#gnet-conn-new"/>
+    <keyword type="function" name="gnet_conn_new_inetaddr ()" link="gnet-conn.html#gnet-conn-new-inetaddr"/>
+    <keyword type="function" name="gnet_conn_new_socket ()" link="gnet-conn.html#gnet-conn-new-socket"/>
+    <keyword type="function" name="gnet_conn_delete ()" link="gnet-conn.html#gnet-conn-delete" deprecated="Use g_conn_unref(), which does the same."/>
+    <keyword type="function" name="gnet_conn_ref ()" link="gnet-conn.html#gnet-conn-ref"/>
+    <keyword type="function" name="gnet_conn_unref ()" link="gnet-conn.html#gnet-conn-unref"/>
+    <keyword type="function" name="gnet_conn_set_callback ()" link="gnet-conn.html#gnet-conn-set-callback"/>
+    <keyword type="function" name="gnet_conn_set_main_context ()" link="gnet-conn.html#gnet-conn-set-main-context" since="2.0.8"/>
+    <keyword type="function" name="gnet_conn_connect ()" link="gnet-conn.html#gnet-conn-connect"/>
+    <keyword type="function" name="gnet_conn_disconnect ()" link="gnet-conn.html#gnet-conn-disconnect"/>
+    <keyword type="function" name="gnet_conn_is_connected ()" link="gnet-conn.html#gnet-conn-is-connected"/>
+    <keyword type="function" name="gnet_conn_read ()" link="gnet-conn.html#gnet-conn-read"/>
+    <keyword type="function" name="gnet_conn_readn ()" link="gnet-conn.html#gnet-conn-readn"/>
+    <keyword type="function" name="gnet_conn_readline ()" link="gnet-conn.html#gnet-conn-readline"/>
+    <keyword type="function" name="gnet_conn_write ()" link="gnet-conn.html#gnet-conn-write"/>
+    <keyword type="function" name="gnet_conn_write_direct ()" link="gnet-conn.html#gnet-conn-write-direct"/>
+    <keyword type="function" name="gnet_conn_set_watch_error ()" link="gnet-conn.html#gnet-conn-set-watch-error"/>
+    <keyword type="function" name="gnet_conn_set_watch_readable ()" link="gnet-conn.html#gnet-conn-set-watch-readable"/>
+    <keyword type="function" name="gnet_conn_set_watch_writable ()" link="gnet-conn.html#gnet-conn-set-watch-writable"/>
+    <keyword type="function" name="gnet_conn_timeout ()" link="gnet-conn.html#gnet-conn-timeout"/>
+    <keyword type="struct" name="GServer" link="gnet-server.html#GServer"/>
+    <keyword type="function" name="GServerFunc ()" link="gnet-server.html#GServerFunc"/>
+    <keyword type="function" name="gnet_server_new ()" link="gnet-server.html#gnet-server-new"/>
+    <keyword type="function" name="gnet_server_delete ()" link="gnet-server.html#gnet-server-delete"/>
+    <keyword type="function" name="gnet_server_ref ()" link="gnet-server.html#gnet-server-ref"/>
+    <keyword type="function" name="gnet_server_unref ()" link="gnet-server.html#gnet-server-unref"/>
+    <keyword type="function" name="gnet_io_channel_writen ()" link="gnet-iochannel.html#gnet-io-channel-writen"/>
+    <keyword type="function" name="gnet_io_channel_readn ()" link="gnet-iochannel.html#gnet-io-channel-readn"/>
+    <keyword type="function" name="gnet_io_channel_readline ()" link="gnet-iochannel.html#gnet-io-channel-readline"/>
+    <keyword type="function" name="gnet_io_channel_readline_strdup ()" link="gnet-iochannel.html#gnet-io-channel-readline-strdup"/>
+    <keyword type="struct" name="GURI" link="gnet-uri.html#GURI:CAPS"/>
+    <keyword type="function" name="gnet_uri_new ()" link="gnet-uri.html#gnet-uri-new"/>
+    <keyword type="function" name="gnet_uri_new_fields ()" link="gnet-uri.html#gnet-uri-new-fields"/>
+    <keyword type="function" name="gnet_uri_new_fields_all ()" link="gnet-uri.html#gnet-uri-new-fields-all"/>
+    <keyword type="function" name="gnet_uri_clone ()" link="gnet-uri.html#gnet-uri-clone"/>
+    <keyword type="function" name="gnet_uri_delete ()" link="gnet-uri.html#gnet-uri-delete"/>
+    <keyword type="function" name="gnet_uri_escape ()" link="gnet-uri.html#gnet-uri-escape"/>
+    <keyword type="function" name="gnet_uri_unescape ()" link="gnet-uri.html#gnet-uri-unescape"/>
+    <keyword type="function" name="gnet_uri_get_string ()" link="gnet-uri.html#gnet-uri-get-string"/>
+    <keyword type="function" name="gnet_uri_set_scheme ()" link="gnet-uri.html#gnet-uri-set-scheme"/>
+    <keyword type="function" name="gnet_uri_set_userinfo ()" link="gnet-uri.html#gnet-uri-set-userinfo"/>
+    <keyword type="function" name="gnet_uri_set_hostname ()" link="gnet-uri.html#gnet-uri-set-hostname"/>
+    <keyword type="function" name="gnet_uri_set_port ()" link="gnet-uri.html#gnet-uri-set-port"/>
+    <keyword type="function" name="gnet_uri_set_path ()" link="gnet-uri.html#gnet-uri-set-path"/>
+    <keyword type="function" name="gnet_uri_set_query ()" link="gnet-uri.html#gnet-uri-set-query"/>
+    <keyword type="function" name="gnet_uri_set_fragment ()" link="gnet-uri.html#gnet-uri-set-fragment"/>
+    <keyword type="function" name="gnet_uri_hash ()" link="gnet-uri.html#gnet-uri-hash"/>
+    <keyword type="function" name="gnet_uri_equal ()" link="gnet-uri.html#gnet-uri-equal"/>
+    <keyword type="function" name="gnet_uri_parse_inplace ()" link="gnet-uri.html#gnet-uri-parse-inplace" since="2.0.8"/>
+    <keyword type="function" name="gnet_base64_encode ()" link="gnet-base64.html#gnet-base64-encode"/>
+    <keyword type="function" name="gnet_base64_decode ()" link="gnet-base64.html#gnet-base64-decode"/>
+    <keyword type="function" name="gnet_pack ()" link="gnet-pack.html#gnet-pack"/>
+    <keyword type="function" name="gnet_pack_strdup ()" link="gnet-pack.html#gnet-pack-strdup"/>
+    <keyword type="function" name="gnet_vpack ()" link="gnet-pack.html#gnet-vpack"/>
+    <keyword type="function" name="gnet_calcsize ()" link="gnet-pack.html#gnet-calcsize"/>
+    <keyword type="function" name="gnet_vcalcsize ()" link="gnet-pack.html#gnet-vcalcsize"/>
+    <keyword type="function" name="gnet_unpack ()" link="gnet-pack.html#gnet-unpack"/>
+    <keyword type="function" name="gnet_vunpack ()" link="gnet-pack.html#gnet-vunpack"/>
+    <keyword type="struct" name="GMD5" link="gnet-md5.html#GMD5:CAPS"/>
+    <keyword type="macro" name="GNET_MD5_HASH_LENGTH" link="gnet-md5.html#GNET-MD5-HASH-LENGTH:CAPS"/>
+    <keyword type="function" name="gnet_md5_new ()" link="gnet-md5.html#gnet-md5-new"/>
+    <keyword type="function" name="gnet_md5_new_string ()" link="gnet-md5.html#gnet-md5-new-string"/>
+    <keyword type="function" name="gnet_md5_clone ()" link="gnet-md5.html#gnet-md5-clone"/>
+    <keyword type="function" name="gnet_md5_delete ()" link="gnet-md5.html#gnet-md5-delete"/>
+    <keyword type="function" name="gnet_md5_new_incremental ()" link="gnet-md5.html#gnet-md5-new-incremental"/>
+    <keyword type="function" name="gnet_md5_update ()" link="gnet-md5.html#gnet-md5-update"/>
+    <keyword type="function" name="gnet_md5_final ()" link="gnet-md5.html#gnet-md5-final"/>
+    <keyword type="function" name="gnet_md5_equal ()" link="gnet-md5.html#gnet-md5-equal"/>
+    <keyword type="function" name="gnet_md5_hash ()" link="gnet-md5.html#gnet-md5-hash"/>
+    <keyword type="function" name="gnet_md5_get_digest ()" link="gnet-md5.html#gnet-md5-get-digest"/>
+    <keyword type="function" name="gnet_md5_get_string ()" link="gnet-md5.html#gnet-md5-get-string"/>
+    <keyword type="function" name="gnet_md5_copy_string ()" link="gnet-md5.html#gnet-md5-copy-string"/>
+    <keyword type="struct" name="GSHA" link="gnet-sha.html#GSHA:CAPS"/>
+    <keyword type="macro" name="GNET_SHA_HASH_LENGTH" link="gnet-sha.html#GNET-SHA-HASH-LENGTH:CAPS"/>
+    <keyword type="function" name="gnet_sha_new ()" link="gnet-sha.html#gnet-sha-new"/>
+    <keyword type="function" name="gnet_sha_new_string ()" link="gnet-sha.html#gnet-sha-new-string"/>
+    <keyword type="function" name="gnet_sha_clone ()" link="gnet-sha.html#gnet-sha-clone"/>
+    <keyword type="function" name="gnet_sha_delete ()" link="gnet-sha.html#gnet-sha-delete"/>
+    <keyword type="function" name="gnet_sha_new_incremental ()" link="gnet-sha.html#gnet-sha-new-incremental"/>
+    <keyword type="function" name="gnet_sha_update ()" link="gnet-sha.html#gnet-sha-update"/>
+    <keyword type="function" name="gnet_sha_final ()" link="gnet-sha.html#gnet-sha-final"/>
+    <keyword type="function" name="gnet_sha_equal ()" link="gnet-sha.html#gnet-sha-equal"/>
+    <keyword type="function" name="gnet_sha_hash ()" link="gnet-sha.html#gnet-sha-hash"/>
+    <keyword type="function" name="gnet_sha_get_digest ()" link="gnet-sha.html#gnet-sha-get-digest"/>
+    <keyword type="function" name="gnet_sha_get_string ()" link="gnet-sha.html#gnet-sha-get-string"/>
+    <keyword type="function" name="gnet_sha_copy_string ()" link="gnet-sha.html#gnet-sha-copy-string"/>
+    <keyword type="struct" name="GUnixSocket" link="gnet-unix.html#GUnixSocket"/>
+    <keyword type="function" name="gnet_unix_socket_new ()" link="gnet-unix.html#gnet-unix-socket-new"/>
+    <keyword type="function" name="gnet_unix_socket_new_abstract ()" link="gnet-unix.html#gnet-unix-socket-new-abstract" since="2.0.8"/>
+    <keyword type="function" name="gnet_unix_socket_delete ()" link="gnet-unix.html#gnet-unix-socket-delete"/>
+    <keyword type="function" name="gnet_unix_socket_ref ()" link="gnet-unix.html#gnet-unix-socket-ref"/>
+    <keyword type="function" name="gnet_unix_socket_unref ()" link="gnet-unix.html#gnet-unix-socket-unref"/>
+    <keyword type="function" name="gnet_unix_socket_get_io_channel ()" link="gnet-unix.html#gnet-unix-socket-get-io-channel"/>
+    <keyword type="function" name="gnet_unix_socket_get_path ()" link="gnet-unix.html#gnet-unix-socket-get-path"/>
+    <keyword type="function" name="gnet_unix_socket_server_new ()" link="gnet-unix.html#gnet-unix-socket-server-new"/>
+    <keyword type="function" name="gnet_unix_socket_server_new_abstract ()" link="gnet-unix.html#gnet-unix-socket-server-new-abstract" since="2.0.8"/>
+    <keyword type="function" name="gnet_unix_socket_server_accept ()" link="gnet-unix.html#gnet-unix-socket-server-accept"/>
+    <keyword type="function" name="gnet_unix_socket_server_accept_nonblock ()" link="gnet-unix.html#gnet-unix-socket-server-accept-nonblock"/>
+    <keyword type="enum" name="enum GIPv6Policy" link="gnet-ipv6.html#GIPv6Policy"/>
+    <keyword type="function" name="gnet_ipv6_set_policy ()" link="gnet-ipv6.html#gnet-ipv6-set-policy"/>
+    <keyword type="function" name="gnet_ipv6_get_policy ()" link="gnet-ipv6.html#gnet-ipv6-get-policy"/>
+    <keyword type="macro" name="GNET_SOCKS_PORT" link="gnet-socks.html#GNET-SOCKS-PORT:CAPS"/>
+    <keyword type="macro" name="GNET_SOCKS_VERSION" link="gnet-socks.html#GNET-SOCKS-VERSION:CAPS"/>
+    <keyword type="function" name="gnet_socks_get_enabled ()" link="gnet-socks.html#gnet-socks-get-enabled"/>
+    <keyword type="function" name="gnet_socks_set_enabled ()" link="gnet-socks.html#gnet-socks-set-enabled"/>
+    <keyword type="function" name="gnet_socks_get_server ()" link="gnet-socks.html#gnet-socks-get-server"/>
+    <keyword type="function" name="gnet_socks_set_server ()" link="gnet-socks.html#gnet-socks-set-server"/>
+    <keyword type="function" name="gnet_socks_get_version ()" link="gnet-socks.html#gnet-socks-get-version"/>
+    <keyword type="function" name="gnet_socks_set_version ()" link="gnet-socks.html#gnet-socks-set-version"/>
+  </functions>
+</book>

@@ -1,0 +1,67 @@
+<!-- ##### SECTION Title ##### -->
+IOChannel
+
+<!-- ##### SECTION Short_Description ##### -->
+GIOChannel utility functions
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The IOChannel module provides utility functions for reading from and
+writing to GIOChannels.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnet_io_channel_writen ##### -->
+<para>
+
+</para>
+
+@channel: 
+@buffer: 
+@length: 
+@bytes_writtenp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_io_channel_readn ##### -->
+<para>
+
+</para>
+
+@channel: 
+@buffer: 
+@length: 
+@bytes_readp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_io_channel_readline ##### -->
+<para>
+
+</para>
+
+@channel: 
+@buffer: 
+@length: 
+@bytes_readp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_io_channel_readline_strdup ##### -->
+<para>
+
+</para>
+
+@channel: 
+@bufferp: 
+@bytes_readp: 
+@Returns: 
+
+

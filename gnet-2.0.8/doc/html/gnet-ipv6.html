@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>IPv6</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-unix.html" title="Unix">
+<link rel="next" href="gnet-socks.html" title="SOCKS">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-unix.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-socks.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id401075" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id401474" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-ipv6"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id401075"></a><span class="refentrytitle">IPv6</span>
+</h2>
+<p>IPv6 &#8212; IPv6 policy functions</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+enum                <a href="gnet-ipv6.html#GIPv6Policy">GIPv6Policy</a>;
+void                <a href="gnet-ipv6.html#gnet-ipv6-set-policy">gnet_ipv6_set_policy</a>                (<a href="gnet-ipv6.html#GIPv6Policy">GIPv6Policy</a> policy);
+<a href="gnet-ipv6.html#GIPv6Policy">GIPv6Policy</a>         <a href="gnet-ipv6.html#gnet-ipv6-get-policy">gnet_ipv6_get_policy</a>                (void);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id401474"></a><h2>Description</h2>
+<p>
+The IPv6 module provides functions for setting and getting the "IPv6
+policy".  The IPv6 policy affects domain name resolution and server
+binding.  The possible policies are: IPv4 only, IPv6 only, IPv4 then
+IPv6, and IPv6 then IPv4.  GNet attempts to set the policy when
+<a href="gnet-gnet.html#gnet-init"><code class="function">gnet_init()</code></a> is called based on two environment variables (if set) or
+on the host's interfaces.  This can be overridden by calling
+<a href="gnet-ipv6.html#gnet-ipv6-set-policy"><code class="function">gnet_ipv6_set_policy()</code></a>.
+</p>
+<p>
+IPv6 policy affects domain name resolution.  A domain name can be
+resolved to several addresses.  Most programs will only use the first
+address in the list.  The problem then is what order the addresses
+should be in.  For example, if there are both IPv4 and IPv6 addresses
+in the list and the system cannot connect to IPv6 hosts then an IPv6
+address should not be first in the list.  Otherwise, the host will
+attempt to connect to it and fail.  IPv6 policy determines the order
+of the list.  If the policy is "IPv4 only", only IPv4 addresses will
+be returned.  If the policy is "IPv6 then IPv4", IPv6 addresses will
+come before IPv4 addresses in the list.
+</p>
+<p>
+IPv6 policy also affects server binding.  When a server socket is
+created, GNet binds to the "any" address by default.  There are IPv4
+and IPv6 "any" addresses.  GNet needs to know which one to use.  If
+the IPv6 policy allows IPv6, GNet will use the IPv6 "any" address.  If
+the IPv6 policy allows only IPv4, GNet will use the IPv4 "any"
+address.
+</p>
+<p>
+GNet sets IPv6 policy in <a href="gnet-gnet.html#gnet-init"><code class="function">gnet_init()</code></a>.  First it checks two environment
+variables: GNET_IPV6_POLICY and IPV6_POLICY.  If either is set, it
+uses the value to set IPv6 policy.  Set the value to "4" for
+<a href="gnet-ipv6.html#GIPV6-POLICY-IPV4-ONLY:CAPS"><code class="literal">GIPV6_POLICY_IPV4_ONLY</code></a>, "6" for <a href="gnet-ipv6.html#GIPV6-POLICY-IPV6-ONLY:CAPS"><code class="literal">GIPV6_POLICY_IPV6_ONLY</code></a>, "46" for
+<a href="gnet-ipv6.html#GIPV6-POLICY-IPV4-THEN-IPV6:CAPS"><code class="literal">GIPV6_POLICY_IPV4_THEN_IPV6</code></a>, or "64" for
+<a href="gnet-ipv6.html#GIPV6-POLICY-IPV6-THEN-IPV4:CAPS"><code class="literal">GIPV6_POLICY_IPV6_THEN_IPV4</code></a>.
+</p>
+<p>
+If neither environment variable is set, GNet sets the policy based on
+the host's interfaces.  If there are only IPv4 interfaces, the policy
+is set to <a href="gnet-ipv6.html#GIPV6-POLICY-IPV4-ONLY:CAPS"><code class="literal">GIPV6_POLICY_IPV4_ONLY</code></a>.  If there are only IPv6 interfaces,
+the policy is set to <a href="gnet-ipv6.html#GIPV6-POLICY-IPV6-ONLY:CAPS"><code class="literal">GIPV6_POLICY_IPV6_ONLY</code></a>.  If there are both, the
+policy is set to <a href="gnet-ipv6.html#GIPV6-POLICY-IPV4-THEN-IPV6:CAPS"><code class="literal">GIPV6_POLICY_IPV4_THEN_IPV6</code></a>.
+</p>
+<p>
+At runtime on Windows, GNet will check to see the computer can support
+IPv6. If so it will set the policy to <a href="gnet-ipv6.html#GIPV6-POLICY-IPV4-THEN-IPV6:CAPS"><code class="literal">GIPV6_POLICY_IPV4_THEN_IPV6</code></a>. If
+not it will set the policy to <a href="gnet-ipv6.html#GIPV6-POLICY-IPV4-ONLY:CAPS"><code class="literal">GIPV6_POLICY_IPV4_ONLY</code></a>. Environment 
+variables are not checked on Windows.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id401651"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id401661"></a><h3>
+<a name="GIPv6Policy"></a>enum GIPv6Policy</h3>
+<a class="indexterm" name="id401673"></a><pre class="programlisting">typedef enum {
+  GIPV6_POLICY_IPV4_THEN_IPV6,
+  GIPV6_POLICY_IPV6_THEN_IPV4,
+  GIPV6_POLICY_IPV4_ONLY,
+  GIPV6_POLICY_IPV6_ONLY
+} GIPv6Policy;
+</pre>
+<p>
+Policy for IPv6 use in GNet.  This affects domain name resolution
+ and server binding.  <a href="gnet-gnet.html#gnet-init"><code class="function">gnet_init()</code></a> attempts to set a reasonable
+ default based on environment variables or the interfaces available
+ on the host.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><a name="GIPV6-POLICY-IPV4-THEN-IPV6:CAPS"></a><code class="literal">GIPV6_POLICY_IPV4_THEN_IPV6</code></span></td>
+<td> Use IPv4, then IPv6
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GIPV6-POLICY-IPV6-THEN-IPV4:CAPS"></a><code class="literal">GIPV6_POLICY_IPV6_THEN_IPV4</code></span></td>
+<td> Use IPv6, then IPv4
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GIPV6-POLICY-IPV4-ONLY:CAPS"></a><code class="literal">GIPV6_POLICY_IPV4_ONLY</code></span></td>
+<td> Use IPv4 only
+</td>
+</tr>
+<tr>
+<td><span class="term"><a name="GIPV6-POLICY-IPV6-ONLY:CAPS"></a><code class="literal">GIPV6_POLICY_IPV6_ONLY</code></span></td>
+<td> Use IPv6 only
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id401795"></a><h3>
+<a name="gnet-ipv6-set-policy"></a>gnet_ipv6_set_policy ()</h3>
+<a class="indexterm" name="id401808"></a><pre class="programlisting">void                gnet_ipv6_set_policy                (<a href="gnet-ipv6.html#GIPv6Policy">GIPv6Policy</a> policy);</pre>
+<p>
+Sets the IPv6 policy.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>policy</code></em>&#160;:</span></td>
+<td> IPv6 policy
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id401856"></a><h3>
+<a name="gnet-ipv6-get-policy"></a>gnet_ipv6_get_policy ()</h3>
+<a class="indexterm" name="id401868"></a><pre class="programlisting"><a href="gnet-ipv6.html#GIPv6Policy">GIPv6Policy</a>         gnet_ipv6_get_policy                (void);</pre>
+<p>
+Gets the IPv6 policy.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> IPv6 policy.
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

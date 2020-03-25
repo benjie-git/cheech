@@ -1,0 +1,102 @@
+<!-- ##### SECTION Title ##### -->
+Pack
+
+<!-- ##### SECTION Short_Description ##### -->
+Byte packing and unpacking functions
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The pack module provides functions for converting data into bytes
+("packing") and converting bytes to data ("unpacking").  For example,
+two integers and a string may be packed into a buffer to be transfered
+over the network.  These functions are similar to the ones in Python
+and Perl.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnet_pack ##### -->
+<para>
+
+</para>
+
+@format: 
+@buffer: 
+@length: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_pack_strdup ##### -->
+<para>
+
+</para>
+
+@format: 
+@bufferp: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_vpack ##### -->
+<para>
+
+</para>
+
+@format: 
+@buffer: 
+@length: 
+@args: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_calcsize ##### -->
+<para>
+
+</para>
+
+@format: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_vcalcsize ##### -->
+<para>
+
+</para>
+
+@format: 
+@args: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_unpack ##### -->
+<para>
+
+</para>
+
+@format: 
+@buffer: 
+@length: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_vunpack ##### -->
+<para>
+
+</para>
+
+@format: 
+@buffer: 
+@length: 
+@args: 
+@Returns: 
+
+

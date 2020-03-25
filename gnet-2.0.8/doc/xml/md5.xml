@@ -1,0 +1,329 @@
+<refentry id="gnet-md5">
+<refmeta>
+<refentrytitle role="top_of_page">MD5</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>MD5</refname>
+<refpurpose>MD5 hash</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+                    <link linkend="GMD5:CAPS">GMD5</link>;
+#define             <link linkend="GNET-MD5-HASH-LENGTH:CAPS">GNET_MD5_HASH_LENGTH</link>
+<link linkend="GMD5:CAPS">GMD5</link>*               <link linkend="gnet-md5-new">gnet_md5_new</link>                        (const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="guint">guint</link> length);
+<link linkend="GMD5:CAPS">GMD5</link>*               <link linkend="gnet-md5-new-string">gnet_md5_new_string</link>                 (const <link linkend="gchar">gchar</link> *str);
+<link linkend="GMD5:CAPS">GMD5</link>*               <link linkend="gnet-md5-clone">gnet_md5_clone</link>                      (const <link linkend="GMD5:CAPS">GMD5</link> *md5);
+<link linkend="void">void</link>                <link linkend="gnet-md5-delete">gnet_md5_delete</link>                     (<link linkend="GMD5:CAPS">GMD5</link> *md5);
+<link linkend="GMD5:CAPS">GMD5</link>*               <link linkend="gnet-md5-new-incremental">gnet_md5_new_incremental</link>            (void);
+<link linkend="void">void</link>                <link linkend="gnet-md5-update">gnet_md5_update</link>                     (<link linkend="GMD5:CAPS">GMD5</link> *md5,
+                                                         const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="guint">guint</link> length);
+<link linkend="void">void</link>                <link linkend="gnet-md5-final">gnet_md5_final</link>                      (<link linkend="GMD5:CAPS">GMD5</link> *md5);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-md5-equal">gnet_md5_equal</link>                      (<link linkend="gconstpointer">gconstpointer</link> p1,
+                                                         <link linkend="gconstpointer">gconstpointer</link> p2);
+<link linkend="guint">guint</link>               <link linkend="gnet-md5-hash">gnet_md5_hash</link>                       (<link linkend="gconstpointer">gconstpointer</link> p);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-md5-get-digest">gnet_md5_get_digest</link>                 (const <link linkend="GMD5:CAPS">GMD5</link> *md5);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-md5-get-string">gnet_md5_get_string</link>                 (const <link linkend="GMD5:CAPS">GMD5</link> *md5);
+<link linkend="void">void</link>                <link linkend="gnet-md5-copy-string">gnet_md5_copy_string</link>                (const <link linkend="GMD5:CAPS">GMD5</link> *md5,
+                                                         <link linkend="gchar">gchar</link> *buffer);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+The MD5 module provide support for computing and manipulating MD5
+hashes.  MD5 is a hash function with a very low probability of
+collision.  MD5 is considered weaker than SHA.
+</para>
+
+<para>
+An MD5 can be calculated at one time or incrementally.  To create a
+MD5 at one time, call <link linkend="gnet-md5-new"><function>gnet_md5_new()</function></link> with the data.  To create a MD5
+incrementally, call <link linkend="gnet-md5-new-incremental"><function>gnet_md5_new_incremental()</function></link> to create the MD5
+object, then <link linkend="gnet-md5-update"><function>gnet_md5_update()</function></link> one or more times with data to hash,
+and finally call <link linkend="gnet-md5-final"><function>gnet_md5_final()</function></link>.
+</para>
+
+<para>
+To get the digest, or hash value, call <link linkend="gnet-md5-get-digest"><function>gnet_md5_get_digest()</function></link>.  This
+returns the raw digest as an array of <link linkend="GNET-MD5-HASH-LENGTH:CAPS"><literal>GNET_MD5_HASH_LENGTH</literal></link> bytes.  To
+get the digest as a human-readable hexidecimal string, call
+<link linkend="gnet-md5-get-string"><function>gnet_md5_get_string()</function></link> or <link linkend="gnet-md5-copy-string"><function>gnet_md5_copy_string()</function></link>.
+</para>
+
+<para>
+<informalexample>
+<programlisting>
+gchar buffer[] = "Hello world!";
+gchar buffer2[] = "Second line";
+GMD5*  md5;
+gchar* md5_str;
+
+&comstart; Compute an MD5 at one time &comend;
+md5 = gnet_md5_new (buffer, strlen(buffer));
+
+md5_str = gnet_md5_get_string (md5);
+g_print ("The MD5 of %s is %s\n", buffer, md5_str);
+
+&comstart; Use MD5... &comend;
+
+g_free (md5_str);
+gnet_md5_delete (md5);
+
+&comstart; Compute an MD5 incrementally &comend;
+md5 = gnet_md5_new_incremental ();
+gnet_md5_update (md5, buffer, strlen(buffer));
+gnet_md5_update (md5, buffer2, strlen(buffer2));
+gnet_md5_final (md5);
+
+&comstart; Use MD5... &comend;
+
+gnet_md5_delete (md5);
+</programlisting>
+</informalexample>
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GMD5:CAPS" role="struct"/>GMD5</title>
+<indexterm><primary>GMD5</primary></indexterm><programlisting>typedef struct _GMD5 GMD5;</programlisting>
+<para>
+GMD5 is a MD5 hash.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GNET-MD5-HASH-LENGTH:CAPS" role="macro"/>GNET_MD5_HASH_LENGTH</title>
+<indexterm><primary>GNET_MD5_HASH_LENGTH</primary></indexterm><programlisting>#define GNET_MD5_HASH_LENGTH	16
+</programlisting>
+<para>
+Length of the MD5 hash in bytes.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-new" role="function"/>gnet_md5_new ()</title>
+<indexterm><primary>gnet_md5_new</primary></indexterm><programlisting><link linkend="GMD5:CAPS">GMD5</link>*               gnet_md5_new                        (const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="guint">guint</link> length);</programlisting>
+<para>
+Creates a <link linkend="GMD5:CAPS"><type>GMD5</type></link> from <parameter>buffer</parameter>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to hash
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GMD5:CAPS"><type>GMD5</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-new-string" role="function"/>gnet_md5_new_string ()</title>
+<indexterm><primary>gnet_md5_new_string</primary></indexterm><programlisting><link linkend="GMD5:CAPS">GMD5</link>*               gnet_md5_new_string                 (const <link linkend="gchar">gchar</link> *str);</programlisting>
+<para>
+Creates a <link linkend="GMD5:CAPS"><type>GMD5</type></link> from <parameter>str</parameter>.  <parameter>str</parameter> is a hexidecimal string
+ representing the digest.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>str</parameter>&nbsp;:</term>
+<listitem><simpara> hexidecimal string
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GMD5:CAPS"><type>GMD5</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-clone" role="function"/>gnet_md5_clone ()</title>
+<indexterm><primary>gnet_md5_clone</primary></indexterm><programlisting><link linkend="GMD5:CAPS">GMD5</link>*               gnet_md5_clone                      (const <link linkend="GMD5:CAPS">GMD5</link> *md5);</programlisting>
+<para>
+Copies a <link linkend="GMD5:CAPS"><type>GMD5</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a copy of <parameter>md5</parameter>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-delete" role="function"/>gnet_md5_delete ()</title>
+<indexterm><primary>gnet_md5_delete</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_md5_delete                     (<link linkend="GMD5:CAPS">GMD5</link> *md5);</programlisting>
+<para>
+Deletes a <link linkend="GMD5:CAPS"><type>GMD5</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-new-incremental" role="function"/>gnet_md5_new_incremental ()</title>
+<indexterm><primary>gnet_md5_new_incremental</primary></indexterm><programlisting><link linkend="GMD5:CAPS">GMD5</link>*               gnet_md5_new_incremental            (void);</programlisting>
+<para>
+Creates a <link linkend="GMD5:CAPS"><type>GMD5</type></link> incrementally.  After creating a <link linkend="GMD5:CAPS"><type>GMD5</type></link>, call
+ <link linkend="gnet-md5-update"><function>gnet_md5_update()</function></link> one or more times to hash data.  Finally, call
+ <link linkend="gnet-md5-final"><function>gnet_md5_final()</function></link> to compute the final hash value.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GMD5:CAPS"><type>GMD5</type></link>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-update" role="function"/>gnet_md5_update ()</title>
+<indexterm><primary>gnet_md5_update</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_md5_update                     (<link linkend="GMD5:CAPS">GMD5</link> *md5,
+                                                         const <link linkend="gchar">gchar</link> *buffer,
+                                                         <link linkend="guint">guint</link> length);</programlisting>
+<para>
+Updates the hash with <parameter>buffer</parameter>.  This may be called several times
+ on a hash created by <link linkend="gnet-md5-new-incremental"><function>gnet_md5_new_incremental()</function></link> before being
+ finalized by calling <link linkend="gnet-md5-final"><function>gnet_md5_final()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to add
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>buffer</parameter>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-final" role="function"/>gnet_md5_final ()</title>
+<indexterm><primary>gnet_md5_final</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_md5_final                      (<link linkend="GMD5:CAPS">GMD5</link> *md5);</programlisting>
+<para>
+Calcuates the final hash value of a <link linkend="GMD5:CAPS"><type>GMD5</type></link>.  This should only be
+ called on an <link linkend="GMD5:CAPS"><type>GMD5</type></link> created by <link linkend="gnet-md5-new-incremental"><function>gnet_md5_new_incremental()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-equal" role="function"/>gnet_md5_equal ()</title>
+<indexterm><primary>gnet_md5_equal</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_md5_equal                      (<link linkend="gconstpointer">gconstpointer</link> p1,
+                                                         <link linkend="gconstpointer">gconstpointer</link> p2);</programlisting>
+<para>
+Compares two <link linkend="GMD5:CAPS"><type>GMD5</type></link>'s for equality.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>p1</parameter>&nbsp;:</term>
+<listitem><simpara> first <link linkend="GMD5:CAPS"><type>GMD5</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>p2</parameter>&nbsp;:</term>
+<listitem><simpara> second <link linkend="GMD5:CAPS"><type>GMD5</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if they are equal; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-hash" role="function"/>gnet_md5_hash ()</title>
+<indexterm><primary>gnet_md5_hash</primary></indexterm><programlisting><link linkend="guint">guint</link>               gnet_md5_hash                       (<link linkend="gconstpointer">gconstpointer</link> p);</programlisting>
+<para>
+Creates a hash code for a <link linkend="GMD5:CAPS"><type>GMD5</type></link> for use with GHashTable.  This
+ hash value is not the same as the MD5 digest.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>p</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the hash code for <parameter>p</parameter>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-get-digest" role="function"/>gnet_md5_get_digest ()</title>
+<indexterm><primary>gnet_md5_get_digest</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_md5_get_digest                 (const <link linkend="GMD5:CAPS">GMD5</link> *md5);</programlisting>
+<para>
+Gets the raw MD5 digest.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a callee-owned buffer containing the MD5 hash digest.
+ The buffer is <link linkend="GNET-MD5-HASH-LENGTH:CAPS"><literal>GNET_MD5_HASH_LENGTH</literal></link> bytes long.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-get-string" role="function"/>gnet_md5_get_string ()</title>
+<indexterm><primary>gnet_md5_get_string</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_md5_get_string                 (const <link linkend="GMD5:CAPS">GMD5</link> *md5);</programlisting>
+<para>
+Gets the digest represented a human-readable string.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a hexadecimal string representing the digest.  The string
+ is 2 * <link linkend="GNET-MD5-HASH-LENGTH:CAPS"><literal>GNET_MD5_HASH_LENGTH</literal></link> bytes long and NULL terminated.  The
+ string is caller owned.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-md5-copy-string" role="function"/>gnet_md5_copy_string ()</title>
+<indexterm><primary>gnet_md5_copy_string</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_md5_copy_string                (const <link linkend="GMD5:CAPS">GMD5</link> *md5,
+                                                         <link linkend="gchar">gchar</link> *buffer);</programlisting>
+<para>
+Copies the digest, represented as a string, into <parameter>buffer</parameter>.  The
+string is not NULL terminated.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>md5</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GMD5:CAPS"><type>GMD5</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer at least 2 * <link linkend="GNET-MD5-HASH-LENGTH:CAPS"><literal>GNET_MD5_HASH_LENGTH</literal></link> bytes long
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

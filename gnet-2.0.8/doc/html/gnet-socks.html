@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>SOCKS</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-ipv6.html" title="IPv6">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-ipv6.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td>&#160;</td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id402120" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id402600" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-socks"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id402120"></a><span class="refentrytitle">SOCKS</span>
+</h2>
+<p>SOCKS &#8212; SOCKS proxy</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+#define             <a href="gnet-socks.html#GNET-SOCKS-PORT:CAPS">GNET_SOCKS_PORT</a>
+#define             <a href="gnet-socks.html#GNET-SOCKS-VERSION:CAPS">GNET_SOCKS_VERSION</a>
+gboolean            <a href="gnet-socks.html#gnet-socks-get-enabled">gnet_socks_get_enabled</a>              (void);
+void                <a href="gnet-socks.html#gnet-socks-set-enabled">gnet_socks_set_enabled</a>              (gboolean enabled);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-socks.html#gnet-socks-get-server">gnet_socks_get_server</a>               (void);
+void                <a href="gnet-socks.html#gnet-socks-set-server">gnet_socks_set_server</a>               (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gint                <a href="gnet-socks.html#gnet-socks-get-version">gnet_socks_get_version</a>              (void);
+void                <a href="gnet-socks.html#gnet-socks-set-version">gnet_socks_set_version</a>              (gint version);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id402600"></a><h2>Description</h2>
+<p>
+SOCKS is a TCP proxy protocol.  Typically, a host behind a firewall
+uses SOCKS to connect to hosts outside the firewall via a SOCKS proxy
+server.  To open a TCP connection, a SOCKS client connects to a SOCKS
+server and the SOCKS server connects to the destination.  Data is then
+forwarded between the client and the destination by the SOCKS server.
+GNet supports SOCKS versions 4 and 5.  Version 5 includes support for
+server sockets.
+</p>
+<p>
+SOCKS is used if the SOCKS_SERVER environment variable is set or
+<a href="gnet-socks.html#gnet-socks-set-server"><code class="function">gnet_socks_set_server()</code></a> is called to set the SOCKS server's address.
+To disable SOCKS support, call <a href="gnet-socks.html#gnet-socks-set-enabled"><code class="function">gnet_socks_set_enabled()</code></a> and pass
+FALSE.  The SOCKS_VERSION environment variable controls which SOCKS
+version is used.  The default is version 5.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id402645"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id402655"></a><h3>
+<a name="GNET-SOCKS-PORT:CAPS"></a>GNET_SOCKS_PORT</h3>
+<a class="indexterm" name="id402667"></a><pre class="programlisting">#define GNET_SOCKS_PORT 1080
+</pre>
+<p>
+Default port for the SOCKS protocol.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id402686"></a><h3>
+<a name="GNET-SOCKS-VERSION:CAPS"></a>GNET_SOCKS_VERSION</h3>
+<a class="indexterm" name="id402698"></a><pre class="programlisting">#define GNET_SOCKS_VERSION 5
+</pre>
+<p>
+Default version of the SOCKS protocol.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id402716"></a><h3>
+<a name="gnet-socks-get-enabled"></a>gnet_socks_get_enabled ()</h3>
+<a class="indexterm" name="id402729"></a><pre class="programlisting">gboolean            gnet_socks_get_enabled              (void);</pre>
+<p>
+Determines whether SOCKS support is enabled.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if SOCKS is enabled, FALSE otherwise.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id402768"></a><h3>
+<a name="gnet-socks-set-enabled"></a>gnet_socks_set_enabled ()</h3>
+<a class="indexterm" name="id402781"></a><pre class="programlisting">void                gnet_socks_set_enabled              (gboolean enabled);</pre>
+<p>
+Sets whether SOCKS support is enabled.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>enabled</code></em>&#160;:</span></td>
+<td> is SOCKS support enabled?
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id402830"></a><h3>
+<a name="gnet-socks-get-server"></a>gnet_socks_get_server ()</h3>
+<a class="indexterm" name="id402843"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_socks_get_server               (void);</pre>
+<p>
+Gets the address of the SOCKS server (regardless of whether SOCKS
+ is enabled).  This function checks the <a href="gnet-socks.html#gnet-socks-set-server"><code class="function">gnet_socks_set_server()</code></a>
+ value and, if not set, the SOCKS_SERVER environment variable.  The
+ SOCKS_SERVER enviroment variable should be in the form HOSTNAME or
+ HOSTNAME:PORT.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a copy of the address; NULL if there is no server.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id402894"></a><h3>
+<a name="gnet-socks-set-server"></a>gnet_socks_set_server ()</h3>
+<a class="indexterm" name="id402907"></a><pre class="programlisting">void                gnet_socks_set_server               (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Sets the address of the SOCKS server.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> SOCKS server address
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id402956"></a><h3>
+<a name="gnet-socks-get-version"></a>gnet_socks_get_version ()</h3>
+<a class="indexterm" name="id402969"></a><pre class="programlisting">gint                gnet_socks_get_version              (void);</pre>
+<p>
+Gets the SOCKS version GNet uses.  This function checks the
+ <a href="gnet-socks.html#gnet-socks-set-version"><code class="function">gnet_socks_set_version()</code></a> value and, if not set, the SOCKS_VERSION
+ environment variable.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the SOCKS version.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id403019"></a><h3>
+<a name="gnet-socks-set-version"></a>gnet_socks_set_version ()</h3>
+<a class="indexterm" name="id403032"></a><pre class="programlisting">void                gnet_socks_set_version              (gint version);</pre>
+<p>
+Sets the SOCKS version GNet uses.  GNet only supports versions 4
+ and 5.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>version</code></em>&#160;:</span></td>
+<td> SOCKS version
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

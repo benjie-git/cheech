@@ -1,0 +1,1240 @@
+<refentry id="gnet-inetaddr">
+<refmeta>
+<refentrytitle role="top_of_page">InetAddr</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>GNET Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>InetAddr</refname>
+<refpurpose>Internet Address</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+#include &lt;gnet.h&gt;
+
+
+                    <link linkend="GInetAddr">GInetAddr</link>;
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-new">gnet_inetaddr_new</link>                   (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);
+typedef             <link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link>;
+<link linkend="void">void</link>                (<link linkend="GInetAddrNewAsyncFunc">*GInetAddrNewAsyncFunc</link>)            (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link> <link linkend="gnet-inetaddr-new-async">gnet_inetaddr_new_async</link>             (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link> <link linkend="gnet-inetaddr-new-async-full">gnet_inetaddr_new_async_full</link>        (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-new-async-cancel">gnet_inetaddr_new_async_cancel</link>      (<link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link> id);
+<link linkend="GList">GList</link>*              <link linkend="gnet-inetaddr-new-list">gnet_inetaddr_new_list</link>              (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-delete-list">gnet_inetaddr_delete_list</link>           (<link linkend="GList">GList</link> *list);
+typedef             <link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link>;
+<link linkend="void">void</link>                (<link linkend="GInetAddrNewListAsyncFunc">*GInetAddrNewListAsyncFunc</link>)        (<link linkend="GList">GList</link> *list,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link> <link linkend="gnet-inetaddr-new-list-async">gnet_inetaddr_new_list_async</link>    (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link> <link linkend="gnet-inetaddr-new-list-async-full">gnet_inetaddr_new_list_async_full</link>
+                                                        (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-new-list-async-cancel">gnet_inetaddr_new_list_async_cancel</link> (<link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link> id);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-new-nonblock">gnet_inetaddr_new_nonblock</link>          (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-new-bytes">gnet_inetaddr_new_bytes</link>             (const <link linkend="gchar">gchar</link> *bytes,
+                                                         const <link linkend="guint">guint</link> length);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-clone">gnet_inetaddr_clone</link>                 (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-delete">gnet_inetaddr_delete</link>                (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-ref">gnet_inetaddr_ref</link>                   (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-unref">gnet_inetaddr_unref</link>                 (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-inetaddr-get-name">gnet_inetaddr_get_name</link>              (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-inetaddr-get-name-nonblock">gnet_inetaddr_get_name_nonblock</link>     (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+typedef             <link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link>;
+<link linkend="void">void</link>                (<link linkend="GInetAddrGetNameAsyncFunc">*GInetAddrGetNameAsyncFunc</link>)        (<link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link> <link linkend="gnet-inetaddr-get-name-async">gnet_inetaddr_get_name_async</link>    (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);
+<link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link> <link linkend="gnet-inetaddr-get-name-async-full">gnet_inetaddr_get_name_async_full</link>
+                                                        (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-get-name-async-cancel">gnet_inetaddr_get_name_async_cancel</link> (<link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link> id);
+#define             <link linkend="GNET-INETADDR-MAX-LEN:CAPS">GNET_INETADDR_MAX_LEN</link>
+<link linkend="gint">gint</link>                <link linkend="gnet-inetaddr-get-length">gnet_inetaddr_get_length</link>            (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-get-bytes">gnet_inetaddr_get_bytes</link>             (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="gchar">gchar</link> *buffer);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-set-bytes">gnet_inetaddr_set_bytes</link>             (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         const <link linkend="gchar">gchar</link> *bytes,
+                                                         <link linkend="gint">gint</link> length);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-inetaddr-get-canonical-name">gnet_inetaddr_get_canonical_name</link>    (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gint">gint</link>                <link linkend="gnet-inetaddr-get-port">gnet_inetaddr_get_port</link>              (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="void">void</link>                <link linkend="gnet-inetaddr-set-port">gnet_inetaddr_set_port</link>              (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="gint">gint</link> port);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-canonical">gnet_inetaddr_is_canonical</link>          (const <link linkend="gchar">gchar</link> *hostname);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-internet">gnet_inetaddr_is_internet</link>           (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-private">gnet_inetaddr_is_private</link>            (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-reserved">gnet_inetaddr_is_reserved</link>           (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-loopback">gnet_inetaddr_is_loopback</link>           (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-multicast">gnet_inetaddr_is_multicast</link>          (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-broadcast">gnet_inetaddr_is_broadcast</link>          (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-ipv4">gnet_inetaddr_is_ipv4</link>               (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-ipv6">gnet_inetaddr_is_ipv6</link>               (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="guint">guint</link>               <link linkend="gnet-inetaddr-hash">gnet_inetaddr_hash</link>                  (<link linkend="gconstpointer">gconstpointer</link> p);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-equal">gnet_inetaddr_equal</link>                 (<link linkend="gconstpointer">gconstpointer</link> p1,
+                                                         <link linkend="gconstpointer">gconstpointer</link> p2);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-noport-equal">gnet_inetaddr_noport_equal</link>          (<link linkend="gconstpointer">gconstpointer</link> p1,
+                                                         <link linkend="gconstpointer">gconstpointer</link> p2);
+<link linkend="gchar">gchar</link>*              <link linkend="gnet-inetaddr-get-host-name">gnet_inetaddr_get_host_name</link>         (void);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-get-host-addr">gnet_inetaddr_get_host_addr</link>         (void);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-autodetect-internet-interface">gnet_inetaddr_autodetect_internet_interface</link>
+                                                        (void);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-get-interface-to">gnet_inetaddr_get_interface_to</link>      (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);
+<link linkend="GInetAddr">GInetAddr</link>*          <link linkend="gnet-inetaddr-get-internet-interface">gnet_inetaddr_get_internet_interface</link>
+                                                        (void);
+<link linkend="gboolean">gboolean</link>            <link linkend="gnet-inetaddr-is-internet-domainname">gnet_inetaddr_is_internet_domainname</link>
+                                                        (const <link linkend="gchar">gchar</link> *name);
+<link linkend="GList">GList</link>*              <link linkend="gnet-inetaddr-list-interfaces">gnet_inetaddr_list_interfaces</link>       (void);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+A <link linkend="GInetAddr"><type>GInetAddr</type></link> represents an internet address.  This module provides
+functions for making DNS and reverse DNS lookups (blocking and
+asynchronously) and for working with <link linkend="GInetAddr"><type>GInetAddr</type></link>'s.
+</para>
+
+<para>
+Create a <link linkend="GInetAddr"><type>GInetAddr</type></link> by calling <link linkend="gnet-inetaddr-new"><function>gnet_inetaddr_new()</function></link>.  This function
+will perform a DNS lookup and creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> representing the
+address.  This function blocks.  The function
+<link linkend="gnet-inetaddr-new-async"><function>gnet_inetaddr_new_async()</function></link> performs the lookup asynchronously and calls
+a callback with the <link linkend="GInetAddr"><type>GInetAddr</type></link> when the lookup completes.  An
+asynchronous lookup can be canceled by calling
+<link linkend="gnet-inetaddr-new-async-cancel"><function>gnet_inetaddr_new_async_cancel()</function></link>.
+</para>
+
+<para>
+Technically a DNS lookup can map a name to several addresses.  Use
+<link linkend="gnet-inetaddr-new-list"><function>gnet_inetaddr_new_list()</function></link> or <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link> to get this
+list.  Use <link linkend="gnet-inetaddr-delete-list"><function>gnet_inetaddr_delete_list()</function></link> to delete the list.
+</para>
+
+<para>
+This module can also make reverse DNS lookups (i.e., map an address to
+a hostname).  Call <link linkend="gnet-inetaddr-get-name"><function>gnet_inetaddr_get_name()</function></link> to get the hostname from
+an address.  This function blocks.  Its asynchronous counterpart is
+<link linkend="gnet-inetadr-get-name-async"><function>gnet_inetadr_get_name_async()</function></link>.  To get the canonical name, or dotted
+decimal address, call <link linkend="gnet-inetaddr-get-canonical-name"><function>gnet_inetaddr_get_canonical_name()</function></link>.
+</para>
+
+<para>
+To get the host's address, call <link linkend="gnet-inetaddr-gethostaddr"><function>gnet_inetaddr_gethostaddr()</function></link>.  This
+creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> by performing a DNS lookup on the host's name.
+To get the list of all the host's interfaces, call
+<link linkend="gnet-inetaddr-list-interfaces"><function>gnet_inetaddr_list_interfaces()</function></link>.  The function
+<link linkend="gnet-inetaddr-autodetect-internet-interface"><function>gnet_inetaddr_autodetect_internet_interface()</function></link> uses this function and
+heuristics to find an interface connected to the internet.  This can
+be used to automatically configure peer-to-peer applications.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="GInetAddr" role="struct"/>GInetAddr</title>
+<indexterm><primary>GInetAddr</primary></indexterm><programlisting>typedef struct _GInetAddr GInetAddr;</programlisting>
+<para>
+GInetAddr is an internet address.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new" role="function"/>gnet_inetaddr_new ()</title>
+<indexterm><primary>gnet_inetaddr_new</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_new                   (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);</programlisting>
+<para>
+Creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> from a host name and port.  This function
+ makes a DNS lookup on the host name so it may block.  The host
+ name may resolve to multiple addresses.  If this occurs, the first
+ address in the list is returned.  Use <link linkend="gnet-inetaddr-new-list"><function>gnet_inetaddr_new_list()</function></link> to
+ get the complete list.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GInetAddr"><type>GInetAddr</type></link>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GInetAddrNewAsyncID" role="typedef"/>GInetAddrNewAsyncID</title>
+<indexterm><primary>GInetAddrNewAsyncID</primary></indexterm><programlisting>typedef struct _GInetAddrNewState * GInetAddrNewAsyncID;
+</programlisting>
+<para>
+ID of an asynchronous GInetAddr creation/lookup started with
+  <link linkend="gnet-inetaddr-new-async"><function>gnet_inetaddr_new_async()</function></link>.  The creation can be canceled by
+  calling <link linkend="gnet-inetaddr-new-async-cancel"><function>gnet_inetaddr_new_async_cancel()</function></link> with the ID.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GInetAddrNewAsyncFunc" role="function"/>GInetAddrNewAsyncFunc ()</title>
+<indexterm><primary>GInetAddrNewAsyncFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GInetAddrNewAsyncFunc)            (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Callback for <link linkend="gnet-inetaddr-new-async"><function>gnet_inetaddr_new_async()</function></link>.  Callee owns the address.
+  The address will be NULL if the lookup failed.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> InetAddr that was looked up (callee owned)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> User data
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-async" role="function"/>gnet_inetaddr_new_async ()</title>
+<indexterm><primary>gnet_inetaddr_new_async</primary></indexterm><programlisting><link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link> gnet_inetaddr_new_async             (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> from a host name and port.
+ The callback is called once the <link linkend="GInetAddr"><type>GInetAddr</type></link> is created or an error
+ occurs during lookup.  The callback will not be called during the
+ call to this function.
+</para>
+<para>
+ See <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link> for implementation notes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on the callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the lookup; NULL on failure.  The ID can be used
+ with <link linkend="gnet-inetaddr-new-async-cancel"><function>gnet_inetaddr_new_async_cancel()</function></link> to cancel the lookup.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-async-full" role="function" condition="since:2.0.8"/>gnet_inetaddr_new_async_full ()</title>
+<indexterm role="2.0.8"><primary>gnet_inetaddr_new_async_full</primary></indexterm><programlisting><link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link> gnet_inetaddr_new_async_full        (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);</programlisting>
+<para>
+Asynchronously creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> from a host name and port.
+ The callback is called once the <link linkend="GInetAddr"><type>GInetAddr</type></link> is created or an error
+ occurs during lookup.  The callback will not be called during the
+ call to this function.
+</para>
+<para>
+ See <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link> for implementation notes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on the callback, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>notify</parameter>&nbsp;:</term>
+<listitem><simpara> function to call to free <parameter>data</parameter>, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> the <link linkend="GMainContext"><type>GMainContext</type></link> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>priority</parameter>&nbsp;:</term>
+<listitem><simpara> the priority with which to schedule notifications in the
+     main context, e.g. <link linkend="G-PRIORITY-DEFAULT:CAPS"><type>G_PRIORITY_DEFAULT</type></link> or <link linkend="G-PRIORITY-HIGH:CAPS"><type>G_PRIORITY_HIGH</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the lookup; NULL on failure.  The ID can be used
+ with <link linkend="gnet-inetaddr-new-async-cancel"><function>gnet_inetaddr_new_async_cancel()</function></link> to cancel the lookup.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-async-cancel" role="function"/>gnet_inetaddr_new_async_cancel ()</title>
+<indexterm><primary>gnet_inetaddr_new_async_cancel</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_new_async_cancel      (<link linkend="GInetAddrNewAsyncID">GInetAddrNewAsyncID</link> id);</programlisting>
+<para>
+Cancels an asynchronous <link linkend="GInetAddr"><type>GInetAddr</type></link> creation that was started with
+ <link linkend="gnet-inetaddr-new-async"><function>gnet_inetaddr_new_async()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>id</parameter>&nbsp;:</term>
+<listitem><simpara> ID of the lookup
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-list" role="function"/>gnet_inetaddr_new_list ()</title>
+<indexterm><primary>gnet_inetaddr_new_list</primary></indexterm><programlisting><link linkend="GList">GList</link>*              gnet_inetaddr_new_list              (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);</programlisting>
+<para>
+Creates a GList of <link linkend="GInetAddr"><type>GInetAddr</type></link>'s from a host name and port.  This
+ function makes a DNS lookup on the host name so it may block.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a GList of <link linkend="GInetAddr"><type>GInetAddr</type></link> structures or NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-delete-list" role="function"/>gnet_inetaddr_delete_list ()</title>
+<indexterm><primary>gnet_inetaddr_delete_list</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_delete_list           (<link linkend="GList">GList</link> *list);</programlisting>
+<para>
+Deletes a GList of <link linkend="GInetAddr"><type>GInetAddr</type></link>'s.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>list</parameter>&nbsp;:</term>
+<listitem><simpara> GList of <link linkend="GInetAddr"><type>GInetAddr</type></link>'s
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GInetAddrNewListAsyncID" role="typedef"/>GInetAddrNewListAsyncID</title>
+<indexterm><primary>GInetAddrNewListAsyncID</primary></indexterm><programlisting>typedef struct _GInetAddrNewListState * GInetAddrNewListAsyncID;
+</programlisting>
+<para>
+ID of an asynchronous GInetAddr list creation/lookup started with
+  <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link>.  The creation can be canceled by
+  calling <link linkend="gnet-inetaddr-new-list-async-cancel"><function>gnet_inetaddr_new_list_async_cancel()</function></link> with the ID.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GInetAddrNewListAsyncFunc" role="function"/>GInetAddrNewListAsyncFunc ()</title>
+<indexterm><primary>GInetAddrNewListAsyncFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GInetAddrNewListAsyncFunc)        (<link linkend="GList">GList</link> *list,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Callback for <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link>.  Callee owns the
+  list of GInetAddrs.  The list is NULL if the lookup failed.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>list</parameter>&nbsp;:</term>
+<listitem><simpara> List of GInetAddr's (callee owned)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> User data
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-list-async" role="function"/>gnet_inetaddr_new_list_async ()</title>
+<indexterm><primary>gnet_inetaddr_new_list_async</primary></indexterm><programlisting><link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link> gnet_inetaddr_new_list_async    (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Asynchronously creates a GList of <link linkend="GInetAddr"><type>GInetAddr</type></link>'s from a host name
+ and port.  The callback is called once the list is created or an
+ error occurs during lookup.  The callback will not be called
+ during the call to <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link>.  The list
+ passed in the callback is callee owned (meaning that it is your
+ responsibility to free the list and each <link linkend="GInetAddr"><type>GInetAddr</type></link> in the list).
+</para>
+<para>
+ If you need to lookup hundreds of addresses, we recommend calling
+ g_main_iteration(FALSE) between calls.  This will help prevent an
+ explosion of threads.
+</para>
+<para>
+ If you need a more robust library for Unix, look at <ulink
+ url="http://www.gnu.org/software/adns/adns.html">GNU ADNS</ulink>.
+ GNU ADNS is under the GNU GPL.  This library does not use threads
+ or processes.
+</para>
+<para>
+ The Windows version is molded after the Unix GThread version.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on the callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the lookup; NULL on failure.  The ID can be
+ used with <link linkend="gnet-inetaddr-new-list-async-cancel"><function>gnet_inetaddr_new_list_async_cancel()</function></link> to cancel the
+ lookup.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-list-async-full" role="function" condition="since:2.0.8"/>gnet_inetaddr_new_list_async_full ()</title>
+<indexterm role="2.0.8"><primary>gnet_inetaddr_new_list_async_full</primary></indexterm><programlisting><link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link> gnet_inetaddr_new_list_async_full
+                                                        (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port,
+                                                         <link linkend="GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);</programlisting>
+<para>
+Asynchronously creates a GList of <link linkend="GInetAddr"><type>GInetAddr</type></link>'s from a host name
+ and port.  The callback is called once the list is created or an
+ error occurs during lookup.  The callback will not be called
+ during the call to <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link>.  The list
+ passed in the callback is callee owned (meaning that it is your
+ responsibility to free the list and each <link linkend="GInetAddr"><type>GInetAddr</type></link> in the list).
+</para>
+<para>
+ If you need to lookup hundreds of addresses, we recommend calling
+ g_main_iteration(FALSE) between calls.  This will help prevent an
+ explosion of threads.
+</para>
+<para>
+ If you need a more robust library for Unix, look at <ulink
+ url="http://www.gnu.org/software/adns/adns.html">GNU ADNS</ulink>.
+ GNU ADNS is under the GNU GPL.  This library does not use threads
+ or processes.
+</para>
+<para>
+ The Windows version is molded after the Unix GThread version.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on the callback, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>notify</parameter>&nbsp;:</term>
+<listitem><simpara> function to call to free <parameter>data</parameter>, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> the <link linkend="GMainContext"><type>GMainContext</type></link> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>priority</parameter>&nbsp;:</term>
+<listitem><simpara> the priority with which to schedule notifications in the
+     main context, e.g. <link linkend="G-PRIORITY-DEFAULT:CAPS"><type>G_PRIORITY_DEFAULT</type></link> or <link linkend="G-PRIORITY-HIGH:CAPS"><type>G_PRIORITY_HIGH</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the lookup; NULL on failure.  The ID can be
+ used with <link linkend="gnet-inetaddr-new-list-async-cancel"><function>gnet_inetaddr_new_list_async_cancel()</function></link> to cancel the
+ lookup.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-list-async-cancel" role="function"/>gnet_inetaddr_new_list_async_cancel ()</title>
+<indexterm><primary>gnet_inetaddr_new_list_async_cancel</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_new_list_async_cancel (<link linkend="GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</link> id);</programlisting>
+<para>
+Cancels an asynchronous <link linkend="GInetAddr"><type>GInetAddr</type></link> list creation that was started
+ with <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>id</parameter>&nbsp;:</term>
+<listitem><simpara> ID of the lookup
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-nonblock" role="function"/>gnet_inetaddr_new_nonblock ()</title>
+<indexterm><primary>gnet_inetaddr_new_nonblock</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_new_nonblock          (const <link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gint">gint</link> port);</programlisting>
+<para>
+Creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> from a host name and port without blocking.
+ This function does not make a DNS lookup and will fail if creating
+ the address would require a DNS lookup.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> port number (0 if the port doesn't matter)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GInetAddr"><type>GInetAddr</type></link>, or NULL if there was a failure or the
+ function would block.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-new-bytes" role="function"/>gnet_inetaddr_new_bytes ()</title>
+<indexterm><primary>gnet_inetaddr_new_bytes</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_new_bytes             (const <link linkend="gchar">gchar</link> *bytes,
+                                                         const <link linkend="guint">guint</link> length);</programlisting>
+<para>
+Creates a <link linkend="GInetAddr"><type>GInetAddr</type></link> from raw bytes.  The bytes should be in
+ network byte order (big endian).  There should be 4 bytes if it's
+ an IPv4 address and 16 bytees if it's an IPv6 address.  The port
+ is set to 0.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>bytes</parameter>&nbsp;:</term>
+<listitem><simpara> address in raw bytes
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>bytes</parameter> (4 if IPv4, 16 if IPv6)
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a new <link linkend="GInetAddr"><type>GInetAddr</type></link>, or NULL if there was a failure.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-clone" role="function"/>gnet_inetaddr_clone ()</title>
+<indexterm><primary>gnet_inetaddr_clone</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_clone                 (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Copies a <link linkend="GInetAddr"><type>GInetAddr</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> a copy of <parameter>inetaddr</parameter>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-delete" role="function"/>gnet_inetaddr_delete ()</title>
+<indexterm><primary>gnet_inetaddr_delete</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_delete                (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Deletes a <link linkend="GInetAddr"><type>GInetAddr</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-ref" role="function"/>gnet_inetaddr_ref ()</title>
+<indexterm><primary>gnet_inetaddr_ref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_ref                   (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Adds a reference to a <link linkend="GInetAddr"><type>GInetAddr</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-unref" role="function"/>gnet_inetaddr_unref ()</title>
+<indexterm><primary>gnet_inetaddr_unref</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_unref                 (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Removes a reference from a <link linkend="GInetAddr"><type>GInetAddr</type></link>.  A <link linkend="GInetAddr"><type>GInetAddr</type></link> is deleted
+ when the reference count reaches 0.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-name" role="function"/>gnet_inetaddr_get_name ()</title>
+<indexterm><primary>gnet_inetaddr_get_name</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_inetaddr_get_name              (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Gets the host name for a <link linkend="GInetAddr"><type>GInetAddr</type></link>.  This functions makes a
+ reverse DNS lookup on the address so it may block.  The canonical
+ name is returned if the address has no host name.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the host name for the <parameter>inetaddr</parameter>; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-name-nonblock" role="function"/>gnet_inetaddr_get_name_nonblock ()</title>
+<indexterm><primary>gnet_inetaddr_get_name_nonblock</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_inetaddr_get_name_nonblock     (<link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Gets the host name for a <link linkend="GInetAddr"><type>GInetAddr</type></link>.  This function does not make
+ a reverse DNS lookup and will fail if getting the name would
+ require a reverse DNS lookup.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the host name for the <parameter>inetaddr</parameter>, or NULL if there was an
+ error or it would require blocking.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GInetAddrGetNameAsyncID" role="typedef"/>GInetAddrGetNameAsyncID</title>
+<indexterm><primary>GInetAddrGetNameAsyncID</primary></indexterm><programlisting>typedef struct _GInetAddrReverseAsyncState * GInetAddrGetNameAsyncID;
+</programlisting>
+<para>
+ID of an asynchronous InetAddr name lookup started with
+  <link linkend="gnet-inetaddr-get-name-async"><function>gnet_inetaddr_get_name_async()</function></link>.  The lookup can be canceled by
+  calling <link linkend="gnet-inetaddr-get-name-async-cancel"><function>gnet_inetaddr_get_name_async_cancel()</function></link> with the ID.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="GInetAddrGetNameAsyncFunc" role="function"/>GInetAddrGetNameAsyncFunc ()</title>
+<indexterm><primary>GInetAddrGetNameAsyncFunc</primary></indexterm><programlisting><link linkend="void">void</link>                (*GInetAddrGetNameAsyncFunc)        (<link linkend="gchar">gchar</link> *hostname,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Callback for <link linkend="gnet-inetaddr-get-name-async"><function>gnet_inetaddr_get_name_async()</function></link>.  Callee (that is: you) owns
+  the name.  Free it with <link linkend="g-free"><function>g_free()</function></link> when no longer needed.  The name will be
+  NULL if the lookup failed.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> Canonical name of the address (callee owned), NULL on failure
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> User data
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-name-async" role="function"/>gnet_inetaddr_get_name_async ()</title>
+<indexterm><primary>gnet_inetaddr_get_name_async</primary></indexterm><programlisting><link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link> gnet_inetaddr_get_name_async    (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data);</programlisting>
+<para>
+Asynchronously gets the host name for a <link linkend="GInetAddr"><type>GInetAddr</type></link>.  The callback
+ is called once the reverse DNS lookup is complete.  The call back
+ will not be called during the call to this function.
+</para>
+<para>
+ See <link linkend="gnet-inetaddr-new-list-async"><function>gnet_inetaddr_new_list_async()</function></link> for implementation notes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on the callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the lookup; NULL on failure.  The ID can be
+ used with <link linkend="gnet-inetaddr-get-name-async-cancel"><function>gnet_inetaddr_get_name_async_cancel()</function></link> to cancel the
+ lookup.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-name-async-full" role="function" condition="since:2.0.8"/>gnet_inetaddr_get_name_async_full ()</title>
+<indexterm role="2.0.8"><primary>gnet_inetaddr_get_name_async_full</primary></indexterm><programlisting><link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link> gnet_inetaddr_get_name_async_full
+                                                        (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</link> func,
+                                                         <link linkend="gpointer">gpointer</link> data,
+                                                         <link linkend="GDestroyNotify">GDestroyNotify</link> notify,
+                                                         <link linkend="GMainContext">GMainContext</link> *context,
+                                                         <link linkend="gint">gint</link> priority);</programlisting>
+<para>
+Asynchronously gets the host name for a <link linkend="GInetAddr"><type>GInetAddr</type></link>.  The callback
+ is called once the reverse DNS lookup is complete.  The callback
+ will not be called during the call to this function.
+</para>
+<para>
+ See <link linkend="gnet-inetaddr-new-list-async-full"><function>gnet_inetaddr_new_list_async_full()</function></link> for implementation notes.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>func</parameter>&nbsp;:</term>
+<listitem><simpara> callback function
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>data</parameter>&nbsp;:</term>
+<listitem><simpara> data to pass to <parameter>func</parameter> on the callback
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>notify</parameter>&nbsp;:</term>
+<listitem><simpara> function to call to free <parameter>data</parameter>, or NULL
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>context</parameter>&nbsp;:</term>
+<listitem><simpara> the <link linkend="GMainContext"><type>GMainContext</type></link> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>priority</parameter>&nbsp;:</term>
+<listitem><simpara> the priority with which to schedule notifications in the
+     main context, e.g. <link linkend="G-PRIORITY-DEFAULT:CAPS"><type>G_PRIORITY_DEFAULT</type></link> or <link linkend="G-PRIORITY-HIGH:CAPS"><type>G_PRIORITY_HIGH</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the ID of the lookup; NULL on failure.  The ID can be
+ used with <link linkend="gnet-inetaddr-get-name-async-cancel"><function>gnet_inetaddr_get_name_async_cancel()</function></link> to cancel the
+ lookup.
+
+</simpara></listitem></varlistentry>
+</variablelist><para role="since">Since  2.0.8
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-name-async-cancel" role="function"/>gnet_inetaddr_get_name_async_cancel ()</title>
+<indexterm><primary>gnet_inetaddr_get_name_async_cancel</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_get_name_async_cancel (<link linkend="GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</link> id);</programlisting>
+<para>
+Cancels an asynchronous name lookup that was started with
+ <link linkend="gnet-inetaddr-get-name-async"><function>gnet_inetaddr_get_name_async()</function></link>.  This function should only be
+ called from the application's main thread, ie. the thread in which
+ context the callback delivering the result would be called (In a
+ GTK+/GUI application this would be your normal GUI thread).</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>id</parameter>&nbsp;:</term>
+<listitem><simpara> ID of the lookup
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="GNET-INETADDR-MAX-LEN:CAPS" role="macro"/>GNET_INETADDR_MAX_LEN</title>
+<indexterm><primary>GNET_INETADDR_MAX_LEN</primary></indexterm><programlisting>#define GNET_INETADDR_MAX_LEN 16
+</programlisting>
+<para>
+Maximum length of a <link linkend="GInetAddr"><type>GInetAddr</type></link>'s address in bytes.  This can be
+ used to allocate a buffer large enough for
+ <link linkend="gnet-inetaddr-get-bytes"><function>gnet_inetaddr_get_bytes()</function></link>.</para>
+<para>
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-length" role="function"/>gnet_inetaddr_get_length ()</title>
+<indexterm><primary>gnet_inetaddr_get_length</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_inetaddr_get_length            (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Get the length of a <link linkend="GInetAddr"><type>GInetAddr</type></link>'s address in bytes.  An IPv4
+ address is 4 bytes long.  An IPv6 address is 16 bytes long.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the length in bytes.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-bytes" role="function"/>gnet_inetaddr_get_bytes ()</title>
+<indexterm><primary>gnet_inetaddr_get_bytes</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_get_bytes             (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="gchar">gchar</link> *buffer);</programlisting>
+<para>
+Get a <link linkend="GInetAddr"><type>GInetAddr</type></link>'s address as bytes.  <parameter>buffer</parameter> should be 4 bytes
+ long for an IPv4 address or 16 bytes long for an IPv6 address.
+ Use <link linkend="GNET-INETADDR-MAX-LEN:CAPS"><literal>GNET_INETADDR_MAX_LEN</literal></link> when allocating a static buffer and
+ <link linkend="gnet-inetaddr-get-length"><function>gnet_inetaddr_get_length()</function></link> when allocating a dynamic buffer.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>buffer</parameter>&nbsp;:</term>
+<listitem><simpara> buffer to store address in
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-set-bytes" role="function"/>gnet_inetaddr_set_bytes ()</title>
+<indexterm><primary>gnet_inetaddr_set_bytes</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_set_bytes             (<link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         const <link linkend="gchar">gchar</link> *bytes,
+                                                         <link linkend="gint">gint</link> length);</programlisting>
+<para>
+Sets the address of a <link linkend="GInetAddr"><type>GInetAddr</type></link> from bytes.  <parameter>buffer</parameter> will be
+ 4 bytes long for an IPv4 address and 16 bytes long for an IPv6
+ address.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>bytes</parameter>&nbsp;:</term>
+<listitem><simpara> address in raw bytes
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>length</parameter>&nbsp;:</term>
+<listitem><simpara> length of <parameter>bytes</parameter>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-canonical-name" role="function"/>gnet_inetaddr_get_canonical_name ()</title>
+<indexterm><primary>gnet_inetaddr_get_canonical_name</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_inetaddr_get_canonical_name    (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Gets the canonical name of a <link linkend="GInetAddr"><type>GInetAddr</type></link>.  An IPv4 canonical name
+ is a dotted decimal name (e.g., 141.213.8.59).  An IPv6 canonical
+ name is a semicoloned hexidecimal name (e.g., 23:de:ad:be:ef).</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the canonical name; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-port" role="function"/>gnet_inetaddr_get_port ()</title>
+<indexterm><primary>gnet_inetaddr_get_port</primary></indexterm><programlisting><link linkend="gint">gint</link>                gnet_inetaddr_get_port              (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Gets the port number of a <link linkend="GInetAddr"><type>GInetAddr</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the port number.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-set-port" role="function"/>gnet_inetaddr_set_port ()</title>
+<indexterm><primary>gnet_inetaddr_set_port</primary></indexterm><programlisting><link linkend="void">void</link>                gnet_inetaddr_set_port              (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr,
+                                                         <link linkend="gint">gint</link> port);</programlisting>
+<para>
+Set the port number of a <link linkend="GInetAddr"><type>GInetAddr</type></link>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>port</parameter>&nbsp;:</term>
+<listitem><simpara> new port number
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-canonical" role="function"/>gnet_inetaddr_is_canonical ()</title>
+<indexterm><primary>gnet_inetaddr_is_canonical</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_canonical          (const <link linkend="gchar">gchar</link> *hostname);</programlisting>
+<para>
+Checks if the host name is in canonical form.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>hostname</parameter>&nbsp;:</term>
+<listitem><simpara> host name
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>name</parameter> is canonical; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-internet" role="function"/>gnet_inetaddr_is_internet ()</title>
+<indexterm><primary>gnet_inetaddr_is_internet</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_internet           (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is a sensible internet address.  This mean
+ it is not private, reserved, loopback, multicast, or broadcast.
+</para>
+<para>
+ Note that private and loopback address are often valid addresses,
+ so this should only be used to check for general internet
+ connectivity.  That is, if the address passes, it is reachable on
+ the internet.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if the address is an internet address; FALSE
+ otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-private" role="function"/>gnet_inetaddr_is_private ()</title>
+<indexterm><primary>gnet_inetaddr_is_private</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_private            (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is an address reserved for private
+ networks.  For IPv4, this includes:
+</para>
+<para>
+  10.0.0.0        -   10.255.255.255  (10/8 prefix)
+  172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
+  192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
+</para>
+<para>
+ (from RFC 1918.  See also draft-manning-dsua-02.txt)
+</para>
+<para>
+ For IPv6, this includes link local addresses (fe80::/64) and site
+ local addresses (fec0::/64).</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is private; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-reserved" role="function"/>gnet_inetaddr_is_reserved ()</title>
+<indexterm><primary>gnet_inetaddr_is_reserved</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_reserved           (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is reserved for some purpose.  This
+ excludes addresses reserved for private networks.
+</para>
+<para>
+ For IPv4, we check for:
+   0.0.0.0/16  (top 16 bits are 0's)
+   Class E (top 5 bits are 11110)
+</para>
+<para>
+ For IPv6, we check for the 00000000 prefix.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is reserved; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-loopback" role="function"/>gnet_inetaddr_is_loopback ()</title>
+<indexterm><primary>gnet_inetaddr_is_loopback</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_loopback           (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is a loopback address.  The IPv4 loopback
+ addresses have the prefix 127.0.0.1/24.  The IPv6 loopback address
+ is ::1.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is a loopback address; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-multicast" role="function"/>gnet_inetaddr_is_multicast ()</title>
+<indexterm><primary>gnet_inetaddr_is_multicast</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_multicast          (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is a multicast address.  IPv4 multicast
+ addresses are in the range 224.0.0.0 to 239.255.255.255 (ie, the
+ top four bits are 1110).  IPv6 multicast addresses have the prefix
+ FF.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is a multicast address; FALSE
+ otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-broadcast" role="function"/>gnet_inetaddr_is_broadcast ()</title>
+<indexterm><primary>gnet_inetaddr_is_broadcast</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_broadcast          (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is a broadcast address.  The broadcast
+ address is 255.255.255.255.  (Network broadcast addresses are
+ network dependent.)</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is a broadcast address; FALSE
+ otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-ipv4" role="function"/>gnet_inetaddr_is_ipv4 ()</title>
+<indexterm><primary>gnet_inetaddr_is_ipv4</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_ipv4               (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Checks if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is an IPv4 address.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is an IPv4 address; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-ipv6" role="function"/>gnet_inetaddr_is_ipv6 ()</title>
+<indexterm><primary>gnet_inetaddr_is_ipv6</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_ipv6               (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Check if a <link linkend="GInetAddr"><type>GInetAddr</type></link> is an IPv6 address.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>inetaddr</parameter> is an IPv6 address; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-hash" role="function"/>gnet_inetaddr_hash ()</title>
+<indexterm><primary>gnet_inetaddr_hash</primary></indexterm><programlisting><link linkend="guint">guint</link>               gnet_inetaddr_hash                  (<link linkend="gconstpointer">gconstpointer</link> p);</programlisting>
+<para>
+Creates a hash code for a <link linkend="GInetAddr"><type>GInetAddr</type></link> for use with GHashTable.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>p</parameter>&nbsp;:</term>
+<listitem><simpara> Pointer to an <link linkend="GInetAddr"><type>GInetAddr</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the hash code for <parameter>p</parameter>.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-equal" role="function"/>gnet_inetaddr_equal ()</title>
+<indexterm><primary>gnet_inetaddr_equal</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_equal                 (<link linkend="gconstpointer">gconstpointer</link> p1,
+                                                         <link linkend="gconstpointer">gconstpointer</link> p2);</programlisting>
+<para>
+Compares two <link linkend="GInetAddr"><type>GInetAddr</type></link>'s for equality.  IPv4 and IPv6 addresses
+ are always unequal.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>p1</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>p2</parameter>&nbsp;:</term>
+<listitem><simpara> another <link linkend="GInetAddr"><type>GInetAddr</type></link>.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if they are equal; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-noport-equal" role="function"/>gnet_inetaddr_noport_equal ()</title>
+<indexterm><primary>gnet_inetaddr_noport_equal</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_noport_equal          (<link linkend="gconstpointer">gconstpointer</link> p1,
+                                                         <link linkend="gconstpointer">gconstpointer</link> p2);</programlisting>
+<para>
+Compares two <link linkend="GInetAddr"><type>GInetAddr</type></link>'s for equality, but does not compare the
+ port numbers.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>p1</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>p2</parameter>&nbsp;:</term>
+<listitem><simpara> another <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if they are equal; FALSE otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-host-name" role="function"/>gnet_inetaddr_get_host_name ()</title>
+<indexterm><primary>gnet_inetaddr_get_host_name</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*              gnet_inetaddr_get_host_name         (void);</programlisting>
+<para>
+Gets the host's name.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the name of the host; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-host-addr" role="function"/>gnet_inetaddr_get_host_addr ()</title>
+<indexterm><primary>gnet_inetaddr_get_host_addr</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_get_host_addr         (void);</programlisting>
+<para>
+Get the host's address.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the address of the host; NULL on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-autodetect-internet-interface" role="function"/>gnet_inetaddr_autodetect_internet_interface ()</title>
+<indexterm><primary>gnet_inetaddr_autodetect_internet_interface</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_autodetect_internet_interface
+                                                        (void);</programlisting>
+<para>
+Finds an interface likely to be connected to the internet.  This
+ function can be used to automatically configure peer-to-peer
+ applications.  The function relies on heuristics and does not
+ always work correctly, especially if the host is behind a NAT.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> an address of an internet interface; NULL if it couldn't
+ find one or on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-interface-to" role="function"/>gnet_inetaddr_get_interface_to ()</title>
+<indexterm><primary>gnet_inetaddr_get_interface_to</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_get_interface_to      (const <link linkend="GInetAddr">GInetAddr</link> *inetaddr);</programlisting>
+<para>
+Figures out which local interface would be used to send a packet
+ to <parameter>inetaddr</parameter>.  This works on some systems, but not others.  We
+ recommend using <link linkend="gnet-inetaddr-autodetect-internet-interface"><function>gnet_inetaddr_autodetect_internet_interface()</function></link> to
+ find an Internet interface since it's more likely to work.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>inetaddr</parameter>&nbsp;:</term>
+<listitem><simpara> a <link linkend="GInetAddr"><type>GInetAddr</type></link>
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the address of an interface used to route packets to
+ <parameter>inetaddr</parameter>; NULL if there is no such interface or the system does
+ not support this check.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-get-internet-interface" role="function"/>gnet_inetaddr_get_internet_interface ()</title>
+<indexterm><primary>gnet_inetaddr_get_internet_interface</primary></indexterm><programlisting><link linkend="GInetAddr">GInetAddr</link>*          gnet_inetaddr_get_internet_interface
+                                                        (void);</programlisting>
+<para>
+Finds an internet interface.  This function finds the first
+ interface that is an internet address.  IPv6 policy is followed.
+</para>
+<para>
+ This function does not work on some systems.  We recommend using
+ <link linkend="gnet-inetaddr-autodetect-internet-interface"><function>gnet_inetaddr_autodetect_internet_interface()</function></link>, which performs
+ additional checks.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the address of an internet interface; NULL if no internet
+ interfaces or on error.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-is-internet-domainname" role="function"/>gnet_inetaddr_is_internet_domainname ()</title>
+<indexterm><primary>gnet_inetaddr_is_internet_domainname</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>            gnet_inetaddr_is_internet_domainname
+                                                        (const <link linkend="gchar">gchar</link> *name);</programlisting>
+<para>
+Checks if a name is a sensible internet domain name.  This
+ function uses heuristics. It does not use DNS and will not block.
+ For example, "localhost" and "10.10.23.42" are not sensible
+ internet domain names.  (10.10.23.42 is a network address, but not
+ accessible to the internet at large.)</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>name</parameter>&nbsp;:</term>
+<listitem><simpara> name
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> TRUE if <parameter>name</parameter> is a sensible Internet domain name; FALSE
+ otherwise.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="gnet-inetaddr-list-interfaces" role="function"/>gnet_inetaddr_list_interfaces ()</title>
+<indexterm><primary>gnet_inetaddr_list_interfaces</primary></indexterm><programlisting><link linkend="GList">GList</link>*              gnet_inetaddr_list_interfaces       (void);</programlisting>
+<para>
+Gets a list of <link linkend="GInetAddr"><type>GInetAddr</type></link> interfaces's on this host.  This list
+ includes all "up" Internet interfaces and the loopback interface,
+ if it exists.
+</para>
+<para>
+ On Windows if you do not have IPv6 installed then this function 
+ will return up to 10 interfaces.
+</para>
+<para>
+ This function may not work on some systems.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> A list of <link linkend="GInetAddr"><type>GInetAddr</type></link>'s representing available interfaces.
+ The caller should delete the list and the addresses.
+
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

@@ -1,0 +1,168 @@
+
+GNet README
+-----------
+
+GNet is a simple network library.  It is written in C,
+object-oriented, and built upon GLib.  It is intended to be easy to
+use and port.  GNet comes with documentation and examples.  It is
+licensed under the GNU Library General Public Licence.
+
+Features:
+  * TCP "client" and "server" sockets
+  * UDP and IP Multicast sockets
+  * High-level TCP connection and server objects
+  * Asynchronous socket IO
+  * Internet address abstraction
+  * Asynchronous DNS lookup
+  * IPv4 and IPv6 support
+  * Byte packing and unpacking
+  * URI parsing
+  * SHA and MD5 hashes
+  * Base64 encoding and decoding
+  * SOCKS support
+  * High-level HTTP connection object
+
+GNet has been ported to Linux, *BSD, MacOSX, Solaris, HP, MacOS X, and
+Windows.  It may work on other operating systems also.
+
+GNet requires GLib 2.x, available at www.gtk.org.  Or, if
+you have a system with packages (e.g., Red Hat or Debian), look for
+the latest glib package (glib2-devel or libglib2.0-dev usually).
+
+Comments and questions should be sent to gnet@gnetlibrary.org.
+
+The GNet homepage is at <http://www.gnetlibrary.org>.
+
+
+Install
+=======
+
+In a nutshell: 
+  > ./configure
+  > make
+  > make install
+
+If gethostbyname() and gethostbyaddr() are thread-safe, pass the
+--enable-threadsafe-gethostbyname() to configure.  (If it is and you
+don't do this, it will still function correctly.)  
+
+Similarly, if getaddrinfo() and getnameinfo() are thread-safe, pass
+the --enable-threadsafe-getaddrinfo() to configure
+
+The flag --with-html-dir=DIR controls the directory the HTML
+documentation goes into.  By default it will go into
+DATADIR/doc/libgnet-X.Y, which DATADIR is /usr/local/share on most
+Unix machines.  Use this flag if you want it to go somewhere else.
+
+
+INSTALL is the standard autoconf INSTALL file.
+
+
+Bugs
+====
+
+Bug reports should be submitted through <http://bugzilla.gnome.org>.
+Our bug page is: 
+   <http://bugzilla.gnome.org/buglist.cgi?product=gnet>
+
+See BUGS for known bugs.
+
+
+Mailing lists
+=============
+
+Go to <http://www.gnetlibrary.org/mailman/listinfo/> to join the
+mailing lists and view the archives.
+
+Name			Purpose
+gnet-announce		Announcements about GNet
+gnet-discuss		Discussion of GNet for users and programmers
+gnet-dev		Discussion of GNet for the developers of GNet
+
+
+
+Developer info
+==============
+
+API documentation lives on the GNet homepage (specifically, at
+<http://www.gnetlibrary.org/docs>)
+
+NOTE ON EXPERIMENTAL FEATURES.  The URL, Server, and Conn modules are
+experimental and part of the IOChannel module is also experimental.
+The GNet development team believes these modules are useful and
+usable, but are not yet completely confident in them.  The API to
+these modules may change and there may still be bugs in them.  For
+example, the URL module is incomplete and the new IOChannel functions
+should be audited again.  If you are feeling adventurous and want to
+use these functions, define GNET_EXPERIMENTAL.  Otherwise, your
+compiler should warn or fail if they are used.  We welcome bug fixes,
+improvements, and comments on the experimental modules.  Our hope is
+that adventurous programmers will use these modules and help in their
+further development.
+
+The Nylon SOCKS server is required for SOCKS server socket support.
+SOCKS server sockets are weird.  Marius, a Nylon and GNet developer,
+changed the semantics in Nylon to make SOCKS integration in GNet
+easier/possible.  GNet SOCKS clients should work with any SOCKS
+server.  The Nylon homepage is
+<http://mesh.eecs.umich.edu/projects/nylon/>.
+
+
+Hacking
+=======
+
+If you are interested in contributing to GNet, please see 'HACKING'.
+This includes information on how to get GNet from the repository and
+how to submit patches.
+
+
+License
+=======
+
+Read COPYING for information on the license.  GNet is under the GNU
+Lesser General Public License.
+
+
+Applications that use GNet
+==========================
+
+eDonkey2000 GTK frontend
+  eDonkey2000 (DFS) frontend
+  http://ed2k-gtk-gui.sourceforge.net
+
+Gnome Chinese Checkers
+  board game
+  http://gchch.sourceforge.net/
+
+Gnome Jabber
+  instant messaging and chat
+  http://gnome-jabber.sourceforge.net
+
+Jungle Monkey	 	
+  distributed file sharing program
+  http://www.junglemonkey.net
+
+Mail Notify
+  mail notification applet
+  http://www.nongnu.org/mailnotify/
+
+MSI 
+  multi-simulation interface
+  http://msi.sourceforge.net>
+
+PAN
+  Gnome newsreader
+  http://pan.rebelbase.com
+
+PreViking
+  telephony middleware
+  http://www.bellworldwide.net/previking/
+
+Sussen
+  network scanner
+  http://sussen.sourceforge.net/
+
+Workrave
+  rest break reminder
+  http://www.workrave.org/
+

@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>GNet</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="next" href="gnet-inetaddr.html" title="InetAddr">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="libgnet-reference.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-inetaddr.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id325568" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id326056" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-gnet"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id325568"></a><span class="refentrytitle">GNet</span>
+</h2>
+<p>GNet &#8212; GNet utility functions and macros</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+#define             <a href="gnet-gnet.html#GNET-EXPORT:CAPS">GNET_EXPORT</a>
+#define             <a href="gnet-gnet.html#GNET-CHECK-VERSION:CAPS">GNET_CHECK_VERSION</a>                  (major,minor,micro)
+void                <a href="gnet-gnet.html#gnet-init">gnet_init</a>                           (void);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id326056"></a><h2>Description</h2>
+<p>
+The main GNet module provides the function <a href="gnet-gnet.html#gnet-init"><code class="function">gnet_init()</code></a>.  This function
+should be called at the beginning of any GNet program.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id326081"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id326092"></a><h3>
+<a name="GNET-EXPORT:CAPS"></a>GNET_EXPORT</h3>
+<a class="indexterm" name="id326104"></a><pre class="programlisting">#define             GNET_EXPORT</pre>
+<p>
+Declares a variable exported.  Used interally.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id326122"></a><h3>
+<a name="GNET-CHECK-VERSION:CAPS"></a>GNET_CHECK_VERSION()</h3>
+<a class="indexterm" name="id326134"></a><pre class="programlisting">#define             GNET_CHECK_VERSION(major,minor,micro)</pre>
+<p>
+Checks if the version given is compatable with this version of the
+ library.  For example, GNET_CHECK_VERSION(1.2.3) would return TRUE
+ if the version is 1.2.5, and FALSE if 1.1.0.  This can be used in
+ build tests.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>major</code></em>&#160;:</span></td>
+<td> Major version number
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>minor</code></em>&#160;:</span></td>
+<td> Minor version number
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>micro</code></em>&#160;:</span></td>
+<td> Micro version number
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id326202"></a><h3>
+<a name="gnet-init"></a>gnet_init ()</h3>
+<a class="indexterm" name="id326214"></a><pre class="programlisting">void                gnet_init                           (void);</pre>
+<p>
+Initializes the GNet library.  This should be called at the
+ beginning of any GNet program and before any call to <code class="function">gtk_init()</code>.</p>
+<p>
+
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>

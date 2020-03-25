@@ -1,0 +1,26 @@
+CC = gcc
+FLAGS = -g -Wall -mno-cygwin -mcpu=pentium -DGNET_EXPERIMENTAL=1
+INCLUDE = -I./ `pkg-config --cflags glib-2.0`
+LIBS = `pkg-config --libs glib-2.0` -lws2_32
+OFILES = gnet-private.o gnet.o ipv6.o inetaddr.o iochannel.o tcp.o udp.o mcast.o socks-private.o socks.o conn.o conn-http.o server.o pack.o md5.o sha.o uri.o base64.o
+
+all:
+	$(CC) $(FLAGS) $(INCLUDE) -c gnet-private.c
+	$(CC) $(FLAGS) $(INCLUDE) -c gnet.c
+	$(CC) $(FLAGS) $(INCLUDE) -c ipv6.c
+	$(CC) $(FLAGS) $(INCLUDE) -c inetaddr.c
+	$(CC) $(FLAGS) $(INCLUDE) -c iochannel.c
+	$(CC) $(FLAGS) $(INCLUDE) -c tcp.c
+	$(CC) $(FLAGS) $(INCLUDE) -c udp.c
+	$(CC) $(FLAGS) $(INCLUDE) -c mcast.c
+	$(CC) $(FLAGS) $(INCLUDE) -c socks-private.c
+	$(CC) $(FLAGS) $(INCLUDE) -c socks.c
+	$(CC) $(FLAGS) $(INCLUDE) -c conn.c
+	$(CC) $(FLAGS) $(INCLUDE) -c conn-http.c
+	$(CC) $(FLAGS) $(INCLUDE) -c server.c
+	$(CC) $(FLAGS) $(INCLUDE) -c pack.c
+	$(CC) $(FLAGS) $(INCLUDE) -c md5.c
+	$(CC) $(FLAGS) $(INCLUDE) -c sha.c
+	$(CC) $(FLAGS) $(INCLUDE) -c uri.c
+	$(CC) $(FLAGS) $(INCLUDE) -c base64.c
+	dllwrap $(INCLUDE) --export-all --output-def gnet.def --implib libgnet-2.0.a -o gnet-2.0.dll $(OFILES) $(LIBS)

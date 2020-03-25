@@ -1,0 +1,1844 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>InetAddr</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
+<link rel="start" href="index.html" title="GNet Network Library Reference Manual">
+<link rel="up" href="libgnet-reference.html" title="GNet Library Reference">
+<link rel="prev" href="gnet-gnet.html" title="GNet">
+<link rel="next" href="gnet-tcp.html" title="TCP">
+<meta name="generator" content="GTK-Doc V1.8 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="gnet-overview.html" title="GNet Overview">
+<link rel="chapter" href="gnet-developers.html" title="GNet for developers">
+<link rel="chapter" href="gnet-examples.html" title="GNet Examples">
+<link rel="chapter" href="libgnet-reference.html" title="GNet Library Reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gnet-gnet.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="libgnet-reference.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GNet Network Library Reference Manual</th>
+<td><a accesskey="n" href="gnet-tcp.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id325791" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id327916" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="gnet-inetaddr"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id325791"></a><span class="refentrytitle">InetAddr</span>
+</h2>
+<p>InetAddr &#8212; Internet Address</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+#include &lt;gnet.h&gt;
+
+
+                    <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>;
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-new">gnet_inetaddr_new</a>                   (const gchar *hostname,
+                                                         gint port);
+typedef             <a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a>;
+void                (<a href="gnet-inetaddr.html#GInetAddrNewAsyncFunc">*GInetAddrNewAsyncFunc</a>)            (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         gpointer data);
+<a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a> <a href="gnet-inetaddr.html#gnet-inetaddr-new-async">gnet_inetaddr_new_async</a>             (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</a> func,
+                                                         gpointer data);
+<a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a> <a href="gnet-inetaddr.html#gnet-inetaddr-new-async-full">gnet_inetaddr_new_async_full</a>        (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</a> func,
+                                                         gpointer data,
+                                                         GDestroyNotify notify,
+                                                         GMainContext *context,
+                                                         gint priority);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-new-async-cancel">gnet_inetaddr_new_async_cancel</a>      (<a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a> id);
+GList*              <a href="gnet-inetaddr.html#gnet-inetaddr-new-list">gnet_inetaddr_new_list</a>              (const gchar *hostname,
+                                                         gint port);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-delete-list">gnet_inetaddr_delete_list</a>           (GList *list);
+typedef             <a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a>;
+void                (<a href="gnet-inetaddr.html#GInetAddrNewListAsyncFunc">*GInetAddrNewListAsyncFunc</a>)        (GList *list,
+                                                         gpointer data);
+<a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a> <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async">gnet_inetaddr_new_list_async</a>    (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</a> func,
+                                                         gpointer data);
+<a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a> <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async-full">gnet_inetaddr_new_list_async_full</a>
+                                                        (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</a> func,
+                                                         gpointer data,
+                                                         GDestroyNotify notify,
+                                                         GMainContext *context,
+                                                         gint priority);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async-cancel">gnet_inetaddr_new_list_async_cancel</a> (<a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a> id);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-new-nonblock">gnet_inetaddr_new_nonblock</a>          (const gchar *hostname,
+                                                         gint port);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-new-bytes">gnet_inetaddr_new_bytes</a>             (const gchar *bytes,
+                                                         const guint length);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-clone">gnet_inetaddr_clone</a>                 (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-delete">gnet_inetaddr_delete</a>                (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-ref">gnet_inetaddr_ref</a>                   (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-unref">gnet_inetaddr_unref</a>                 (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gchar*              <a href="gnet-inetaddr.html#gnet-inetaddr-get-name">gnet_inetaddr_get_name</a>              (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gchar*              <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-nonblock">gnet_inetaddr_get_name_nonblock</a>     (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+typedef             <a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a>;
+void                (<a href="gnet-inetaddr.html#GInetAddrGetNameAsyncFunc">*GInetAddrGetNameAsyncFunc</a>)        (gchar *hostname,
+                                                         gpointer data);
+<a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a> <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async">gnet_inetaddr_get_name_async</a>    (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         <a href="gnet-inetaddr.html#GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</a> func,
+                                                         gpointer data);
+<a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a> <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async-full">gnet_inetaddr_get_name_async_full</a>
+                                                        (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         <a href="gnet-inetaddr.html#GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</a> func,
+                                                         gpointer data,
+                                                         GDestroyNotify notify,
+                                                         GMainContext *context,
+                                                         gint priority);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async-cancel">gnet_inetaddr_get_name_async_cancel</a> (<a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a> id);
+#define             <a href="gnet-inetaddr.html#GNET-INETADDR-MAX-LEN:CAPS">GNET_INETADDR_MAX_LEN</a>
+gint                <a href="gnet-inetaddr.html#gnet-inetaddr-get-length">gnet_inetaddr_get_length</a>            (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-get-bytes">gnet_inetaddr_get_bytes</a>             (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         gchar *buffer);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-set-bytes">gnet_inetaddr_set_bytes</a>             (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         const gchar *bytes,
+                                                         gint length);
+gchar*              <a href="gnet-inetaddr.html#gnet-inetaddr-get-canonical-name">gnet_inetaddr_get_canonical_name</a>    (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gint                <a href="gnet-inetaddr.html#gnet-inetaddr-get-port">gnet_inetaddr_get_port</a>              (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+void                <a href="gnet-inetaddr.html#gnet-inetaddr-set-port">gnet_inetaddr_set_port</a>              (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         gint port);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-canonical">gnet_inetaddr_is_canonical</a>          (const gchar *hostname);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-internet">gnet_inetaddr_is_internet</a>           (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-private">gnet_inetaddr_is_private</a>            (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-reserved">gnet_inetaddr_is_reserved</a>           (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-loopback">gnet_inetaddr_is_loopback</a>           (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-multicast">gnet_inetaddr_is_multicast</a>          (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-broadcast">gnet_inetaddr_is_broadcast</a>          (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-ipv4">gnet_inetaddr_is_ipv4</a>               (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-ipv6">gnet_inetaddr_is_ipv6</a>               (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+guint               <a href="gnet-inetaddr.html#gnet-inetaddr-hash">gnet_inetaddr_hash</a>                  (gconstpointer p);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-equal">gnet_inetaddr_equal</a>                 (gconstpointer p1,
+                                                         gconstpointer p2);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-noport-equal">gnet_inetaddr_noport_equal</a>          (gconstpointer p1,
+                                                         gconstpointer p2);
+gchar*              <a href="gnet-inetaddr.html#gnet-inetaddr-get-host-name">gnet_inetaddr_get_host_name</a>         (void);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-get-host-addr">gnet_inetaddr_get_host_addr</a>         (void);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-autodetect-internet-interface">gnet_inetaddr_autodetect_internet_interface</a>
+                                                        (void);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-get-interface-to">gnet_inetaddr_get_interface_to</a>      (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);
+<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          <a href="gnet-inetaddr.html#gnet-inetaddr-get-internet-interface">gnet_inetaddr_get_internet_interface</a>
+                                                        (void);
+gboolean            <a href="gnet-inetaddr.html#gnet-inetaddr-is-internet-domainname">gnet_inetaddr_is_internet_domainname</a>
+                                                        (const gchar *name);
+GList*              <a href="gnet-inetaddr.html#gnet-inetaddr-list-interfaces">gnet_inetaddr_list_interfaces</a>       (void);
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id327916"></a><h2>Description</h2>
+<p>
+A <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> represents an internet address.  This module provides
+functions for making DNS and reverse DNS lookups (blocking and
+asynchronously) and for working with <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s.
+</p>
+<p>
+Create a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> by calling <a href="gnet-inetaddr.html#gnet-inetaddr-new"><code class="function">gnet_inetaddr_new()</code></a>.  This function
+will perform a DNS lookup and creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> representing the
+address.  This function blocks.  The function
+<a href="gnet-inetaddr.html#gnet-inetaddr-new-async"><code class="function">gnet_inetaddr_new_async()</code></a> performs the lookup asynchronously and calls
+a callback with the <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> when the lookup completes.  An
+asynchronous lookup can be canceled by calling
+<a href="gnet-inetaddr.html#gnet-inetaddr-new-async-cancel"><code class="function">gnet_inetaddr_new_async_cancel()</code></a>.
+</p>
+<p>
+Technically a DNS lookup can map a name to several addresses.  Use
+<a href="gnet-inetaddr.html#gnet-inetaddr-new-list"><code class="function">gnet_inetaddr_new_list()</code></a> or <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a> to get this
+list.  Use <a href="gnet-inetaddr.html#gnet-inetaddr-delete-list"><code class="function">gnet_inetaddr_delete_list()</code></a> to delete the list.
+</p>
+<p>
+This module can also make reverse DNS lookups (i.e., map an address to
+a hostname).  Call <a href="gnet-inetaddr.html#gnet-inetaddr-get-name"><code class="function">gnet_inetaddr_get_name()</code></a> to get the hostname from
+an address.  This function blocks.  Its asynchronous counterpart is
+<code class="function">gnet_inetadr_get_name_async()</code>.  To get the canonical name, or dotted
+decimal address, call <a href="gnet-inetaddr.html#gnet-inetaddr-get-canonical-name"><code class="function">gnet_inetaddr_get_canonical_name()</code></a>.
+</p>
+<p>
+To get the host's address, call <code class="function">gnet_inetaddr_gethostaddr()</code>.  This
+creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> by performing a DNS lookup on the host's name.
+To get the list of all the host's interfaces, call
+<a href="gnet-inetaddr.html#gnet-inetaddr-list-interfaces"><code class="function">gnet_inetaddr_list_interfaces()</code></a>.  The function
+<a href="gnet-inetaddr.html#gnet-inetaddr-autodetect-internet-interface"><code class="function">gnet_inetaddr_autodetect_internet_interface()</code></a> uses this function and
+heuristics to find an interface connected to the internet.  This can
+be used to automatically configure peer-to-peer applications.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id328128"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id328138"></a><h3>
+<a name="GInetAddr"></a>GInetAddr</h3>
+<a class="indexterm" name="id328150"></a><pre class="programlisting">typedef struct _GInetAddr GInetAddr;</pre>
+<p>
+GInetAddr is an internet address.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328169"></a><h3>
+<a name="gnet-inetaddr-new"></a>gnet_inetaddr_new ()</h3>
+<a class="indexterm" name="id328181"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_new                   (const gchar *hostname,
+                                                         gint port);</pre>
+<p>
+Creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> from a host name and port.  This function
+ makes a DNS lookup on the host name so it may block.  The host
+ name may resolve to multiple addresses.  If this occurs, the first
+ address in the list is returned.  Use <a href="gnet-inetaddr.html#gnet-inetaddr-new-list"><code class="function">gnet_inetaddr_new_list()</code></a> to
+ get the complete list.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a new <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>; NULL on error.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328290"></a><h3>
+<a name="GInetAddrNewAsyncID"></a>GInetAddrNewAsyncID</h3>
+<a class="indexterm" name="id328302"></a><pre class="programlisting">typedef struct _GInetAddrNewState * GInetAddrNewAsyncID;
+</pre>
+<p>
+ID of an asynchronous GInetAddr creation/lookup started with
+  <a href="gnet-inetaddr.html#gnet-inetaddr-new-async"><code class="function">gnet_inetaddr_new_async()</code></a>.  The creation can be canceled by
+  calling <a href="gnet-inetaddr.html#gnet-inetaddr-new-async-cancel"><code class="function">gnet_inetaddr_new_async_cancel()</code></a> with the ID.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328342"></a><h3>
+<a name="GInetAddrNewAsyncFunc"></a>GInetAddrNewAsyncFunc ()</h3>
+<a class="indexterm" name="id328354"></a><pre class="programlisting">void                (*GInetAddrNewAsyncFunc)            (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         gpointer data);</pre>
+<p>
+Callback for <a href="gnet-inetaddr.html#gnet-inetaddr-new-async"><code class="function">gnet_inetaddr_new_async()</code></a>.  Callee owns the address.
+  The address will be NULL if the lookup failed.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> InetAddr that was looked up (callee owned)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> User data
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328435"></a><h3>
+<a name="gnet-inetaddr-new-async"></a>gnet_inetaddr_new_async ()</h3>
+<a class="indexterm" name="id328447"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a> gnet_inetaddr_new_async             (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</a> func,
+                                                         gpointer data);</pre>
+<p>
+Asynchronously creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> from a host name and port.
+ The callback is called once the <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is created or an error
+ occurs during lookup.  The callback will not be called during the
+ call to this function.
+</p>
+<p>
+ See <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a> for implementation notes.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> data to pass to <em class="parameter"><code>func</code></em> on the callback
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the ID of the lookup; NULL on failure.  The ID can be used
+ with <a href="gnet-inetaddr.html#gnet-inetaddr-new-async-cancel"><code class="function">gnet_inetaddr_new_async_cancel()</code></a> to cancel the lookup.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328619"></a><h3>
+<a name="gnet-inetaddr-new-async-full"></a>gnet_inetaddr_new_async_full ()</h3>
+<a class="indexterm" name="id328634"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a> gnet_inetaddr_new_async_full        (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewAsyncFunc">GInetAddrNewAsyncFunc</a> func,
+                                                         gpointer data,
+                                                         GDestroyNotify notify,
+                                                         GMainContext *context,
+                                                         gint priority);</pre>
+<p>
+Asynchronously creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> from a host name and port.
+ The callback is called once the <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is created or an error
+ occurs during lookup.  The callback will not be called during the
+ call to this function.
+</p>
+<p>
+ See <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a> for implementation notes.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> data to pass to <em class="parameter"><code>func</code></em> on the callback, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>notify</code></em>&#160;:</span></td>
+<td> function to call to free <em class="parameter"><code>data</code></em>, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>context</code></em>&#160;:</span></td>
+<td> the <span class="type">GMainContext</span> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>priority</code></em>&#160;:</span></td>
+<td> the priority with which to schedule notifications in the
+     main context, e.g. <span class="type">G_PRIORITY_DEFAULT</span> or <span class="type">G_PRIORITY_HIGH</span>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the ID of the lookup; NULL on failure.  The ID can be used
+ with <a href="gnet-inetaddr.html#gnet-inetaddr-new-async-cancel"><code class="function">gnet_inetaddr_new_async_cancel()</code></a> to cancel the lookup.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since  2.0.8
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328909"></a><h3>
+<a name="gnet-inetaddr-new-async-cancel"></a>gnet_inetaddr_new_async_cancel ()</h3>
+<a class="indexterm" name="id328921"></a><pre class="programlisting">void                gnet_inetaddr_new_async_cancel      (<a href="gnet-inetaddr.html#GInetAddrNewAsyncID">GInetAddrNewAsyncID</a> id);</pre>
+<p>
+Cancels an asynchronous <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> creation that was started with
+ <a href="gnet-inetaddr.html#gnet-inetaddr-new-async"><code class="function">gnet_inetaddr_new_async()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>id</code></em>&#160;:</span></td>
+<td> ID of the lookup
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id328989"></a><h3>
+<a name="gnet-inetaddr-new-list"></a>gnet_inetaddr_new_list ()</h3>
+<a class="indexterm" name="id329001"></a><pre class="programlisting">GList*              gnet_inetaddr_new_list              (const gchar *hostname,
+                                                         gint port);</pre>
+<p>
+Creates a GList of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s from a host name and port.  This
+ function makes a DNS lookup on the host name so it may block.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a GList of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> structures or NULL on error.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329098"></a><h3>
+<a name="gnet-inetaddr-delete-list"></a>gnet_inetaddr_delete_list ()</h3>
+<a class="indexterm" name="id329111"></a><pre class="programlisting">void                gnet_inetaddr_delete_list           (GList *list);</pre>
+<p>
+Deletes a GList of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>list</code></em>&#160;:</span></td>
+<td> GList of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329176"></a><h3>
+<a name="GInetAddrNewListAsyncID"></a>GInetAddrNewListAsyncID</h3>
+<a class="indexterm" name="id329188"></a><pre class="programlisting">typedef struct _GInetAddrNewListState * GInetAddrNewListAsyncID;
+</pre>
+<p>
+ID of an asynchronous GInetAddr list creation/lookup started with
+  <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a>.  The creation can be canceled by
+  calling <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async-cancel"><code class="function">gnet_inetaddr_new_list_async_cancel()</code></a> with the ID.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329228"></a><h3>
+<a name="GInetAddrNewListAsyncFunc"></a>GInetAddrNewListAsyncFunc ()</h3>
+<a class="indexterm" name="id329240"></a><pre class="programlisting">void                (*GInetAddrNewListAsyncFunc)        (GList *list,
+                                                         gpointer data);</pre>
+<p>
+Callback for <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a>.  Callee owns the
+  list of GInetAddrs.  The list is NULL if the lookup failed.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>list</code></em>&#160;:</span></td>
+<td> List of GInetAddr's (callee owned)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> User data
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329322"></a><h3>
+<a name="gnet-inetaddr-new-list-async"></a>gnet_inetaddr_new_list_async ()</h3>
+<a class="indexterm" name="id329334"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a> gnet_inetaddr_new_list_async    (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</a> func,
+                                                         gpointer data);</pre>
+<p>
+Asynchronously creates a GList of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s from a host name
+ and port.  The callback is called once the list is created or an
+ error occurs during lookup.  The callback will not be called
+ during the call to <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a>.  The list
+ passed in the callback is callee owned (meaning that it is your
+ responsibility to free the list and each <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> in the list).
+</p>
+<p>
+ If you need to lookup hundreds of addresses, we recommend calling
+ g_main_iteration(FALSE) between calls.  This will help prevent an
+ explosion of threads.
+</p>
+<p>
+ If you need a more robust library for Unix, look at <a href="http://www.gnu.org/software/adns/adns.html" target="_top">GNU ADNS</a>.
+ GNU ADNS is under the GNU GPL.  This library does not use threads
+ or processes.
+</p>
+<p>
+ The Windows version is molded after the Unix GThread version.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> data to pass to <em class="parameter"><code>func</code></em> on the callback
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the ID of the lookup; NULL on failure.  The ID can be
+ used with <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async-cancel"><code class="function">gnet_inetaddr_new_list_async_cancel()</code></a> to cancel the
+ lookup.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329523"></a><h3>
+<a name="gnet-inetaddr-new-list-async-full"></a>gnet_inetaddr_new_list_async_full ()</h3>
+<a class="indexterm" name="id329538"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a> gnet_inetaddr_new_list_async_full
+                                                        (const gchar *hostname,
+                                                         gint port,
+                                                         <a href="gnet-inetaddr.html#GInetAddrNewListAsyncFunc">GInetAddrNewListAsyncFunc</a> func,
+                                                         gpointer data,
+                                                         GDestroyNotify notify,
+                                                         GMainContext *context,
+                                                         gint priority);</pre>
+<p>
+Asynchronously creates a GList of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s from a host name
+ and port.  The callback is called once the list is created or an
+ error occurs during lookup.  The callback will not be called
+ during the call to <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a>.  The list
+ passed in the callback is callee owned (meaning that it is your
+ responsibility to free the list and each <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> in the list).
+</p>
+<p>
+ If you need to lookup hundreds of addresses, we recommend calling
+ g_main_iteration(FALSE) between calls.  This will help prevent an
+ explosion of threads.
+</p>
+<p>
+ If you need a more robust library for Unix, look at <a href="http://www.gnu.org/software/adns/adns.html" target="_top">GNU ADNS</a>.
+ GNU ADNS is under the GNU GPL.  This library does not use threads
+ or processes.
+</p>
+<p>
+ The Windows version is molded after the Unix GThread version.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> data to pass to <em class="parameter"><code>func</code></em> on the callback, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>notify</code></em>&#160;:</span></td>
+<td> function to call to free <em class="parameter"><code>data</code></em>, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>context</code></em>&#160;:</span></td>
+<td> the <span class="type">GMainContext</span> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>priority</code></em>&#160;:</span></td>
+<td> the priority with which to schedule notifications in the
+     main context, e.g. <span class="type">G_PRIORITY_DEFAULT</span> or <span class="type">G_PRIORITY_HIGH</span>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the ID of the lookup; NULL on failure.  The ID can be
+ used with <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async-cancel"><code class="function">gnet_inetaddr_new_list_async_cancel()</code></a> to cancel the
+ lookup.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since  2.0.8
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329828"></a><h3>
+<a name="gnet-inetaddr-new-list-async-cancel"></a>gnet_inetaddr_new_list_async_cancel ()</h3>
+<a class="indexterm" name="id329841"></a><pre class="programlisting">void                gnet_inetaddr_new_list_async_cancel (<a href="gnet-inetaddr.html#GInetAddrNewListAsyncID">GInetAddrNewListAsyncID</a> id);</pre>
+<p>
+Cancels an asynchronous <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> list creation that was started
+ with <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>id</code></em>&#160;:</span></td>
+<td> ID of the lookup
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id329908"></a><h3>
+<a name="gnet-inetaddr-new-nonblock"></a>gnet_inetaddr_new_nonblock ()</h3>
+<a class="indexterm" name="id329921"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_new_nonblock          (const gchar *hostname,
+                                                         gint port);</pre>
+<p>
+Creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> from a host name and port without blocking.
+ This function does not make a DNS lookup and will fail if creating
+ the address would require a DNS lookup.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> port number (0 if the port doesn't matter)
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a new <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>, or NULL if there was a failure or the
+ function would block.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330019"></a><h3>
+<a name="gnet-inetaddr-new-bytes"></a>gnet_inetaddr_new_bytes ()</h3>
+<a class="indexterm" name="id330031"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_new_bytes             (const gchar *bytes,
+                                                         const guint length);</pre>
+<p>
+Creates a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> from raw bytes.  The bytes should be in
+ network byte order (big endian).  There should be 4 bytes if it's
+ an IPv4 address and 16 bytees if it's an IPv6 address.  The port
+ is set to 0.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>bytes</code></em>&#160;:</span></td>
+<td> address in raw bytes
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of <em class="parameter"><code>bytes</code></em> (4 if IPv4, 16 if IPv6)
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a new <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>, or NULL if there was a failure.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330136"></a><h3>
+<a name="gnet-inetaddr-clone"></a>gnet_inetaddr_clone ()</h3>
+<a class="indexterm" name="id330148"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_clone                 (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Copies a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a copy of <em class="parameter"><code>inetaddr</code></em>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330228"></a><h3>
+<a name="gnet-inetaddr-delete"></a>gnet_inetaddr_delete ()</h3>
+<a class="indexterm" name="id330240"></a><pre class="programlisting">void                gnet_inetaddr_delete                (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Deletes a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330304"></a><h3>
+<a name="gnet-inetaddr-ref"></a>gnet_inetaddr_ref ()</h3>
+<a class="indexterm" name="id330316"></a><pre class="programlisting">void                gnet_inetaddr_ref                   (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Adds a reference to a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330381"></a><h3>
+<a name="gnet-inetaddr-unref"></a>gnet_inetaddr_unref ()</h3>
+<a class="indexterm" name="id330393"></a><pre class="programlisting">void                gnet_inetaddr_unref                 (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Removes a reference from a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.  A <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is deleted
+ when the reference count reaches 0.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330466"></a><h3>
+<a name="gnet-inetaddr-get-name"></a>gnet_inetaddr_get_name ()</h3>
+<a class="indexterm" name="id330478"></a><pre class="programlisting">gchar*              gnet_inetaddr_get_name              (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Gets the host name for a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.  This functions makes a
+ reverse DNS lookup on the address so it may block.  The canonical
+ name is returned if the address has no host name.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the host name for the <em class="parameter"><code>inetaddr</code></em>; NULL on error.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330560"></a><h3>
+<a name="gnet-inetaddr-get-name-nonblock"></a>gnet_inetaddr_get_name_nonblock ()</h3>
+<a class="indexterm" name="id330572"></a><pre class="programlisting">gchar*              gnet_inetaddr_get_name_nonblock     (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Gets the host name for a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.  This function does not make
+ a reverse DNS lookup and will fail if getting the name would
+ require a reverse DNS lookup.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the host name for the <em class="parameter"><code>inetaddr</code></em>, or NULL if there was an
+ error or it would require blocking.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330655"></a><h3>
+<a name="GInetAddrGetNameAsyncID"></a>GInetAddrGetNameAsyncID</h3>
+<a class="indexterm" name="id330667"></a><pre class="programlisting">typedef struct _GInetAddrReverseAsyncState * GInetAddrGetNameAsyncID;
+</pre>
+<p>
+ID of an asynchronous InetAddr name lookup started with
+  <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async"><code class="function">gnet_inetaddr_get_name_async()</code></a>.  The lookup can be canceled by
+  calling <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async-cancel"><code class="function">gnet_inetaddr_get_name_async_cancel()</code></a> with the ID.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330707"></a><h3>
+<a name="GInetAddrGetNameAsyncFunc"></a>GInetAddrGetNameAsyncFunc ()</h3>
+<a class="indexterm" name="id330720"></a><pre class="programlisting">void                (*GInetAddrGetNameAsyncFunc)        (gchar *hostname,
+                                                         gpointer data);</pre>
+<p>
+Callback for <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async"><code class="function">gnet_inetaddr_get_name_async()</code></a>.  Callee (that is: you) owns
+  the name.  Free it with <code class="function">g_free()</code> when no longer needed.  The name will be
+  NULL if the lookup failed.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> Canonical name of the address (callee owned), NULL on failure
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> User data
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330813"></a><h3>
+<a name="gnet-inetaddr-get-name-async"></a>gnet_inetaddr_get_name_async ()</h3>
+<a class="indexterm" name="id330826"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a> gnet_inetaddr_get_name_async    (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         <a href="gnet-inetaddr.html#GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</a> func,
+                                                         gpointer data);</pre>
+<p>
+Asynchronously gets the host name for a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.  The callback
+ is called once the reverse DNS lookup is complete.  The call back
+ will not be called during the call to this function.
+</p>
+<p>
+ See <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async"><code class="function">gnet_inetaddr_new_list_async()</code></a> for implementation notes.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> data to pass to <em class="parameter"><code>func</code></em> on the callback
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the ID of the lookup; NULL on failure.  The ID can be
+ used with <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async-cancel"><code class="function">gnet_inetaddr_get_name_async_cancel()</code></a> to cancel the
+ lookup.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id330976"></a><h3>
+<a name="gnet-inetaddr-get-name-async-full"></a>gnet_inetaddr_get_name_async_full ()</h3>
+<a class="indexterm" name="id330991"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a> gnet_inetaddr_get_name_async_full
+                                                        (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         <a href="gnet-inetaddr.html#GInetAddrGetNameAsyncFunc">GInetAddrGetNameAsyncFunc</a> func,
+                                                         gpointer data,
+                                                         GDestroyNotify notify,
+                                                         GMainContext *context,
+                                                         gint priority);</pre>
+<p>
+Asynchronously gets the host name for a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.  The callback
+ is called once the reverse DNS lookup is complete.  The callback
+ will not be called during the call to this function.
+</p>
+<p>
+ See <a href="gnet-inetaddr.html#gnet-inetaddr-new-list-async-full"><code class="function">gnet_inetaddr_new_list_async_full()</code></a> for implementation notes.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>func</code></em>&#160;:</span></td>
+<td> callback function
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> data to pass to <em class="parameter"><code>func</code></em> on the callback
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>notify</code></em>&#160;:</span></td>
+<td> function to call to free <em class="parameter"><code>data</code></em>, or NULL
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>context</code></em>&#160;:</span></td>
+<td> the <span class="type">GMainContext</span> to use for notifications, or NULL for the
+     default GLib main context.  If in doubt, pass NULL.
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>priority</code></em>&#160;:</span></td>
+<td> the priority with which to schedule notifications in the
+     main context, e.g. <span class="type">G_PRIORITY_DEFAULT</span> or <span class="type">G_PRIORITY_HIGH</span>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the ID of the lookup; NULL on failure.  The ID can be
+ used with <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async-cancel"><code class="function">gnet_inetaddr_get_name_async_cancel()</code></a> to cancel the
+ lookup.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since  2.0.8
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331243"></a><h3>
+<a name="gnet-inetaddr-get-name-async-cancel"></a>gnet_inetaddr_get_name_async_cancel ()</h3>
+<a class="indexterm" name="id331255"></a><pre class="programlisting">void                gnet_inetaddr_get_name_async_cancel (<a href="gnet-inetaddr.html#GInetAddrGetNameAsyncID">GInetAddrGetNameAsyncID</a> id);</pre>
+<p>
+Cancels an asynchronous name lookup that was started with
+ <a href="gnet-inetaddr.html#gnet-inetaddr-get-name-async"><code class="function">gnet_inetaddr_get_name_async()</code></a>.  This function should only be
+ called from the application's main thread, ie. the thread in which
+ context the callback delivering the result would be called (In a
+ GTK+/GUI application this would be your normal GUI thread).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><em class="parameter"><code>id</code></em>&#160;:</span></td>
+<td> ID of the lookup
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331317"></a><h3>
+<a name="GNET-INETADDR-MAX-LEN:CAPS"></a>GNET_INETADDR_MAX_LEN</h3>
+<a class="indexterm" name="id331330"></a><pre class="programlisting">#define GNET_INETADDR_MAX_LEN 16
+</pre>
+<p>
+Maximum length of a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s address in bytes.  This can be
+ used to allocate a buffer large enough for
+ <a href="gnet-inetaddr.html#gnet-inetaddr-get-bytes"><code class="function">gnet_inetaddr_get_bytes()</code></a>.</p>
+<p>
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331367"></a><h3>
+<a name="gnet-inetaddr-get-length"></a>gnet_inetaddr_get_length ()</h3>
+<a class="indexterm" name="id331379"></a><pre class="programlisting">gint                gnet_inetaddr_get_length            (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Get the length of a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s address in bytes.  An IPv4
+ address is 4 bytes long.  An IPv6 address is 16 bytes long.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the length in bytes.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331455"></a><h3>
+<a name="gnet-inetaddr-get-bytes"></a>gnet_inetaddr_get_bytes ()</h3>
+<a class="indexterm" name="id331467"></a><pre class="programlisting">void                gnet_inetaddr_get_bytes             (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         gchar *buffer);</pre>
+<p>
+Get a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s address as bytes.  <em class="parameter"><code>buffer</code></em> should be 4 bytes
+ long for an IPv4 address or 16 bytes long for an IPv6 address.
+ Use <a href="gnet-inetaddr.html#GNET-INETADDR-MAX-LEN:CAPS"><code class="literal">GNET_INETADDR_MAX_LEN</code></a> when allocating a static buffer and
+ <a href="gnet-inetaddr.html#gnet-inetaddr-get-length"><code class="function">gnet_inetaddr_get_length()</code></a> when allocating a dynamic buffer.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>buffer</code></em>&#160;:</span></td>
+<td> buffer to store address in
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331581"></a><h3>
+<a name="gnet-inetaddr-set-bytes"></a>gnet_inetaddr_set_bytes ()</h3>
+<a class="indexterm" name="id331594"></a><pre class="programlisting">void                gnet_inetaddr_set_bytes             (<a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         const gchar *bytes,
+                                                         gint length);</pre>
+<p>
+Sets the address of a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> from bytes.  <em class="parameter"><code>buffer</code></em> will be
+ 4 bytes long for an IPv4 address and 16 bytes long for an IPv6
+ address.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>bytes</code></em>&#160;:</span></td>
+<td> address in raw bytes
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td> length of <em class="parameter"><code>bytes</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331713"></a><h3>
+<a name="gnet-inetaddr-get-canonical-name"></a>gnet_inetaddr_get_canonical_name ()</h3>
+<a class="indexterm" name="id331725"></a><pre class="programlisting">gchar*              gnet_inetaddr_get_canonical_name    (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Gets the canonical name of a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.  An IPv4 canonical name
+ is a dotted decimal name (e.g., 141.213.8.59).  An IPv6 canonical
+ name is a semicoloned hexidecimal name (e.g., 23:de:ad:be:ef).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the canonical name; NULL on error.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331802"></a><h3>
+<a name="gnet-inetaddr-get-port"></a>gnet_inetaddr_get_port ()</h3>
+<a class="indexterm" name="id331814"></a><pre class="programlisting">gint                gnet_inetaddr_get_port              (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Gets the port number of a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the port number.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331889"></a><h3>
+<a name="gnet-inetaddr-set-port"></a>gnet_inetaddr_set_port ()</h3>
+<a class="indexterm" name="id331902"></a><pre class="programlisting">void                gnet_inetaddr_set_port              (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr,
+                                                         gint port);</pre>
+<p>
+Set the port number of a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>port</code></em>&#160;:</span></td>
+<td> new port number
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id331987"></a><h3>
+<a name="gnet-inetaddr-is-canonical"></a>gnet_inetaddr_is_canonical ()</h3>
+<a class="indexterm" name="id332000"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_canonical          (const gchar *hostname);</pre>
+<p>
+Checks if the host name is in canonical form.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>hostname</code></em>&#160;:</span></td>
+<td> host name
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>name</code></em> is canonical; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332066"></a><h3>
+<a name="gnet-inetaddr-is-internet"></a>gnet_inetaddr_is_internet ()</h3>
+<a class="indexterm" name="id332078"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_internet           (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is a sensible internet address.  This mean
+ it is not private, reserved, loopback, multicast, or broadcast.
+</p>
+<p>
+ Note that private and loopback address are often valid addresses,
+ so this should only be used to check for general internet
+ connectivity.  That is, if the address passes, it is reachable on
+ the internet.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if the address is an internet address; FALSE
+ otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332160"></a><h3>
+<a name="gnet-inetaddr-is-private"></a>gnet_inetaddr_is_private ()</h3>
+<a class="indexterm" name="id332172"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_private            (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is an address reserved for private
+ networks.  For IPv4, this includes:
+</p>
+<p>
+  10.0.0.0        -   10.255.255.255  (10/8 prefix)
+  172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
+  192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
+</p>
+<p>
+ (from RFC 1918.  See also draft-manning-dsua-02.txt)
+</p>
+<p>
+ For IPv6, this includes link local addresses (fe80::/64) and site
+ local addresses (fec0::/64).</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is private; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332267"></a><h3>
+<a name="gnet-inetaddr-is-reserved"></a>gnet_inetaddr_is_reserved ()</h3>
+<a class="indexterm" name="id332279"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_reserved           (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is reserved for some purpose.  This
+ excludes addresses reserved for private networks.
+</p>
+<p>
+ For IPv4, we check for:
+   0.0.0.0/16  (top 16 bits are 0's)
+   Class E (top 5 bits are 11110)
+</p>
+<p>
+ For IPv6, we check for the 00000000 prefix.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is reserved; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332369"></a><h3>
+<a name="gnet-inetaddr-is-loopback"></a>gnet_inetaddr_is_loopback ()</h3>
+<a class="indexterm" name="id332382"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_loopback           (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is a loopback address.  The IPv4 loopback
+ addresses have the prefix 127.0.0.1/24.  The IPv6 loopback address
+ is ::1.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is a loopback address; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332464"></a><h3>
+<a name="gnet-inetaddr-is-multicast"></a>gnet_inetaddr_is_multicast ()</h3>
+<a class="indexterm" name="id332476"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_multicast          (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is a multicast address.  IPv4 multicast
+ addresses are in the range 224.0.0.0 to 239.255.255.255 (ie, the
+ top four bits are 1110).  IPv6 multicast addresses have the prefix
+ FF.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is a multicast address; FALSE
+ otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332559"></a><h3>
+<a name="gnet-inetaddr-is-broadcast"></a>gnet_inetaddr_is_broadcast ()</h3>
+<a class="indexterm" name="id332571"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_broadcast          (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is a broadcast address.  The broadcast
+ address is 255.255.255.255.  (Network broadcast addresses are
+ network dependent.)</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is a broadcast address; FALSE
+ otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332654"></a><h3>
+<a name="gnet-inetaddr-is-ipv4"></a>gnet_inetaddr_is_ipv4 ()</h3>
+<a class="indexterm" name="id332666"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_ipv4               (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Checks if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is an IPv4 address.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is an IPv4 address; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332747"></a><h3>
+<a name="gnet-inetaddr-is-ipv6"></a>gnet_inetaddr_is_ipv6 ()</h3>
+<a class="indexterm" name="id332759"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_ipv6               (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Check if a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> is an IPv6 address.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>inetaddr</code></em> is an IPv6 address; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332840"></a><h3>
+<a name="gnet-inetaddr-hash"></a>gnet_inetaddr_hash ()</h3>
+<a class="indexterm" name="id332852"></a><pre class="programlisting">guint               gnet_inetaddr_hash                  (gconstpointer p);</pre>
+<p>
+Creates a hash code for a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> for use with GHashTable.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>p</code></em>&#160;:</span></td>
+<td> Pointer to an <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the hash code for <em class="parameter"><code>p</code></em>.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id332933"></a><h3>
+<a name="gnet-inetaddr-equal"></a>gnet_inetaddr_equal ()</h3>
+<a class="indexterm" name="id332945"></a><pre class="programlisting">gboolean            gnet_inetaddr_equal                 (gconstpointer p1,
+                                                         gconstpointer p2);</pre>
+<p>
+Compares two <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s for equality.  IPv4 and IPv6 addresses
+ are always unequal.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>p1</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>p2</code></em>&#160;:</span></td>
+<td> another <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>.
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if they are equal; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333050"></a><h3>
+<a name="gnet-inetaddr-noport-equal"></a>gnet_inetaddr_noport_equal ()</h3>
+<a class="indexterm" name="id333062"></a><pre class="programlisting">gboolean            gnet_inetaddr_noport_equal          (gconstpointer p1,
+                                                         gconstpointer p2);</pre>
+<p>
+Compares two <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s for equality, but does not compare the
+ port numbers.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>p1</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><em class="parameter"><code>p2</code></em>&#160;:</span></td>
+<td> another <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if they are equal; FALSE otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333166"></a><h3>
+<a name="gnet-inetaddr-get-host-name"></a>gnet_inetaddr_get_host_name ()</h3>
+<a class="indexterm" name="id333178"></a><pre class="programlisting">gchar*              gnet_inetaddr_get_host_name         (void);</pre>
+<p>
+Gets the host's name.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the name of the host; NULL on error.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333218"></a><h3>
+<a name="gnet-inetaddr-get-host-addr"></a>gnet_inetaddr_get_host_addr ()</h3>
+<a class="indexterm" name="id333230"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_get_host_addr         (void);</pre>
+<p>
+Get the host's address.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the address of the host; NULL on error.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333269"></a><h3>
+<a name="gnet-inetaddr-autodetect-internet-interface"></a>gnet_inetaddr_autodetect_internet_interface ()</h3>
+<a class="indexterm" name="id333282"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_autodetect_internet_interface
+                                                        (void);</pre>
+<p>
+Finds an interface likely to be connected to the internet.  This
+ function can be used to automatically configure peer-to-peer
+ applications.  The function relies on heuristics and does not
+ always work correctly, especially if the host is behind a NAT.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> an address of an internet interface; NULL if it couldn't
+ find one or on error.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333324"></a><h3>
+<a name="gnet-inetaddr-get-interface-to"></a>gnet_inetaddr_get_interface_to ()</h3>
+<a class="indexterm" name="id333337"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_get_interface_to      (const <a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a> *inetaddr);</pre>
+<p>
+Figures out which local interface would be used to send a packet
+ to <em class="parameter"><code>inetaddr</code></em>.  This works on some systems, but not others.  We
+ recommend using <a href="gnet-inetaddr.html#gnet-inetaddr-autodetect-internet-interface"><code class="function">gnet_inetaddr_autodetect_internet_interface()</code></a> to
+ find an Internet interface since it's more likely to work.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>inetaddr</code></em>&#160;:</span></td>
+<td> a <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the address of an interface used to route packets to
+ <em class="parameter"><code>inetaddr</code></em>; NULL if there is no such interface or the system does
+ not support this check.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333429"></a><h3>
+<a name="gnet-inetaddr-get-internet-interface"></a>gnet_inetaddr_get_internet_interface ()</h3>
+<a class="indexterm" name="id333442"></a><pre class="programlisting"><a href="gnet-inetaddr.html#GInetAddr">GInetAddr</a>*          gnet_inetaddr_get_internet_interface
+                                                        (void);</pre>
+<p>
+Finds an internet interface.  This function finds the first
+ interface that is an internet address.  IPv6 policy is followed.
+</p>
+<p>
+ This function does not work on some systems.  We recommend using
+ <a href="gnet-inetaddr.html#gnet-inetaddr-autodetect-internet-interface"><code class="function">gnet_inetaddr_autodetect_internet_interface()</code></a>, which performs
+ additional checks.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the address of an internet interface; NULL if no internet
+ interfaces or on error.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333498"></a><h3>
+<a name="gnet-inetaddr-is-internet-domainname"></a>gnet_inetaddr_is_internet_domainname ()</h3>
+<a class="indexterm" name="id333510"></a><pre class="programlisting">gboolean            gnet_inetaddr_is_internet_domainname
+                                                        (const gchar *name);</pre>
+<p>
+Checks if a name is a sensible internet domain name.  This
+ function uses heuristics. It does not use DNS and will not block.
+ For example, "localhost" and "10.10.23.42" are not sensible
+ internet domain names.  (10.10.23.42 is a network address, but not
+ accessible to the internet at large.)</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><span class="term"><em class="parameter"><code>name</code></em>&#160;:</span></td>
+<td> name
+</td>
+</tr>
+<tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> TRUE if <em class="parameter"><code>name</code></em> is a sensible Internet domain name; FALSE
+ otherwise.
+
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id333579"></a><h3>
+<a name="gnet-inetaddr-list-interfaces"></a>gnet_inetaddr_list_interfaces ()</h3>
+<a class="indexterm" name="id333592"></a><pre class="programlisting">GList*              gnet_inetaddr_list_interfaces       (void);</pre>
+<p>
+Gets a list of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a> interfaces's on this host.  This list
+ includes all "up" Internet interfaces and the loopback interface,
+ if it exists.
+</p>
+<p>
+ On Windows if you do not have IPv6 installed then this function 
+ will return up to 10 interfaces.
+</p>
+<p>
+ This function may not work on some systems.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> A list of <a href="gnet-inetaddr.html#GInetAddr"><span class="type">GInetAddr</span></a>'s representing available interfaces.
+ The caller should delete the list and the addresses.
+
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!-- ##### SECTION Title ##### -->
+Mcast
+
+<!-- ##### SECTION Short_Description ##### -->
+IP Multicast socket
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+The Mcast module provides support for IP Multicast sockets.  IP
+Multicast allows you to send one packet to many receivers at once.
+Unfortunately, IP Multicast is not widely available.  IP Multicast is
+built on UDP.
+</para>
+
+<para>
+An IP Multicast socket is represented by a #GMcastSocket stucture.  To
+create a #GMcastSocket, call gnet_mcast_socket_new(),
+gnet_mcast_socket_new_with_port(), or gnet_mcast_socket_new_full().
+Then call gnet_mcast_socket_join_group() to join a multicast group.
+To leave the group, call gnet_mcast_socket_leave_group().
+</para>
+
+<para>
+Use gnet_mcast_socket_set_loopback() to set whether packets sent by
+the host will also be received by the host.  Applications typically
+disable loopback.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GMcastSocket ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_new_with_port ##### -->
+<para>
+
+</para>
+
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_new_full ##### -->
+<para>
+
+</para>
+
+@iface: 
+@port: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_delete ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_ref ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_unref ##### -->
+<para>
+
+</para>
+
+@socket: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_get_io_channel ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_get_local_inetaddr ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_join_group ##### -->
+<para>
+
+</para>
+
+@socket: 
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_leave_group ##### -->
+<para>
+
+</para>
+
+@socket: 
+@inetaddr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_get_ttl ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_set_ttl ##### -->
+<para>
+
+</para>
+
+@socket: 
+@ttl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_send ##### -->
+<para>
+
+</para>
+
+@socket: 
+@buffer: 
+@length: 
+@dst: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_receive ##### -->
+<para>
+
+</para>
+
+@socket: 
+@buffer: 
+@length: 
+@src: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_has_packet ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_is_loopback ##### -->
+<para>
+
+</para>
+
+@socket: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnet_mcast_socket_set_loopback ##### -->
+<para>
+
+</para>
+
+@socket: 
+@enable: 
+@Returns: 
+
+
+<!-- ##### MACRO gnet_mcast_socket_to_udp_socket ##### -->
+<para>
+
+</para>
+
+@MS: 
+
+
