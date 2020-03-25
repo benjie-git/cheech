@@ -62,7 +62,7 @@ about_win_glade::about_win_glade(
 		"\n"
 		"cheech is based on gchch by Loban A Rahman.\n"
 		"\n"
-		"2005-2006 Ben Levitt")));
+		"2005-2020 Ben Levitt")));
    Gtk::Button *close_button = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
    Gtk::HButtonBox *hbuttonbox6 = Gtk::manage(new class Gtk::HButtonBox(Gtk::BUTTONBOX_END, 0));
    Gtk::VBox *vbox9 = Gtk::manage(new class Gtk::VBox(false, 0));
@@ -79,7 +79,7 @@ about_win_glade::about_win_glade(
    hbuttonbox6->pack_start(*close_button);
    vbox9->pack_start(*label12);
    vbox9->pack_start(*hbuttonbox6, Gtk::PACK_SHRINK, 0);
-   about_win->set_title(_("About cheech -- Chinese Checkers"));
+   about_win->set_title(_("About cheech 0.9 -- Chinese Checkers"));
    about_win->set_modal(false);
    about_win->property_window_position().set_value(Gtk::WIN_POS_NONE);
    about_win->set_resizable(true);
