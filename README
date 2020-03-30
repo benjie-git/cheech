@@ -57,8 +57,7 @@ Building cheech
 Build on *nix/MacOS:
 --------------
 - install gtkmm (on a mac, run: brew install gtkmm)
-- manually install gnet-2.0.8 from within this project using the same steps below, but inside the gnet-2.0.8 dir.
-- run the below commands again in the root directory of the cheech project.
+- run the below commands in the root directory of the cheech project.
   - autoreconf -i
   - automake -a
   - ./configure
@@ -71,7 +70,6 @@ Build on Windows using Dev-C++
 - Get gtkmm 2.8 or higher from here:
     http://www.pcpm.ucl.ac.be/~gustin/win32_ports/gtkmm.html
   and install into C:\GTK.
-- Build gnet-2.0.8 from within this project, and put gnet-2.0.dll into C:\GTK\lib.
 - Use the included Dev-C++ files to build the cheech binaries.
 - Put the cheech*.exe files and the pixmap directory into a folder together
 - Rename the ajax/www/com.benjie.cheech directory cheechweb, and put it into
