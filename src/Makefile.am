@@ -84,12 +84,52 @@ cheech_SOURCES = \
 	ajax_server.cc\
 	ajax_server.hh\
 	ajax_server_conn.cc\
-	ajax_server_conn.hh
+	ajax_server_conn.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheech_LDFLAGS = 
 
 cheech_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 cheechd_SOURCES = \
 	cheechd.cc\
@@ -126,12 +166,52 @@ cheechd_SOURCES = \
 	ajax_server.cc\
 	ajax_server.hh\
 	ajax_server_conn.cc\
-	ajax_server_conn.hh
+	ajax_server_conn.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheechd_LDFLAGS = 
 
 cheechd_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 cheechbot_SOURCES = \
 	cheechbot.cc\
@@ -158,12 +238,52 @@ cheechbot_SOURCES = \
 	game_client.cc\
 	game_client.hh\
 	game_hole.cc\
-	game_hole.hh
+	game_hole.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheechbot_LDFLAGS = 
 
 cheechbot_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 cheechwebd_SOURCES = \
 	cheechwebd.cc\
@@ -198,9 +318,49 @@ cheechwebd_SOURCES = \
 	ajax_server.cc\
 	ajax_server.hh\
 	ajax_server_conn.cc\
-	ajax_server_conn.hh
+	ajax_server_conn.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheechwebd_LDFLAGS = 
 
 cheechwebd_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0

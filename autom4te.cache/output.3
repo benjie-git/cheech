@@ -633,6 +633,21 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIB@&t@OBJS
+GNET_GCOV_ENABLED_FALSE
+GNET_GCOV_ENABLED_TRUE
+VALGRIND_LIBS
+VALGRIND_CFLAGS
+HAVE_VALGRIND_FALSE
+HAVE_VALGRIND_TRUE
+VALGRIND_PATH
+CHECK_LIBS
+CHECK_CFLAGS
+HAVE_CHECK_FALSE
+HAVE_CHECK_TRUE
+GTHREAD_LIBS
+GTHREAD_CFLAGS
+GLIB_LIBS
+GLIB_CFLAGS
 PACKAGE_MENU_DIR
 NO_PREFIX_PACKAGE_MENU_DIR
 PACKAGE_HELP_DIR
@@ -803,6 +818,8 @@ with_aix_soname
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+enable_threadsafe_getaddrinfo
+enable_threadsafe_gethostbyname
 '
       ac_precious_vars='build_alias
 host_alias
@@ -822,7 +839,15 @@ PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 PACKAGE_CFLAGS
-PACKAGE_LIBS'
+PACKAGE_LIBS
+GLIB_CFLAGS
+GLIB_LIBS
+GTHREAD_CFLAGS
+GTHREAD_LIBS
+CHECK_CFLAGS
+CHECK_LIBS
+VALGRIND_CFLAGS
+VALGRIND_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1453,6 +1478,10 @@ Optional Features:
   --enable-fast-install@<:@=PKGS@:>@ 
                           optimize for fast installation @<:@default=yes@:>@
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --enable-threadsafe-getaddrinfo 
+                          assume getaddrinfo() is threadsafe
+  --enable-threadsafe-gethostbyname 
+                          assume gethostbyname() is threadsafe
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -1489,6 +1518,19 @@ Some influential environment variables:
               C compiler flags for PACKAGE, overriding pkg-config
   PACKAGE_LIBS 
               linker flags for PACKAGE, overriding pkg-config
+  GLIB_CFLAGS C compiler flags for GLIB, overriding pkg-config
+  GLIB_LIBS   linker flags for GLIB, overriding pkg-config
+  GTHREAD_CFLAGS 
+              C compiler flags for GTHREAD, overriding pkg-config
+  GTHREAD_LIBS 
+              linker flags for GTHREAD, overriding pkg-config
+  CHECK_CFLAGS 
+              C compiler flags for CHECK, overriding pkg-config
+  CHECK_LIBS  linker flags for CHECK, overriding pkg-config
+  VALGRIND_CFLAGS 
+              C compiler flags for VALGRIND, overriding pkg-config
+  VALGRIND_LIBS 
+              linker flags for VALGRIND, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -2038,6 +2080,63 @@ fi
   as_fn_set_status $ac_retval
 
 } @%:@ ac_fn_cxx_try_link
+
+@%:@ ac_fn_c_check_member LINENO AGGR MEMBER VAR INCLUDES
+@%:@ ----------------------------------------------------
+@%:@ Tries to find if the field MEMBER exists in type AGGR, after including
+@%:@ INCLUDES, setting cache variable VAR accordingly.
+ac_fn_c_check_member ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2.$3" >&5
+$as_echo_n "checking for $2.$3... " >&6; }
+if eval \${$4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (sizeof ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  eval "$4=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$4
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} @%:@ ac_fn_c_check_member
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -18401,19 +18500,19 @@ $as_echo "no" >&6; }
 fi
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gtkmm-2.4, gnet-2.0" >&5
-$as_echo_n "checking for gtkmm-2.4, gnet-2.0... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gtkmm-2.4" >&5
+$as_echo_n "checking for gtkmm-2.4... " >&6; }
 
 if test -n "$PACKAGE_CFLAGS"; then
     pkg_cv_PACKAGE_CFLAGS="$PACKAGE_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtkmm-2.4, gnet-2.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtkmm-2.4, gnet-2.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtkmm-2.4\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtkmm-2.4") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_PACKAGE_CFLAGS=`$PKG_CONFIG --cflags "gtkmm-2.4, gnet-2.0" 2>/dev/null`
+  pkg_cv_PACKAGE_CFLAGS=`$PKG_CONFIG --cflags "gtkmm-2.4" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes 
 else
   pkg_failed=yes
@@ -18425,12 +18524,12 @@ if test -n "$PACKAGE_LIBS"; then
     pkg_cv_PACKAGE_LIBS="$PACKAGE_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtkmm-2.4, gnet-2.0\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "gtkmm-2.4, gnet-2.0") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gtkmm-2.4\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gtkmm-2.4") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_PACKAGE_LIBS=`$PKG_CONFIG --libs "gtkmm-2.4, gnet-2.0" 2>/dev/null`
+  pkg_cv_PACKAGE_LIBS=`$PKG_CONFIG --libs "gtkmm-2.4" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes 
 else
   pkg_failed=yes
@@ -18451,14 +18550,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        PACKAGE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtkmm-2.4, gnet-2.0" 2>&1`
+	        PACKAGE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gtkmm-2.4" 2>&1`
         else
-	        PACKAGE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtkmm-2.4, gnet-2.0" 2>&1`
+	        PACKAGE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gtkmm-2.4" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$PACKAGE_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (gtkmm-2.4, gnet-2.0) were not met:
+	as_fn_error $? "Package requirements (gtkmm-2.4) were not met:
 
 $PACKAGE_PKG_ERRORS
 
@@ -18570,6 +18669,1451 @@ PACKAGE_HELP_DIR="${packageprefix}/${packagehelpdir}"
 NO_PREFIX_PACKAGE_MENU_DIR="${packagemenudir}"
 
 PACKAGE_MENU_DIR="${packageprefix}/${packagemenudir}"
+
+
+####################
+# Mac OS X
+
+# MacOSX doesn't define socklen_t, so we must define it to be an
+# 'int'.  On all other systems, it's size_t.
+case $build in
+  *-apple-darwin*)
+    
+$as_echo "@%:@define GNET_APPLE_DARWIN 1" >>confdefs.h
+
+esac
+
+
+###############################
+# Check for libraries
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
+$as_echo_n "checking for main in -lsocket... " >&6; }
+if ${ac_cv_lib_socket_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsocket  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_socket_main=yes
+else
+  ac_cv_lib_socket_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_main" >&5
+$as_echo "$ac_cv_lib_socket_main" >&6; }
+if test "x$ac_cv_lib_socket_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBSOCKET 1
+_ACEOF
+
+  LIBS="-lsocket $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lnsl" >&5
+$as_echo_n "checking for main in -lnsl... " >&6; }
+if ${ac_cv_lib_nsl_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnsl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_nsl_main=yes
+else
+  ac_cv_lib_nsl_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_main" >&5
+$as_echo "$ac_cv_lib_nsl_main" >&6; }
+if test "x$ac_cv_lib_nsl_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBNSL 1
+_ACEOF
+
+  LIBS="-lnsl $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lresolv" >&5
+$as_echo_n "checking for main in -lresolv... " >&6; }
+if ${ac_cv_lib_resolv_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lresolv  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_resolv_main=yes
+else
+  ac_cv_lib_resolv_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_resolv_main" >&5
+$as_echo "$ac_cv_lib_resolv_main" >&6; }
+if test "x$ac_cv_lib_resolv_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define HAVE_LIBRESOLV 1
+_ACEOF
+
+  LIBS="-lresolv $LIBS"
+
+fi
+
+
+
+GLIB_REQ=2.6.0
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for  glib-2.0 >= $GLIB_REQ " >&5
+$as_echo_n "checking for  glib-2.0 >= $GLIB_REQ ... " >&6; }
+
+if test -n "$GLIB_CFLAGS"; then
+    pkg_cv_GLIB_CFLAGS="$GLIB_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \" glib-2.0 >= \$GLIB_REQ \""; } >&5
+  ($PKG_CONFIG --exists --print-errors " glib-2.0 >= $GLIB_REQ ") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GLIB_CFLAGS=`$PKG_CONFIG --cflags " glib-2.0 >= $GLIB_REQ " 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GLIB_LIBS"; then
+    pkg_cv_GLIB_LIBS="$GLIB_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \" glib-2.0 >= \$GLIB_REQ \""; } >&5
+  ($PKG_CONFIG --exists --print-errors " glib-2.0 >= $GLIB_REQ ") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GLIB_LIBS=`$PKG_CONFIG --libs " glib-2.0 >= $GLIB_REQ " 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs " glib-2.0 >= $GLIB_REQ " 2>&1`
+        else
+	        GLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs " glib-2.0 >= $GLIB_REQ " 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GLIB_PKG_ERRORS" >&5
+
+	
+  as_fn_error $? "
+    GLib-2.x development files not found (or version too old):
+
+    Cannot find glib-2.0 >= $GLIB_REQ
+                    
+    Please check the following:
+                    
+     * Do you have the glib2 _development_ package installed?
+       (usually called glib2-devel, libglib2.0-dev or similar)
+       If 
+           ls -l /usr/lib/pkgconfig/glib-2.0.pc
+       reports that the file does not exist, then you are missing
+       the development package. If this is the case, you are most
+       likely missing a whole bunch of other -devel packages as
+       well (e.g. gtk2-devel, libglade2-devel, gstreamer-devel), so
+       you might want to install them all in one go. If you installed 
+       glib2 from source, this point does not apply to you.
+
+     * Do you have glib2 installed more than once, e.g. once from
+       package and once from source? (if both 
+           ls /usr/lib/libglib-2.0*
+       and
+           ls /usr/local/lib/libglib-2.0*
+       show results, you need to fix your installation.
+                    
+     * Did you install glib from source? If yes, you might need to
+       point pkg-config to the location of the glib-2.0.pc file by
+       doing something like
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+       and then running ./configure again.
+                    
+   " "$LINENO" 5
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	
+  as_fn_error $? "
+    GLib-2.x development files not found (or version too old):
+
+    Cannot find glib-2.0 >= $GLIB_REQ
+                    
+    Please check the following:
+                    
+     * Do you have the glib2 _development_ package installed?
+       (usually called glib2-devel, libglib2.0-dev or similar)
+       If 
+           ls -l /usr/lib/pkgconfig/glib-2.0.pc
+       reports that the file does not exist, then you are missing
+       the development package. If this is the case, you are most
+       likely missing a whole bunch of other -devel packages as
+       well (e.g. gtk2-devel, libglade2-devel, gstreamer-devel), so
+       you might want to install them all in one go. If you installed 
+       glib2 from source, this point does not apply to you.
+
+     * Do you have glib2 installed more than once, e.g. once from
+       package and once from source? (if both 
+           ls /usr/lib/libglib-2.0*
+       and
+           ls /usr/local/lib/libglib-2.0*
+       show results, you need to fix your installation.
+                    
+     * Did you install glib from source? If yes, you might need to
+       point pkg-config to the location of the glib-2.0.pc file by
+       doing something like
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+       and then running ./configure again.
+                    
+   " "$LINENO" 5
+
+else
+	GLIB_CFLAGS=$pkg_cv_GLIB_CFLAGS
+	GLIB_LIBS=$pkg_cv_GLIB_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	
+fi
+
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gthread-2.0 >= $GLIB_REQ" >&5
+$as_echo_n "checking for gthread-2.0 >= $GLIB_REQ... " >&6; }
+
+if test -n "$GTHREAD_CFLAGS"; then
+    pkg_cv_GTHREAD_CFLAGS="$GTHREAD_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gthread-2.0 >= \$GLIB_REQ\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gthread-2.0 >= $GLIB_REQ") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GTHREAD_CFLAGS=`$PKG_CONFIG --cflags "gthread-2.0 >= $GLIB_REQ" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GTHREAD_LIBS"; then
+    pkg_cv_GTHREAD_LIBS="$GTHREAD_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"gthread-2.0 >= \$GLIB_REQ\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "gthread-2.0 >= $GLIB_REQ") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GTHREAD_LIBS=`$PKG_CONFIG --libs "gthread-2.0 >= $GLIB_REQ" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GTHREAD_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "gthread-2.0 >= $GLIB_REQ" 2>&1`
+        else
+	        GTHREAD_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "gthread-2.0 >= $GLIB_REQ" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GTHREAD_PKG_ERRORS" >&5
+
+	 as_fn_error $? "The impossible happened" "$LINENO" 5  
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	 as_fn_error $? "The impossible happened" "$LINENO" 5  
+else
+	GTHREAD_CFLAGS=$pkg_cv_GTHREAD_CFLAGS
+	GTHREAD_LIBS=$pkg_cv_GTHREAD_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	
+fi
+
+# These SUBSTs are primarily for gnet-config and gnet.pc
+
+
+
+
+
+# make double sure GLib was compiled with GThread support
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if GLib was compiled with support for threads" >&5
+$as_echo_n "checking if GLib was compiled with support for threads... " >&6; }
+SAVED_CFLAGS="$CFLAGS"
+CFLAGS="$GTHREAD_CFLAGS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <glib.h>
+int
+main ()
+{
+
+  #ifndef G_THREADS_ENABLED
+  #error "GNet requires a GLib with support for threads"
+  #endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+else
+  
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  as_fn_error $? "GNet requires a GLib with support for threads enabled!" "$LINENO" 5
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+CFLAGS="$SAVED_CFLAGS"
+
+# Check for IPv6 support on unix
+# (will be done at runtime on win32)
+if test "x$gnet_native_win32" != "xyes"
+then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for IPv6 availability" >&5
+$as_echo_n "checking for IPv6 availability... " >&6; }
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <sys/types.h>
+                #include <sys/socket.h>
+                #include <netinet/in.h> 
+int
+main ()
+{
+ struct sockaddr_in6 s; 
+                struct in6_addr t=in6addr_any; 
+                int i=AF_INET6; 
+                s; 
+                t.s6_addr[0] = 0; 
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  
+                
+$as_echo "@%:@define HAVE_IPV6 1" >>confdefs.h
+
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+              
+else
+  
+                { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+              
+  
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+
+
+
+###############################
+# Check for headers
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
+$as_echo_n "checking for ANSI C header files... " >&6; }
+if ${ac_cv_header_stdc+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <float.h>
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_stdc=yes
+else
+  ac_cv_header_stdc=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+if test $ac_cv_header_stdc = yes; then
+  # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <string.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "memchr" >/dev/null 2>&1; then :
+  
+else
+  ac_cv_header_stdc=no
+fi
+rm -f conftest*
+
+fi
+
+if test $ac_cv_header_stdc = yes; then
+  # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "free" >/dev/null 2>&1; then :
+  
+else
+  ac_cv_header_stdc=no
+fi
+rm -f conftest*
+
+fi
+
+if test $ac_cv_header_stdc = yes; then
+  # /bin/cc in Irix-4.0.5 gets non-ANSI ctype macros unless using -ansi.
+  if test "$cross_compiling" = yes; then :
+  :
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <ctype.h>
+#include <stdlib.h>
+#if ((' ' & 0x0FF) == 0x020)
+# define ISLOWER(c) ('a' <= (c) && (c) <= 'z')
+# define TOUPPER(c) (ISLOWER(c) ? 'A' + ((c) - 'a') : (c))
+#else
+# define ISLOWER(c) \
+		   (('a' <= (c) && (c) <= 'i') \
+		     || ('j' <= (c) && (c) <= 'r') \
+		     || ('s' <= (c) && (c) <= 'z'))
+# define TOUPPER(c) (ISLOWER(c) ? ((c) | 0x40) : (c))
+#endif
+
+#define XOR(e, f) (((e) && !(f)) || (!(e) && (f)))
+int
+main ()
+{
+  int i;
+  for (i = 0; i < 256; i++)
+    if (XOR (islower (i), ISLOWER (i))
+	|| toupper (i) != TOUPPER (i))
+      return 2;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  
+else
+  ac_cv_header_stdc=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_stdc" >&5
+$as_echo "$ac_cv_header_stdc" >&6; }
+if test $ac_cv_header_stdc = yes; then
+  
+$as_echo "@%:@define STDC_HEADERS 1" >>confdefs.h
+
+fi
+
+for ac_header in sys/sockio.h sys/param.h ifaddrs.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+@%:@define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+ 
+fi
+
+done
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linux/netlink.h" >&5
+$as_echo_n "checking for linux/netlink.h... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <linux/netlink.h>
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+  
+	     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }	     
+             
+$as_echo "@%:@define HAVE_LINUX_NETLINK_H 1" >>confdefs.h
+
+           
+else
+  
+             { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+           
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+
+
+###############################
+# Check for types
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for socklen_t" >&5
+$as_echo_n "checking for socklen_t... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  socklen_t x;
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+else
+  
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    int accept (int, struct sockaddr *, size_t *);
+    
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: size_t" >&5
+$as_echo "size_t" >&6; }
+      
+$as_echo "@%:@define socklen_t size_t" >>confdefs.h
+
+    
+else
+  
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: int" >&5
+$as_echo "int" >&6; }
+      
+$as_echo "@%:@define socklen_t int" >>confdefs.h
+
+    
+  
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+
+###############################
+# Check for structures
+ac_fn_c_check_member "$LINENO" "struct sockaddr" "sa_len" "ac_cv_member_struct_sockaddr_sa_len" "#include <sys/types.h>
+		 #include <sys/socket.h>
+"
+if test "x$ac_cv_member_struct_sockaddr_sa_len" = xyes; then :
+  
+$as_echo "@%:@define HAVE_SOCKADDR_SA_LEN 1" >>confdefs.h
+
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct sockaddr_storage" >&5
+$as_echo_n "checking for struct sockaddr_storage... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <sys/types.h>
+#include <sys/socket.h>
+int
+main ()
+{
+struct sockaddr_storage s; s
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  have_sockaddr_storage=yes
+else
+  have_sockaddr_storage=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+if test "$have_sockaddr_storage" = yes; then
+  
+$as_echo "@%:@define HAVE_SOCKADDR_STORAGE 1" >>confdefs.h
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct sockaddr_storage family field" >&5
+$as_echo_n "checking for struct sockaddr_storage family field... " >&6; }
+  gnet_sockaddr_family_field_name=""
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <sys/types.h>
+    #include <sys/socket.h>
+int
+main ()
+{
+struct sockaddr_storage s; s.ss_family = AF_INET;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gnet_sockaddr_family_field_name=ss_family
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  if test -z "${gnet_sockaddr_family_field_name}" ; then
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <sys/types.h>
+      #include <sys/socket.h>
+int
+main ()
+{
+struct sockaddr_storage s; s.__ss_family = AF_INET;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  gnet_sockaddr_family_field_name=__ss_family
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  fi
+  if test -z "${gnet_sockaddr_family_field_name}" ; then
+    as_fn_error $? "can't figure out 'family' field of struct sockaddr_storage" "$LINENO" 5
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gnet_sockaddr_family_field_name" >&5
+$as_echo "$gnet_sockaddr_family_field_name" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  gnet_sockaddr_family_field_name=ss_family
+fi
+
+cat >>confdefs.h <<_ACEOF
+@%:@define GNET_SOCKADDR_FAMILY_FIELD_NAME $gnet_sockaddr_family_field_name
+_ACEOF
+
+
+ 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for abstract socket namespace availability" >&5
+$as_echo_n "checking for abstract socket namespace availability... " >&6; }
+if ${ac_cv_gnet_have_abstract_sockets+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot run test program while cross compiling
+See \`config.log' for more details" "$LINENO" 5; }
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <sys/types.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <errno.h>
+
+int
+main ()
+{
+
+  int listen_fd, len;
+  struct sockaddr_un addr;
+  
+  listen_fd = socket (PF_UNIX, SOCK_STREAM, 0);
+  if (listen_fd < 0) {
+    perror ("socket() failed: ");
+    exit (1);
+  }
+  memset (&addr, '\0', sizeof (addr));
+  addr.sun_family = AF_UNIX;
+  strcpy (addr.sun_path, "X/tmp/gnet-fake-socket-path-used-in-configure-test");
+  len = SUN_LEN (&addr); /* calculate size before adding the \0 */
+  addr.sun_path[0] = '\0'; /* this is what makes it abstract */
+  
+  if (bind (listen_fd, (struct sockaddr*) &addr, len) < 0) {
+    perror ("Abstract socket namespace bind() failed: ");
+    exit (1);
+  }
+  exit (0);
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_gnet_have_abstract_sockets=yes
+else
+  ac_cv_gnet_have_abstract_sockets=no
+
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_gnet_have_abstract_sockets" >&5
+$as_echo "$ac_cv_gnet_have_abstract_sockets" >&6; }
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+if test x$ac_cv_gnet_have_abstract_sockets = xyes ; then
+   
+$as_echo "@%:@define HAVE_ABSTRACT_SOCKETS 1" >>confdefs.h
+
+fi
+
+###############################
+# Compiler characteristics
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
+$as_echo_n "checking for an ANSI C-conforming const... " >&6; }
+if ${ac_cv_c_const+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+#ifndef __cplusplus
+  /* Ultrix mips cc rejects this sort of thing.  */
+  typedef int charset[2];
+  const charset cs = { 0, 0 };
+  /* SunOS 4.1.1 cc rejects this.  */
+  char const *const *pcpcc;
+  char **ppc;
+  /* NEC SVR4.0.2 mips cc rejects this.  */
+  struct point {int x, y;};
+  static struct point const zero = {0,0};
+  /* AIX XL C 1.02.0.0 rejects this.
+     It does not let you subtract one const X* pointer from another in
+     an arm of an if-expression whose if-part is not a constant
+     expression */
+  const char *g = "string";
+  pcpcc = &g + (g ? g-g : 0);
+  /* HPUX 7.0 cc rejects these. */
+  ++pcpcc;
+  ppc = (char**) pcpcc;
+  pcpcc = (char const *const *) ppc;
+  { /* SCO 3.2v4 cc rejects this sort of thing.  */
+    char tx;
+    char *t = &tx;
+    char const *s = 0 ? (char *) 0 : (char const *) 0;
+
+    *t++ = 0;
+    if (s) return 0;
+  }
+  { /* Someone thinks the Sun supposedly-ANSI compiler will reject this.  */
+    int x[] = {25, 17};
+    const int *foo = &x[0];
+    ++foo;
+  }
+  { /* Sun SC1.0 ANSI compiler rejects this -- but not the above. */
+    typedef const int *iptr;
+    iptr p = 0;
+    ++p;
+  }
+  { /* AIX XL C 1.02.0.0 rejects this sort of thing, saying
+       "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
+    struct s { int j; const int *ap[3]; } bx;
+    struct s *b = &bx; b->j = 5;
+  }
+  { /* ULTRIX-32 V3.1 (Rev 9) vcc rejects this */
+    const int foo = 10;
+    if (!foo) return 0;
+  }
+  return !cs[0] && !zero.x;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_const=yes
+else
+  ac_cv_c_const=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_const" >&5
+$as_echo "$ac_cv_c_const" >&6; }
+if test $ac_cv_c_const = no; then
+  
+$as_echo "@%:@define const /**/" >>confdefs.h
+
+fi
+
+
+# Use reentract functions, and compile expiramental stuff
+CFLAGS="$CFLAGS -D_REENTRANT -DGNET_EXPERIMENTAL"
+
+
+###############################
+# Check for library functions
+
+# Most of this code checks for variants of gethostbyname().  For
+# simplicity and curiosity, we check for all variants, though only one
+# working variant is needed.
+
+# Look for getifaddrs()
+ac_fn_c_check_func "$LINENO" "getifaddrs" "ac_cv_func_getifaddrs"
+if test "x$ac_cv_func_getifaddrs" = xyes; then :
+  
+$as_echo "@%:@define HAVE_GETIFADDRS 1" >>confdefs.h
+
+fi
+
+
+
+# The user may be able to tell us if a function is thread-safe.  We
+# know of no good way to test this programaticly.
+
+# On some systems, getaddrinfo() is thread-safe
+@%:@ Check whether --enable-threadsafe_getaddrinfo was given.
+if test "${enable_threadsafe_getaddrinfo+set}" = set; then :
+  enableval=$enable_threadsafe_getaddrinfo; 
+fi
+
+
+# On some systems, gethostbyname() is thread-safe
+@%:@ Check whether --enable-threadsafe_gethostbyname was given.
+if test "${enable_threadsafe_gethostbyname+set}" = set; then :
+  enableval=$enable_threadsafe_gethostbyname; 
+fi
+
+
+
+# Look for getaddrinfo().  If we have that, we don't need
+# gethostbyname().  We assume if the system has getaddrinfo(), they
+# have getnameinfo().
+
+ac_fn_c_check_func "$LINENO" "getaddrinfo" "ac_cv_func_getaddrinfo"
+if test "x$ac_cv_func_getaddrinfo" = xyes; then :
+   # have getaddrinfo()
+  HAVE_GETADDRINFO=yes
+  
+$as_echo "@%:@define HAVE_GETADDRINFO 1" >>confdefs.h
+
+  # Check for threadsafe getaddrinfo()
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for threadsafe getaddrinfo()" >&5
+$as_echo_n "checking for threadsafe getaddrinfo()... " >&6; }
+  if test "x$enable_threadsafe_getaddrinfo" = "xyes" ; then
+    HAVE_GETADDRINFO_THREADSAFE=yes
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+    
+$as_echo "@%:@define HAVE_GETADDRINFO_THREADSAFE 1" >>confdefs.h
+
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    # If there is no threadsafe getaddrinfo, use a Glib mutex.
+    if test "x$GTHREAD_CFLAGS" != "x"; then
+      
+$as_echo "@%:@define HAVE_GETADDRINFO_GLIB_MUTEX 1" >>confdefs.h
+
+	HAVE_GETADDRINFO_GLIB_MUTEX=yes
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 
+
+You do not have a thread-safe getaddrinfo() or GLib threads.
+Calls to getaddrinfo() (called by the GNet address functions) may
+not be thread-safe.  This build of GNet could malfunction if used in
+programs that use threads.  If your system has a thread-safe version
+of getaddrinfo(), pass the option --enable-threadsafe-getaddrinfo
+to configure.  The function's manpage may be able to tell you whether
+it is thread-safe or not.
+
+" >&5
+$as_echo "$as_me: WARNING: 
+
+You do not have a thread-safe getaddrinfo() or GLib threads.
+Calls to getaddrinfo() (called by the GNet address functions) may
+not be thread-safe.  This build of GNet could malfunction if used in
+programs that use threads.  If your system has a thread-safe version
+of getaddrinfo(), pass the option --enable-threadsafe-getaddrinfo
+to configure.  The function's manpage may be able to tell you whether
+it is thread-safe or not.
+
+" >&2;}
+    fi
+  fi
+ 
+else
+    # no getaddrinfo()
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+ 
+fi
+
+
+
+
+# Check if the user told use gethostbyname() is thread-safe.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for threadsafe gethostbyname()" >&5
+$as_echo_n "checking for threadsafe gethostbyname()... " >&6; }
+if test "x$enable_threadsafe_gethostbyname" = "xyes" ; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+  
+$as_echo "@%:@define HAVE_GETHOSTBYNAME_THREADSAFE 1" >>confdefs.h
+
+  HAVE_GETHOSTBYNAME_THREADSAFE=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+# Look for a gethostbyname_r() we can use.  We assume that if the
+# system has gethostbyname_r(), they also have gethostbyaddr_r().
+
+# First, look for the glibc varient
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for glibc gethostbyname_r" >&5
+$as_echo_n "checking for glibc gethostbyname_r... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <netdb.h>
+int
+main ()
+{
+struct hostent result_buf;
+	     char buf[1024];
+	     struct hostent *result;
+	     int h_erropp;
+
+	     gethostbyname_r("localhost",
+			     &result_buf,
+			     buf,
+			     sizeof(buf),
+			     &result,
+			     &h_erropp);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	      
+$as_echo "@%:@define HAVE_GETHOSTBYNAME_R_GLIBC 1" >>confdefs.h
+
+	      HAVE_GETHOSTBYNAME_R=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+# Whups, maybe we're on Solaris or Irix
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Solaris/Irix gethostbyname_r" >&5
+$as_echo_n "checking for Solaris/Irix gethostbyname_r... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <netdb.h>
+int
+main ()
+{
+struct hostent result;
+	     char buf[1024];
+	     int h_errnop;
+
+	     gethostbyname_r("localhost",
+			     &result,
+			     buf,
+			     sizeof(buf),
+			     &h_errnop);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	     
+$as_echo "@%:@define HAVE_GETHOSTBYNAME_R_SOLARIS 1" >>confdefs.h
+
+	     HAVE_GETHOSTBYNAME_R=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+# Or not.  Perhaps we're on HP-UX?
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for HP-UX gethostbyname_r" >&5
+$as_echo_n "checking for HP-UX gethostbyname_r... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <netdb.h>
+int
+main ()
+{
+struct hostent result;
+	     char buf[1024];
+
+	     gethostbyname_r("localhost",
+			     &result,
+			     buf);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	     
+$as_echo "@%:@define HAVE_GETHOSTBYNAME_R_HPUX 1" >>confdefs.h
+
+	     HAVE_GETHOSTBYNAME_R=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+# If there is no gethostbyname_r, use Glib threads.
+if test -z "$HAVE_GETHOSTBYNAME_THREADSAFE" -a -z "$HAVE_GETHOSTBYNAME_R" -a "$GTHREAD_CFLAGS"; then
+	
+$as_echo "@%:@define HAVE_GETHOSTBYNAME_R_GLIB_MUTEX 1" >>confdefs.h
+
+	HAVE_GETHOSTBYNAME_R=yes
+fi
+
+# Duh-oh.  We don't have _any_ thread-safety, so warn the builder
+if test -z "$HAVE_GETADDRINFO_THREADSAFE" -a -z "$HAVE_GETHOSTBYNAME_THREADSAFE" -a -z "$HAVE_GETHOSTBYNAME_R"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 
+
+You do not have a thread-safe gethostbyname_r() or GLib threads.
+Calls to gethostbyname() (called by the GNet address functions) may
+not be thread-safe.  This build of GNet could malfunction if used in
+programs that use threads.  If your system has a thread-safe version
+of gethostbyname(), pass the option --enable-threadsafe-gethostbyname
+to configure.  The function's manpage may be able to tell you whether
+it is thread-safe or not.
+
+" >&5
+$as_echo "$as_me: WARNING: 
+
+You do not have a thread-safe gethostbyname_r() or GLib threads.
+Calls to gethostbyname() (called by the GNet address functions) may
+not be thread-safe.  This build of GNet could malfunction if used in
+programs that use threads.  If your system has a thread-safe version
+of gethostbyname(), pass the option --enable-threadsafe-gethostbyname
+to configure.  The function's manpage may be able to tell you whether
+it is thread-safe or not.
+
+" >&2;}
+fi
+
+
+# If the compiler is gcc, turn on as many warnings as possible
+if test "x$GCC" = "xyes"; then
+  CFLAGS="$CFLAGS -Wall -Wstrict-prototypes \
+    -Wmissing-prototypes -Wmissing-declarations"
+  if test "x$enable_debug" = "xyes"; then
+    CFLAGS="$CFLAGS -Werror"
+  fi
+
+  if test "x$enable_ansi" = "xyes"; then
+    CFLAGS="$CFLAGS -ansi"
+    CFLAGS="$CFLAGS -pedantic"
+  fi
+fi
+
+	
+###############################
+# libcheck unit test framework
+###############################
+
+#dnl check for "check", unit testing library/header
+#AM_PATH_CHECK([0.9.4],
+#    [
+#        HAVE_CHECK=yes
+#        AC_MSG_NOTICE(CHECK_CFLAGS: $CHECK_CFLAGS)
+#        AC_MSG_NOTICE(CHECK_LIBS: $CHECK_LIBS)
+#    ], [
+#        HAVE_CHECK=no
+#    ])
+#AM_CONDITIONAL(HAVE_CHECK, test "x$HAVE_CHECK" = "xyes")
+
+ 
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for check >= 0.9.4" >&5
+$as_echo_n "checking for check >= 0.9.4... " >&6; }
+
+if test -n "$CHECK_CFLAGS"; then
+    pkg_cv_CHECK_CFLAGS="$CHECK_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check >= 0.9.4\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "check >= 0.9.4") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_CHECK_CFLAGS=`$PKG_CONFIG --cflags "check >= 0.9.4" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$CHECK_LIBS"; then
+    pkg_cv_CHECK_LIBS="$CHECK_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"check >= 0.9.4\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "check >= 0.9.4") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_CHECK_LIBS=`$PKG_CONFIG --libs "check >= 0.9.4" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        CHECK_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "check >= 0.9.4" 2>&1`
+        else
+	        CHECK_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "check >= 0.9.4" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$CHECK_PKG_ERRORS" >&5
+
+	 if false; then
+  HAVE_CHECK_TRUE=
+  HAVE_CHECK_FALSE='#'
+else
+  HAVE_CHECK_TRUE='#'
+  HAVE_CHECK_FALSE=
+fi
+
+ 
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	 if false; then
+  HAVE_CHECK_TRUE=
+  HAVE_CHECK_FALSE='#'
+else
+  HAVE_CHECK_TRUE='#'
+  HAVE_CHECK_FALSE=
+fi
+
+ 
+else
+	CHECK_CFLAGS=$pkg_cv_CHECK_CFLAGS
+	CHECK_LIBS=$pkg_cv_CHECK_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	 if true; then
+  HAVE_CHECK_TRUE=
+  HAVE_CHECK_FALSE='#'
+else
+  HAVE_CHECK_TRUE='#'
+  HAVE_CHECK_FALSE=
+fi
+
+fi
+
+# Extract the first word of "valgrind", so it can be a program name with args.
+set dummy valgrind; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_VALGRIND_PATH+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $VALGRIND_PATH in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_VALGRIND_PATH="$VALGRIND_PATH" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_VALGRIND_PATH="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_VALGRIND_PATH" && ac_cv_path_VALGRIND_PATH="no"
+  ;;
+esac
+fi
+VALGRIND_PATH=$ac_cv_path_VALGRIND_PATH
+if test -n "$VALGRIND_PATH"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $VALGRIND_PATH" >&5
+$as_echo "$VALGRIND_PATH" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether valgrind.h is available" >&5
+$as_echo_n "checking whether valgrind.h is available... " >&6; }
+ if test ! "x$VALGRIND_PATH" = "xno"; then
+  HAVE_VALGRIND_TRUE=
+  HAVE_VALGRIND_FALSE='#'
+else
+  HAVE_VALGRIND_TRUE='#'
+  HAVE_VALGRIND_FALSE=
+fi
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for valgrind > 2.1" >&5
+$as_echo_n "checking for valgrind > 2.1... " >&6; }
+
+if test -n "$VALGRIND_CFLAGS"; then
+    pkg_cv_VALGRIND_CFLAGS="$VALGRIND_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"valgrind > 2.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "valgrind > 2.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_VALGRIND_CFLAGS=`$PKG_CONFIG --cflags "valgrind > 2.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$VALGRIND_LIBS"; then
+    pkg_cv_VALGRIND_LIBS="$VALGRIND_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"valgrind > 2.1\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "valgrind > 2.1") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_VALGRIND_LIBS=`$PKG_CONFIG --libs "valgrind > 2.1" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes 
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        VALGRIND_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "valgrind > 2.1" 2>&1`
+        else
+	        VALGRIND_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "valgrind > 2.1" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$VALGRIND_PKG_ERRORS" >&5
+
+	
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+  
+else
+	VALGRIND_CFLAGS=$pkg_cv_VALGRIND_CFLAGS
+	VALGRIND_LIBS=$pkg_cv_VALGRIND_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+    
+$as_echo "@%:@define HAVE_VALGRIND 1" >>confdefs.h
+
+    
+  
+fi
+
+ if test "xyes" = "xno"; then
+  GNET_GCOV_ENABLED_TRUE=
+  GNET_GCOV_ENABLED_FALSE='#'
+else
+  GNET_GCOV_ENABLED_TRUE='#'
+  GNET_GCOV_ENABLED_FALSE=
+fi
 
 
 ac_config_files="$ac_config_files Makefile src/Makefile pixmaps/Makefile ajax/Makefile ajax/www/Makefile ajax/www/com.benjie.cheech/Makefile ajax/www/com.benjie.cheech/images/Makefile"
@@ -18720,6 +20264,22 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_CHECK_TRUE}" && test -z "${HAVE_CHECK_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_CHECK\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_CHECK_TRUE}" && test -z "${HAVE_CHECK_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_CHECK\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_VALGRIND_TRUE}" && test -z "${HAVE_VALGRIND_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_VALGRIND\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${GNET_GCOV_ENABLED_TRUE}" && test -z "${GNET_GCOV_ENABLED_FALSE}"; then
+  as_fn_error $? "conditional \"GNET_GCOV_ENABLED\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

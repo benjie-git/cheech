@@ -92,7 +92,10 @@ bin_PROGRAMS = cheech$(EXEEXT) cheechd$(EXEEXT) cheechbot$(EXEEXT) \
 	cheechwebd$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -118,7 +121,13 @@ am_cheech_OBJECTS = cheech.$(OBJEXT) about_win.$(OBJEXT) \
 	game_images.$(OBJEXT) game_server.$(OBJEXT) \
 	game_client.$(OBJEXT) game_hole.$(OBJEXT) game_view.$(OBJEXT) \
 	game_view_hole.$(OBJEXT) prefs.$(OBJEXT) ajax_server.$(OBJEXT) \
-	ajax_server_conn.$(OBJEXT)
+	ajax_server_conn.$(OBJEXT) base64.$(OBJEXT) \
+	conn-http.$(OBJEXT) conn.$(OBJEXT) gnet-private.$(OBJEXT) \
+	gnet.$(OBJEXT) inetaddr.$(OBJEXT) iochannel.$(OBJEXT) \
+	ipv6.$(OBJEXT) mcast.$(OBJEXT) md5.$(OBJEXT) pack.$(OBJEXT) \
+	server.$(OBJEXT) sha.$(OBJEXT) socks-private.$(OBJEXT) \
+	socks.$(OBJEXT) tcp.$(OBJEXT) udp.$(OBJEXT) unix.$(OBJEXT) \
+	uri.$(OBJEXT) usagi_ifaddrs.$(OBJEXT)
 cheech_OBJECTS = $(am_cheech_OBJECTS)
 am__DEPENDENCIES_1 =
 cheech_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -134,7 +143,13 @@ am_cheechbot_OBJECTS = cheechbot.$(OBJEXT) bot_base.$(OBJEXT) \
 	bot_lookahead.$(OBJEXT) bot_friendly.$(OBJEXT) \
 	bot_mean.$(OBJEXT) game_board.$(OBJEXT) game_images.$(OBJEXT) \
 	gnet_conn.$(OBJEXT) utility.$(OBJEXT) game_client.$(OBJEXT) \
-	game_hole.$(OBJEXT)
+	game_hole.$(OBJEXT) base64.$(OBJEXT) conn-http.$(OBJEXT) \
+	conn.$(OBJEXT) gnet-private.$(OBJEXT) gnet.$(OBJEXT) \
+	inetaddr.$(OBJEXT) iochannel.$(OBJEXT) ipv6.$(OBJEXT) \
+	mcast.$(OBJEXT) md5.$(OBJEXT) pack.$(OBJEXT) server.$(OBJEXT) \
+	sha.$(OBJEXT) socks-private.$(OBJEXT) socks.$(OBJEXT) \
+	tcp.$(OBJEXT) udp.$(OBJEXT) unix.$(OBJEXT) uri.$(OBJEXT) \
+	usagi_ifaddrs.$(OBJEXT)
 cheechbot_OBJECTS = $(am_cheechbot_OBJECTS)
 cheechbot_DEPENDENCIES = $(am__DEPENDENCIES_1)
 cheechbot_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -147,7 +162,13 @@ am_cheechd_OBJECTS = cheechd.$(OBJEXT) bot_base.$(OBJEXT) \
 	gnet_server.$(OBJEXT) utility.$(OBJEXT) game_server.$(OBJEXT) \
 	game_client.$(OBJEXT) game_board.$(OBJEXT) game_hole.$(OBJEXT) \
 	prefs.$(OBJEXT) ajax_server.$(OBJEXT) \
-	ajax_server_conn.$(OBJEXT)
+	ajax_server_conn.$(OBJEXT) base64.$(OBJEXT) \
+	conn-http.$(OBJEXT) conn.$(OBJEXT) gnet-private.$(OBJEXT) \
+	gnet.$(OBJEXT) inetaddr.$(OBJEXT) iochannel.$(OBJEXT) \
+	ipv6.$(OBJEXT) mcast.$(OBJEXT) md5.$(OBJEXT) pack.$(OBJEXT) \
+	server.$(OBJEXT) sha.$(OBJEXT) socks-private.$(OBJEXT) \
+	socks.$(OBJEXT) tcp.$(OBJEXT) udp.$(OBJEXT) unix.$(OBJEXT) \
+	uri.$(OBJEXT) usagi_ifaddrs.$(OBJEXT)
 cheechd_OBJECTS = $(am_cheechd_OBJECTS)
 cheechd_DEPENDENCIES = $(am__DEPENDENCIES_1)
 cheechd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -159,7 +180,14 @@ am_cheechwebd_OBJECTS = cheechwebd.$(OBJEXT) bot_base.$(OBJEXT) \
 	bot_mean.$(OBJEXT) game_images.$(OBJEXT) gnet_conn.$(OBJEXT) \
 	gnet_server.$(OBJEXT) utility.$(OBJEXT) game_client.$(OBJEXT) \
 	game_board.$(OBJEXT) game_hole.$(OBJEXT) prefs.$(OBJEXT) \
-	ajax_server.$(OBJEXT) ajax_server_conn.$(OBJEXT)
+	ajax_server.$(OBJEXT) ajax_server_conn.$(OBJEXT) \
+	base64.$(OBJEXT) conn-http.$(OBJEXT) conn.$(OBJEXT) \
+	gnet-private.$(OBJEXT) gnet.$(OBJEXT) inetaddr.$(OBJEXT) \
+	iochannel.$(OBJEXT) ipv6.$(OBJEXT) mcast.$(OBJEXT) \
+	md5.$(OBJEXT) pack.$(OBJEXT) server.$(OBJEXT) sha.$(OBJEXT) \
+	socks-private.$(OBJEXT) socks.$(OBJEXT) tcp.$(OBJEXT) \
+	udp.$(OBJEXT) unix.$(OBJEXT) uri.$(OBJEXT) \
+	usagi_ifaddrs.$(OBJEXT)
 cheechwebd_OBJECTS = $(am_cheechwebd_OBJECTS)
 cheechwebd_DEPENDENCIES = $(am__DEPENDENCIES_1)
 cheechwebd_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
@@ -182,44 +210,36 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/about_win.Po \
 	./$(DEPDIR)/about_win_glade.Po ./$(DEPDIR)/ajax_server.Po \
-	./$(DEPDIR)/ajax_server_conn.Po ./$(DEPDIR)/bot_base.Po \
-	./$(DEPDIR)/bot_friendly.Po ./$(DEPDIR)/bot_lookahead.Po \
-	./$(DEPDIR)/bot_mean.Po ./$(DEPDIR)/bot_random.Po \
-	./$(DEPDIR)/bot_simple.Po ./$(DEPDIR)/cheech.Po \
-	./$(DEPDIR)/cheechbot.Po ./$(DEPDIR)/cheechd.Po \
-	./$(DEPDIR)/cheechwebd.Po ./$(DEPDIR)/color_win.Po \
-	./$(DEPDIR)/color_win_glade.Po ./$(DEPDIR)/game_board.Po \
-	./$(DEPDIR)/game_client.Po ./$(DEPDIR)/game_hole.Po \
-	./$(DEPDIR)/game_images.Po ./$(DEPDIR)/game_server.Po \
-	./$(DEPDIR)/game_view.Po ./$(DEPDIR)/game_view_hole.Po \
-	./$(DEPDIR)/gnet_conn.Po ./$(DEPDIR)/gnet_server.Po \
-	./$(DEPDIR)/help_win.Po ./$(DEPDIR)/help_win_glade.Po \
+	./$(DEPDIR)/ajax_server_conn.Po ./$(DEPDIR)/base64.Po \
+	./$(DEPDIR)/bot_base.Po ./$(DEPDIR)/bot_friendly.Po \
+	./$(DEPDIR)/bot_lookahead.Po ./$(DEPDIR)/bot_mean.Po \
+	./$(DEPDIR)/bot_random.Po ./$(DEPDIR)/bot_simple.Po \
+	./$(DEPDIR)/cheech.Po ./$(DEPDIR)/cheechbot.Po \
+	./$(DEPDIR)/cheechd.Po ./$(DEPDIR)/cheechwebd.Po \
+	./$(DEPDIR)/color_win.Po ./$(DEPDIR)/color_win_glade.Po \
+	./$(DEPDIR)/conn-http.Po ./$(DEPDIR)/conn.Po \
+	./$(DEPDIR)/game_board.Po ./$(DEPDIR)/game_client.Po \
+	./$(DEPDIR)/game_hole.Po ./$(DEPDIR)/game_images.Po \
+	./$(DEPDIR)/game_server.Po ./$(DEPDIR)/game_view.Po \
+	./$(DEPDIR)/game_view_hole.Po ./$(DEPDIR)/gnet-private.Po \
+	./$(DEPDIR)/gnet.Po ./$(DEPDIR)/gnet_conn.Po \
+	./$(DEPDIR)/gnet_server.Po ./$(DEPDIR)/help_win.Po \
+	./$(DEPDIR)/help_win_glade.Po ./$(DEPDIR)/inetaddr.Po \
+	./$(DEPDIR)/iochannel.Po ./$(DEPDIR)/ipv6.Po \
 	./$(DEPDIR)/main_win.Po ./$(DEPDIR)/main_win_glade.Po \
+	./$(DEPDIR)/mcast.Po ./$(DEPDIR)/md5.Po \
 	./$(DEPDIR)/name_win.Po ./$(DEPDIR)/name_win_glade.Po \
 	./$(DEPDIR)/new_game_win.Po ./$(DEPDIR)/new_game_win_glade.Po \
-	./$(DEPDIR)/prefs.Po ./$(DEPDIR)/setup_bot_win.Po \
+	./$(DEPDIR)/pack.Po ./$(DEPDIR)/prefs.Po ./$(DEPDIR)/server.Po \
+	./$(DEPDIR)/setup_bot_win.Po \
 	./$(DEPDIR)/setup_bot_win_glade.Po \
 	./$(DEPDIR)/setup_game_win.Po \
-	./$(DEPDIR)/setup_game_win_glade.Po ./$(DEPDIR)/utility.Po
+	./$(DEPDIR)/setup_game_win_glade.Po ./$(DEPDIR)/sha.Po \
+	./$(DEPDIR)/socks-private.Po ./$(DEPDIR)/socks.Po \
+	./$(DEPDIR)/tcp.Po ./$(DEPDIR)/udp.Po ./$(DEPDIR)/unix.Po \
+	./$(DEPDIR)/uri.Po ./$(DEPDIR)/usagi_ifaddrs.Po \
+	./$(DEPDIR)/utility.Po
 am__mv = mv -f
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
-	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
-	$(AM_CXXFLAGS) $(CXXFLAGS)
-AM_V_CXX = $(am__v_CXX_@AM_V@)
-am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
-am__v_CXX_0 = @echo "  CXX     " $@;
-am__v_CXX_1 = 
-CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
-am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
-am__v_CXXLD_0 = @echo "  CXXLD   " $@;
-am__v_CXXLD_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -238,6 +258,24 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+LTCXXCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CXXFLAGS) $(CXXFLAGS)
+AM_V_CXX = $(am__v_CXX_@AM_V@)
+am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
+am__v_CXX_0 = @echo "  CXX     " $@;
+am__v_CXX_1 = 
+CXXLD = $(CXX)
+CXXLINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
+am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
+am__v_CXXLD_0 = @echo "  CXXLD   " $@;
+am__v_CXXLD_1 = 
 SOURCES = $(cheech_SOURCES) $(cheechbot_SOURCES) $(cheechd_SOURCES) \
 	$(cheechwebd_SOURCES)
 DIST_SOURCES = $(cheech_SOURCES) $(cheechbot_SOURCES) \
@@ -501,11 +539,51 @@ cheech_SOURCES = \
 	ajax_server.cc\
 	ajax_server.hh\
 	ajax_server_conn.cc\
-	ajax_server_conn.hh
+	ajax_server_conn.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheech_LDFLAGS = 
 cheech_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 cheechd_SOURCES = \
 	cheechd.cc\
@@ -542,11 +620,51 @@ cheechd_SOURCES = \
 	ajax_server.cc\
 	ajax_server.hh\
 	ajax_server_conn.cc\
-	ajax_server_conn.hh
+	ajax_server_conn.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheechd_LDFLAGS = 
 cheechd_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 cheechbot_SOURCES = \
 	cheechbot.cc\
@@ -573,11 +691,51 @@ cheechbot_SOURCES = \
 	game_client.cc\
 	game_client.hh\
 	game_hole.cc\
-	game_hole.hh
+	game_hole.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheechbot_LDFLAGS = 
 cheechbot_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 cheechwebd_SOURCES = \
 	cheechwebd.cc\
@@ -612,16 +770,56 @@ cheechwebd_SOURCES = \
 	ajax_server.cc\
 	ajax_server.hh\
 	ajax_server_conn.cc\
-	ajax_server_conn.hh
+	ajax_server_conn.hh\
+	gnet-2.0/base64.c\
+	gnet-2.0/base64.h\
+	gnet-2.0/conn-http.c\
+	gnet-2.0/conn-http.h\
+	gnet-2.0/conn.c\
+	gnet-2.0/conn.h\
+	gnet-2.0/gnet-private.c\
+	gnet-2.0/gnet-private.h\
+	gnet-2.0/gnet.c\
+	gnet-2.0/gnet.h\
+	gnet-2.0/inetaddr.c\
+	gnet-2.0/inetaddr.h\
+	gnet-2.0/iochannel.c\
+	gnet-2.0/iochannel.h\
+	gnet-2.0/ipv6.c\
+	gnet-2.0/ipv6.h\
+	gnet-2.0/mcast.c\
+	gnet-2.0/mcast.h\
+	gnet-2.0/md5.c\
+	gnet-2.0/md5.h\
+	gnet-2.0/pack.c\
+	gnet-2.0/pack.h\
+	gnet-2.0/server.c\
+	gnet-2.0/server.h\
+	gnet-2.0/sha.c\
+	gnet-2.0/sha.h\
+	gnet-2.0/socks-private.c\
+	gnet-2.0/socks-private.h\
+	gnet-2.0/socks.c\
+	gnet-2.0/socks.h\
+	gnet-2.0/tcp.c\
+	gnet-2.0/tcp.h\
+	gnet-2.0/udp.c\
+	gnet-2.0/udp.h\
+	gnet-2.0/unix.c\
+	gnet-2.0/unix.h\
+	gnet-2.0/uri.c\
+	gnet-2.0/uri.h\
+	gnet-2.0/usagi_ifaddrs.c\
+	gnet-2.0/usagi_ifaddrs.h
 
 cheechwebd_LDFLAGS = 
 cheechwebd_LDADD = \
-	$(PACKAGE_LIBS) -lpthread -lgnet-2.0 -lgthread-2.0 -lglib-2.0
+	$(PACKAGE_LIBS) -lpthread -lgthread-2.0 -lglib-2.0
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cc .lo .o .obj
+.SUFFIXES: .c .cc .lo .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -727,6 +925,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/about_win_glade.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ajax_server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ajax_server_conn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/base64.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bot_base.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bot_friendly.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bot_lookahead.Po@am__quote@ # am--include-marker
@@ -739,6 +938,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cheechwebd.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/color_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/color_win_glade.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conn-http.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conn.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_board.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_client.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_hole.Po@am__quote@ # am--include-marker
@@ -746,21 +947,38 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_view.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/game_view_hole.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnet-private.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnet.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnet_conn.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnet_server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/help_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/help_win_glade.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inetaddr.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iochannel.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ipv6.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main_win_glade.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mcast.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/name_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/name_win_glade.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/new_game_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/new_game_win_glade.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pack.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prefs.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/setup_bot_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/setup_bot_win_glade.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/setup_game_win.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/setup_game_win_glade.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socks-private.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/socks.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tcp.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/udp.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unix.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uri.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usagi_ifaddrs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utility.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -768,6 +986,307 @@ $(am__depfiles_remade):
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+base64.o: gnet-2.0/base64.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT base64.o -MD -MP -MF $(DEPDIR)/base64.Tpo -c -o base64.o `test -f 'gnet-2.0/base64.c' || echo '$(srcdir)/'`gnet-2.0/base64.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/base64.Tpo $(DEPDIR)/base64.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/base64.c' object='base64.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o base64.o `test -f 'gnet-2.0/base64.c' || echo '$(srcdir)/'`gnet-2.0/base64.c
+
+base64.obj: gnet-2.0/base64.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT base64.obj -MD -MP -MF $(DEPDIR)/base64.Tpo -c -o base64.obj `if test -f 'gnet-2.0/base64.c'; then $(CYGPATH_W) 'gnet-2.0/base64.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/base64.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/base64.Tpo $(DEPDIR)/base64.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/base64.c' object='base64.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o base64.obj `if test -f 'gnet-2.0/base64.c'; then $(CYGPATH_W) 'gnet-2.0/base64.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/base64.c'; fi`
+
+conn-http.o: gnet-2.0/conn-http.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT conn-http.o -MD -MP -MF $(DEPDIR)/conn-http.Tpo -c -o conn-http.o `test -f 'gnet-2.0/conn-http.c' || echo '$(srcdir)/'`gnet-2.0/conn-http.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/conn-http.Tpo $(DEPDIR)/conn-http.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/conn-http.c' object='conn-http.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o conn-http.o `test -f 'gnet-2.0/conn-http.c' || echo '$(srcdir)/'`gnet-2.0/conn-http.c
+
+conn-http.obj: gnet-2.0/conn-http.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT conn-http.obj -MD -MP -MF $(DEPDIR)/conn-http.Tpo -c -o conn-http.obj `if test -f 'gnet-2.0/conn-http.c'; then $(CYGPATH_W) 'gnet-2.0/conn-http.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/conn-http.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/conn-http.Tpo $(DEPDIR)/conn-http.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/conn-http.c' object='conn-http.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o conn-http.obj `if test -f 'gnet-2.0/conn-http.c'; then $(CYGPATH_W) 'gnet-2.0/conn-http.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/conn-http.c'; fi`
+
+conn.o: gnet-2.0/conn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT conn.o -MD -MP -MF $(DEPDIR)/conn.Tpo -c -o conn.o `test -f 'gnet-2.0/conn.c' || echo '$(srcdir)/'`gnet-2.0/conn.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/conn.Tpo $(DEPDIR)/conn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/conn.c' object='conn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o conn.o `test -f 'gnet-2.0/conn.c' || echo '$(srcdir)/'`gnet-2.0/conn.c
+
+conn.obj: gnet-2.0/conn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT conn.obj -MD -MP -MF $(DEPDIR)/conn.Tpo -c -o conn.obj `if test -f 'gnet-2.0/conn.c'; then $(CYGPATH_W) 'gnet-2.0/conn.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/conn.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/conn.Tpo $(DEPDIR)/conn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/conn.c' object='conn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o conn.obj `if test -f 'gnet-2.0/conn.c'; then $(CYGPATH_W) 'gnet-2.0/conn.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/conn.c'; fi`
+
+gnet-private.o: gnet-2.0/gnet-private.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gnet-private.o -MD -MP -MF $(DEPDIR)/gnet-private.Tpo -c -o gnet-private.o `test -f 'gnet-2.0/gnet-private.c' || echo '$(srcdir)/'`gnet-2.0/gnet-private.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gnet-private.Tpo $(DEPDIR)/gnet-private.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/gnet-private.c' object='gnet-private.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gnet-private.o `test -f 'gnet-2.0/gnet-private.c' || echo '$(srcdir)/'`gnet-2.0/gnet-private.c
+
+gnet-private.obj: gnet-2.0/gnet-private.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gnet-private.obj -MD -MP -MF $(DEPDIR)/gnet-private.Tpo -c -o gnet-private.obj `if test -f 'gnet-2.0/gnet-private.c'; then $(CYGPATH_W) 'gnet-2.0/gnet-private.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/gnet-private.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gnet-private.Tpo $(DEPDIR)/gnet-private.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/gnet-private.c' object='gnet-private.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gnet-private.obj `if test -f 'gnet-2.0/gnet-private.c'; then $(CYGPATH_W) 'gnet-2.0/gnet-private.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/gnet-private.c'; fi`
+
+gnet.o: gnet-2.0/gnet.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gnet.o -MD -MP -MF $(DEPDIR)/gnet.Tpo -c -o gnet.o `test -f 'gnet-2.0/gnet.c' || echo '$(srcdir)/'`gnet-2.0/gnet.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gnet.Tpo $(DEPDIR)/gnet.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/gnet.c' object='gnet.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gnet.o `test -f 'gnet-2.0/gnet.c' || echo '$(srcdir)/'`gnet-2.0/gnet.c
+
+gnet.obj: gnet-2.0/gnet.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gnet.obj -MD -MP -MF $(DEPDIR)/gnet.Tpo -c -o gnet.obj `if test -f 'gnet-2.0/gnet.c'; then $(CYGPATH_W) 'gnet-2.0/gnet.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/gnet.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gnet.Tpo $(DEPDIR)/gnet.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/gnet.c' object='gnet.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gnet.obj `if test -f 'gnet-2.0/gnet.c'; then $(CYGPATH_W) 'gnet-2.0/gnet.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/gnet.c'; fi`
+
+inetaddr.o: gnet-2.0/inetaddr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT inetaddr.o -MD -MP -MF $(DEPDIR)/inetaddr.Tpo -c -o inetaddr.o `test -f 'gnet-2.0/inetaddr.c' || echo '$(srcdir)/'`gnet-2.0/inetaddr.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inetaddr.Tpo $(DEPDIR)/inetaddr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/inetaddr.c' object='inetaddr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o inetaddr.o `test -f 'gnet-2.0/inetaddr.c' || echo '$(srcdir)/'`gnet-2.0/inetaddr.c
+
+inetaddr.obj: gnet-2.0/inetaddr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT inetaddr.obj -MD -MP -MF $(DEPDIR)/inetaddr.Tpo -c -o inetaddr.obj `if test -f 'gnet-2.0/inetaddr.c'; then $(CYGPATH_W) 'gnet-2.0/inetaddr.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/inetaddr.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/inetaddr.Tpo $(DEPDIR)/inetaddr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/inetaddr.c' object='inetaddr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o inetaddr.obj `if test -f 'gnet-2.0/inetaddr.c'; then $(CYGPATH_W) 'gnet-2.0/inetaddr.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/inetaddr.c'; fi`
+
+iochannel.o: gnet-2.0/iochannel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT iochannel.o -MD -MP -MF $(DEPDIR)/iochannel.Tpo -c -o iochannel.o `test -f 'gnet-2.0/iochannel.c' || echo '$(srcdir)/'`gnet-2.0/iochannel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/iochannel.Tpo $(DEPDIR)/iochannel.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/iochannel.c' object='iochannel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o iochannel.o `test -f 'gnet-2.0/iochannel.c' || echo '$(srcdir)/'`gnet-2.0/iochannel.c
+
+iochannel.obj: gnet-2.0/iochannel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT iochannel.obj -MD -MP -MF $(DEPDIR)/iochannel.Tpo -c -o iochannel.obj `if test -f 'gnet-2.0/iochannel.c'; then $(CYGPATH_W) 'gnet-2.0/iochannel.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/iochannel.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/iochannel.Tpo $(DEPDIR)/iochannel.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/iochannel.c' object='iochannel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o iochannel.obj `if test -f 'gnet-2.0/iochannel.c'; then $(CYGPATH_W) 'gnet-2.0/iochannel.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/iochannel.c'; fi`
+
+ipv6.o: gnet-2.0/ipv6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ipv6.o -MD -MP -MF $(DEPDIR)/ipv6.Tpo -c -o ipv6.o `test -f 'gnet-2.0/ipv6.c' || echo '$(srcdir)/'`gnet-2.0/ipv6.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ipv6.Tpo $(DEPDIR)/ipv6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/ipv6.c' object='ipv6.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ipv6.o `test -f 'gnet-2.0/ipv6.c' || echo '$(srcdir)/'`gnet-2.0/ipv6.c
+
+ipv6.obj: gnet-2.0/ipv6.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ipv6.obj -MD -MP -MF $(DEPDIR)/ipv6.Tpo -c -o ipv6.obj `if test -f 'gnet-2.0/ipv6.c'; then $(CYGPATH_W) 'gnet-2.0/ipv6.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/ipv6.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ipv6.Tpo $(DEPDIR)/ipv6.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/ipv6.c' object='ipv6.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ipv6.obj `if test -f 'gnet-2.0/ipv6.c'; then $(CYGPATH_W) 'gnet-2.0/ipv6.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/ipv6.c'; fi`
+
+mcast.o: gnet-2.0/mcast.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mcast.o -MD -MP -MF $(DEPDIR)/mcast.Tpo -c -o mcast.o `test -f 'gnet-2.0/mcast.c' || echo '$(srcdir)/'`gnet-2.0/mcast.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mcast.Tpo $(DEPDIR)/mcast.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/mcast.c' object='mcast.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mcast.o `test -f 'gnet-2.0/mcast.c' || echo '$(srcdir)/'`gnet-2.0/mcast.c
+
+mcast.obj: gnet-2.0/mcast.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT mcast.obj -MD -MP -MF $(DEPDIR)/mcast.Tpo -c -o mcast.obj `if test -f 'gnet-2.0/mcast.c'; then $(CYGPATH_W) 'gnet-2.0/mcast.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/mcast.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/mcast.Tpo $(DEPDIR)/mcast.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/mcast.c' object='mcast.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o mcast.obj `if test -f 'gnet-2.0/mcast.c'; then $(CYGPATH_W) 'gnet-2.0/mcast.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/mcast.c'; fi`
+
+md5.o: gnet-2.0/md5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT md5.o -MD -MP -MF $(DEPDIR)/md5.Tpo -c -o md5.o `test -f 'gnet-2.0/md5.c' || echo '$(srcdir)/'`gnet-2.0/md5.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/md5.Tpo $(DEPDIR)/md5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/md5.c' object='md5.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o md5.o `test -f 'gnet-2.0/md5.c' || echo '$(srcdir)/'`gnet-2.0/md5.c
+
+md5.obj: gnet-2.0/md5.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT md5.obj -MD -MP -MF $(DEPDIR)/md5.Tpo -c -o md5.obj `if test -f 'gnet-2.0/md5.c'; then $(CYGPATH_W) 'gnet-2.0/md5.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/md5.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/md5.Tpo $(DEPDIR)/md5.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/md5.c' object='md5.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o md5.obj `if test -f 'gnet-2.0/md5.c'; then $(CYGPATH_W) 'gnet-2.0/md5.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/md5.c'; fi`
+
+pack.o: gnet-2.0/pack.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pack.o -MD -MP -MF $(DEPDIR)/pack.Tpo -c -o pack.o `test -f 'gnet-2.0/pack.c' || echo '$(srcdir)/'`gnet-2.0/pack.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pack.Tpo $(DEPDIR)/pack.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/pack.c' object='pack.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pack.o `test -f 'gnet-2.0/pack.c' || echo '$(srcdir)/'`gnet-2.0/pack.c
+
+pack.obj: gnet-2.0/pack.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pack.obj -MD -MP -MF $(DEPDIR)/pack.Tpo -c -o pack.obj `if test -f 'gnet-2.0/pack.c'; then $(CYGPATH_W) 'gnet-2.0/pack.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/pack.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pack.Tpo $(DEPDIR)/pack.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/pack.c' object='pack.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pack.obj `if test -f 'gnet-2.0/pack.c'; then $(CYGPATH_W) 'gnet-2.0/pack.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/pack.c'; fi`
+
+server.o: gnet-2.0/server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT server.o -MD -MP -MF $(DEPDIR)/server.Tpo -c -o server.o `test -f 'gnet-2.0/server.c' || echo '$(srcdir)/'`gnet-2.0/server.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/server.Tpo $(DEPDIR)/server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/server.c' object='server.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o server.o `test -f 'gnet-2.0/server.c' || echo '$(srcdir)/'`gnet-2.0/server.c
+
+server.obj: gnet-2.0/server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT server.obj -MD -MP -MF $(DEPDIR)/server.Tpo -c -o server.obj `if test -f 'gnet-2.0/server.c'; then $(CYGPATH_W) 'gnet-2.0/server.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/server.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/server.Tpo $(DEPDIR)/server.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/server.c' object='server.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o server.obj `if test -f 'gnet-2.0/server.c'; then $(CYGPATH_W) 'gnet-2.0/server.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/server.c'; fi`
+
+sha.o: gnet-2.0/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sha.o -MD -MP -MF $(DEPDIR)/sha.Tpo -c -o sha.o `test -f 'gnet-2.0/sha.c' || echo '$(srcdir)/'`gnet-2.0/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sha.Tpo $(DEPDIR)/sha.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/sha.c' object='sha.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sha.o `test -f 'gnet-2.0/sha.c' || echo '$(srcdir)/'`gnet-2.0/sha.c
+
+sha.obj: gnet-2.0/sha.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sha.obj -MD -MP -MF $(DEPDIR)/sha.Tpo -c -o sha.obj `if test -f 'gnet-2.0/sha.c'; then $(CYGPATH_W) 'gnet-2.0/sha.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/sha.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/sha.Tpo $(DEPDIR)/sha.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/sha.c' object='sha.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sha.obj `if test -f 'gnet-2.0/sha.c'; then $(CYGPATH_W) 'gnet-2.0/sha.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/sha.c'; fi`
+
+socks-private.o: gnet-2.0/socks-private.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT socks-private.o -MD -MP -MF $(DEPDIR)/socks-private.Tpo -c -o socks-private.o `test -f 'gnet-2.0/socks-private.c' || echo '$(srcdir)/'`gnet-2.0/socks-private.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/socks-private.Tpo $(DEPDIR)/socks-private.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/socks-private.c' object='socks-private.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o socks-private.o `test -f 'gnet-2.0/socks-private.c' || echo '$(srcdir)/'`gnet-2.0/socks-private.c
+
+socks-private.obj: gnet-2.0/socks-private.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT socks-private.obj -MD -MP -MF $(DEPDIR)/socks-private.Tpo -c -o socks-private.obj `if test -f 'gnet-2.0/socks-private.c'; then $(CYGPATH_W) 'gnet-2.0/socks-private.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/socks-private.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/socks-private.Tpo $(DEPDIR)/socks-private.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/socks-private.c' object='socks-private.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o socks-private.obj `if test -f 'gnet-2.0/socks-private.c'; then $(CYGPATH_W) 'gnet-2.0/socks-private.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/socks-private.c'; fi`
+
+socks.o: gnet-2.0/socks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT socks.o -MD -MP -MF $(DEPDIR)/socks.Tpo -c -o socks.o `test -f 'gnet-2.0/socks.c' || echo '$(srcdir)/'`gnet-2.0/socks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/socks.Tpo $(DEPDIR)/socks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/socks.c' object='socks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o socks.o `test -f 'gnet-2.0/socks.c' || echo '$(srcdir)/'`gnet-2.0/socks.c
+
+socks.obj: gnet-2.0/socks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT socks.obj -MD -MP -MF $(DEPDIR)/socks.Tpo -c -o socks.obj `if test -f 'gnet-2.0/socks.c'; then $(CYGPATH_W) 'gnet-2.0/socks.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/socks.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/socks.Tpo $(DEPDIR)/socks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/socks.c' object='socks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o socks.obj `if test -f 'gnet-2.0/socks.c'; then $(CYGPATH_W) 'gnet-2.0/socks.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/socks.c'; fi`
+
+tcp.o: gnet-2.0/tcp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tcp.o -MD -MP -MF $(DEPDIR)/tcp.Tpo -c -o tcp.o `test -f 'gnet-2.0/tcp.c' || echo '$(srcdir)/'`gnet-2.0/tcp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tcp.Tpo $(DEPDIR)/tcp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/tcp.c' object='tcp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tcp.o `test -f 'gnet-2.0/tcp.c' || echo '$(srcdir)/'`gnet-2.0/tcp.c
+
+tcp.obj: gnet-2.0/tcp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tcp.obj -MD -MP -MF $(DEPDIR)/tcp.Tpo -c -o tcp.obj `if test -f 'gnet-2.0/tcp.c'; then $(CYGPATH_W) 'gnet-2.0/tcp.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/tcp.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tcp.Tpo $(DEPDIR)/tcp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/tcp.c' object='tcp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tcp.obj `if test -f 'gnet-2.0/tcp.c'; then $(CYGPATH_W) 'gnet-2.0/tcp.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/tcp.c'; fi`
+
+udp.o: gnet-2.0/udp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udp.o -MD -MP -MF $(DEPDIR)/udp.Tpo -c -o udp.o `test -f 'gnet-2.0/udp.c' || echo '$(srcdir)/'`gnet-2.0/udp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/udp.Tpo $(DEPDIR)/udp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/udp.c' object='udp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udp.o `test -f 'gnet-2.0/udp.c' || echo '$(srcdir)/'`gnet-2.0/udp.c
+
+udp.obj: gnet-2.0/udp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT udp.obj -MD -MP -MF $(DEPDIR)/udp.Tpo -c -o udp.obj `if test -f 'gnet-2.0/udp.c'; then $(CYGPATH_W) 'gnet-2.0/udp.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/udp.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/udp.Tpo $(DEPDIR)/udp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/udp.c' object='udp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o udp.obj `if test -f 'gnet-2.0/udp.c'; then $(CYGPATH_W) 'gnet-2.0/udp.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/udp.c'; fi`
+
+unix.o: gnet-2.0/unix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT unix.o -MD -MP -MF $(DEPDIR)/unix.Tpo -c -o unix.o `test -f 'gnet-2.0/unix.c' || echo '$(srcdir)/'`gnet-2.0/unix.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unix.Tpo $(DEPDIR)/unix.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/unix.c' object='unix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o unix.o `test -f 'gnet-2.0/unix.c' || echo '$(srcdir)/'`gnet-2.0/unix.c
+
+unix.obj: gnet-2.0/unix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT unix.obj -MD -MP -MF $(DEPDIR)/unix.Tpo -c -o unix.obj `if test -f 'gnet-2.0/unix.c'; then $(CYGPATH_W) 'gnet-2.0/unix.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/unix.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unix.Tpo $(DEPDIR)/unix.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/unix.c' object='unix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o unix.obj `if test -f 'gnet-2.0/unix.c'; then $(CYGPATH_W) 'gnet-2.0/unix.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/unix.c'; fi`
+
+uri.o: gnet-2.0/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT uri.o -MD -MP -MF $(DEPDIR)/uri.Tpo -c -o uri.o `test -f 'gnet-2.0/uri.c' || echo '$(srcdir)/'`gnet-2.0/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/uri.Tpo $(DEPDIR)/uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/uri.c' object='uri.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o uri.o `test -f 'gnet-2.0/uri.c' || echo '$(srcdir)/'`gnet-2.0/uri.c
+
+uri.obj: gnet-2.0/uri.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT uri.obj -MD -MP -MF $(DEPDIR)/uri.Tpo -c -o uri.obj `if test -f 'gnet-2.0/uri.c'; then $(CYGPATH_W) 'gnet-2.0/uri.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/uri.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/uri.Tpo $(DEPDIR)/uri.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/uri.c' object='uri.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o uri.obj `if test -f 'gnet-2.0/uri.c'; then $(CYGPATH_W) 'gnet-2.0/uri.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/uri.c'; fi`
+
+usagi_ifaddrs.o: gnet-2.0/usagi_ifaddrs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT usagi_ifaddrs.o -MD -MP -MF $(DEPDIR)/usagi_ifaddrs.Tpo -c -o usagi_ifaddrs.o `test -f 'gnet-2.0/usagi_ifaddrs.c' || echo '$(srcdir)/'`gnet-2.0/usagi_ifaddrs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/usagi_ifaddrs.Tpo $(DEPDIR)/usagi_ifaddrs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/usagi_ifaddrs.c' object='usagi_ifaddrs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o usagi_ifaddrs.o `test -f 'gnet-2.0/usagi_ifaddrs.c' || echo '$(srcdir)/'`gnet-2.0/usagi_ifaddrs.c
+
+usagi_ifaddrs.obj: gnet-2.0/usagi_ifaddrs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT usagi_ifaddrs.obj -MD -MP -MF $(DEPDIR)/usagi_ifaddrs.Tpo -c -o usagi_ifaddrs.obj `if test -f 'gnet-2.0/usagi_ifaddrs.c'; then $(CYGPATH_W) 'gnet-2.0/usagi_ifaddrs.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/usagi_ifaddrs.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/usagi_ifaddrs.Tpo $(DEPDIR)/usagi_ifaddrs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='gnet-2.0/usagi_ifaddrs.c' object='usagi_ifaddrs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o usagi_ifaddrs.obj `if test -f 'gnet-2.0/usagi_ifaddrs.c'; then $(CYGPATH_W) 'gnet-2.0/usagi_ifaddrs.c'; else $(CYGPATH_W) '$(srcdir)/gnet-2.0/usagi_ifaddrs.c'; fi`
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -927,6 +1446,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/about_win_glade.Po
 	-rm -f ./$(DEPDIR)/ajax_server.Po
 	-rm -f ./$(DEPDIR)/ajax_server_conn.Po
+	-rm -f ./$(DEPDIR)/base64.Po
 	-rm -f ./$(DEPDIR)/bot_base.Po
 	-rm -f ./$(DEPDIR)/bot_friendly.Po
 	-rm -f ./$(DEPDIR)/bot_lookahead.Po
@@ -939,6 +1459,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/cheechwebd.Po
 	-rm -f ./$(DEPDIR)/color_win.Po
 	-rm -f ./$(DEPDIR)/color_win_glade.Po
+	-rm -f ./$(DEPDIR)/conn-http.Po
+	-rm -f ./$(DEPDIR)/conn.Po
 	-rm -f ./$(DEPDIR)/game_board.Po
 	-rm -f ./$(DEPDIR)/game_client.Po
 	-rm -f ./$(DEPDIR)/game_hole.Po
@@ -946,21 +1468,38 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/game_server.Po
 	-rm -f ./$(DEPDIR)/game_view.Po
 	-rm -f ./$(DEPDIR)/game_view_hole.Po
+	-rm -f ./$(DEPDIR)/gnet-private.Po
+	-rm -f ./$(DEPDIR)/gnet.Po
 	-rm -f ./$(DEPDIR)/gnet_conn.Po
 	-rm -f ./$(DEPDIR)/gnet_server.Po
 	-rm -f ./$(DEPDIR)/help_win.Po
 	-rm -f ./$(DEPDIR)/help_win_glade.Po
+	-rm -f ./$(DEPDIR)/inetaddr.Po
+	-rm -f ./$(DEPDIR)/iochannel.Po
+	-rm -f ./$(DEPDIR)/ipv6.Po
 	-rm -f ./$(DEPDIR)/main_win.Po
 	-rm -f ./$(DEPDIR)/main_win_glade.Po
+	-rm -f ./$(DEPDIR)/mcast.Po
+	-rm -f ./$(DEPDIR)/md5.Po
 	-rm -f ./$(DEPDIR)/name_win.Po
 	-rm -f ./$(DEPDIR)/name_win_glade.Po
 	-rm -f ./$(DEPDIR)/new_game_win.Po
 	-rm -f ./$(DEPDIR)/new_game_win_glade.Po
+	-rm -f ./$(DEPDIR)/pack.Po
 	-rm -f ./$(DEPDIR)/prefs.Po
+	-rm -f ./$(DEPDIR)/server.Po
 	-rm -f ./$(DEPDIR)/setup_bot_win.Po
 	-rm -f ./$(DEPDIR)/setup_bot_win_glade.Po
 	-rm -f ./$(DEPDIR)/setup_game_win.Po
 	-rm -f ./$(DEPDIR)/setup_game_win_glade.Po
+	-rm -f ./$(DEPDIR)/sha.Po
+	-rm -f ./$(DEPDIR)/socks-private.Po
+	-rm -f ./$(DEPDIR)/socks.Po
+	-rm -f ./$(DEPDIR)/tcp.Po
+	-rm -f ./$(DEPDIR)/udp.Po
+	-rm -f ./$(DEPDIR)/unix.Po
+	-rm -f ./$(DEPDIR)/uri.Po
+	-rm -f ./$(DEPDIR)/usagi_ifaddrs.Po
 	-rm -f ./$(DEPDIR)/utility.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -1011,6 +1550,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/about_win_glade.Po
 	-rm -f ./$(DEPDIR)/ajax_server.Po
 	-rm -f ./$(DEPDIR)/ajax_server_conn.Po
+	-rm -f ./$(DEPDIR)/base64.Po
 	-rm -f ./$(DEPDIR)/bot_base.Po
 	-rm -f ./$(DEPDIR)/bot_friendly.Po
 	-rm -f ./$(DEPDIR)/bot_lookahead.Po
@@ -1023,6 +1563,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/cheechwebd.Po
 	-rm -f ./$(DEPDIR)/color_win.Po
 	-rm -f ./$(DEPDIR)/color_win_glade.Po
+	-rm -f ./$(DEPDIR)/conn-http.Po
+	-rm -f ./$(DEPDIR)/conn.Po
 	-rm -f ./$(DEPDIR)/game_board.Po
 	-rm -f ./$(DEPDIR)/game_client.Po
 	-rm -f ./$(DEPDIR)/game_hole.Po
@@ -1030,21 +1572,38 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/game_server.Po
 	-rm -f ./$(DEPDIR)/game_view.Po
 	-rm -f ./$(DEPDIR)/game_view_hole.Po
+	-rm -f ./$(DEPDIR)/gnet-private.Po
+	-rm -f ./$(DEPDIR)/gnet.Po
 	-rm -f ./$(DEPDIR)/gnet_conn.Po
 	-rm -f ./$(DEPDIR)/gnet_server.Po
 	-rm -f ./$(DEPDIR)/help_win.Po
 	-rm -f ./$(DEPDIR)/help_win_glade.Po
+	-rm -f ./$(DEPDIR)/inetaddr.Po
+	-rm -f ./$(DEPDIR)/iochannel.Po
+	-rm -f ./$(DEPDIR)/ipv6.Po
 	-rm -f ./$(DEPDIR)/main_win.Po
 	-rm -f ./$(DEPDIR)/main_win_glade.Po
+	-rm -f ./$(DEPDIR)/mcast.Po
+	-rm -f ./$(DEPDIR)/md5.Po
 	-rm -f ./$(DEPDIR)/name_win.Po
 	-rm -f ./$(DEPDIR)/name_win_glade.Po
 	-rm -f ./$(DEPDIR)/new_game_win.Po
 	-rm -f ./$(DEPDIR)/new_game_win_glade.Po
+	-rm -f ./$(DEPDIR)/pack.Po
 	-rm -f ./$(DEPDIR)/prefs.Po
+	-rm -f ./$(DEPDIR)/server.Po
 	-rm -f ./$(DEPDIR)/setup_bot_win.Po
 	-rm -f ./$(DEPDIR)/setup_bot_win_glade.Po
 	-rm -f ./$(DEPDIR)/setup_game_win.Po
 	-rm -f ./$(DEPDIR)/setup_game_win_glade.Po
+	-rm -f ./$(DEPDIR)/sha.Po
+	-rm -f ./$(DEPDIR)/socks-private.Po
+	-rm -f ./$(DEPDIR)/socks.Po
+	-rm -f ./$(DEPDIR)/tcp.Po
+	-rm -f ./$(DEPDIR)/udp.Po
+	-rm -f ./$(DEPDIR)/unix.Po
+	-rm -f ./$(DEPDIR)/uri.Po
+	-rm -f ./$(DEPDIR)/usagi_ifaddrs.Po
 	-rm -f ./$(DEPDIR)/utility.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
