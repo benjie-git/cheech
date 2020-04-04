@@ -79,12 +79,12 @@ void GameImages::init()
 									 _highlight->get_height());
 	}
 	
-	for (unsigned int i = 0; i < NUM_COLORS+1; i++)
-	{
-		Glib::RefPtr<Pixbuf> pixbuf = Pixbuf::create_from_file(pixmaps_dir + "pegs.png");
-		if (pixbuf) {
-			Gdk::Point size(pixbuf->get_width() / (NUM_COLORS+1),
-							pixbuf->get_height());
+	Glib::RefPtr<Pixbuf> pixbuf = Pixbuf::create_from_file(pixmaps_dir + "pegs.png");
+	if (pixbuf) {
+		Gdk::Point size(pixbuf->get_width() / (NUM_COLORS+1),
+						pixbuf->get_height());
+		for (unsigned int i = 0; i < NUM_COLORS+1; i++)
+		{
 			_pegs[i] = Pixbuf::create_subpixbuf(pixbuf, size.get_x() * i, 0,
 												size.get_x(), size.get_y());
 			_peg_size = size;
