@@ -34,7 +34,6 @@ using Gdk::Pixbuf;
 
 Glib::RefPtr<Pixbuf> GameImages::_highlight;
 Glib::RefPtr<Pixbuf> GameImages::_pegs[NUM_COLORS+1];
-
 Glib::RefPtr<Pixbuf> GameImages::_logos[2];
 
 Gdk::Point GameImages::_highlight_size;
@@ -72,23 +71,20 @@ void GameImages::init()
 #else
 	pixmaps_dir = PACKAGE_PIXMAPS_DIR "/" PACKAGE "/";
 #endif
-
-	Glib::ustring hstr = pixmaps_dir + "highlight.png";
-	_highlight = Pixbuf::create_from_file(hstr);
+	
+	_highlight = Pixbuf::create_from_file(pixmaps_dir + "highlight.png");
+	
 	if (_highlight) {
 		_highlight_size = Gdk::Point(_highlight->get_width(),
 									 _highlight->get_height());
 	}
 	
-	Glib::RefPtr<Pixbuf> pixbuf =
-		Pixbuf::create_from_file(pixmaps_dir + "pegs.png");
-	
-	if (pixbuf) {
-		Gdk::Point size(pixbuf->get_width() / (NUM_COLORS+1),
-						pixbuf->get_height());
-		
-		for (unsigned int i = 0; i < NUM_COLORS+1; i++)
-		{
+	for (unsigned int i = 0; i < NUM_COLORS+1; i++)
+	{
+		Glib::RefPtr<Pixbuf> pixbuf = Pixbuf::create_from_file(pixmaps_dir + "pegs.png");
+		if (pixbuf) {
+			Gdk::Point size(pixbuf->get_width() / (NUM_COLORS+1),
+							pixbuf->get_height());
 			_pegs[i] = Pixbuf::create_subpixbuf(pixbuf, size.get_x() * i, 0,
 												size.get_x(), size.get_y());
 			_peg_size = size;
@@ -98,7 +94,6 @@ void GameImages::init()
 	_logos[0] = Pixbuf::create_from_file(pixmaps_dir + "cheech.png");
 	_logos[1] = Pixbuf::create_from_file(pixmaps_dir + "smiley.png");
 }
-
 
 Glib::RefPtr<Pixbuf> GameImages::get_highlight()
 {
