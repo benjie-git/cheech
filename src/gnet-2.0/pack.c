@@ -467,7 +467,7 @@ gnet_vcalcsize (const gchar* format, va_list args)
 	    for (mult=(mult?mult:1); mult; --mult)
 	      {
 		char* s;
-		int slen;
+		size_t slen;
 
 		s = va_arg (args, char*);
 		g_return_val_if_fail (s, -1);

@@ -25,14 +25,6 @@
    risk.  To use this module, define GNET_EXPERIMENTAL before
    including gnet.h.
 */
-#ifdef GNET_EXPERIMENTAL 
-
-#include <glib.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 /**
  *  GNET_SOCKS_PORT
  *
@@ -43,11 +35,19 @@ extern "C" {
 
 /**
  *  GNET_SOCKS_VERSION
- *  
+ *
  *  Default version of the SOCKS protocol.
  **/
 #define GNET_SOCKS_VERSION 5
 
+
+#ifdef GNET_EXPERIMENTAL 
+
+#include <glib.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 
 gboolean   gnet_socks_get_enabled (void);

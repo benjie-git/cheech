@@ -25,6 +25,9 @@
 #include "config.h"
 #include "game_images.hh"
 
+#ifdef MACOS_APP
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 using namespace std;
 using Gdk::Pixbuf;
@@ -52,14 +55,29 @@ void GameImages::init()
 	PathRemoveFileSpec(module_path);
 	program_dir = g_locale_to_utf8(module_path, -1, NULL, NULL, NULL);
 	pixmaps_dir = g_strdup_printf("%s\\pixmaps\\", program_dir);
+#elif MACOS_APP
+	CFBundleRef mainBundle = CFBundleGetMainBundle();
+	CFURLRef burl = CFBundleCopyBundleURL(mainBundle);
+	CFURLRef rurl = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	CFStringRef bstr = CFURLCopyFileSystemPath(burl, kCFURLPOSIXPathStyle);
+	CFStringRef rstr = CFURLCopyFileSystemPath(rurl, kCFURLPOSIXPathStyle);
+	pixmaps_dir = CFStringGetCStringPtr(bstr, kCFStringEncodingUTF8);
+	pixmaps_dir += "/";
+	pixmaps_dir += CFStringGetCStringPtr(rstr, kCFStringEncodingUTF8);
+	pixmaps_dir += "/";
+	CFRelease(rstr);
+	CFRelease(bstr);
+	CFRelease(rurl);
+	CFRelease(burl);
 #else
 	pixmaps_dir = PACKAGE_PIXMAPS_DIR "/" PACKAGE "/";
 #endif
 
-	_highlight = Pixbuf::create_from_file(pixmaps_dir + "highlight.png");
-	_highlight_size = Gdk::Point(_highlight->get_width(), 
+	Glib::ustring hstr = pixmaps_dir + "highlight.png";
+	_highlight = Pixbuf::create_from_file(hstr);
+	_highlight_size = Gdk::Point(_highlight->get_width(),
 								 _highlight->get_height());
-
+	
 	for (unsigned int i = 0; i < NUM_COLORS+1; i++)
 	{
 		Glib::RefPtr<Pixbuf> pixbuf =

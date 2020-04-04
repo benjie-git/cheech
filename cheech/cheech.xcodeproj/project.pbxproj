@@ -1,0 +1,1028 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B94959AA24341BAC00DF2CF1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B94959A924341BAC00DF2CF1 /* Assets.xcassets */; };
+		B9495A0724341CBD00DF2CF1 /* bot_random.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959B724341CBA00DF2CF1 /* bot_random.cc */; };
+		B9495A0824341CBD00DF2CF1 /* cheech.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959BC24341CBA00DF2CF1 /* cheech.cc */; };
+		B9495A0A24341CBD00DF2CF1 /* utility.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959BE24341CBA00DF2CF1 /* utility.cc */; };
+		B9495A0B24341CBD00DF2CF1 /* bot_mean.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959C024341CBA00DF2CF1 /* bot_mean.cc */; };
+		B9495A0C24341CBD00DF2CF1 /* main_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959C224341CBA00DF2CF1 /* main_win.cc */; };
+		B9495A0E24341CBD00DF2CF1 /* new_game_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959C624341CBA00DF2CF1 /* new_game_win.cc */; };
+		B9495A0F24341CBD00DF2CF1 /* setup_bot_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959C724341CBA00DF2CF1 /* setup_bot_win.cc */; };
+		B9495A1024341CBD00DF2CF1 /* help_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959C824341CBA00DF2CF1 /* help_win.cc */; };
+		B9495A1124341CBD00DF2CF1 /* bot_friendly.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959CA24341CBA00DF2CF1 /* bot_friendly.cc */; };
+		B9495A1224341CBD00DF2CF1 /* color_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959CC24341CBA00DF2CF1 /* color_win.cc */; };
+		B9495A1324341CBD00DF2CF1 /* prefs.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959CD24341CBA00DF2CF1 /* prefs.cc */; };
+		B9495A1424341CBD00DF2CF1 /* setup_game_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959D124341CBB00DF2CF1 /* setup_game_win.cc */; };
+		B9495A1524341CBD00DF2CF1 /* ajax_server_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959D224341CBB00DF2CF1 /* ajax_server_conn.cc */; };
+		B9495A1624341CBD00DF2CF1 /* about_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959D324341CBB00DF2CF1 /* about_win_glade.cc */; };
+		B9495A1724341CBD00DF2CF1 /* game_view_hole.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959D424341CBB00DF2CF1 /* game_view_hole.cc */; };
+		B9495A1824341CBD00DF2CF1 /* game_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959D724341CBB00DF2CF1 /* game_server.cc */; };
+		B9495A1924341CBD00DF2CF1 /* game_board.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959D924341CBB00DF2CF1 /* game_board.cc */; };
+		B9495A1B24341CBD00DF2CF1 /* main_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959DB24341CBB00DF2CF1 /* main_win_glade.cc */; };
+		B9495A1C24341CBD00DF2CF1 /* ajax_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959DD24341CBB00DF2CF1 /* ajax_server.cc */; };
+		B9495A1D24341CBD00DF2CF1 /* game_images.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959DF24341CBB00DF2CF1 /* game_images.cc */; };
+		B9495A1E24341CBD00DF2CF1 /* gnet_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E024341CBB00DF2CF1 /* gnet_server.cc */; };
+		B9495A2024341CBD00DF2CF1 /* game_view.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E424341CBC00DF2CF1 /* game_view.cc */; };
+		B9495A2124341CBD00DF2CF1 /* bot_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E824341CBC00DF2CF1 /* bot_base.cc */; };
+		B9495A2224341CBD00DF2CF1 /* gnet_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E924341CBC00DF2CF1 /* gnet_conn.cc */; };
+		B9495A2324341CBD00DF2CF1 /* new_game_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959EA24341CBC00DF2CF1 /* new_game_win_glade.cc */; };
+		B9495A2424341CBD00DF2CF1 /* help_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959EB24341CBC00DF2CF1 /* help_win_glade.cc */; };
+		B9495A2524341CBD00DF2CF1 /* game_hole.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959ED24341CBC00DF2CF1 /* game_hole.cc */; };
+		B9495A2624341CBD00DF2CF1 /* setup_game_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959F124341CBC00DF2CF1 /* setup_game_win_glade.cc */; };
+		B9495A2724341CBD00DF2CF1 /* bot_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959F224341CBC00DF2CF1 /* bot_simple.cc */; };
+		B9495A2824341CBD00DF2CF1 /* color_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959F324341CBC00DF2CF1 /* color_win_glade.cc */; };
+		B9495A2B24341CBD00DF2CF1 /* name_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959FA24341CBD00DF2CF1 /* name_win_glade.cc */; };
+		B9495A2C24341CBD00DF2CF1 /* about_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959FB24341CBD00DF2CF1 /* about_win.cc */; };
+		B9495A2D24341CBD00DF2CF1 /* setup_bot_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959FE24341CBD00DF2CF1 /* setup_bot_win_glade.cc */; };
+		B9495A2E24341CBD00DF2CF1 /* name_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B9495A0124341CBD00DF2CF1 /* name_win.cc */; };
+		B9495A2F24341CBD00DF2CF1 /* bot_lookahead.cc in Sources */ = {isa = PBXBuildFile; fileRef = B9495A0324341CBD00DF2CF1 /* bot_lookahead.cc */; };
+		B9495A3024341CBD00DF2CF1 /* game_client.cc in Sources */ = {isa = PBXBuildFile; fileRef = B9495A0524341CBD00DF2CF1 /* game_client.cc */; };
+		B9495A5B24341CDA00DF2CF1 /* ipv6.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3224341CD900DF2CF1 /* ipv6.c */; };
+		B9495A5C24341CDA00DF2CF1 /* conn.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3324341CD900DF2CF1 /* conn.c */; };
+		B9495A5D24341CDA00DF2CF1 /* pack.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3724341CD900DF2CF1 /* pack.c */; };
+		B9495A5E24341CDA00DF2CF1 /* udp.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3824341CD900DF2CF1 /* udp.c */; };
+		B9495A5F24341CDA00DF2CF1 /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3924341CD900DF2CF1 /* unix.c */; };
+		B9495A6024341CDA00DF2CF1 /* conn-http.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3A24341CD900DF2CF1 /* conn-http.c */; };
+		B9495A6124341CDA00DF2CF1 /* gnet-private.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3E24341CD900DF2CF1 /* gnet-private.c */; };
+		B9495A6224341CDA00DF2CF1 /* socks.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4024341CD900DF2CF1 /* socks.c */; };
+		B9495A6324341CDA00DF2CF1 /* uri.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4324341CD900DF2CF1 /* uri.c */; };
+		B9495A6424341CDA00DF2CF1 /* usagi_ifaddrs.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4524341CD900DF2CF1 /* usagi_ifaddrs.c */; };
+		B9495A6524341CDA00DF2CF1 /* gnet.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4624341CD900DF2CF1 /* gnet.c */; };
+		B9495A6624341CDA00DF2CF1 /* iochannel.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4924341CD900DF2CF1 /* iochannel.c */; };
+		B9495A6724341CDA00DF2CF1 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4A24341CD900DF2CF1 /* md5.c */; };
+		B9495A6824341CDA00DF2CF1 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4C24341CD900DF2CF1 /* base64.c */; };
+		B9495A6924341CDA00DF2CF1 /* socks-private.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4F24341CD900DF2CF1 /* socks-private.c */; };
+		B9495A6A24341CDA00DF2CF1 /* tcp.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5124341CD900DF2CF1 /* tcp.c */; };
+		B9495A6B24341CDA00DF2CF1 /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5324341CD900DF2CF1 /* sha.c */; };
+		B9495A6C24341CDA00DF2CF1 /* inetaddr.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5524341CD900DF2CF1 /* inetaddr.c */; };
+		B9495A6D24341CDA00DF2CF1 /* server.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5624341CD900DF2CF1 /* server.c */; };
+		B9495A6E24341CDA00DF2CF1 /* mcast.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5824341CDA00DF2CF1 /* mcast.c */; };
+		B9495A752434559D00DF2CF1 /* pegs.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A712434559D00DF2CF1 /* pegs.png */; };
+		B9495A762434559D00DF2CF1 /* smiley.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A722434559D00DF2CF1 /* smiley.png */; };
+		B9495A772434559D00DF2CF1 /* highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A732434559D00DF2CF1 /* highlight.png */; };
+		B9495A782434559D00DF2CF1 /* cheech.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A742434559D00DF2CF1 /* cheech.png */; };
+		B9495A7B24345A0D00DF2CF1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */; };
+		B9B823832437D78D0021755E /* libgdk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823662437D3CE0021755E /* libgdk-quartz-2.0.a */; };
+		B9B823842437D78D0021755E /* libgdkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823672437D3CE0021755E /* libgdkmm-2.4.a */; };
+		B9B823852437D78D0021755E /* libgtk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823652437D3CE0021755E /* libgtk-quartz-2.0.a */; };
+		B9B823862437D78D0021755E /* libgtkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823642437D3CE0021755E /* libgtkmm-2.4.a */; };
+		B9B823882437D7B10021755E /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823872437D7B10021755E /* libpng16.a */; };
+		B9B823AD243808710021755E /* libpangocairo-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82389243808700021755E /* libpangocairo-1.0.a */; };
+		B9B823AE243808710021755E /* libcairo-gobject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238A243808700021755E /* libcairo-gobject.a */; };
+		B9B823AF243808710021755E /* libgio-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238B243808700021755E /* libgio-2.0.a */; };
+		B9B823B0243808710021755E /* libgdk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238C243808700021755E /* libgdk-quartz-2.0.a */; };
+		B9B823B1243808710021755E /* libgdkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238D243808700021755E /* libgdkmm-2.4.a */; };
+		B9B823B2243808710021755E /* libgthread-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238E243808700021755E /* libgthread-2.0.a */; };
+		B9B823B3243808710021755E /* libharfbuzz-gobject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238F243808700021755E /* libharfbuzz-gobject.a */; };
+		B9B823B4243808710021755E /* libpangomm-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82390243808700021755E /* libpangomm-1.4.a */; };
+		B9B823B7243808710021755E /* libharfbuzz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82393243808700021755E /* libharfbuzz.a */; };
+		B9B823B8243808710021755E /* libgdk_pixbuf-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82394243808700021755E /* libgdk_pixbuf-2.0.a */; };
+		B9B823B9243808710021755E /* libfontconfig.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82395243808700021755E /* libfontconfig.a */; };
+		B9B823BA243808710021755E /* libpangoft2-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82396243808700021755E /* libpangoft2-1.0.a */; };
+		B9B823BB243808710021755E /* libfribidi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82397243808700021755E /* libfribidi.a */; };
+		B9B823BC243808710021755E /* libatk-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82398243808700021755E /* libatk-1.0.a */; };
+		B9B823BD243808710021755E /* libgtk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82399243808700021755E /* libgtk-quartz-2.0.a */; };
+		B9B823BE243808710021755E /* libpcre.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239A243808700021755E /* libpcre.a */; };
+		B9B823BF243808710021755E /* libpixman-1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239B243808700021755E /* libpixman-1.a */; };
+		B9B823C0243808710021755E /* libglibmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239C243808710021755E /* libglibmm-2.4.a */; };
+		B9B823C1243808710021755E /* libsigc-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239D243808710021755E /* libsigc-2.0.a */; };
+		B9B823C2243808710021755E /* libintl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239E243808710021755E /* libintl.a */; };
+		B9B823C3243808710021755E /* libcairomm-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239F243808710021755E /* libcairomm-1.0.a */; };
+		B9B823C4243808710021755E /* libpango-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A0243808710021755E /* libpango-1.0.a */; };
+		B9B823C5243808710021755E /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A1243808710021755E /* libfreetype.a */; };
+		B9B823C6243808710021755E /* libcairo-script-interpreter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A2243808710021755E /* libcairo-script-interpreter.a */; };
+		B9B823C7243808710021755E /* libcairo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A3243808710021755E /* libcairo.a */; };
+		B9B823C8243808710021755E /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A4243808710021755E /* libffi.a */; };
+		B9B823C9243808710021755E /* libgtkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A5243808710021755E /* libgtkmm-2.4.a */; };
+		B9B823CA243808710021755E /* libglib-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A6243808710021755E /* libglib-2.0.a */; };
+		B9B823CB243808710021755E /* libgraphite2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A7243808710021755E /* libgraphite2.a */; };
+		B9B823CC243808710021755E /* libatkmm-1.6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A8243808710021755E /* libatkmm-1.6.a */; };
+		B9B823CD243808710021755E /* libgmodule-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A9243808710021755E /* libgmodule-2.0.a */; };
+		B9B823CE243808710021755E /* libgiomm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823AA243808710021755E /* libgiomm-2.4.a */; };
+		B9B823D0243808710021755E /* libgailutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823AC243808710021755E /* libgailutil.a */; };
+		B9B823D22438095D0021755E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D12438095D0021755E /* libbz2.tbd */; };
+		B9B823D4243809680021755E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D3243809680021755E /* CoreGraphics.framework */; };
+		B9B823D624380C090021755E /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D524380C090021755E /* CoreText.framework */; };
+		B9B823D824380C600021755E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D724380C600021755E /* AppKit.framework */; };
+		B9B823DA24380C790021755E /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D924380C790021755E /* libiconv.tbd */; };
+		B9B823DC24380CA90021755E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823DB24380CA90021755E /* libz.tbd */; };
+		B9B823DE24380CF40021755E /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823DD24380CF40021755E /* libxml2.tbd */; };
+		B9B823E024380D170021755E /* libexpat.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823DF24380D160021755E /* libexpat.tbd */; };
+		B9B823E224380D5C0021755E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E124380D5C0021755E /* Cocoa.framework */; };
+		B9B823E424380D9E0021755E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E324380D9E0021755E /* Carbon.framework */; };
+		B9B823E824380F6D0021755E /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E724380F6D0021755E /* libresolv.tbd */; };
+		B9B823EA243811070021755E /* libgobject-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E524380F070021755E /* libgobject-2.0.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B94959A324341BAB00DF2CF1 /* cheech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cheech.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B94959A924341BAC00DF2CF1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B94959AE24341BAC00DF2CF1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B94959B124341BAC00DF2CF1 /* cheech.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = cheech.entitlements; sourceTree = "<group>"; };
+		B94959B724341CBA00DF2CF1 /* bot_random.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_random.cc; path = ../../src/bot_random.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959B824341CBA00DF2CF1 /* game_server.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_server.hh; path = ../../src/game_server.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959B924341CBA00DF2CF1 /* game_client.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_client.hh; path = ../../src/game_client.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959BA24341CBA00DF2CF1 /* bot_friendly.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_friendly.hh; path = ../../src/bot_friendly.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959BB24341CBA00DF2CF1 /* ajax_server.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ajax_server.hh; path = ../../src/ajax_server.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959BC24341CBA00DF2CF1 /* cheech.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cheech.cc; path = ../../src/cheech.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959BE24341CBA00DF2CF1 /* utility.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = utility.cc; path = ../../src/utility.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959BF24341CBA00DF2CF1 /* about_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = about_win_glade.hh; path = ../../src/about_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C024341CBA00DF2CF1 /* bot_mean.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_mean.cc; path = ../../src/bot_mean.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C124341CBA00DF2CF1 /* GtkComboBoxText.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GtkComboBoxText.hh; path = ../../src/GtkComboBoxText.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C224341CBA00DF2CF1 /* main_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_win.cc; path = ../../src/main_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C324341CBA00DF2CF1 /* GtkComboBoxEntryText.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GtkComboBoxEntryText.hh; path = ../../src/GtkComboBoxEntryText.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C524341CBA00DF2CF1 /* game_hole.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_hole.hh; path = ../../src/game_hole.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C624341CBA00DF2CF1 /* new_game_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = new_game_win.cc; path = ../../src/new_game_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C724341CBA00DF2CF1 /* setup_bot_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = setup_bot_win.cc; path = ../../src/setup_bot_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C824341CBA00DF2CF1 /* help_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = help_win.cc; path = ../../src/help_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959C924341CBA00DF2CF1 /* setup_bot_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setup_bot_win_glade.hh; path = ../../src/setup_bot_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959CA24341CBA00DF2CF1 /* bot_friendly.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_friendly.cc; path = ../../src/bot_friendly.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959CB24341CBA00DF2CF1 /* utility.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = utility.hh; path = ../../src/utility.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959CC24341CBA00DF2CF1 /* color_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = color_win.cc; path = ../../src/color_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959CD24341CBA00DF2CF1 /* prefs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = prefs.cc; path = ../../src/prefs.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959CE24341CBA00DF2CF1 /* setup_game_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setup_game_win_glade.hh; path = ../../src/setup_game_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959CF24341CBA00DF2CF1 /* new_game_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = new_game_win.hh; path = ../../src/new_game_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D024341CBA00DF2CF1 /* game_view.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_view.hh; path = ../../src/game_view.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D124341CBB00DF2CF1 /* setup_game_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = setup_game_win.cc; path = ../../src/setup_game_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D224341CBB00DF2CF1 /* ajax_server_conn.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server_conn.cc; path = ../../src/ajax_server_conn.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D324341CBB00DF2CF1 /* about_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = about_win_glade.cc; path = ../../src/about_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D424341CBB00DF2CF1 /* game_view_hole.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_view_hole.cc; path = ../../src/game_view_hole.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D524341CBB00DF2CF1 /* game_board.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_board.hh; path = ../../src/game_board.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D624341CBB00DF2CF1 /* gnet_conn.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gnet_conn.hh; path = ../../src/gnet_conn.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D724341CBB00DF2CF1 /* game_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = ../../src/game_server.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D824341CBB00DF2CF1 /* GtkImage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GtkImage.hh; path = ../../src/GtkImage.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D924341CBB00DF2CF1 /* game_board.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_board.cc; path = ../../src/game_board.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959DB24341CBB00DF2CF1 /* main_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_win_glade.cc; path = ../../src/main_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959DC24341CBB00DF2CF1 /* main_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = main_win_glade.hh; path = ../../src/main_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959DD24341CBB00DF2CF1 /* ajax_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server.cc; path = ../../src/ajax_server.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959DE24341CBB00DF2CF1 /* color_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = color_win.hh; path = ../../src/color_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959DF24341CBB00DF2CF1 /* game_images.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_images.cc; path = ../../src/game_images.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E024341CBB00DF2CF1 /* gnet_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gnet_server.cc; path = ../../src/gnet_server.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E124341CBB00DF2CF1 /* main_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = main_win.hh; path = ../../src/main_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E224341CBB00DF2CF1 /* game_view_hole.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_view_hole.hh; path = ../../src/game_view_hole.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E424341CBC00DF2CF1 /* game_view.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_view.cc; path = ../../src/game_view.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E524341CBC00DF2CF1 /* bot_mean.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_mean.hh; path = ../../src/bot_mean.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E624341CBC00DF2CF1 /* gnet_server.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gnet_server.hh; path = ../../src/gnet_server.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E724341CBC00DF2CF1 /* prefs.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prefs.hh; path = ../../src/prefs.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E824341CBC00DF2CF1 /* bot_base.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_base.cc; path = ../../src/bot_base.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E924341CBC00DF2CF1 /* gnet_conn.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gnet_conn.cc; path = ../../src/gnet_conn.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959EA24341CBC00DF2CF1 /* new_game_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = new_game_win_glade.cc; path = ../../src/new_game_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959EB24341CBC00DF2CF1 /* help_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = help_win_glade.cc; path = ../../src/help_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959EC24341CBC00DF2CF1 /* setup_bot_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setup_bot_win.hh; path = ../../src/setup_bot_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959ED24341CBC00DF2CF1 /* game_hole.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_hole.cc; path = ../../src/game_hole.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959EE24341CBC00DF2CF1 /* ajax_server_conn.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ajax_server_conn.hh; path = ../../src/ajax_server_conn.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959EF24341CBC00DF2CF1 /* help_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = help_win.hh; path = ../../src/help_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F024341CBC00DF2CF1 /* about_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = about_win.hh; path = ../../src/about_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F124341CBC00DF2CF1 /* setup_game_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = setup_game_win_glade.cc; path = ../../src/setup_game_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F224341CBC00DF2CF1 /* bot_simple.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_simple.cc; path = ../../src/bot_simple.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F324341CBC00DF2CF1 /* color_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = color_win_glade.cc; path = ../../src/color_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F424341CBC00DF2CF1 /* bot_lookahead.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_lookahead.hh; path = ../../src/bot_lookahead.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F624341CBC00DF2CF1 /* color_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = color_win_glade.hh; path = ../../src/color_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F724341CBC00DF2CF1 /* game_images.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_images.hh; path = ../../src/game_images.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959F824341CBC00DF2CF1 /* help_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = help_win_glade.hh; path = ../../src/help_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959FA24341CBD00DF2CF1 /* name_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = name_win_glade.cc; path = ../../src/name_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959FB24341CBD00DF2CF1 /* about_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = about_win.cc; path = ../../src/about_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959FC24341CBD00DF2CF1 /* name_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = name_win_glade.hh; path = ../../src/name_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959FD24341CBD00DF2CF1 /* setup_game_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setup_game_win.hh; path = ../../src/setup_game_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959FE24341CBD00DF2CF1 /* setup_bot_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = setup_bot_win_glade.cc; path = ../../src/setup_bot_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959FF24341CBD00DF2CF1 /* bot_random.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_random.hh; path = ../../src/bot_random.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0024341CBD00DF2CF1 /* name_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = name_win.hh; path = ../../src/name_win.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0124341CBD00DF2CF1 /* name_win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = name_win.cc; path = ../../src/name_win.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0224341CBD00DF2CF1 /* bot_simple.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_simple.hh; path = ../../src/bot_simple.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0324341CBD00DF2CF1 /* bot_lookahead.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_lookahead.cc; path = ../../src/bot_lookahead.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0424341CBD00DF2CF1 /* new_game_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = new_game_win_glade.hh; path = ../../src/new_game_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0524341CBD00DF2CF1 /* game_client.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_client.cc; path = ../../src/game_client.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A0624341CBD00DF2CF1 /* bot_base.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_base.hh; path = ../../src/bot_base.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3224341CD900DF2CF1 /* ipv6.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ipv6.c; path = "../../src/gnet-2.0/ipv6.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3324341CD900DF2CF1 /* conn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = conn.c; path = "../../src/gnet-2.0/conn.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3424341CD900DF2CF1 /* sha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha.h; path = "../../src/gnet-2.0/sha.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3524341CD900DF2CF1 /* conn-http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "conn-http.h"; path = "../../src/gnet-2.0/conn-http.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3624341CD900DF2CF1 /* gnetconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gnetconfig.h; path = "../../src/gnet-2.0/gnetconfig.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3724341CD900DF2CF1 /* pack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack.c; path = "../../src/gnet-2.0/pack.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3824341CD900DF2CF1 /* udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = udp.c; path = "../../src/gnet-2.0/udp.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3924341CD900DF2CF1 /* unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unix.c; path = "../../src/gnet-2.0/unix.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3A24341CD900DF2CF1 /* conn-http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "conn-http.c"; path = "../../src/gnet-2.0/conn-http.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3B24341CD900DF2CF1 /* tcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tcp.h; path = "../../src/gnet-2.0/tcp.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3C24341CD900DF2CF1 /* mcast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mcast.h; path = "../../src/gnet-2.0/mcast.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3D24341CD900DF2CF1 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = md5.h; path = "../../src/gnet-2.0/md5.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3E24341CD900DF2CF1 /* gnet-private.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gnet-private.c"; path = "../../src/gnet-2.0/gnet-private.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A3F24341CD900DF2CF1 /* iochannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iochannel.h; path = "../../src/gnet-2.0/iochannel.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4024341CD900DF2CF1 /* socks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socks.c; path = "../../src/gnet-2.0/socks.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4124341CD900DF2CF1 /* inetaddr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inetaddr.h; path = "../../src/gnet-2.0/inetaddr.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4224341CD900DF2CF1 /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unix.h; path = "../../src/gnet-2.0/unix.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4324341CD900DF2CF1 /* uri.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uri.c; path = "../../src/gnet-2.0/uri.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4424341CD900DF2CF1 /* uri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uri.h; path = "../../src/gnet-2.0/uri.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4524341CD900DF2CF1 /* usagi_ifaddrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = usagi_ifaddrs.c; path = "../../src/gnet-2.0/usagi_ifaddrs.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4624341CD900DF2CF1 /* gnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gnet.c; path = "../../src/gnet-2.0/gnet.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4724341CD900DF2CF1 /* pack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pack.h; path = "../../src/gnet-2.0/pack.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4824341CD900DF2CF1 /* socks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socks.h; path = "../../src/gnet-2.0/socks.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4924341CD900DF2CF1 /* iochannel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = iochannel.c; path = "../../src/gnet-2.0/iochannel.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4A24341CD900DF2CF1 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = "../../src/gnet-2.0/md5.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4B24341CD900DF2CF1 /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = server.h; path = "../../src/gnet-2.0/server.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4C24341CD900DF2CF1 /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = base64.c; path = "../../src/gnet-2.0/base64.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4D24341CD900DF2CF1 /* gnet-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gnet-private.h"; path = "../../src/gnet-2.0/gnet-private.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4E24341CD900DF2CF1 /* ipv6.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipv6.h; path = "../../src/gnet-2.0/ipv6.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A4F24341CD900DF2CF1 /* socks-private.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "socks-private.c"; path = "../../src/gnet-2.0/socks-private.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5024341CD900DF2CF1 /* usagi_ifaddrs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usagi_ifaddrs.h; path = "../../src/gnet-2.0/usagi_ifaddrs.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5124341CD900DF2CF1 /* tcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcp.c; path = "../../src/gnet-2.0/tcp.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5224341CD900DF2CF1 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = "../../src/gnet-2.0/base64.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5324341CD900DF2CF1 /* sha.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha.c; path = "../../src/gnet-2.0/sha.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5424341CD900DF2CF1 /* conn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = conn.h; path = "../../src/gnet-2.0/conn.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5524341CD900DF2CF1 /* inetaddr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inetaddr.c; path = "../../src/gnet-2.0/inetaddr.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5624341CD900DF2CF1 /* server.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = server.c; path = "../../src/gnet-2.0/server.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5724341CDA00DF2CF1 /* gnet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gnet.h; path = "../../src/gnet-2.0/gnet.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5824341CDA00DF2CF1 /* mcast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mcast.c; path = "../../src/gnet-2.0/mcast.c"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5924341CDA00DF2CF1 /* udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = udp.h; path = "../../src/gnet-2.0/udp.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A5A24341CDA00DF2CF1 /* socks-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "socks-private.h"; path = "../../src/gnet-2.0/socks-private.h"; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A6F24341D5200DF2CF1 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../config.h; sourceTree = "<group>"; usesTabs = 1; };
+		B9495A712434559D00DF2CF1 /* pegs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pegs.png; path = ../../pixmaps/pegs.png; sourceTree = "<group>"; };
+		B9495A722434559D00DF2CF1 /* smiley.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = smiley.png; path = ../../pixmaps/smiley.png; sourceTree = "<group>"; };
+		B9495A732434559D00DF2CF1 /* highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = highlight.png; path = ../../pixmaps/highlight.png; sourceTree = "<group>"; };
+		B9495A742434559D00DF2CF1 /* cheech.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cheech.png; path = ../../pixmaps/cheech.png; sourceTree = "<group>"; };
+		B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		B9B823642437D3CE0021755E /* libgtkmm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgtkmm-2.4.a"; path = "../../../../../usr/local/lib/libgtkmm-2.4.a"; sourceTree = "<group>"; };
+		B9B823652437D3CE0021755E /* libgtk-quartz-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgtk-quartz-2.0.a"; path = "../../../../../usr/local/lib/libgtk-quartz-2.0.a"; sourceTree = "<group>"; };
+		B9B823662437D3CE0021755E /* libgdk-quartz-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgdk-quartz-2.0.a"; path = "../../../../../usr/local/lib/libgdk-quartz-2.0.a"; sourceTree = "<group>"; };
+		B9B823672437D3CE0021755E /* libgdkmm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgdkmm-2.4.a"; path = "../../../../../usr/local/lib/libgdkmm-2.4.a"; sourceTree = "<group>"; };
+		B9B8236C2437D4B90021755E /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../../../../../usr/local/lib/libpng16.a; sourceTree = "<group>"; };
+		B9B823872437D7B10021755E /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = ../../../../../usr/local/Cellar/libpng/1.6.37/lib/libpng16.a; sourceTree = "<group>"; };
+		B9B82389243808700021755E /* libpangocairo-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpangocairo-1.0.a"; path = "libs/libpangocairo-1.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B8238A243808700021755E /* libcairo-gobject.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcairo-gobject.a"; path = "libs/libcairo-gobject.a"; sourceTree = SOURCE_ROOT; };
+		B9B8238B243808700021755E /* libgio-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgio-2.0.a"; path = "libs/libgio-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B8238C243808700021755E /* libgdk-quartz-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgdk-quartz-2.0.a"; path = "libs/libgdk-quartz-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B8238D243808700021755E /* libgdkmm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgdkmm-2.4.a"; path = "libs/libgdkmm-2.4.a"; sourceTree = SOURCE_ROOT; };
+		B9B8238E243808700021755E /* libgthread-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgthread-2.0.a"; path = "libs/libgthread-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B8238F243808700021755E /* libharfbuzz-gobject.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libharfbuzz-gobject.a"; path = "libs/libharfbuzz-gobject.a"; sourceTree = SOURCE_ROOT; };
+		B9B82390243808700021755E /* libpangomm-1.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpangomm-1.4.a"; path = "libs/libpangomm-1.4.a"; sourceTree = SOURCE_ROOT; };
+		B9B82392243808700021755E /* libpng16.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng16.a; path = libs/libpng16.a; sourceTree = SOURCE_ROOT; };
+		B9B82393243808700021755E /* libharfbuzz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libharfbuzz.a; path = libs/libharfbuzz.a; sourceTree = SOURCE_ROOT; };
+		B9B82394243808700021755E /* libgdk_pixbuf-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgdk_pixbuf-2.0.a"; path = "libs/libgdk_pixbuf-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B82395243808700021755E /* libfontconfig.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfontconfig.a; path = libs/libfontconfig.a; sourceTree = SOURCE_ROOT; };
+		B9B82396243808700021755E /* libpangoft2-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpangoft2-1.0.a"; path = "libs/libpangoft2-1.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B82397243808700021755E /* libfribidi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfribidi.a; path = libs/libfribidi.a; sourceTree = SOURCE_ROOT; };
+		B9B82398243808700021755E /* libatk-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libatk-1.0.a"; path = "libs/libatk-1.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B82399243808700021755E /* libgtk-quartz-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgtk-quartz-2.0.a"; path = "libs/libgtk-quartz-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B8239A243808700021755E /* libpcre.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcre.a; path = libs/libpcre.a; sourceTree = SOURCE_ROOT; };
+		B9B8239B243808700021755E /* libpixman-1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpixman-1.a"; path = "libs/libpixman-1.a"; sourceTree = SOURCE_ROOT; };
+		B9B8239C243808710021755E /* libglibmm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libglibmm-2.4.a"; path = "libs/libglibmm-2.4.a"; sourceTree = SOURCE_ROOT; };
+		B9B8239D243808710021755E /* libsigc-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsigc-2.0.a"; path = "libs/libsigc-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B8239E243808710021755E /* libintl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libintl.a; path = libs/libintl.a; sourceTree = SOURCE_ROOT; };
+		B9B8239F243808710021755E /* libcairomm-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcairomm-1.0.a"; path = "libs/libcairomm-1.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B823A0243808710021755E /* libpango-1.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpango-1.0.a"; path = "libs/libpango-1.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B823A1243808710021755E /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = libs/libfreetype.a; sourceTree = SOURCE_ROOT; };
+		B9B823A2243808710021755E /* libcairo-script-interpreter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libcairo-script-interpreter.a"; path = "libs/libcairo-script-interpreter.a"; sourceTree = SOURCE_ROOT; };
+		B9B823A3243808710021755E /* libcairo.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcairo.a; path = libs/libcairo.a; sourceTree = SOURCE_ROOT; };
+		B9B823A4243808710021755E /* libffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libffi.a; path = libs/libffi.a; sourceTree = SOURCE_ROOT; };
+		B9B823A5243808710021755E /* libgtkmm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgtkmm-2.4.a"; path = "libs/libgtkmm-2.4.a"; sourceTree = SOURCE_ROOT; };
+		B9B823A6243808710021755E /* libglib-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libglib-2.0.a"; path = "libs/libglib-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B823A7243808710021755E /* libgraphite2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgraphite2.a; path = libs/libgraphite2.a; sourceTree = SOURCE_ROOT; };
+		B9B823A8243808710021755E /* libatkmm-1.6.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libatkmm-1.6.a"; path = "libs/libatkmm-1.6.a"; sourceTree = SOURCE_ROOT; };
+		B9B823A9243808710021755E /* libgmodule-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgmodule-2.0.a"; path = "libs/libgmodule-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B823AA243808710021755E /* libgiomm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgiomm-2.4.a"; path = "libs/libgiomm-2.4.a"; sourceTree = SOURCE_ROOT; };
+		B9B823AC243808710021755E /* libgailutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgailutil.a; path = libs/libgailutil.a; sourceTree = SOURCE_ROOT; };
+		B9B823D12438095D0021755E /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		B9B823D3243809680021755E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		B9B823D524380C090021755E /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		B9B823D724380C600021755E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B9B823D924380C790021755E /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		B9B823DB24380CA90021755E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		B9B823DD24380CF40021755E /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		B9B823DF24380D160021755E /* libexpat.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libexpat.tbd; path = usr/lib/libexpat.tbd; sourceTree = SDKROOT; };
+		B9B823E124380D5C0021755E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B9B823E324380D9E0021755E /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		B9B823E524380F070021755E /* libgobject-2.0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgobject-2.0.a"; path = "libs/libgobject-2.0.a"; sourceTree = SOURCE_ROOT; };
+		B9B823E724380F6D0021755E /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B94959A024341BAB00DF2CF1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9B823E824380F6D0021755E /* libresolv.tbd in Frameworks */,
+				B9B823E424380D9E0021755E /* Carbon.framework in Frameworks */,
+				B9B823E224380D5C0021755E /* Cocoa.framework in Frameworks */,
+				B9B823E024380D170021755E /* libexpat.tbd in Frameworks */,
+				B9B823DE24380CF40021755E /* libxml2.tbd in Frameworks */,
+				B9B823DC24380CA90021755E /* libz.tbd in Frameworks */,
+				B9B823DA24380C790021755E /* libiconv.tbd in Frameworks */,
+				B9B823D824380C600021755E /* AppKit.framework in Frameworks */,
+				B9B823D624380C090021755E /* CoreText.framework in Frameworks */,
+				B9B823D4243809680021755E /* CoreGraphics.framework in Frameworks */,
+				B9B823D22438095D0021755E /* libbz2.tbd in Frameworks */,
+				B9B823C3243808710021755E /* libcairomm-1.0.a in Frameworks */,
+				B9B823C8243808710021755E /* libffi.a in Frameworks */,
+				B9B823C7243808710021755E /* libcairo.a in Frameworks */,
+				B9B823C1243808710021755E /* libsigc-2.0.a in Frameworks */,
+				B9B823BC243808710021755E /* libatk-1.0.a in Frameworks */,
+				B9B823B7243808710021755E /* libharfbuzz.a in Frameworks */,
+				B9B823B0243808710021755E /* libgdk-quartz-2.0.a in Frameworks */,
+				B9495A7B24345A0D00DF2CF1 /* CoreFoundation.framework in Frameworks */,
+				B9B823D0243808710021755E /* libgailutil.a in Frameworks */,
+				B9B823B2243808710021755E /* libgthread-2.0.a in Frameworks */,
+				B9B823AE243808710021755E /* libcairo-gobject.a in Frameworks */,
+				B9B823B1243808710021755E /* libgdkmm-2.4.a in Frameworks */,
+				B9B823C9243808710021755E /* libgtkmm-2.4.a in Frameworks */,
+				B9B823EA243811070021755E /* libgobject-2.0.a in Frameworks */,
+				B9B823832437D78D0021755E /* libgdk-quartz-2.0.a in Frameworks */,
+				B9B823B8243808710021755E /* libgdk_pixbuf-2.0.a in Frameworks */,
+				B9B823C2243808710021755E /* libintl.a in Frameworks */,
+				B9B823842437D78D0021755E /* libgdkmm-2.4.a in Frameworks */,
+				B9B823BD243808710021755E /* libgtk-quartz-2.0.a in Frameworks */,
+				B9B823C0243808710021755E /* libglibmm-2.4.a in Frameworks */,
+				B9B823B4243808710021755E /* libpangomm-1.4.a in Frameworks */,
+				B9B823CD243808710021755E /* libgmodule-2.0.a in Frameworks */,
+				B9B823B9243808710021755E /* libfontconfig.a in Frameworks */,
+				B9B823BB243808710021755E /* libfribidi.a in Frameworks */,
+				B9B823CA243808710021755E /* libglib-2.0.a in Frameworks */,
+				B9B823C4243808710021755E /* libpango-1.0.a in Frameworks */,
+				B9B823C6243808710021755E /* libcairo-script-interpreter.a in Frameworks */,
+				B9B823BA243808710021755E /* libpangoft2-1.0.a in Frameworks */,
+				B9B823CC243808710021755E /* libatkmm-1.6.a in Frameworks */,
+				B9B823AF243808710021755E /* libgio-2.0.a in Frameworks */,
+				B9B823BE243808710021755E /* libpcre.a in Frameworks */,
+				B9B823CE243808710021755E /* libgiomm-2.4.a in Frameworks */,
+				B9B823BF243808710021755E /* libpixman-1.a in Frameworks */,
+				B9B823C5243808710021755E /* libfreetype.a in Frameworks */,
+				B9B823AD243808710021755E /* libpangocairo-1.0.a in Frameworks */,
+				B9B823882437D7B10021755E /* libpng16.a in Frameworks */,
+				B9B823852437D78D0021755E /* libgtk-quartz-2.0.a in Frameworks */,
+				B9B823CB243808710021755E /* libgraphite2.a in Frameworks */,
+				B9B823862437D78D0021755E /* libgtkmm-2.4.a in Frameworks */,
+				B9B823B3243808710021755E /* libharfbuzz-gobject.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B949599A24341BAB00DF2CF1 = {
+			isa = PBXGroup;
+			children = (
+				B94959A524341BAB00DF2CF1 /* cheech */,
+				B94959A424341BAB00DF2CF1 /* Products */,
+				B9495A7924345A0D00DF2CF1 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B94959A424341BAB00DF2CF1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B94959A324341BAB00DF2CF1 /* cheech.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B94959A524341BAB00DF2CF1 /* cheech */ = {
+			isa = PBXGroup;
+			children = (
+				B9495A6F24341D5200DF2CF1 /* config.h */,
+				B94959D324341CBB00DF2CF1 /* about_win_glade.cc */,
+				B94959BF24341CBA00DF2CF1 /* about_win_glade.hh */,
+				B94959FB24341CBD00DF2CF1 /* about_win.cc */,
+				B94959F024341CBC00DF2CF1 /* about_win.hh */,
+				B94959D224341CBB00DF2CF1 /* ajax_server_conn.cc */,
+				B94959EE24341CBC00DF2CF1 /* ajax_server_conn.hh */,
+				B94959DD24341CBB00DF2CF1 /* ajax_server.cc */,
+				B94959BB24341CBA00DF2CF1 /* ajax_server.hh */,
+				B94959E824341CBC00DF2CF1 /* bot_base.cc */,
+				B9495A0624341CBD00DF2CF1 /* bot_base.hh */,
+				B94959CA24341CBA00DF2CF1 /* bot_friendly.cc */,
+				B94959BA24341CBA00DF2CF1 /* bot_friendly.hh */,
+				B9495A0324341CBD00DF2CF1 /* bot_lookahead.cc */,
+				B94959F424341CBC00DF2CF1 /* bot_lookahead.hh */,
+				B94959C024341CBA00DF2CF1 /* bot_mean.cc */,
+				B94959E524341CBC00DF2CF1 /* bot_mean.hh */,
+				B94959B724341CBA00DF2CF1 /* bot_random.cc */,
+				B94959FF24341CBD00DF2CF1 /* bot_random.hh */,
+				B94959F224341CBC00DF2CF1 /* bot_simple.cc */,
+				B9495A0224341CBD00DF2CF1 /* bot_simple.hh */,
+				B94959BC24341CBA00DF2CF1 /* cheech.cc */,
+				B94959F324341CBC00DF2CF1 /* color_win_glade.cc */,
+				B94959F624341CBC00DF2CF1 /* color_win_glade.hh */,
+				B94959CC24341CBA00DF2CF1 /* color_win.cc */,
+				B94959DE24341CBB00DF2CF1 /* color_win.hh */,
+				B94959D924341CBB00DF2CF1 /* game_board.cc */,
+				B94959D524341CBB00DF2CF1 /* game_board.hh */,
+				B9495A0524341CBD00DF2CF1 /* game_client.cc */,
+				B94959B924341CBA00DF2CF1 /* game_client.hh */,
+				B94959ED24341CBC00DF2CF1 /* game_hole.cc */,
+				B94959C524341CBA00DF2CF1 /* game_hole.hh */,
+				B94959DF24341CBB00DF2CF1 /* game_images.cc */,
+				B94959F724341CBC00DF2CF1 /* game_images.hh */,
+				B94959D724341CBB00DF2CF1 /* game_server.cc */,
+				B94959B824341CBA00DF2CF1 /* game_server.hh */,
+				B94959D424341CBB00DF2CF1 /* game_view_hole.cc */,
+				B94959E224341CBB00DF2CF1 /* game_view_hole.hh */,
+				B94959E424341CBC00DF2CF1 /* game_view.cc */,
+				B94959D024341CBA00DF2CF1 /* game_view.hh */,
+				B94959E924341CBC00DF2CF1 /* gnet_conn.cc */,
+				B94959D624341CBB00DF2CF1 /* gnet_conn.hh */,
+				B94959E024341CBB00DF2CF1 /* gnet_server.cc */,
+				B94959E624341CBC00DF2CF1 /* gnet_server.hh */,
+				B94959C324341CBA00DF2CF1 /* GtkComboBoxEntryText.hh */,
+				B94959C124341CBA00DF2CF1 /* GtkComboBoxText.hh */,
+				B94959D824341CBB00DF2CF1 /* GtkImage.hh */,
+				B94959EB24341CBC00DF2CF1 /* help_win_glade.cc */,
+				B94959F824341CBC00DF2CF1 /* help_win_glade.hh */,
+				B94959C824341CBA00DF2CF1 /* help_win.cc */,
+				B94959EF24341CBC00DF2CF1 /* help_win.hh */,
+				B94959DB24341CBB00DF2CF1 /* main_win_glade.cc */,
+				B94959DC24341CBB00DF2CF1 /* main_win_glade.hh */,
+				B94959C224341CBA00DF2CF1 /* main_win.cc */,
+				B94959E124341CBB00DF2CF1 /* main_win.hh */,
+				B94959FA24341CBD00DF2CF1 /* name_win_glade.cc */,
+				B94959FC24341CBD00DF2CF1 /* name_win_glade.hh */,
+				B9495A0124341CBD00DF2CF1 /* name_win.cc */,
+				B9495A0024341CBD00DF2CF1 /* name_win.hh */,
+				B94959EA24341CBC00DF2CF1 /* new_game_win_glade.cc */,
+				B9495A0424341CBD00DF2CF1 /* new_game_win_glade.hh */,
+				B94959C624341CBA00DF2CF1 /* new_game_win.cc */,
+				B94959CF24341CBA00DF2CF1 /* new_game_win.hh */,
+				B94959CD24341CBA00DF2CF1 /* prefs.cc */,
+				B94959E724341CBC00DF2CF1 /* prefs.hh */,
+				B94959FE24341CBD00DF2CF1 /* setup_bot_win_glade.cc */,
+				B94959C924341CBA00DF2CF1 /* setup_bot_win_glade.hh */,
+				B94959C724341CBA00DF2CF1 /* setup_bot_win.cc */,
+				B94959EC24341CBC00DF2CF1 /* setup_bot_win.hh */,
+				B94959F124341CBC00DF2CF1 /* setup_game_win_glade.cc */,
+				B94959CE24341CBA00DF2CF1 /* setup_game_win_glade.hh */,
+				B94959D124341CBB00DF2CF1 /* setup_game_win.cc */,
+				B94959FD24341CBD00DF2CF1 /* setup_game_win.hh */,
+				B94959BE24341CBA00DF2CF1 /* utility.cc */,
+				B94959CB24341CBA00DF2CF1 /* utility.hh */,
+				B9B8237D2437D7180021755E /* static libraries */,
+				B9495A3124341CCF00DF2CF1 /* gnet */,
+				B94959A924341BAC00DF2CF1 /* Assets.xcassets */,
+				B94959AE24341BAC00DF2CF1 /* Info.plist */,
+				B9495A702434557B00DF2CF1 /* Images */,
+				B94959B124341BAC00DF2CF1 /* cheech.entitlements */,
+			);
+			path = cheech;
+			sourceTree = "<group>";
+		};
+		B9495A3124341CCF00DF2CF1 /* gnet */ = {
+			isa = PBXGroup;
+			children = (
+				B9495A4C24341CD900DF2CF1 /* base64.c */,
+				B9495A5224341CD900DF2CF1 /* base64.h */,
+				B9495A3A24341CD900DF2CF1 /* conn-http.c */,
+				B9495A3524341CD900DF2CF1 /* conn-http.h */,
+				B9495A3324341CD900DF2CF1 /* conn.c */,
+				B9495A5424341CD900DF2CF1 /* conn.h */,
+				B9495A3E24341CD900DF2CF1 /* gnet-private.c */,
+				B9495A4D24341CD900DF2CF1 /* gnet-private.h */,
+				B9495A4624341CD900DF2CF1 /* gnet.c */,
+				B9495A5724341CDA00DF2CF1 /* gnet.h */,
+				B9495A3624341CD900DF2CF1 /* gnetconfig.h */,
+				B9495A5524341CD900DF2CF1 /* inetaddr.c */,
+				B9495A4124341CD900DF2CF1 /* inetaddr.h */,
+				B9495A4924341CD900DF2CF1 /* iochannel.c */,
+				B9495A3F24341CD900DF2CF1 /* iochannel.h */,
+				B9495A3224341CD900DF2CF1 /* ipv6.c */,
+				B9495A4E24341CD900DF2CF1 /* ipv6.h */,
+				B9495A5824341CDA00DF2CF1 /* mcast.c */,
+				B9495A3C24341CD900DF2CF1 /* mcast.h */,
+				B9495A4A24341CD900DF2CF1 /* md5.c */,
+				B9495A3D24341CD900DF2CF1 /* md5.h */,
+				B9495A3724341CD900DF2CF1 /* pack.c */,
+				B9495A4724341CD900DF2CF1 /* pack.h */,
+				B9495A5624341CD900DF2CF1 /* server.c */,
+				B9495A4B24341CD900DF2CF1 /* server.h */,
+				B9495A5324341CD900DF2CF1 /* sha.c */,
+				B9495A3424341CD900DF2CF1 /* sha.h */,
+				B9495A4F24341CD900DF2CF1 /* socks-private.c */,
+				B9495A5A24341CDA00DF2CF1 /* socks-private.h */,
+				B9495A4024341CD900DF2CF1 /* socks.c */,
+				B9495A4824341CD900DF2CF1 /* socks.h */,
+				B9495A5124341CD900DF2CF1 /* tcp.c */,
+				B9495A3B24341CD900DF2CF1 /* tcp.h */,
+				B9495A3824341CD900DF2CF1 /* udp.c */,
+				B9495A5924341CDA00DF2CF1 /* udp.h */,
+				B9495A3924341CD900DF2CF1 /* unix.c */,
+				B9495A4224341CD900DF2CF1 /* unix.h */,
+				B9495A4324341CD900DF2CF1 /* uri.c */,
+				B9495A4424341CD900DF2CF1 /* uri.h */,
+				B9495A4524341CD900DF2CF1 /* usagi_ifaddrs.c */,
+				B9495A5024341CD900DF2CF1 /* usagi_ifaddrs.h */,
+			);
+			name = gnet;
+			sourceTree = "<group>";
+		};
+		B9495A702434557B00DF2CF1 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				B9495A742434559D00DF2CF1 /* cheech.png */,
+				B9495A732434559D00DF2CF1 /* highlight.png */,
+				B9495A712434559D00DF2CF1 /* pegs.png */,
+				B9495A722434559D00DF2CF1 /* smiley.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		B9495A7924345A0D00DF2CF1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B9B823E724380F6D0021755E /* libresolv.tbd */,
+				B9B823E324380D9E0021755E /* Carbon.framework */,
+				B9B823E124380D5C0021755E /* Cocoa.framework */,
+				B9B823DF24380D160021755E /* libexpat.tbd */,
+				B9B823DD24380CF40021755E /* libxml2.tbd */,
+				B9B823DB24380CA90021755E /* libz.tbd */,
+				B9B823D924380C790021755E /* libiconv.tbd */,
+				B9B823D724380C600021755E /* AppKit.framework */,
+				B9B823D524380C090021755E /* CoreText.framework */,
+				B9B823D3243809680021755E /* CoreGraphics.framework */,
+				B9B823D12438095D0021755E /* libbz2.tbd */,
+				B9B8236C2437D4B90021755E /* libpng16.a */,
+				B9B823872437D7B10021755E /* libpng16.a */,
+				B9B823662437D3CE0021755E /* libgdk-quartz-2.0.a */,
+				B9B823672437D3CE0021755E /* libgdkmm-2.4.a */,
+				B9B823652437D3CE0021755E /* libgtk-quartz-2.0.a */,
+				B9B823642437D3CE0021755E /* libgtkmm-2.4.a */,
+				B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B9B8237D2437D7180021755E /* static libraries */ = {
+			isa = PBXGroup;
+			children = (
+				B9B82398243808700021755E /* libatk-1.0.a */,
+				B9B823A8243808710021755E /* libatkmm-1.6.a */,
+				B9B8238A243808700021755E /* libcairo-gobject.a */,
+				B9B823A2243808710021755E /* libcairo-script-interpreter.a */,
+				B9B823A3243808710021755E /* libcairo.a */,
+				B9B8239F243808710021755E /* libcairomm-1.0.a */,
+				B9B823A4243808710021755E /* libffi.a */,
+				B9B82395243808700021755E /* libfontconfig.a */,
+				B9B823A1243808710021755E /* libfreetype.a */,
+				B9B82397243808700021755E /* libfribidi.a */,
+				B9B823AC243808710021755E /* libgailutil.a */,
+				B9B82394243808700021755E /* libgdk_pixbuf-2.0.a */,
+				B9B8238C243808700021755E /* libgdk-quartz-2.0.a */,
+				B9B8238D243808700021755E /* libgdkmm-2.4.a */,
+				B9B8238B243808700021755E /* libgio-2.0.a */,
+				B9B823AA243808710021755E /* libgiomm-2.4.a */,
+				B9B823A6243808710021755E /* libglib-2.0.a */,
+				B9B8239C243808710021755E /* libglibmm-2.4.a */,
+				B9B823A9243808710021755E /* libgmodule-2.0.a */,
+				B9B823E524380F070021755E /* libgobject-2.0.a */,
+				B9B823A7243808710021755E /* libgraphite2.a */,
+				B9B8238E243808700021755E /* libgthread-2.0.a */,
+				B9B82399243808700021755E /* libgtk-quartz-2.0.a */,
+				B9B823A5243808710021755E /* libgtkmm-2.4.a */,
+				B9B8238F243808700021755E /* libharfbuzz-gobject.a */,
+				B9B82393243808700021755E /* libharfbuzz.a */,
+				B9B8239E243808710021755E /* libintl.a */,
+				B9B823A0243808710021755E /* libpango-1.0.a */,
+				B9B82389243808700021755E /* libpangocairo-1.0.a */,
+				B9B82396243808700021755E /* libpangoft2-1.0.a */,
+				B9B82390243808700021755E /* libpangomm-1.4.a */,
+				B9B8239A243808700021755E /* libpcre.a */,
+				B9B8239B243808700021755E /* libpixman-1.a */,
+				B9B82392243808700021755E /* libpng16.a */,
+				B9B8239D243808710021755E /* libsigc-2.0.a */,
+			);
+			name = "static libraries";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B94959A224341BAB00DF2CF1 /* cheech */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B94959B424341BAC00DF2CF1 /* Build configuration list for PBXNativeTarget "cheech" */;
+			buildPhases = (
+				B949599F24341BAB00DF2CF1 /* Sources */,
+				B94959A024341BAB00DF2CF1 /* Frameworks */,
+				B9309DA424370DCB008D2150 /* ShellScript */,
+				B94959A124341BAB00DF2CF1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = cheech;
+			productName = cheech;
+			productReference = B94959A324341BAB00DF2CF1 /* cheech.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B949599B24341BAB00DF2CF1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = "Ben Levitt";
+				TargetAttributes = {
+					B94959A224341BAB00DF2CF1 = {
+						CreatedOnToolsVersion = 11.4;
+					};
+				};
+			};
+			buildConfigurationList = B949599E24341BAB00DF2CF1 /* Build configuration list for PBXProject "cheech" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B949599A24341BAB00DF2CF1;
+			productRefGroup = B94959A424341BAB00DF2CF1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B94959A224341BAB00DF2CF1 /* cheech */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B94959A124341BAB00DF2CF1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9495A782434559D00DF2CF1 /* cheech.png in Resources */,
+				B9495A772434559D00DF2CF1 /* highlight.png in Resources */,
+				B9495A752434559D00DF2CF1 /* pegs.png in Resources */,
+				B9495A762434559D00DF2CF1 /* smiley.png in Resources */,
+				B94959AA24341BAC00DF2CF1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B9309DA424370DCB008D2150 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#dylibbundler -od -b -x ${TARGET_BUILD_DIR}/cheech.app/Contents/MacOS/cheech -d ${TARGET_BUILD_DIR}/cheech.app/Contents/libs\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B949599F24341BAB00DF2CF1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9495A2F24341CBD00DF2CF1 /* bot_lookahead.cc in Sources */,
+				B9495A6224341CDA00DF2CF1 /* socks.c in Sources */,
+				B9495A1724341CBD00DF2CF1 /* game_view_hole.cc in Sources */,
+				B9495A2324341CBD00DF2CF1 /* new_game_win_glade.cc in Sources */,
+				B9495A6C24341CDA00DF2CF1 /* inetaddr.c in Sources */,
+				B9495A5E24341CDA00DF2CF1 /* udp.c in Sources */,
+				B9495A1124341CBD00DF2CF1 /* bot_friendly.cc in Sources */,
+				B9495A6724341CDA00DF2CF1 /* md5.c in Sources */,
+				B9495A0B24341CBD00DF2CF1 /* bot_mean.cc in Sources */,
+				B9495A2E24341CBD00DF2CF1 /* name_win.cc in Sources */,
+				B9495A6424341CDA00DF2CF1 /* usagi_ifaddrs.c in Sources */,
+				B9495A1524341CBD00DF2CF1 /* ajax_server_conn.cc in Sources */,
+				B9495A2424341CBD00DF2CF1 /* help_win_glade.cc in Sources */,
+				B9495A5C24341CDA00DF2CF1 /* conn.c in Sources */,
+				B9495A6524341CDA00DF2CF1 /* gnet.c in Sources */,
+				B9495A0824341CBD00DF2CF1 /* cheech.cc in Sources */,
+				B9495A0724341CBD00DF2CF1 /* bot_random.cc in Sources */,
+				B9495A1B24341CBD00DF2CF1 /* main_win_glade.cc in Sources */,
+				B9495A2C24341CBD00DF2CF1 /* about_win.cc in Sources */,
+				B9495A5B24341CDA00DF2CF1 /* ipv6.c in Sources */,
+				B9495A1824341CBD00DF2CF1 /* game_server.cc in Sources */,
+				B9495A2624341CBD00DF2CF1 /* setup_game_win_glade.cc in Sources */,
+				B9495A3024341CBD00DF2CF1 /* game_client.cc in Sources */,
+				B9495A6B24341CDA00DF2CF1 /* sha.c in Sources */,
+				B9495A6D24341CDA00DF2CF1 /* server.c in Sources */,
+				B9495A2D24341CBD00DF2CF1 /* setup_bot_win_glade.cc in Sources */,
+				B9495A2B24341CBD00DF2CF1 /* name_win_glade.cc in Sources */,
+				B9495A1D24341CBD00DF2CF1 /* game_images.cc in Sources */,
+				B9495A1424341CBD00DF2CF1 /* setup_game_win.cc in Sources */,
+				B9495A2724341CBD00DF2CF1 /* bot_simple.cc in Sources */,
+				B9495A1624341CBD00DF2CF1 /* about_win_glade.cc in Sources */,
+				B9495A2524341CBD00DF2CF1 /* game_hole.cc in Sources */,
+				B9495A6A24341CDA00DF2CF1 /* tcp.c in Sources */,
+				B9495A6324341CDA00DF2CF1 /* uri.c in Sources */,
+				B9495A2024341CBD00DF2CF1 /* game_view.cc in Sources */,
+				B9495A6E24341CDA00DF2CF1 /* mcast.c in Sources */,
+				B9495A1324341CBD00DF2CF1 /* prefs.cc in Sources */,
+				B9495A5D24341CDA00DF2CF1 /* pack.c in Sources */,
+				B9495A0A24341CBD00DF2CF1 /* utility.cc in Sources */,
+				B9495A1C24341CBD00DF2CF1 /* ajax_server.cc in Sources */,
+				B9495A0C24341CBD00DF2CF1 /* main_win.cc in Sources */,
+				B9495A0F24341CBD00DF2CF1 /* setup_bot_win.cc in Sources */,
+				B9495A6124341CDA00DF2CF1 /* gnet-private.c in Sources */,
+				B9495A2124341CBD00DF2CF1 /* bot_base.cc in Sources */,
+				B9495A6024341CDA00DF2CF1 /* conn-http.c in Sources */,
+				B9495A6824341CDA00DF2CF1 /* base64.c in Sources */,
+				B9495A1924341CBD00DF2CF1 /* game_board.cc in Sources */,
+				B9495A1E24341CBD00DF2CF1 /* gnet_server.cc in Sources */,
+				B9495A1224341CBD00DF2CF1 /* color_win.cc in Sources */,
+				B9495A2224341CBD00DF2CF1 /* gnet_conn.cc in Sources */,
+				B9495A1024341CBD00DF2CF1 /* help_win.cc in Sources */,
+				B9495A6924341CDA00DF2CF1 /* socks-private.c in Sources */,
+				B9495A6624341CDA00DF2CF1 /* iochannel.c in Sources */,
+				B9495A5F24341CDA00DF2CF1 /* unix.c in Sources */,
+				B9495A0E24341CBD00DF2CF1 /* new_game_win.cc in Sources */,
+				B9495A2824341CBD00DF2CF1 /* color_win_glade.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B94959B224341BAC00DF2CF1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B94959B324341BAC00DF2CF1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B94959B524341BAC00DF2CF1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = cheech/cheech.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_OPTIMIZATION_LEVEL = fast;
+				HEADER_SEARCH_PATHS = (
+					.,
+					"./gnet-2.0",
+				);
+				INFOPLIST_FILE = cheech/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DMACOS_APP";
+				PRODUCT_BUNDLE_IDENTIFIER = com.octopilot.cheech;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					"/usr/local/Cellar/libffi/3.2.1/lib/libffi-3.2.1/include",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/include/gtkmm-2.4",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/lib/gtkmm-2.4/include",
+					"/usr/local/Cellar/atkmm/2.28.0_2/include/atkmm-1.6",
+					"/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-unix-print-2.0",
+					"/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/include/gdkmm-2.4",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/lib/gdkmm-2.4/include",
+					"/usr/local/Cellar/glibmm/2.64.2/include/giomm-2.4",
+					"/usr/local/Cellar/glibmm/2.64.2/lib/giomm-2.4/include",
+					"/usr/local/Cellar/pangomm/2.42.1/include/pangomm-1.4",
+					"/usr/local/Cellar/pangomm/2.42.1/lib/pangomm-1.4/include",
+					"/usr/local/Cellar/glibmm/2.64.2/include/glibmm-2.4",
+					"/usr/local/Cellar/glibmm/2.64.2/lib/glibmm-2.4/include",
+					"/usr/local/Cellar/cairomm/1.12.2_1/include/cairomm-1.0",
+					"/usr/local/Cellar/cairomm/1.12.2_1/lib/cairomm-1.0/include",
+					"/usr/local/Cellar/libsigc++@2/2.10.3/include/sigc++-2.0",
+					"/usr/local/Cellar/libsigc++@2/2.10.3/lib/sigc++-2.0/include",
+					"/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0",
+					"/usr/local/Cellar/gtk+/2.24.32_3/lib/gtk-2.0/include",
+					"/usr/local/Cellar/pango/1.44.7/include/pango-1.0",
+					/usr/local/Cellar/fribidi/1.0.9/include/fribidi,
+					/usr/local/Cellar/harfbuzz/2.6.4/include/harfbuzz,
+					/usr/local/Cellar/graphite2/1.3.13/include,
+					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
+					"/usr/local/Cellar/atk/2.34.1/include/atk-1.0",
+					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
+					"/usr/local/Cellar/pixman/0.38.4/include/pixman-1",
+					/usr/local/Cellar/fontconfig/2.13.1/include,
+					/usr/local/opt/freetype/include/freetype2,
+					/usr/local/Cellar/libpng/1.6.37/include/libpng16,
+					"/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0",
+					/usr/local/Cellar/glib/2.64.1/include,
+					"/usr/local/Cellar/glib/2.64.1/include/glib-2.0",
+					"/usr/local/Cellar/glib/2.64.1/lib/glib-2.0/include",
+					/usr/local/opt/gettext/include,
+					/usr/local/Cellar/pcre/8.44/include,
+					"/usr/include/gnet-2.0",
+					"/usr/lib/gnet-2.0/include/",
+					"/usr/include/glib-2.0",
+					"/usr/lib/glib-2.0/include",
+				);
+			};
+			name = Debug;
+		};
+		B94959B624341BAC00DF2CF1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = cheech/cheech.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
+				ENABLE_HARDENED_RUNTIME = YES;
+				HEADER_SEARCH_PATHS = (
+					.,
+					"./gnet-2.0",
+				);
+				INFOPLIST_FILE = cheech/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				OTHER_CFLAGS = "-DMACOS_APP";
+				PRODUCT_BUNDLE_IDENTIFIER = com.octopilot.cheech;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					.,
+					..,
+					"/usr/local/Cellar/libffi/3.2.1/lib/libffi-3.2.1/include",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/include/gtkmm-2.4",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/lib/gtkmm-2.4/include",
+					"/usr/local/Cellar/atkmm/2.28.0_2/include/atkmm-1.6",
+					"/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-unix-print-2.0",
+					"/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/include/gdkmm-2.4",
+					"/usr/local/Cellar/gtkmm/2.24.5_3/lib/gdkmm-2.4/include",
+					"/usr/local/Cellar/glibmm/2.64.2/include/giomm-2.4",
+					"/usr/local/Cellar/glibmm/2.64.2/lib/giomm-2.4/include",
+					"/usr/local/Cellar/pangomm/2.42.1/include/pangomm-1.4",
+					"/usr/local/Cellar/pangomm/2.42.1/lib/pangomm-1.4/include",
+					"/usr/local/Cellar/glibmm/2.64.2/include/glibmm-2.4",
+					"/usr/local/Cellar/glibmm/2.64.2/lib/glibmm-2.4/include",
+					"/usr/local/Cellar/cairomm/1.12.2_1/include/cairomm-1.0",
+					"/usr/local/Cellar/cairomm/1.12.2_1/lib/cairomm-1.0/include",
+					"/usr/local/Cellar/libsigc++@2/2.10.3/include/sigc++-2.0",
+					"/usr/local/Cellar/libsigc++@2/2.10.3/lib/sigc++-2.0/include",
+					"/usr/local/Cellar/gtk+/2.24.32_3/include/gtk-2.0",
+					"/usr/local/Cellar/gtk+/2.24.32_3/lib/gtk-2.0/include",
+					"/usr/local/Cellar/pango/1.44.7/include/pango-1.0",
+					/usr/local/Cellar/fribidi/1.0.9/include/fribidi,
+					/usr/local/Cellar/harfbuzz/2.6.4/include/harfbuzz,
+					/usr/local/Cellar/graphite2/1.3.13/include,
+					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
+					"/usr/local/Cellar/atk/2.34.1/include/atk-1.0",
+					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
+					"/usr/local/Cellar/pixman/0.38.4/include/pixman-1",
+					/usr/local/Cellar/fontconfig/2.13.1/include,
+					/usr/local/opt/freetype/include/freetype2,
+					/usr/local/Cellar/libpng/1.6.37/include/libpng16,
+					"/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0",
+					/usr/local/Cellar/glib/2.64.1/include,
+					"/usr/local/Cellar/glib/2.64.1/include/glib-2.0",
+					"/usr/local/Cellar/glib/2.64.1/lib/glib-2.0/include",
+					/usr/local/opt/gettext/include,
+					/usr/local/Cellar/pcre/8.44/include,
+					"/usr/include/gnet-2.0",
+					"/usr/lib/gnet-2.0/include/",
+					"/usr/include/glib-2.0",
+					"/usr/lib/glib-2.0/include",
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B949599E24341BAB00DF2CF1 /* Build configuration list for PBXProject "cheech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B94959B224341BAC00DF2CF1 /* Debug */,
+				B94959B324341BAC00DF2CF1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B94959B424341BAC00DF2CF1 /* Build configuration list for PBXNativeTarget "cheech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B94959B524341BAC00DF2CF1 /* Debug */,
+				B94959B624341BAC00DF2CF1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B949599B24341BAB00DF2CF1 /* Project object */;
+}

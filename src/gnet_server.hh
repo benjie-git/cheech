@@ -24,7 +24,7 @@
 
 #include <glibmm/ustring.h>
 #include <sigc++/sigc++.h>
-#include <gnet-2.0/gnet.h>
+#include "gnet-2.0/gnet.h"
 
 #include "gnet_conn.hh"
 

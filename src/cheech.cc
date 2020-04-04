@@ -18,7 +18,7 @@
  */
 
 #include <iostream>
-#include <gnet-2.0/gnet.h>
+#include "gnet-2.0/gnet.h"
 #include <gtkmm/main.h>
 #include <glib/gi18n.h>
 #include <glibmm/optioncontext.h>
@@ -141,7 +141,7 @@ void process_options(int &argc, char **&argv)
 	{
 		std::cout << "Bad command line arguments.  Try cheech --help"
 			<< std::endl;
-		exit(1);
+//		exit(1);
 	}
 
 	// Defaults
