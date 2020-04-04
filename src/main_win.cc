@@ -24,6 +24,7 @@
 
 #include "game_images.hh"
 #include "utility.hh"
+using Gdk::Pixbuf;
 
 
 main_win::main_win() : main_win_glade()
@@ -52,10 +53,12 @@ main_win::main_win() : main_win_glade()
 	for (int i=0; i<6; i++)
 		_finished_in_moves[i] = 0;
 
-	logo->set(GameImages::get_logo(false));
-	logo->set_size_request(GameImages::get_logo(false)->get_width(),
-						   GameImages::get_logo(false)->get_height());
-
+	Glib::RefPtr<Pixbuf> logoPix = GameImages::get_logo(false);
+	if (logoPix) {
+		logo->set(logoPix);
+		logo->set_size_request(logoPix->get_width(), logoPix->get_height());
+	}
+	
 	game_view->evt_unhandled_key.connect(sigc::mem_fun(*this,
 		&main_win::append_to_chat_entry));
 	game_view->evt_user_action.connect(sigc::bind(sigc::mem_fun(*this,
@@ -707,11 +710,11 @@ void main_win::on_cmd_player_add(unsigned int posn,
 {
 	set_player_label(posn, _current_player == posn);
 
-	_player_peg[posn-1]->set(GameImages::get_peg(color));
-	_player_peg[posn-1]->set_size_request(
-		GameImages::get_peg(color)->get_width(),
-		GameImages::get_peg(color)->get_height());
-
+	Glib::RefPtr<Pixbuf> pg = GameImages::get_peg(color);
+	if (pg) {
+		_player_peg[posn-1]->set(pg);
+		_player_peg[posn-1]->set_size_request(pg->get_width(), pg->get_height());
+	}
 	game_view->queue_draw();
 
 	update_menus();

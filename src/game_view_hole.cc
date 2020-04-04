@@ -82,20 +82,24 @@ void GameViewHole::draw(Glib::RefPtr<Gdk::Window> window,
 	Glib::RefPtr<Gdk::Pixbuf> peg = GameImages::get_peg(!_hole ? 0 :
 		_client->get_player_color(_hole->get_current_player()));
 	
-	peg->render_to_drawable(window, gc, 0, 0,
-							get_location().get_x() - off_x,
-							get_location().get_y() - off_y,
-							-1, -1, Gdk::RGB_DITHER_NONE, 0, 0);
-
+	if (peg) {
+		peg->render_to_drawable(window, gc, 0, 0,
+								get_location().get_x() - off_x,
+								get_location().get_y() - off_y,
+								-1, -1, Gdk::RGB_DITHER_NONE, 0, 0);
+	}
+	
 	if (_hilighted)
 	{
 		off_x = GameImages::get_highlight_size().get_x()/2;
 		off_y = GameImages::get_highlight_size().get_y()/2;
 		Glib::RefPtr<Gdk::Pixbuf> hl = GameImages::get_highlight();
-		hl->render_to_drawable(window, gc, 0, 0,
-							   get_location().get_x() - off_x,
-							   get_location().get_y() - off_y,
-							   -1, -1, Gdk::RGB_DITHER_NONE, 0, 0);
+		if (hl) {
+			hl->render_to_drawable(window, gc, 0, 0,
+								   get_location().get_x() - off_x,
+								   get_location().get_y() - off_y,
+								   -1, -1, Gdk::RGB_DITHER_NONE, 0, 0);
+		}
 	}
 }
 
