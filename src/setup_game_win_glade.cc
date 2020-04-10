@@ -62,7 +62,7 @@ setup_game_win_glade::setup_game_win_glade(
    gmm_data = new GlademmData(get_accel_group());
 
    Gtk::Label *label65 = Gtk::manage(new class Gtk::Label(_("Number of Players:")));
-   Gtk::Adjustment *num_players_adj = Gtk::manage(new class Gtk::Adjustment(3, 1, 6, 1, 1, 1));
+   Gtk::Adjustment *num_players_adj = Gtk::manage(new class Gtk::Adjustment(3, 1, 6, 1, 1, 0));
    num_players = Gtk::manage(new class Gtk::SpinButton(*num_players_adj, 1, 0));
 
    Gtk::Table *table10 = Gtk::manage(new class Gtk::Table(2, 2, false));

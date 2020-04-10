@@ -87,7 +87,7 @@ new_game_win_glade::new_game_win_glade(
 
    Gtk::HBox *hbox15 = Gtk::manage(new class Gtk::HBox(false, 6));
    Gtk::Label *label24 = Gtk::manage(new class Gtk::Label(_("Number Of Players:")));
-   Gtk::Adjustment *num_players_adj = Gtk::manage(new class Gtk::Adjustment(3, 1, 6, 1, 1, 1));
+   Gtk::Adjustment *num_players_adj = Gtk::manage(new class Gtk::Adjustment(3, 1, 6, 1, 1, 0));
    num_players = Gtk::manage(new class Gtk::SpinButton(*num_players_adj, 1, 0));
 
    Gtk::HBox *hbox14 = Gtk::manage(new class Gtk::HBox(false, 6));
