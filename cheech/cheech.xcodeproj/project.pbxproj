@@ -69,44 +69,6 @@
 		B9495A772434559D00DF2CF1 /* highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A732434559D00DF2CF1 /* highlight.png */; };
 		B9495A782434559D00DF2CF1 /* cheech.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A742434559D00DF2CF1 /* cheech.png */; };
 		B9495A7B24345A0D00DF2CF1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */; };
-		B9B823832437D78D0021755E /* libgdk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823662437D3CE0021755E /* libgdk-quartz-2.0.a */; };
-		B9B823842437D78D0021755E /* libgdkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823672437D3CE0021755E /* libgdkmm-2.4.a */; };
-		B9B823852437D78D0021755E /* libgtk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823652437D3CE0021755E /* libgtk-quartz-2.0.a */; };
-		B9B823862437D78D0021755E /* libgtkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823642437D3CE0021755E /* libgtkmm-2.4.a */; };
-		B9B823882437D7B10021755E /* libpng16.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823872437D7B10021755E /* libpng16.a */; };
-		B9B823AD243808710021755E /* libpangocairo-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82389243808700021755E /* libpangocairo-1.0.a */; };
-		B9B823AE243808710021755E /* libcairo-gobject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238A243808700021755E /* libcairo-gobject.a */; };
-		B9B823AF243808710021755E /* libgio-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238B243808700021755E /* libgio-2.0.a */; };
-		B9B823B0243808710021755E /* libgdk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238C243808700021755E /* libgdk-quartz-2.0.a */; };
-		B9B823B1243808710021755E /* libgdkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238D243808700021755E /* libgdkmm-2.4.a */; };
-		B9B823B2243808710021755E /* libgthread-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238E243808700021755E /* libgthread-2.0.a */; };
-		B9B823B3243808710021755E /* libharfbuzz-gobject.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8238F243808700021755E /* libharfbuzz-gobject.a */; };
-		B9B823B4243808710021755E /* libpangomm-1.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82390243808700021755E /* libpangomm-1.4.a */; };
-		B9B823B7243808710021755E /* libharfbuzz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82393243808700021755E /* libharfbuzz.a */; };
-		B9B823B8243808710021755E /* libgdk_pixbuf-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82394243808700021755E /* libgdk_pixbuf-2.0.a */; };
-		B9B823B9243808710021755E /* libfontconfig.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82395243808700021755E /* libfontconfig.a */; };
-		B9B823BA243808710021755E /* libpangoft2-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82396243808700021755E /* libpangoft2-1.0.a */; };
-		B9B823BB243808710021755E /* libfribidi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82397243808700021755E /* libfribidi.a */; };
-		B9B823BC243808710021755E /* libatk-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82398243808700021755E /* libatk-1.0.a */; };
-		B9B823BD243808710021755E /* libgtk-quartz-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B82399243808700021755E /* libgtk-quartz-2.0.a */; };
-		B9B823BE243808710021755E /* libpcre.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239A243808700021755E /* libpcre.a */; };
-		B9B823BF243808710021755E /* libpixman-1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239B243808700021755E /* libpixman-1.a */; };
-		B9B823C0243808710021755E /* libglibmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239C243808710021755E /* libglibmm-2.4.a */; };
-		B9B823C1243808710021755E /* libsigc-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239D243808710021755E /* libsigc-2.0.a */; };
-		B9B823C2243808710021755E /* libintl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239E243808710021755E /* libintl.a */; };
-		B9B823C3243808710021755E /* libcairomm-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B8239F243808710021755E /* libcairomm-1.0.a */; };
-		B9B823C4243808710021755E /* libpango-1.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A0243808710021755E /* libpango-1.0.a */; };
-		B9B823C5243808710021755E /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A1243808710021755E /* libfreetype.a */; };
-		B9B823C6243808710021755E /* libcairo-script-interpreter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A2243808710021755E /* libcairo-script-interpreter.a */; };
-		B9B823C7243808710021755E /* libcairo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A3243808710021755E /* libcairo.a */; };
-		B9B823C8243808710021755E /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A4243808710021755E /* libffi.a */; };
-		B9B823C9243808710021755E /* libgtkmm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A5243808710021755E /* libgtkmm-2.4.a */; };
-		B9B823CA243808710021755E /* libglib-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A6243808710021755E /* libglib-2.0.a */; };
-		B9B823CB243808710021755E /* libgraphite2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A7243808710021755E /* libgraphite2.a */; };
-		B9B823CC243808710021755E /* libatkmm-1.6.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A8243808710021755E /* libatkmm-1.6.a */; };
-		B9B823CD243808710021755E /* libgmodule-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823A9243808710021755E /* libgmodule-2.0.a */; };
-		B9B823CE243808710021755E /* libgiomm-2.4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823AA243808710021755E /* libgiomm-2.4.a */; };
-		B9B823D0243808710021755E /* libgailutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823AC243808710021755E /* libgailutil.a */; };
 		B9B823D22438095D0021755E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D12438095D0021755E /* libbz2.tbd */; };
 		B9B823D4243809680021755E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D3243809680021755E /* CoreGraphics.framework */; };
 		B9B823D624380C090021755E /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D524380C090021755E /* CoreText.framework */; };
@@ -118,7 +80,6 @@
 		B9B823E224380D5C0021755E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E124380D5C0021755E /* Cocoa.framework */; };
 		B9B823E424380D9E0021755E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E324380D9E0021755E /* Carbon.framework */; };
 		B9B823E824380F6D0021755E /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E724380F6D0021755E /* libresolv.tbd */; };
-		B9B823EA243811070021755E /* libgobject-2.0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823E524380F070021755E /* libgobject-2.0.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -317,46 +278,7 @@
 				B9B823D624380C090021755E /* CoreText.framework in Frameworks */,
 				B9B823D4243809680021755E /* CoreGraphics.framework in Frameworks */,
 				B9B823D22438095D0021755E /* libbz2.tbd in Frameworks */,
-				B9B823C3243808710021755E /* libcairomm-1.0.a in Frameworks */,
-				B9B823C8243808710021755E /* libffi.a in Frameworks */,
-				B9B823C7243808710021755E /* libcairo.a in Frameworks */,
-				B9B823C1243808710021755E /* libsigc-2.0.a in Frameworks */,
-				B9B823BC243808710021755E /* libatk-1.0.a in Frameworks */,
-				B9B823B7243808710021755E /* libharfbuzz.a in Frameworks */,
-				B9B823B0243808710021755E /* libgdk-quartz-2.0.a in Frameworks */,
 				B9495A7B24345A0D00DF2CF1 /* CoreFoundation.framework in Frameworks */,
-				B9B823D0243808710021755E /* libgailutil.a in Frameworks */,
-				B9B823B2243808710021755E /* libgthread-2.0.a in Frameworks */,
-				B9B823AE243808710021755E /* libcairo-gobject.a in Frameworks */,
-				B9B823B1243808710021755E /* libgdkmm-2.4.a in Frameworks */,
-				B9B823C9243808710021755E /* libgtkmm-2.4.a in Frameworks */,
-				B9B823EA243811070021755E /* libgobject-2.0.a in Frameworks */,
-				B9B823832437D78D0021755E /* libgdk-quartz-2.0.a in Frameworks */,
-				B9B823B8243808710021755E /* libgdk_pixbuf-2.0.a in Frameworks */,
-				B9B823C2243808710021755E /* libintl.a in Frameworks */,
-				B9B823842437D78D0021755E /* libgdkmm-2.4.a in Frameworks */,
-				B9B823BD243808710021755E /* libgtk-quartz-2.0.a in Frameworks */,
-				B9B823C0243808710021755E /* libglibmm-2.4.a in Frameworks */,
-				B9B823B4243808710021755E /* libpangomm-1.4.a in Frameworks */,
-				B9B823CD243808710021755E /* libgmodule-2.0.a in Frameworks */,
-				B9B823B9243808710021755E /* libfontconfig.a in Frameworks */,
-				B9B823BB243808710021755E /* libfribidi.a in Frameworks */,
-				B9B823CA243808710021755E /* libglib-2.0.a in Frameworks */,
-				B9B823C4243808710021755E /* libpango-1.0.a in Frameworks */,
-				B9B823C6243808710021755E /* libcairo-script-interpreter.a in Frameworks */,
-				B9B823BA243808710021755E /* libpangoft2-1.0.a in Frameworks */,
-				B9B823CC243808710021755E /* libatkmm-1.6.a in Frameworks */,
-				B9B823AF243808710021755E /* libgio-2.0.a in Frameworks */,
-				B9B823BE243808710021755E /* libpcre.a in Frameworks */,
-				B9B823CE243808710021755E /* libgiomm-2.4.a in Frameworks */,
-				B9B823BF243808710021755E /* libpixman-1.a in Frameworks */,
-				B9B823C5243808710021755E /* libfreetype.a in Frameworks */,
-				B9B823AD243808710021755E /* libpangocairo-1.0.a in Frameworks */,
-				B9B823882437D7B10021755E /* libpng16.a in Frameworks */,
-				B9B823852437D78D0021755E /* libgtk-quartz-2.0.a in Frameworks */,
-				B9B823CB243808710021755E /* libgraphite2.a in Frameworks */,
-				B9B823862437D78D0021755E /* libgtkmm-2.4.a in Frameworks */,
-				B9B823B3243808710021755E /* libharfbuzz-gobject.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -880,9 +802,44 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_CFLAGS = "-DMACOS_APP";
+				OTHER_LDFLAGS = (
+					"-L/usr/local/Cellar/gtkmm/2.24.5_3/lib",
+					"-L/usr/local/Cellar/atkmm/2.28.0_2/lib",
+					"-L/usr/local/Cellar/gtk+/2.24.32_3/lib",
+					"-L/usr/local/Cellar/glibmm/2.64.2/lib",
+					"-L/usr/local/Cellar/pangomm/2.42.1/lib",
+					"-L/usr/local/Cellar/cairomm/1.12.2_1/lib",
+					"-L/usr/local/Cellar/libsigc++@2/2.10.3/lib",
+					"-L/usr/local/Cellar/pango/1.44.7/lib",
+					"-L/usr/local/Cellar/harfbuzz/2.6.4/lib",
+					"-L/usr/local/Cellar/atk/2.36.0/lib",
+					"-L/usr/local/Cellar/cairo/1.16.0_3/lib",
+					"-L/usr/local/Cellar/gdk-pixbuf/2.40.0/lib",
+					"-L/usr/local/Cellar/glib/2.64.2/lib",
+					"-L/usr/local/opt/gettext/lib",
+					"-lgtkmm-2.4",
+					"-latkmm-1.6",
+					"-lgdkmm-2.4",
+					"-lgiomm-2.4",
+					"-lpangomm-1.4",
+					"-lglibmm-2.4",
+					"-lcairomm-1.0",
+					"-lsigc-2.0",
+					"-lgtk-quartz-2.0",
+					"-lgdk-quartz-2.0",
+					"-lpangocairo-1.0",
+					"-lpango-1.0",
+					"-lharfbuzz",
+					"-latk-1.0",
+					"-lcairo",
+					"-lgdk_pixbuf-2.0",
+					"-lgio-2.0",
+					"-lgobject-2.0",
+					"-lgthread-2.0",
+					"-lglib-2.0",
+				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.octopilot.cheech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -913,17 +870,17 @@
 					/usr/local/Cellar/fribidi/1.0.9/include/fribidi,
 					/usr/local/Cellar/harfbuzz/2.6.4/include/harfbuzz,
 					/usr/local/Cellar/graphite2/1.3.13/include,
-					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
-					"/usr/local/Cellar/atk/2.34.1/include/atk-1.0",
-					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
+					/usr/local/Cellar/cairo/1.16.0_3/include/cairo,
+					"/usr/local/Cellar/atk/2.36.0/include/atk-1.0",
+					/usr/local/Cellar/cairo/1.16.0_3/include/cairo,
 					"/usr/local/Cellar/pixman/0.38.4/include/pixman-1",
 					/usr/local/Cellar/fontconfig/2.13.1/include,
 					/usr/local/opt/freetype/include/freetype2,
 					/usr/local/Cellar/libpng/1.6.37/include/libpng16,
 					"/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0",
-					/usr/local/Cellar/glib/2.64.1/include,
-					"/usr/local/Cellar/glib/2.64.1/include/glib-2.0",
-					"/usr/local/Cellar/glib/2.64.1/lib/glib-2.0/include",
+					/usr/local/Cellar/glib/2.64.2/include,
+					"/usr/local/Cellar/glib/2.64.2/include/glib-2.0",
+					"/usr/local/Cellar/glib/2.64.2/lib/glib-2.0/include",
 					/usr/local/opt/gettext/include,
 					/usr/local/Cellar/pcre/8.44/include,
 					"/usr/include/gnet-2.0",
@@ -955,9 +912,44 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/libs";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_CFLAGS = "-DMACOS_APP";
+				OTHER_LDFLAGS = (
+					"-L/usr/local/Cellar/gtkmm/2.24.5_3/lib",
+					"-L/usr/local/Cellar/atkmm/2.28.0_2/lib",
+					"-L/usr/local/Cellar/gtk+/2.24.32_3/lib",
+					"-L/usr/local/Cellar/glibmm/2.64.2/lib",
+					"-L/usr/local/Cellar/pangomm/2.42.1/lib",
+					"-L/usr/local/Cellar/cairomm/1.12.2_1/lib",
+					"-L/usr/local/Cellar/libsigc++@2/2.10.3/lib",
+					"-L/usr/local/Cellar/pango/1.44.7/lib",
+					"-L/usr/local/Cellar/harfbuzz/2.6.4/lib",
+					"-L/usr/local/Cellar/atk/2.36.0/lib",
+					"-L/usr/local/Cellar/cairo/1.16.0_3/lib",
+					"-L/usr/local/Cellar/gdk-pixbuf/2.40.0/lib",
+					"-L/usr/local/Cellar/glib/2.64.2/lib",
+					"-L/usr/local/opt/gettext/lib",
+					"-lgtkmm-2.4",
+					"-latkmm-1.6",
+					"-lgdkmm-2.4",
+					"-lgiomm-2.4",
+					"-lpangomm-1.4",
+					"-lglibmm-2.4",
+					"-lcairomm-1.0",
+					"-lsigc-2.0",
+					"-lgtk-quartz-2.0",
+					"-lgdk-quartz-2.0",
+					"-lpangocairo-1.0",
+					"-lpango-1.0",
+					"-lharfbuzz",
+					"-latk-1.0",
+					"-lcairo",
+					"-lgdk_pixbuf-2.0",
+					"-lgio-2.0",
+					"-lgobject-2.0",
+					"-lgthread-2.0",
+					"-lglib-2.0",
+				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.octopilot.cheech;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -988,17 +980,17 @@
 					/usr/local/Cellar/fribidi/1.0.9/include/fribidi,
 					/usr/local/Cellar/harfbuzz/2.6.4/include/harfbuzz,
 					/usr/local/Cellar/graphite2/1.3.13/include,
-					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
-					"/usr/local/Cellar/atk/2.34.1/include/atk-1.0",
-					/usr/local/Cellar/cairo/1.16.0_2/include/cairo,
+					/usr/local/Cellar/cairo/1.16.0_3/include/cairo,
+					"/usr/local/Cellar/atk/2.36.0/include/atk-1.0",
+					/usr/local/Cellar/cairo/1.16.0_3/include/cairo,
 					"/usr/local/Cellar/pixman/0.38.4/include/pixman-1",
 					/usr/local/Cellar/fontconfig/2.13.1/include,
 					/usr/local/opt/freetype/include/freetype2,
 					/usr/local/Cellar/libpng/1.6.37/include/libpng16,
 					"/usr/local/Cellar/gdk-pixbuf/2.40.0/include/gdk-pixbuf-2.0",
-					/usr/local/Cellar/glib/2.64.1/include,
-					"/usr/local/Cellar/glib/2.64.1/include/glib-2.0",
-					"/usr/local/Cellar/glib/2.64.1/lib/glib-2.0/include",
+					/usr/local/Cellar/glib/2.64.2/include,
+					"/usr/local/Cellar/glib/2.64.2/include/glib-2.0",
+					"/usr/local/Cellar/glib/2.64.2/lib/glib-2.0/include",
 					/usr/local/opt/gettext/include,
 					/usr/local/Cellar/pcre/8.44/include,
 					"/usr/include/gnet-2.0",
