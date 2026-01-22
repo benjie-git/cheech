@@ -68,8 +68,9 @@ bool on_stdin(Glib::IOCondition condition, GameServer *server)
 
 	if(!std::getline(std::cin, line))
 	{
-		server->end_game();
-		exit(0);
+		return false;
+//		server->end_game();
+//		exit(0);
 	}
 
 	server->parse_command(line);
