@@ -39,6 +39,36 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
 AC_LANG_POP([C++])
 
 dnl ---------------------------------------------------------------
+dnl Link-time optimization.  The AI search calls a large number of
+dnl tiny board accessors that live in other translation units; LTO
+dnl lets the compiler inline them, which roughly doubles single-core
+dnl search speed.  Enabled by default when the toolchain supports it.
+dnl ---------------------------------------------------------------
+AC_ARG_ENABLE([lto],
+  [AS_HELP_STRING([--disable-lto],
+                  [disable link-time optimization (LTO) [default=enabled]])],
+  [], [enable_lto=yes])
+
+if test "x$enable_lto" = "xyes"; then
+  AC_MSG_CHECKING([whether the toolchain supports link-time optimization])
+  save_CFLAGS="$CFLAGS"
+  save_CXXFLAGS="$CXXFLAGS"
+  save_LDFLAGS="$LDFLAGS"
+  CFLAGS="$CFLAGS -flto"
+  CXXFLAGS="$CXXFLAGS -flto"
+  LDFLAGS="$LDFLAGS -flto"
+  AC_LANG_PUSH([C++])
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
+    [AC_MSG_RESULT([yes])],
+    [CFLAGS="$save_CFLAGS"
+     CXXFLAGS="$save_CXXFLAGS"
+     LDFLAGS="$save_LDFLAGS"
+     AC_MSG_RESULT([no])
+     enable_lto=no])
+  AC_LANG_POP([C++])
+fi
+
+dnl ---------------------------------------------------------------
 dnl Native Language Support (optional).
 dnl There is currently no translation catalogue shipped, so this is
 dnl disabled by default (matching the historical build).

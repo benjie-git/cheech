@@ -30,6 +30,11 @@ class BotMean : public BotFriendly
 
 		virtual Glib::ustring get_default_name() const;
 
+		virtual BotBase* clone_for_search() const;
+
+		virtual long score_move(GameBoard *board, unsigned int player,
+								MoveList *move);
+
 	protected:
                 //virtual long score_this_move(GameBoard *board, 
 			    //   unsigned int player,

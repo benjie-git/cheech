@@ -23,6 +23,8 @@
 
 #include "bot_base.hh"
 
+#include <cstdint>
+
 
 class BotLookAhead : public BotBase
 {
@@ -38,6 +40,10 @@ class BotLookAhead : public BotBase
 
 		virtual Glib::ustring get_default_name() const;
 
+		virtual BotBase* clone_for_search() const;
+		virtual bool supports_parallel_search() const;
+		virtual void prepare_search(GameBoard *board);
+
 	protected:
 		virtual void on_cmd_game_turn(unsigned int posn, 
 									  GameServer::GameStatus status,
@@ -50,11 +56,61 @@ class BotLookAhead : public BotBase
 									 unsigned int player,
 									 MoveList *move);
 
+		void update_distance_cache(GameBoard *board);
+
+		// Paranoid alpha-beta search.  Returns the value of the remaining
+		// `remaining` plies from the point of view of `root`, with `player`
+		// to move.  The root player maximises and every other player
+		// minimises.  When `_paranoid` is false the original cooperative
+		// max-max recursion (score_move_recurse) is used instead.
+		long paranoid_search(GameBoard *board, unsigned int player,
+							 unsigned int root, unsigned int remaining,
+							 long alpha, long beta);
+
+		// Value of a single root move under the paranoid search, including
+		// the move's own score.
+		long paranoid_move_value(GameBoard *board, unsigned int player,
+								 MoveList *move);
+
 		unsigned int	_depth;
 		unsigned int	_current_depth;
 
+		bool	_paranoid;
+
+		long	_dist_to_goal[7][GameBoard::SIZE];
+
 		std::vector<MoveList>	_scratch_moves;
-		std::vector< std::vector<MoveList> >	_scratch_best_moves;
+
+		// One reusable move buffer per remaining-depth level, so the
+		// alpha-beta kernel does not allocate a fresh vector per node.
+		std::vector<std::vector<MoveList> >	_search_moves;
+
+		// Fixed-size always-replace transposition table.  Invalid entries
+		// are distinguished by a generation stamp rather than by clearing
+		// the whole table on every turn.  Scores are bounds (see below)
+		// rather than exact values once alpha-beta pruning is in use.
+		static const unsigned char TT_EXACT = 0;
+		static const unsigned char TT_LOWER = 1;
+		static const unsigned char TT_UPPER = 2;
+
+		struct TTEntry
+		{
+			uint64_t		key;
+			long			score;
+			uint32_t		best;
+			unsigned int	gen;
+			unsigned char	flag;
+		};
+
+		static const unsigned int TT_SIZE_BITS = 20;
+		static const unsigned int TT_SIZE = 1u << TT_SIZE_BITS;
+		static const unsigned int TT_MASK = TT_SIZE - 1;
+
+		std::vector<TTEntry>	_tt;
+		unsigned int			_tt_gen;
+		unsigned int			_tt_mask;
+
+		void set_tt_bits(unsigned int bits);
 };
 
 #endif // _BOT_LOOKAHEAD_HH

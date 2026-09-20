@@ -24,6 +24,7 @@ BotFriendly::BotFriendly(unsigned int depth) : BotLookAhead(depth)
 {
 	_my_player_num = 0;
 	_self_penalty = 2;
+	_paranoid = false;
 }
 
 
@@ -47,8 +48,17 @@ Glib::ustring BotFriendly::get_default_name() const
 		case 4:
 			return "Unicorn";
 		default:
-			return "Who,Now?";
+			return "Princess";
 	}
+}
+
+
+BotBase* BotFriendly::clone_for_search() const
+{
+	BotFriendly *clone = new BotFriendly(_depth);
+	clone->set_self_penalty(_self_penalty);
+	clone->set_tt_bits(18);
+	return clone;
 }
 
 

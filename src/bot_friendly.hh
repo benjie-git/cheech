@@ -32,6 +32,8 @@ class BotFriendly : public BotLookAhead
 
 		virtual Glib::ustring get_default_name() const;
 
+		virtual BotBase* clone_for_search() const;
+
 	protected:
 		virtual long score_move_recurse(GameBoard *board, unsigned int player,
 										MoveList *move);

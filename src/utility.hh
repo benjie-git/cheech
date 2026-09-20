@@ -39,6 +39,7 @@ namespace util {
 	bool odd(unsigned int number);
 
 	void delay_ms(int ms);
+	void delay_us(int us);
 
 	int hex_decode(char hex);
 	Glib::ustring url_decode(Glib::ustring encoded);

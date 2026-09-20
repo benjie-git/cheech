@@ -23,6 +23,7 @@
 BotMean::BotMean(unsigned int depth) : BotFriendly(depth)
 {
 	_self_penalty = 3;
+	_paranoid = true;
 }
 
 
@@ -39,8 +40,30 @@ Glib::ustring BotMean::get_default_name() const
 		case 4:
 			return "Burns";
 		default:
-			return "Who,Now?";
+			return "Badger";
 	}
+}
+
+
+BotBase* BotMean::clone_for_search() const
+{
+	BotMean *clone = new BotMean(_depth);
+	clone->set_self_penalty(_self_penalty);
+	clone->set_tt_bits(18);
+	return clone;
+}
+
+
+long BotMean::score_move(GameBoard *board, unsigned int player,
+						 MoveList *move)
+{
+	// The root player's own progress is scaled by the self penalty; the
+	// paranoid kernel calls score_this_move() with `player` set, so make
+	// sure it knows who we are.
+	if (_current_depth == _depth)
+		_my_player_num = player;
+
+	return BotLookAhead::score_move(board, player, move);
 }
 
 
@@ -48,15 +71,9 @@ void BotMean::find_best_move(GameBoard *board, unsigned int player,
 							 std::vector<MoveList> *best_moves,
 							 long *best_score)
 {
-	BotFriendly::find_best_move(board, player, best_moves, best_score);
-
-	// negate score if switching between me and not-me on the way 
-	// in to the next depth.
-	if ((player != _my_player_num &&
-		board->get_next_player(player) == _my_player_num) ||
-		(player == _my_player_num &&
-		board->get_next_player(player) != _my_player_num))
-			*best_score *= -1;
+	// The paranoid alpha-beta kernel applies the sign flips internally,
+	// so unlike the old recursive search there is nothing to negate here.
+	BotLookAhead::find_best_move(board, player, best_moves, best_score);
 }
 
 /*

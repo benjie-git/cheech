@@ -101,6 +101,17 @@ void util::delay_ms(int ms)
 }
 
 
+void util::delay_us(int us)
+{
+	while (Glib::MainContext::get_default()->iteration(false));
+#ifndef WIN32
+	Glib::usleep(us);
+#else
+	Sleep((us + 999) / 1000);
+#endif
+}
+
+
 int util::hex_decode(char hex)
 {
 	if ((hex >= 'A') && (hex <= 'F'))

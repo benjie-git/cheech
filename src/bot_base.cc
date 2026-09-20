@@ -20,6 +20,9 @@
 #include <glibmm/random.h>
 #include <glibmm/main.h>
 
+#include <thread>
+#include <atomic>
+
 #include "bot_base.hh"
 #include "game_images.hh"
 #include "utility.hh"
@@ -37,6 +40,9 @@ BotBase::BotBase()
 	_move_step_delay = 400;
 	_move_done_delay = 600;
 	_abort = FALSE;
+	_search_clone = false;
+	_search_abort = NULL;
+	_search_clones.clear();
 
 	_client.change_color(5);
 }
@@ -110,6 +116,11 @@ void BotBase::set_move_delay(int delay, int done_delay)
 BotBase::~BotBase()
 {
 	_abort = TRUE;
+
+	for (unsigned int i = 0; i < _search_clones.size(); i++)
+		delete _search_clones[i];
+	_search_clones.clear();
+
 	_client.leave_game();
 }
 
@@ -235,7 +246,42 @@ void BotBase::on_cmd_game_turn(unsigned int posn,
 
 bool BotBase::is_still_my_turn()
 {
-	return (!_abort);
+	if (_abort)
+		return false;
+
+	if (_search_abort && _search_abort->load(std::memory_order_relaxed))
+		return false;
+
+	return true;
+}
+
+
+BotBase* BotBase::clone_for_search() const
+{
+	return NULL;
+}
+
+
+bool BotBase::supports_parallel_search() const
+{
+	return false;
+}
+
+
+void BotBase::prepare_search(GameBoard *board)
+{
+}
+
+
+void BotBase::set_search_clone(bool search_clone)
+{
+	_search_clone = search_clone;
+}
+
+
+void BotBase::set_search_abort(std::atomic<bool> *flag)
+{
+	_search_abort = flag;
 }
 
 
@@ -245,8 +291,16 @@ void BotBase::make_best_move()
 	GameBoard board(*_client.get_board());
 	long best_score = LONG_MIN;
 
-	find_best_move(&board, _client.get_my_player_number(),
-					&best_moves, &best_score);
+	if (!parallel_root_search(&board, _client.get_my_player_number(),
+							  &best_moves, &best_score))
+	{
+		find_best_move(&board, _client.get_my_player_number(),
+					   &best_moves, &best_score);
+	}
+
+	// Aborted (undo/etc) or no legal move found.
+	if (_abort || best_moves.empty())
+		return;
 
 	make_move(&(best_moves[_rand.get_int_range(0, best_moves.size())]));
 }
@@ -270,13 +324,13 @@ void BotBase::find_better_move(GameBoard *board, unsigned int player,
 	MoveList *move,	std::vector<MoveList> *best_moves, long *best_score)
 {
 	unsigned int *pegs = board->get_pegs(player);
-	std::set<unsigned int> tos;
+	std::bitset<GameBoard::SIZE> tos;
 
 	for (unsigned int i = 0; i < 10; i++)
 	{
 		move->push_back(pegs[i]);
-		tos.clear();
-		tos.insert(pegs[i]);
+		tos.reset();
+		tos.set(pegs[i]);
 		find_better_move_for_peg(board, player, move, best_moves,
 								 best_score, &tos);
 
@@ -290,7 +344,7 @@ void BotBase::find_better_move(GameBoard *board, unsigned int player,
 
 void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 	MoveList *move,	std::vector<MoveList> *best_moves, long *best_score,
-	std::set<unsigned int> *tos)
+	std::bitset<GameBoard::SIZE> *tos)
 {
 	unsigned int from_hole = move->back();
 
@@ -299,9 +353,6 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 		// Potential non-jumping move
 		if (move->size() == 1 && (*board)[from_hole]->get_neighbor(dir))
 		{
-			//if (move->size() == 1 && (from_hole == 70 || from_hole == 72)) {
-			//	printf("zing!\n");
-			//}
 			unsigned int to_hole =
 				(*board)[from_hole]->get_neighbor(dir)->get_id();
 
@@ -315,23 +366,25 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 				if (score > *best_score)
 				{
 					*best_score = score;
-					best_moves->clear();
-					best_moves->push_back(*move);
+					if (best_moves)
+					{
+						best_moves->clear();
+						best_moves->push_back(*move);
+					}
 				}
-				else if (score == *best_score)
+				else if (score == *best_score && best_moves)
 				{
 					best_moves->push_back(*move);
 				}
 
-				if (_client.ready() && _think_delay)
+				if (_think_delay && _client.ready())
 				{
 					_client.show_move(move);
-					//printf("%ld\n", score);
 					util::delay_ms(_think_delay);
 				}
 
 				move->pop_back();
-				tos->insert(to_hole);
+				tos->set(to_hole);
 			}
 		}
 
@@ -339,7 +392,7 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 		unsigned int to_hole = board->find_valid_jump(move->front(),
 													  from_hole, dir);
 
-		if (to_hole && tos->find(to_hole) == tos->end())
+		if (to_hole && !tos->test(to_hole))
 		{
 			move->push_back(to_hole);
 
@@ -350,22 +403,24 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 				if (score > *best_score)
 				{
 					*best_score = score;
-					best_moves->clear();
-					best_moves->push_back(*move);
+					if (best_moves)
+					{
+						best_moves->clear();
+						best_moves->push_back(*move);
+					}
 				}
-				else if (score == *best_score)
+				else if (score == *best_score && best_moves)
 				{
 					best_moves->push_back(*move);
 				}
 
-				if (_client.ready() && _think_delay)
+				if (_think_delay && _client.ready())
 				{
 					_client.show_move(move);
-					//printf("%ld\n", score);
 					util::delay_ms(_think_delay);
 				}
 			}
-			tos->insert(to_hole);
+			tos->set(to_hole);
 
 			// Recurse
 			find_better_move_for_peg(board, player, move, best_moves,
@@ -376,6 +431,182 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 			if (!is_still_my_turn()) return;
 		}
 	}
+}
+
+
+void BotBase::collect_root_moves(GameBoard *board, unsigned int player,
+								 std::vector<MoveList> *moves)
+{
+	unsigned int *pegs = board->get_pegs(player);
+	MoveList move(0);
+	move.reserve(10);
+
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		move.push_back(pegs[i]);
+
+		std::bitset<GameBoard::SIZE> tos;
+		tos.reset();
+		tos.set(pegs[i]);
+
+		collect_peg_moves(board, player, &move, &tos, moves);
+
+		move.pop_back();
+	}
+}
+
+
+void BotBase::collect_peg_moves(GameBoard *board, unsigned int player,
+	MoveList *move, std::bitset<GameBoard::SIZE> *tos,
+	std::vector<MoveList> *moves)
+{
+	unsigned int from_hole = move->back();
+
+	for (int dir = 0; dir < 6; dir++)
+	{
+		// Potential non-jumping move
+		if (move->size() == 1 && (*board)[from_hole]->get_neighbor(dir))
+		{
+			unsigned int to_hole =
+				(*board)[from_hole]->get_neighbor(dir)->get_id();
+
+			if (board->valid_move_to(move->front(), to_hole) &&
+				board->valid_move(from_hole, to_hole, dir) &&
+				(board->get_stop_others_allowed() ||
+				!board->is_other_player_triangle(player, to_hole)))
+			{
+				move->push_back(to_hole);
+				moves->push_back(*move);
+				move->pop_back();
+				tos->set(to_hole);
+			}
+		}
+
+		// Potential jumping move
+		unsigned int to_hole = board->find_valid_jump(move->front(),
+													  from_hole, dir);
+
+		if (to_hole && !tos->test(to_hole))
+		{
+			move->push_back(to_hole);
+
+			if (board->get_stop_others_allowed() ||
+				!board->is_other_player_triangle(player, to_hole))
+			{
+				moves->push_back(*move);
+			}
+			tos->set(to_hole);
+
+			// Recurse
+			collect_peg_moves(board, player, move, tos, moves);
+			move->pop_back();
+		}
+	}
+}
+
+
+bool BotBase::parallel_root_search(GameBoard *board, unsigned int player,
+								   std::vector<MoveList> *best_moves,
+								   long *best_score)
+{
+	if (!supports_parallel_search() || _think_delay > 0)
+		return false;
+
+	unsigned int hw = std::thread::hardware_concurrency();
+
+	if (hw < 2)
+		return false;
+	if (hw > 16)
+		hw = 16;
+
+	std::vector<MoveList> root_moves;
+	root_moves.reserve(64);
+	collect_root_moves(board, player, &root_moves);
+
+	if (root_moves.size() < 2)
+		return false;
+
+	unsigned int num_threads = hw;
+	if (num_threads > root_moves.size())
+		num_threads = (unsigned int)root_moves.size();
+
+	// Reuse thread-private search clones (and their transposition tables)
+	// across turns.  Each clone's TT is invalidated by the generation
+	// counter, so it needs no per-turn clearing or reallocation.
+	while (_search_clones.size() < num_threads)
+	{
+		BotBase *clone = clone_for_search();
+
+		if (!clone)
+			return false;
+
+		clone->set_search_clone(true);
+		_search_clones.push_back(clone);
+	}
+
+	std::vector<long> scores(root_moves.size(), LONG_MIN);
+	std::atomic<unsigned int> next(0);
+	std::atomic<unsigned int> done(0);
+	std::atomic<bool> abort_flag(false);
+
+	auto worker = [&](unsigned int t)
+	{
+		BotBase *clone = _search_clones[t];
+		GameBoard local(*board);
+
+		clone->set_search_abort(&abort_flag);
+		clone->prepare_search(&local);
+
+		unsigned int i;
+		while (!abort_flag.load() &&
+			   (i = next.fetch_add(1)) < (unsigned int)root_moves.size())
+		{
+			MoveList move = root_moves[i];
+			scores[i] = clone->score_move(&local, player, &move);
+		}
+
+		done.fetch_add(1);
+	};
+
+	std::vector<std::thread> threads;
+	threads.reserve(num_threads);
+
+	for (unsigned int t = 0; t < num_threads; t++)
+		threads.push_back(std::thread(worker, t));
+
+	// Wait for the workers, but keep pumping the main loop so that an undo
+	// is noticed and can abort the search.
+	while (done.load() < num_threads)
+	{
+		if (_abort)
+			abort_flag.store(true);
+
+		util::delay_us(1000);
+	}
+
+	for (unsigned int t = 0; t < num_threads; t++)
+		threads[t].join();
+
+	if (_abort || abort_flag.load())
+		return true;
+
+	// Merge in enumeration order so the chosen move and tie set match the
+	// single-threaded search exactly.
+	for (unsigned int i = 0; i < root_moves.size(); i++)
+	{
+		if (scores[i] > *best_score)
+		{
+			*best_score = scores[i];
+			best_moves->clear();
+			best_moves->push_back(root_moves[i]);
+		}
+		else if (scores[i] == *best_score)
+		{
+			best_moves->push_back(root_moves[i]);
+		}
+	}
+
+	return true;
 }
 
 

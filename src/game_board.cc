@@ -24,6 +24,16 @@
 #include "game_board.hh"
 
 
+static uint64_t zobrist_piece(unsigned int player, unsigned int hole)
+{
+	uint64_t x = (uint64_t)hole | ((uint64_t)player << 20);
+	x += 0x9E3779B97F4A7C15ULL;
+	x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ULL;
+	x = (x ^ (x >> 27)) * 0x94D049BB133111EBULL;
+	return x ^ (x >> 31);
+}
+
+
 const unsigned int
 GameBoard::START_MAP[7][7] =
 {
@@ -110,7 +120,8 @@ GameBoard::GameBoard(const GameBoard &board)
 	:_num_players(board._num_players),
 	 _long_jumps(board._long_jumps),
 	 _hop_others(board._hop_others),
-	 _stop_others(board._stop_others)
+	 _stop_others(board._stop_others),
+	 _zobrist(board._zobrist)
 {
 	for (unsigned int i = 0; i < SIZE; i++)
 		if (BOARD_MAP[i] >= 0)
@@ -138,6 +149,7 @@ GameBoard& GameBoard::operator=(const GameBoard& board)
 	_long_jumps = board._long_jumps;
 	_hop_others = board._hop_others;
 	_stop_others = board._stop_others;
+	_zobrist = board._zobrist;
 
 	for (unsigned int i = 0; i < SIZE; i++)
 	{
@@ -200,6 +212,22 @@ void GameBoard::reset_board()
 		}
 	}
 	reset_peg_lists();
+	recompute_zobrist();
+}
+
+
+void GameBoard::recompute_zobrist()
+{
+	_zobrist = 0;
+	for (unsigned int i = 0; i < SIZE; i++)
+	{
+		if (_board[i] != NULL)
+		{
+			unsigned int player = _board[i]->get_current_player();
+			if (player)
+				_zobrist ^= zobrist_piece(player, i);
+		}
+	}
 }
 
 
@@ -270,6 +298,12 @@ unsigned int *GameBoard::get_pegs(unsigned int player)
 unsigned int GameBoard::get_size() const 
 { 
 	return SIZE; 
+}
+
+
+uint64_t GameBoard::get_zobrist() const
+{
+	return _zobrist;
 }
 
 
@@ -459,6 +493,8 @@ void GameBoard::move_peg(unsigned int from, unsigned int to)
 
 	_pegs[player-1][_board[from]->get_peg_list_index()] = to;
 	_board[to]->set_peg_list_index(_board[from]->get_peg_list_index());
+
+	_zobrist ^= zobrist_piece(player, from) ^ zobrist_piece(player, to);
 }
 
 

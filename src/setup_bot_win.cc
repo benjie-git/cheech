@@ -35,7 +35,7 @@ setup_bot_win::setup_bot_win()
 	type_box->append_text("LookAhead(2)");
 	type_box->append_text("LookAhead(3)");
 	type_box->append_text("LookAhead(4)");
-//	type_box->append_text("LookAhead(5)");
+	type_box->append_text("LookAhead(5)");
 	type_box->append_text("Friendly(2)");
 	type_box->append_text("Friendly(3)");
 	type_box->append_text("Friendly(4)");
@@ -43,7 +43,7 @@ setup_bot_win::setup_bot_win()
 	type_box->append_text("Mean(2)");
 	type_box->append_text("Mean(3)");
 	type_box->append_text("Mean(4)");
-//	type_box->append_text("Mean(5)");
+	type_box->append_text("Mean(5)");
 
 	Prefs prefs;
 

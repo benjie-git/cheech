@@ -21,6 +21,7 @@
 #define INCL_GAME_BOARD_HH
 
 #include <vector>
+#include <cstdint>
 #include <sigc++/sigc++.h>
 
 #include "game_hole.hh"
@@ -51,6 +52,7 @@ private:
 	bool						_stop_others;
 	unsigned int				_pegs_in_goal[6];
 	unsigned int				_pegs[6][10];
+	uint64_t					_zobrist;
 
 public:
 	GameBoard(unsigned int num_players, bool long_jumps,
@@ -63,6 +65,7 @@ public:
 	void reset_peg_lists();
 	void reconfigure_board(unsigned int num_players, bool long_jumps,
 						   bool hop_others, bool stop_others);
+	void recompute_zobrist();
 
 	unsigned int get_num_players() const;
 	bool get_long_jumps_allowed() const;
@@ -70,6 +73,7 @@ public:
 	bool get_stop_others_allowed() const;
 	unsigned int *get_pegs(unsigned int player);
 	unsigned int get_size() const;
+	uint64_t get_zobrist() const;
 	GameHole* operator[](unsigned int i) const;
 
 	double get_distance(unsigned int from, unsigned int to);

@@ -21,7 +21,8 @@
 #define _BOT_BASE_HH
 
 #include <vector>
-#include <set>
+#include <bitset>
+#include <atomic>
 #include <sigc++/sigc++.h>
 #include <glibmm/ustring.h>
 #include <glibmm/random.h>
@@ -59,6 +60,26 @@ class BotBase : public sigc::trackable
 
 		virtual Glib::ustring get_default_name() const = 0;
 
+		// Creates a second bot of the same concrete type/strength that can be
+		// used to search on a worker thread.  Returns NULL if this bot does not
+		// support parallel search.
+		virtual BotBase* clone_for_search() const;
+
+		// Whether the root move list can be searched across several threads.
+		virtual bool supports_parallel_search() const;
+
+		// Root-level setup (distance cache, transposition generation, ...) that
+		// a worker clone must perform before scoring root moves.
+		virtual void prepare_search(GameBoard *board);
+
+		// Marks this object as a worker clone: it must never touch the GLib
+		// main loop or the shared client.
+		void set_search_clone(bool search_clone);
+
+		// Points this object at a shared abort flag owned by the thread that
+		// spawned the search.  is_still_my_turn() consults it.
+		void set_search_abort(std::atomic<bool> *flag);
+
 	protected:
 		void on_connect();
 		void on_cancelled();
@@ -80,13 +101,29 @@ class BotBase : public sigc::trackable
 			MoveList *move,	std::vector<MoveList> *best_moves, long *best_score);
 		void find_better_move_for_peg(GameBoard *board, unsigned int player,
 			MoveList *move,	std::vector<MoveList> *best_moves, long *best_score,
-			std::set<unsigned int> *tos);
+			std::bitset<GameBoard::SIZE> *tos);
+
+		// Root-move-level parallelism.  collect_root_moves() enumerates every
+		// legal root move in the same order find_better_move() would score
+		// them; parallel_root_search() then scores those moves on several
+		// threads and merges the results.  Returns true if it handled the
+		// search (even if it was aborted).
+		bool parallel_root_search(GameBoard *board, unsigned int player,
+			std::vector<MoveList> *best_moves, long *best_score);
+		void collect_root_moves(GameBoard *board, unsigned int player,
+			std::vector<MoveList> *moves);
+		void collect_peg_moves(GameBoard *board, unsigned int player,
+			MoveList *move, std::bitset<GameBoard::SIZE> *tos,
+			std::vector<MoveList> *moves);
 
 		GameClient 		_client;
 		int				_think_delay;
 		int				_move_step_delay;
 		int				_move_done_delay;
 		bool			_abort;
+		bool			_search_clone;
+		std::atomic<bool>	*_search_abort;
+		std::vector<BotBase*>	_search_clones;
 		Glib::Rand		_rand;
 };
 
