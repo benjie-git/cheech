@@ -1,15 +1,26 @@
 # generated autotools
 /configure
+/configure~
 /config.h
+/config.h.in
 /config.status
 /config.log
 /stamp-h1
+/stamp-h.in
+/aclocal.m4
 /autom4te.cache/
+/config.guess
+/config.sub
+/install-sh
+/ltmain.sh
 /depcomp
 /compile
 /missing
 /libtool
 Makefile
+Makefile.in
+am--include-marker
+\#
 .deps/
 .dirstamp
 .libs/
