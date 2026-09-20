@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = \
+	-I$(srcdir)/gnet-2.0 \
 	$(GTKMM_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GTHREAD_CFLAGS) \
