@@ -26,6 +26,7 @@
 #include "game_images.hh"
 
 #ifdef MACOS_APP
+#include <limits.h>
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -55,19 +56,25 @@ void GameImages::init()
 	program_dir = g_locale_to_utf8(module_path, -1, NULL, NULL, NULL);
 	pixmaps_dir = g_strdup_printf("%s\\pixmaps\\", program_dir);
 #elif MACOS_APP
+	// CFBundleCopyResourcesDirectoryURL can return a path relative to the
+	// current directory, so build an absolute path from the bundle URL.
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
-	CFURLRef burl = CFBundleCopyBundleURL(mainBundle);
-	CFURLRef rurl = CFBundleCopyResourcesDirectoryURL(mainBundle);
-	CFStringRef bstr = CFURLCopyFileSystemPath(burl, kCFURLPOSIXPathStyle);
-	CFStringRef rstr = CFURLCopyFileSystemPath(rurl, kCFURLPOSIXPathStyle);
-	pixmaps_dir = CFStringGetCStringPtr(bstr, kCFStringEncodingUTF8);
-	pixmaps_dir += "/";
-	pixmaps_dir += CFStringGetCStringPtr(rstr, kCFStringEncodingUTF8);
-	pixmaps_dir += "/";
-	CFRelease(rstr);
-	CFRelease(bstr);
-	CFRelease(rurl);
-	CFRelease(burl);
+	CFURLRef burl = mainBundle ? CFBundleCopyBundleURL(mainBundle) : NULL;
+	if (burl) {
+		char path[PATH_MAX];
+		CFStringRef bstr = CFURLCopyFileSystemPath(burl, kCFURLPOSIXPathStyle);
+		if (bstr) {
+			if (CFStringGetCString(bstr, path, sizeof(path),
+								   kCFStringEncodingUTF8)) {
+				pixmaps_dir = path;
+				pixmaps_dir += "/Contents/Resources/";
+			}
+			CFRelease(bstr);
+		}
+		CFRelease(burl);
+	}
+	if (pixmaps_dir.empty())
+		pixmaps_dir = PACKAGE_PIXMAPS_DIR "/" PACKAGE "/";
 #else
 	pixmaps_dir = PACKAGE_PIXMAPS_DIR "/" PACKAGE "/";
 #endif

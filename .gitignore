@@ -1,0 +1,32 @@
+# generated autotools
+/configure
+/config.h
+/config.status
+/config.log
+/stamp-h1
+/autom4te.cache/
+/depcomp
+/compile
+/missing
+/libtool
+Makefile
+.deps/
+.dirstamp
+.libs/
+*.o
+*.lo
+*.la
+
+# built binaries
+/src/cheech
+/src/cheechd
+/src/cheechbot
+/src/cheechwebd
+
+# local installs / app bundles
+/_install/
+/*.app/
+
+# macOS / Xcode user state
+xcuserdata/
+.DS_Store

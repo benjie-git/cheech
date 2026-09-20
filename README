@@ -59,10 +59,23 @@ Build on *nix/MacOS:
 - install gtkmm (on a mac, run: brew install gtkmm)
 - run the below commands in the root directory of the cheech project.
   - autoreconf -i
-  - automake -a
   - ./configure
   - make
   - make install
+
+
+Building a MacOS app bundle
+---------------------------
+To build a self-contained Cheech.app instead of installing system-wide:
+- install dylibbundler (on a mac, run: brew install dylibbundler)
+- run the below commands in the root directory of the cheech project.
+  - autoreconf -i
+  - ./configure --enable-macos-app
+  - make
+  - make bundle
+- the resulting Cheech.app is in the build directory and can be dragged to
+  /Applications.  It uses dylibbundler to copy the GTK libraries into the
+  bundle and links them from there.
 
 
 Build on Windows using Dev-C++
