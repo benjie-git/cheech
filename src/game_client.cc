@@ -165,7 +165,7 @@ void GameClient::show_move(MoveList *move_list)
 	if (!ready())
 		return;
 
-	Glib::ustring move_str = util::to_str<unsigned int>(move_list->size());
+	Glib::ustring move_str = util::to_str<unsigned int>((uint)move_list->size());
 	for (MoveList::iterator h = move_list->begin(); h < move_list->end(); h++)
 	{
 		move_str += " " + util::to_str<unsigned int>(*h);
@@ -187,7 +187,7 @@ void GameClient::make_move(MoveList *move_list)
 	if (!ready())
 		return;
 
-	Glib::ustring move_str = util::to_str<unsigned int>(move_list->size());
+	Glib::ustring move_str = util::to_str<unsigned int>((uint)move_list->size());
 	for (MoveList::iterator h = move_list->begin(); h < move_list->end(); h++)
 	{
 		move_str += " " + util::to_str<unsigned int>(*h);
@@ -331,7 +331,7 @@ GameClient::read(Glib::ustring message)
 {
 	Glib::ustring command, arguments;
 
-	int seperator = message.find_first_of(" ");
+	u_long seperator = message.find_first_of(" ");
 	if (seperator < 0)
 	{
 		command = message.substr(0, message.length());

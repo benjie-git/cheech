@@ -36,7 +36,7 @@ public:
 
 inline void usleep(unsigned long usec)
 {
-	::usleep(usec);
+	::usleep((uint)usec);
 }
 
 class signal_timeout_t

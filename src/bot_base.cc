@@ -359,7 +359,7 @@ void BotBase::make_best_move()
 	if (_abort || best_moves.empty())
 		return;
 
-	make_move(&(best_moves[_rand.get_int_range(0, best_moves.size())]));
+	make_move(&(best_moves[_rand.get_int_range(0, (int)best_moves.size())]));
 }
 
 

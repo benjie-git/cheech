@@ -257,7 +257,7 @@ bool Loop::iteration(bool may_block)
 	}
 	else
 	{
-		int result = ::poll(pollfds.data(), pollfds.size(), timeout);
+		int result = ::poll(pollfds.data(), (uint)pollfds.size(), timeout);
 		if (result > 0)
 		{
 			for (size_t i = 0; i < pollfds.size(); ++i)

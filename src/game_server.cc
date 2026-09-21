@@ -139,7 +139,7 @@ void GameServer::parse_command(Glib::ustring message)
 	util::trim(message);
 
 	Glib::ustring command, arguments;
-	int seperator = message.find_first_of(" ");
+	u_long seperator = message.find_first_of(" ");
 
 	if (seperator < 0)
 		command = message;
@@ -644,7 +644,7 @@ void GameServer::read_client(Glib::ustring message, Conn* socket)
 {
 	Glib::ustring command, arguments;
 
-	int seperator = message.find_first_of(" ");
+    u_long seperator = message.find_first_of(" ");
 	if (seperator < 0)
 		command = message.substr(0, message.length());
 	else
