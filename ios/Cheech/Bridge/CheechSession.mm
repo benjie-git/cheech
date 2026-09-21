@@ -22,6 +22,7 @@
 #include "game_hole.hh"
 #include "bot_base.hh"
 #include "cheech_move_gate.hh"
+#include <glibmm/main.h>
 
 namespace
 {
@@ -95,6 +96,7 @@ struct Seat
 	std::string name;
 	int color = 0;
 	GameClient *client = nullptr; // when kind == CheechSeatHuman
+	BotBase *bot = nullptr;       // when kind == CheechSeatComputer
 	int playerNumber = 0;         // assigned after connect
 };
 
@@ -127,6 +129,14 @@ struct SessionImpl
 	int animStepMs = kAnimateStepMs;
 	int animDoneMs = kAnimateStepMs * 2;
 	int computerSmarts = 100;
+	int hostPort = 0;
+
+	// Hosted games join their seats one at a time so that player numbers are
+	// assigned in seat order (connections otherwise race, e.g. seat 2 can be
+	// assigned before seat 1).  joinTimer polls until the current seat has been
+	// assigned, then joins the next.
+	sigc::connection joinTimer;
+	int joinWaitTicks = 0;
 };
 
 } // namespace
@@ -139,6 +149,8 @@ struct SessionImpl
 - (void)rebuildAndNotify;
 - (void)connectDisplaySignals;
 - (void)connectSeatSignals:(GameClient *)client index:(int)index;
+- (void)joinHostedSeatsFromIndex:(int)index;
+- (BOOL)seatIsJoinedAtIndex:(int)index;
 - (GameClient *)activeClient;
 - (void)stopCore;
 - (void)performAction:(void (^)(GameClient *client))block;
@@ -316,6 +328,7 @@ struct SessionImpl
 		impl->isSpectator = false;
 		impl->configuredPlayers = (int)numPlayers;
 		impl->status = 0;
+		impl->hostPort = (int)port;
 
 		impl->server = new GameServer((unsigned int)port,
 									  (unsigned int)numPlayers,
@@ -332,43 +345,102 @@ struct SessionImpl
 		impl->client->join_game("127.0.0.1", (unsigned int)port, true);
 
 		impl->seats = specs;
-		for (size_t i = 0; i < impl->seats.size(); i++)
-		{
-			Seat &seat = impl->seats[i];
-
-			if (seat.kind == CheechSeatHuman)
-			{
-				GameClient *client = new GameClient();
-				[s connectSeatSignals:client index:(int)i];
-				if (!seat.name.empty())
-					client->change_name(seat.name);
-				client->change_color(seat.color);
-				client->join_game("127.0.0.1", (unsigned int)port, false);
-				seat.client = client;
-			}
-			else if (seat.kind == CheechSeatComputer)
-			{
-				BotBase *bot = BotBase::new_bot_of_type(seat.botType);
-				if (!bot) bot = BotBase::new_bot_of_type("LookAhead(4)");
-				if (!bot) bot = BotBase::new_bot_of_type("Simple(1)");
-				if (!bot) continue;
-
-				// Let the bot apply its move immediately; the UI replays it.
-				bot->set_think_delay(0);
-				bot->set_move_delay(0, 0);
-				bot->set_smarts(impl->computerSmarts);
-				if (!seat.name.empty())
-					bot->set_name(seat.name);
-				bot->set_color(seat.color);
-				bot->join_game("127.0.0.1", (unsigned int)port);
-				impl->bots.push_back(bot);
-			}
-			// Remote seats are deliberately left open: the server waits for
-			// another device to fill them by joining.
-		}
+		// Join seats one at a time so the server assigns player numbers in
+		// seat order (see joinHostedSeatsFromIndex:).
+		[s joinHostedSeatsFromIndex:0];
 
 		[s rebuildAndNotify];
 	});
+}
+
+// Returns YES once the seat at the given index has been assigned a player
+// number by the server (remote seats are never joined and count as done).
+- (BOOL)seatIsJoinedAtIndex:(int)index
+{
+	if (index < 0 || index >= (int)_impl->seats.size())
+		return YES;
+
+	Seat &seat = _impl->seats[index];
+	if (seat.kind == CheechSeatRemote)
+		return YES;
+
+	GameClient *client = seat.client;
+	if (seat.kind == CheechSeatComputer && seat.bot)
+		client = seat.bot->get_game_client();
+	if (!client)
+		return NO;
+
+	return client->get_my_player_number() != 0;
+}
+
+// Joins hosted seats one at a time, waiting for each to be assigned before
+// joining the next, so that player numbers follow seat order.  Remote seats are
+// skipped (another device fills them).  A short fallback timeout prevents a
+// failed connection from stalling the rest of the seats indefinitely.
+- (void)joinHostedSeatsFromIndex:(int)index
+{
+	SessionImpl *impl = _impl;
+
+	while (index < (int)impl->seats.size()
+		   && impl->seats[index].kind == CheechSeatRemote)
+		index++;
+
+	if (index >= (int)impl->seats.size())
+	{
+		[self rebuildAndNotify];
+		return;
+	}
+
+	Seat &seat = impl->seats[index];
+	unsigned int port = (unsigned int)impl->hostPort;
+
+	if (seat.kind == CheechSeatHuman)
+	{
+		GameClient *client = new GameClient();
+		[self connectSeatSignals:client index:index];
+		if (!seat.name.empty())
+			client->change_name(seat.name);
+		client->change_color(seat.color);
+		client->join_game("127.0.0.1", port, false);
+		seat.client = client;
+	}
+	else if (seat.kind == CheechSeatComputer)
+	{
+		BotBase *bot = BotBase::new_bot_of_type(seat.botType);
+		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(4)");
+		if (!bot) bot = BotBase::new_bot_of_type("Simple(1)");
+		if (bot)
+		{
+			// Let the bot apply its move immediately; the UI replays it.
+			bot->set_think_delay(0);
+			bot->set_move_delay(0, 0);
+			bot->set_smarts(impl->computerSmarts);
+			if (!seat.name.empty())
+				bot->set_name(seat.name);
+			bot->set_color(seat.color);
+			bot->join_game("127.0.0.1", port);
+			seat.bot = bot;
+			impl->bots.push_back(bot);
+		}
+	}
+
+	impl->joinWaitTicks = 0;
+	impl->joinTimer.disconnect();
+
+	__weak CheechSession *weakSelf = self;
+	impl->joinTimer = Glib::signal_timeout().connect([weakSelf, index]() -> bool
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return false;
+		SessionImpl *impl2 = s->_impl;
+
+		if ([s seatIsJoinedAtIndex:index] || impl2->joinWaitTicks++ > 100)
+		{
+			[s joinHostedSeatsFromIndex:index + 1];
+			return false;
+		}
+		return true;
+	}, 10);
 }
 
 - (void)leave
@@ -989,6 +1061,8 @@ struct SessionImpl
 {
 	SessionImpl *impl = _impl;
 	if (!impl) return;
+
+	impl->joinTimer.disconnect();
 
 	// Hotseat seat clients (human seats) must be left before deletion, same
 	// double-free hazard as the primary client.
