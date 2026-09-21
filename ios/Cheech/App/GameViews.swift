@@ -101,7 +101,7 @@ struct GameSetupView: View {
 						}
 					}
 					if model.seats.contains(where: { $0.kind == .computer }) {
-						Section("Computer smarts") {
+						Section("Computer Smarts") {
 							HStack {
 								Text("Skill")
 								Spacer()
@@ -115,7 +115,7 @@ struct GameSetupView: View {
 						}
 					}
 					if model.seats.contains(where: { $0.kind == .computer || $0.kind == .remote }) {
-						Section("Opponent moves") {
+						Section("Move Animations") {
 							HStack {
 								Text("Speed")
 								Spacer()
