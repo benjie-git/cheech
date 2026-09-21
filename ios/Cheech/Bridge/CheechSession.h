@@ -96,6 +96,22 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // at random from its top-N moves (see BotBase::set_smarts).
 - (void)setComputerSmarts:(NSInteger)percent;
 
+// In-game setup for a hosted or joined game.  -reconfigureGame... applies new
+// rules and player count to the running server (which restarts the board), and
+// the computer-player methods add/remove bots that connect to the same host as
+// this client.  Any connected player may reconfigure; a spectator cannot, so a
+// bot's player socket is used instead when one has been added.
+- (void)reconfigureGameNumPlayers:(NSInteger)numPlayers
+						longJumps:(BOOL)longJumps
+						hopOthers:(BOOL)hopOthers
+					   stopOthers:(BOOL)stopOthers
+	NS_SWIFT_NAME(reconfigureGame(numPlayers:longJumps:hopOthers:stopOthers:));
+- (void)addComputerPlayerOfType:(NSString *)type
+						   name:(NSString *)name
+						  color:(NSInteger)color
+	NS_SWIFT_NAME(addComputerPlayer(ofType:name:color:));
+- (void)removeComputerPlayers;
+
 // Host actions (ignored by the server for non-hosts)
 - (void)undoMove;
 - (void)restartGame;
@@ -106,6 +122,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 - (void)tapHole:(NSInteger)hole;
 - (void)confirmMove;
 - (void)clearSelection;
+// Removes just the last hop of the in-progress move path (a single hole
+// selection is cleared entirely).
+- (void)removeLastHop;
 
 // State
 @property (nonatomic, readonly) BOOL connected;
@@ -134,6 +153,16 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // invite more players once a game is joined.
 @property (nonatomic, readonly) NSString *serverHost;
 @property (nonatomic, readonly) NSInteger serverPort;
+
+// Current game rules as reported by the server's board.  Before a board exists
+// these default to longJumps=NO, hopOthers=YES, stopOthers=YES.
+@property (nonatomic, readonly) BOOL longJumps;
+@property (nonatomic, readonly) BOOL hopOthers;
+@property (nonatomic, readonly) BOOL stopOthers;
+
+// How many computer players have been added in-game via
+// -addComputerPlayerOfType:name:color: on this device.
+@property (nonatomic, readonly) NSInteger extraComputerPlayerCount;
 - (NSInteger)colorForPlayer:(NSInteger)playerNumber;
 - (NSString *)nameForPlayer:(NSInteger)playerNumber;
 - (BOOL)finishedForPlayer:(NSInteger)playerNumber;

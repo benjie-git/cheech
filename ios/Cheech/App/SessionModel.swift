@@ -55,6 +55,9 @@ struct SeatConfig: Identifiable, Equatable, Codable {
 	var botType: String
 	var name: String
 	var color: Int
+	// The last name used while this seat was Human, so switching a seat back to
+	// Human restores the player's own name instead of the computer default.
+	var humanName: String?
 }
 
 // A destructive action that should be confirmed once a game is underway.
@@ -113,6 +116,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	@Published var showProfile = false
 	@Published var spectator = false
 	@Published var fullScreen = false
+	// In-game "Setup Game" sheet (change rules/player count, add bots).
+	@Published var showGameSetup = false
 	// A destructive action awaiting confirmation (only when a game is
 	// underway).  The game screen presents a dialog while this is non-nil.
 	@Published var confirmAction: GameAction? = nil
@@ -176,7 +181,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			numPlayers = decoded.count
 		} else {
 			seats = []
-			numPlayers = defaults.object(forKey: PrefKey.numPlayers) as? Int ?? 4
+			numPlayers = defaults.object(forKey: PrefKey.numPlayers) as? Int ?? 3
 		}
 		super.init()
 		session.delegate = self
@@ -197,11 +202,13 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		let count = numPlayers
 		if seats.count < count {
 			for i in seats.count..<count {
+				let defaultName = "Player \(i + 1)"
 				seats.append(SeatConfig(
 					kind: .human,
 					botType: lastBotType,
-					name: "Player \(i + 1)",
-					color: i % 8 + 1
+					name: defaultName,
+					color: i % 8 + 1,
+					humanName: defaultName
 				))
 			}
 		} else if seats.count > count {
@@ -223,10 +230,12 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 				let mover = session.player(atHole: path[path.count - 1])
 				if mover != session.myPlayerNumber {
 					animatingPlayer = Int(mover)
+					// Once control passes to a local human, drop the resting
+					// delay so they can start tapping as soon as the peg lands.
 					animator.start(
 						path: path,
 						step: Double(session.animationStepMs) / 1000.0,
-						done: Double(session.animationDoneMs) / 1000.0
+						done: isLocalHumanTurn ? 0 : Double(session.animationDoneMs) / 1000.0
 					) { [weak self] in
 						self?.animatingPlayer = 0
 					}
@@ -328,6 +337,46 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		playerColor = color
 		session.changeName(name)
 		session.changeColor(color)
+	}
+
+	// In-game setup (see CheechSession's "In-game setup" methods).  Changing
+	// the player count or rules applies to the running server and restarts the
+	// board; computer players connect to the same host as this client.
+	func reconfigureGame(numPlayers: Int, longJumps: Bool, hopOthers: Bool, stopOthers: Bool) {
+		session.reconfigureGame(
+			numPlayers: numPlayers,
+			longJumps: longJumps,
+			hopOthers: hopOthers,
+			stopOthers: stopOthers
+		)
+	}
+
+	func addComputerPlayer(type: String, name: String, color: Int) {
+		session.addComputerPlayer(ofType: type, name: name, color: color)
+	}
+
+	func removeComputerPlayers() {
+		session.removeComputerPlayers()
+	}
+
+	// Whether the local device may currently make a move: a human seat that it
+	// controls.  Checked while the previous move is replaying so the player can
+	// begin tapping immediately rather than waiting for the animation.
+	var isLocalHumanTurn: Bool {
+		guard session.connected else { return false }
+		if session.isHost {
+			return session.activeSeatKind == .human
+		}
+		return !session.isSpectator
+			&& session.myPlayerNumber != 0
+			&& session.currentPlayer == session.myPlayerNumber
+	}
+
+	// Removes just the last hop from the in-progress move path (backspace/delete).
+	func removeLastHop() {
+		lastTapHole = -1
+		lastTapWasTerminal = false
+		session.removeLastHop()
 	}
 
 	func handleTap(hole: Int) {

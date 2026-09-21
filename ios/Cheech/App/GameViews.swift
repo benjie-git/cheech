@@ -261,6 +261,32 @@ struct InviteView: View {
 	}
 }
 
+struct BotTypePickerRow: View {
+	let title: String
+	@Binding var selection: String
+
+	var body: some View {
+		HStack {
+			Text(title)
+			Spacer(minLength: 8)
+			Menu {
+				ForEach(GameScreenView.botTypes, id: \.self) { type in
+					Button(GameScreenView.botLabel(type)) { selection = type }
+				}
+			} label: {
+				HStack(spacing: 4) {
+					Text(GameScreenView.botLabel(selection))
+						.lineLimit(1)
+						.minimumScaleFactor(0.7)
+					Image(systemName: "chevron.up.chevron.down")
+						.font(.caption2.weight(.semibold))
+						.foregroundStyle(.tertiary)
+				}
+			}
+		}
+	}
+}
+
 struct SeatEditorView: View {
 	@EnvironmentObject var model: SessionModel
 	@Binding var seat: SeatConfig
@@ -271,8 +297,14 @@ struct SeatEditorView: View {
 				get: { seat.kind },
 				set: { newKind in
 					seat.kind = newKind
-					if newKind == .computer, seat.name.isEmpty || seat.name.hasPrefix("Player ") {
+					switch newKind {
+					case .computer:
+						if seat.humanName == nil { seat.humanName = seat.name }
 						seat.name = CheechSession.defaultName(forComputerType: seat.botType)
+					case .human:
+						seat.name = seat.humanName ?? seat.name
+					default:
+						break
 					}
 				}
 			)) {
@@ -286,8 +318,14 @@ struct SeatEditorView: View {
 			case .human:
 				HStack {
 					Text("Name")
-					TextField("Name", text: $seat.name)
-						.multilineTextAlignment(.trailing)
+					TextField("Name", text: Binding(
+						get: { seat.name },
+						set: { newName in
+							seat.name = newName
+							seat.humanName = newName
+						}
+					))
+					.multilineTextAlignment(.trailing)
 				}
 				ColorPickerRow(selection: $seat.color)
 			case .computer:
@@ -296,18 +334,14 @@ struct SeatEditorView: View {
 					TextField("Name", text: $seat.name)
 						.multilineTextAlignment(.trailing)
 				}
-				Picker("Computer", selection: Binding(
+				BotTypePickerRow(title: "Computer", selection: Binding(
 					get: { seat.botType },
 					set: { newType in
 						seat.botType = newType
 						model.lastBotType = newType
 						seat.name = CheechSession.defaultName(forComputerType: newType)
 					}
-				)) {
-					ForEach(GameScreenView.botTypes, id: \.self) { type in
-						Text(type).tag(type)
-					}
-				}
+				))
 				ColorPickerRow(selection: $seat.color)
 			case .remote:
 				Text("Open seat — another device can join")
@@ -328,6 +362,15 @@ struct GameScreenView: View {
 		"Friendly(2)", "Friendly(3)", "Friendly(4)",
 		"Mean(2)", "Mean(3)", "Mean(4)", "Mean(5)",
 	]
+
+	// Human-friendly name for a computer-player type, e.g. "Cosmo (LookAhead 4)".
+	static func botLabel(_ type: String) -> String {
+		let name = CheechSession.defaultName(forComputerType: type)
+		let description = type
+			.replacingOccurrences(of: "(", with: " ")
+			.replacingOccurrences(of: ")", with: "")
+		return name.isEmpty ? description : "\(name) (\(description))"
+	}
 
 	private var session: CheechSession { model.session }
 
@@ -390,6 +433,10 @@ struct GameScreenView: View {
 			InviteView()
 				.environmentObject(model)
 		}
+		.sheet(isPresented: $model.showGameSetup) {
+			GameSetupSheet()
+				.environmentObject(model)
+		}
 	}
 
 	// Actions that discard the current game ask for confirmation once any move
@@ -437,24 +484,19 @@ struct GameScreenView: View {
 				Spacer()
 				Text(statusText).font(.headline)
 				Spacer()
-				if session.isHost && session.hasLocalHumanSeat {
+				if session.connected {
 					Menu {
-						Button("Undo Move") { session.undoMove() }
-						Button("Restart Game") { perform(.restart) }
-						Button("Rotate Players") { perform(.rotate) }
-						Button("Shuffle Players") { perform(.shuffle) }
-						if hasOpenSpots {
+						if session.isHost && session.hasLocalHumanSeat {
+							Button("Undo Move") { session.undoMove() }
+							Button("Restart Game") { perform(.restart) }
+							Button("Rotate Players") { perform(.rotate) }
+							Button("Shuffle Players") { perform(.shuffle) }
 							Divider()
+						}
+						Button("Setup Game") { model.showGameSetup = true }
+						if hasOpenSpots {
 							Button("Invite More Players") { model.showInvite = true }
 						}
-					} label: {
-						Image(systemName: "ellipsis.circle")
-					}
-				} else if hasOpenSpots {
-					// A joined player (or spectator) can invite others while
-					// the server still has open seats.
-					Menu {
-						Button("Invite More Players") { model.showInvite = true }
 					} label: {
 						Image(systemName: "ellipsis.circle")
 					}
@@ -512,11 +554,28 @@ struct GameScreenView: View {
 			animator: model.animator,
 			rotation: rotation,
 			leadingOverlay: AnyView(turnBadge),
-			trailingOverlay: AnyView(fullScreenExit)
+			trailingOverlay: AnyView(fullScreenExit),
+			bottomTrailingOverlay: AnyView(fullScreenControls)
 		)
 		.frame(maxWidth: .infinity, maxHeight: .infinity)
 		.background(Color.black.ignoresSafeArea())
 		.ignoresSafeArea()
+	}
+
+	// Move/Cancel for the in-progress path, pinned to the bottom-right corner
+	// of the board (which has no holes).
+	@ViewBuilder private var fullScreenControls: some View {
+		let canControl = !session.isSpectator && (!session.isHost || session.activeSeatKind == .human)
+		let selectedCount = session.selectedHoles().count
+		if selectedCount > 0 && canControl {
+			HStack(spacing: 12) {
+				Button("Cancel") { session.clearSelection() }
+					.buttonStyle(.bordered)
+				Button("Move") { session.confirmMove() }
+					.buttonStyle(.borderedProminent)
+					.disabled(selectedCount < 2)
+			}
+		}
 	}
 
 	// Who's turn it is, pinned to the board corner (which has no holes).
@@ -710,6 +769,10 @@ struct GameScreenView: View {
 				.keyboardShortcut(.return, modifiers: [])
 			Button("Cancel") { session.clearSelection() }
 				.keyboardShortcut(.escape, modifiers: [])
+			Button("Remove Hop") { model.removeLastHop() }
+				.keyboardShortcut(.delete, modifiers: [])
+			Button("Remove Hop") { model.removeLastHop() }
+				.keyboardShortcut(.deleteForward, modifiers: [])
 		}
 		.frame(width: 0, height: 0)
 		.opacity(0)
@@ -761,6 +824,99 @@ struct ProfileEditorView: View {
 						model.showProfile = false
 					}
 				}
+			}
+		}
+	}
+}
+
+// In-game setup for a hosted or joined game: change the player count and rules
+// (which restarts the board) and add/remove computer players that connect to
+// the same host as this client.
+// Editable copy of the in-game setup, so the form can be changed without
+// touching the running game until "Apply" is tapped.  (Held as an
+// ObservableObject because this toolchain cannot expand @State.)
+final class GameSetupDraft: ObservableObject {
+	@Published var numPlayers = 3
+	@Published var longJumps = false
+	@Published var hopOthers = true
+	@Published var stopOthers = true
+	@Published var botType = "LookAhead(4)"
+}
+
+struct GameSetupSheet: View {
+	@EnvironmentObject var model: SessionModel
+	@StateObject private var draft = GameSetupDraft()
+
+	private var session: CheechSession { model.session }
+
+	private var canAddComputer: Bool {
+		Int(session.playerCount) < draft.numPlayers
+	}
+
+	var body: some View {
+		NavigationStack {
+			Form {
+				Section("Players") {
+					Stepper("Players: \(draft.numPlayers)", value: $draft.numPlayers, in: 2...6)
+					HStack {
+						Text("Connected")
+						Spacer()
+						Text("\(session.playerCount)")
+							.foregroundStyle(.secondary)
+					}
+				}
+
+				Section("Rules") {
+					Toggle("Allow long jumps", isOn: $draft.longJumps)
+					Toggle("Can Enter Opponents' Goal", isOn: $draft.hopOthers)
+					Toggle("Can Stop in Opponents' Goal", isOn: $draft.stopOthers)
+				}
+
+				Section("Computer Players") {
+					BotTypePickerRow(title: "Type", selection: $draft.botType)
+					Button("Add Computer Player") {
+						model.lastBotType = draft.botType
+						model.addComputerPlayer(type: draft.botType, name: "", color: 0)
+					}
+					.disabled(!canAddComputer)
+					Button("Remove All Computer Players", role: .destructive) {
+						model.removeComputerPlayers()
+					}
+					.disabled(Int(session.extraComputerPlayerCount) == 0)
+					if Int(session.extraComputerPlayerCount) > 0 {
+						HStack {
+							Text("Added by you")
+							Spacer()
+							Text("\(session.extraComputerPlayerCount)")
+								.foregroundStyle(.secondary)
+						}
+					}
+				}
+			}
+			.navigationTitle("Setup Game")
+			.toolbar {
+				ToolbarItem(placement: .cancellationAction) {
+					Button("Cancel") { model.showGameSetup = false }
+				}
+				ToolbarItem(placement: .confirmationAction) {
+					Button("Apply") {
+						model.reconfigureGame(
+							numPlayers: draft.numPlayers,
+							longJumps: draft.longJumps,
+							hopOthers: draft.hopOthers,
+							stopOthers: draft.stopOthers
+						)
+						model.showGameSetup = false
+					}
+				}
+			}
+			.onAppear {
+				let players = Int(session.numPlayers)
+				draft.numPlayers = min(max(players > 0 ? players : model.numPlayers, 2), 6)
+				draft.longJumps = session.longJumps
+				draft.hopOthers = session.hopOthers
+				draft.stopOthers = session.stopOthers
+				draft.botType = model.lastBotType
 			}
 		}
 	}

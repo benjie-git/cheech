@@ -68,6 +68,10 @@ struct Snapshot
 	int playerCount = 0;
 	std::string serverHost;
 	int serverPort = 0;
+	bool longJumps = false;
+	bool hopOthers = true;
+	bool stopOthers = true;
+	int extraBotCount = 0;
 	// 1-based (index 0 unused).  Always sized so that callers querying players
 	// 1..6 never index an empty vector before the first rebuildSnapshot() (the
 	// UI can render the game screen before the loop thread populates it).
@@ -104,6 +108,11 @@ struct SessionImpl
 	// has a bot, and each remote seat is left open for another device to join.
 	std::vector<Seat> seats;
 	std::unordered_map<int, GameClient *> clientByNumber;
+
+	// Computer players added in-game (via -addComputerPlayerOfType:...) on this
+	// device.  They connect to whatever host this client is connected to, and
+	// are kept separate from the bots that back locally hosted computer seats.
+	std::vector<BotBase *> extraBots;
 
 	std::vector<unsigned int> selection;
 	int configuredPlayers = 0;
@@ -484,6 +493,112 @@ struct SessionImpl
 }
 
 
+#pragma mark - In-game setup
+
+- (void)reconfigureGameNumPlayers:(NSInteger)numPlayers
+						longJumps:(BOOL)longJumps
+						hopOthers:(BOOL)hopOthers
+					   stopOthers:(BOOL)stopOthers
+{
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf, numPlayers, longJumps, hopOthers, stopOthers]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		SessionImpl *impl = s->_impl;
+
+		// The in-process server can be reconfigured directly; a joined game
+		// must send GAME_RECONFIG from a player socket (spectators are
+		// rejected, so fall back to a bot's player socket).
+		if (impl->server)
+		{
+			impl->server->reconfigure_game((unsigned int)numPlayers, longJumps,
+										   hopOthers, stopOthers);
+			[s rebuildAndNotify];
+			return;
+		}
+
+		GameClient *target = impl->client;
+		if (target && target->is_spectator())
+		{
+			target = nullptr;
+			for (BotBase *bot : impl->extraBots)
+			{
+				GameClient *botClient = bot->get_game_client();
+				if (botClient && botClient->ready() && !botClient->is_spectator())
+				{
+					target = botClient;
+					break;
+				}
+			}
+		}
+		if (!target || target->is_spectator()) return;
+
+		target->reconfigure_game((unsigned int)numPlayers, longJumps, hopOthers, stopOthers);
+		[s rebuildAndNotify];
+	});
+}
+
+- (void)addComputerPlayerOfType:(NSString *)type
+						   name:(NSString *)name
+						  color:(NSInteger)color
+{
+	std::string typeStr = type ? [type UTF8String] : "";
+	NSString *defaultName = [CheechSession defaultNameForComputerType:type];
+	std::string nameStr = (name && name.length > 0)
+						  ? std::string([name UTF8String])
+						  : std::string([defaultName UTF8String]);
+
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf, typeStr, nameStr, color]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		SessionImpl *impl = s->_impl;
+		if (!impl->client) return;
+
+		// Bots connect to the same host as this client (loopback for a host,
+		// the remote address for a joiner); the server fills the next open
+		// player slot.
+		std::string host = impl->client->get_host_name();
+		unsigned int port = impl->client->get_port();
+		if (host.empty() || port == 0) return;
+
+		BotBase *bot = BotBase::new_bot_of_type(typeStr);
+		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(3)");
+		if (!bot) return;
+
+		bot->set_think_delay(0);
+		bot->set_move_delay(0, 0);
+		bot->set_smarts(impl->computerSmarts);
+		if (!nameStr.empty()) bot->set_name(nameStr);
+		if (color > 0) bot->set_color((int)color);
+		bot->join_game(host, port);
+		impl->extraBots.push_back(bot);
+
+		[s rebuildAndNotify];
+	});
+}
+
+- (void)removeComputerPlayers
+{
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		SessionImpl *impl = s->_impl;
+		for (BotBase *bot : impl->extraBots)
+		{
+			bot->leave_game();
+			delete bot;
+		}
+		impl->extraBots.clear();
+		[s rebuildAndNotify];
+	});
+}
+
+
 #pragma mark - Board interaction
 
 - (void)tapHole:(NSInteger)hole
@@ -512,7 +627,6 @@ struct SessionImpl
 
 		if (it == sel.end())
 		{
-			bool had_one = (sel.size() == 1);
 			sel.push_back((unsigned int)hole);
 			bool valid = false;
 			if (sel.size() == 1)
@@ -529,18 +643,14 @@ struct SessionImpl
 			{
 				sel.pop_back();
 
-				// If only one peg was selected (no move path yet), tapping a
-				// different one of our pegs switches the selection to it
-				// instead of being ignored as an invalid move.
-				if (had_one)
+				// Tapping a different one of our pegs starts a new move from
+				// it, even when a path is already selected.
+				GameHole *h = (*board)[(unsigned int)hole];
+				if (h && (int)h->get_current_player() == my)
 				{
-					GameHole *h = (*board)[(unsigned int)hole];
-					if (h && (int)h->get_current_player() == my)
-					{
-						sel.clear();
-						sel.push_back((unsigned int)hole);
-						active->show_move(&sel);
-					}
+					sel.clear();
+					sel.push_back((unsigned int)hole);
+					active->show_move(&sel);
 				}
 			}
 			else
@@ -598,6 +708,29 @@ struct SessionImpl
 		{
 			impl->selection.clear();
 			active->hide_move();
+		}
+		[s rebuildAndNotify];
+	});
+}
+
+- (void)removeLastHop
+{
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		SessionImpl *impl = s->_impl;
+		GameClient *active = [s activeClient];
+		if (!active) return;
+
+		if (!impl->selection.empty())
+		{
+			impl->selection.pop_back();
+			if (impl->selection.empty())
+				active->hide_move();
+			else
+				active->show_move(&impl->selection);
 		}
 		[s rebuildAndNotify];
 	});
@@ -877,6 +1010,14 @@ struct SessionImpl
 	}
 	impl->bots.clear();
 
+	// In-game computer players connect to this client's host; leave them too.
+	for (BotBase *bot : impl->extraBots)
+	{
+		bot->leave_game();
+		delete bot;
+	}
+	impl->extraBots.clear();
+
 	// leave_game() closes the socket first so ~GameClient() does not
 	// double-free the board (see GameClient::disconnected).
 	if (impl->client)
@@ -936,6 +1077,10 @@ struct SessionImpl
 	snap.numPlayers = impl->configuredPlayers;
 	snap.serverHost.clear();
 	snap.serverPort = 0;
+	snap.longJumps = false;
+	snap.hopOthers = true;
+	snap.stopOthers = true;
+	snap.extraBotCount = (int)impl->extraBots.size();
 	snap.players.assign(7, PlayerInfo());
 	snap.playerCount = 0;
 	std::fill(std::begin(snap.holes), std::end(snap.holes), 0);
@@ -957,7 +1102,12 @@ struct SessionImpl
 
 	GameBoard *board = client->get_board();
 	if (board)
+	{
 		snap.numPlayers = (int)board->get_num_players();
+		snap.longJumps = board->get_long_jumps_allowed();
+		snap.hopOthers = board->get_hop_others_allowed();
+		snap.stopOthers = board->get_stop_others_allowed();
+	}
 
 	for (unsigned int p = 1; p <= 6; p++)
 	{
@@ -1110,6 +1260,30 @@ struct SessionImpl
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
 	return _impl->snap.serverPort;
+}
+
+- (BOOL)longJumps
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return _impl->snap.longJumps;
+}
+
+- (BOOL)hopOthers
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return _impl->snap.hopOthers;
+}
+
+- (BOOL)stopOthers
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return _impl->snap.stopOthers;
+}
+
+- (NSInteger)extraComputerPlayerCount
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return _impl->snap.extraBotCount;
 }
 
 - (NSInteger)colorForPlayer:(NSInteger)playerNumber

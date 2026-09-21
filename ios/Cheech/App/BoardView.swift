@@ -6,6 +6,7 @@ struct BoardView: View {
 	let rotation: Double
 	var leadingOverlay: AnyView? = nil
 	var trailingOverlay: AnyView? = nil
+	var bottomTrailingOverlay: AnyView? = nil
 
 	var body: some View {
 		TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !animator.isAnimating)) { timeline in
@@ -40,7 +41,7 @@ struct BoardView: View {
 						// Holes
 						for i in 0..<BoardGeometry.count where BoardGeometry.present[i] {
 							guard let p = points[i] else { continue }
-							let r = unit * 0.46
+							let r = max(2, unit * 0.46 - 2)
 							let rect = CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)
 							context.fill(Path(ellipseIn: rect), with: .color(Color(red: 0.40, green: 0.26, blue: 0.15)))
 						}
@@ -77,7 +78,7 @@ struct BoardView: View {
 					}
 					.gesture(
 						SpatialTapGesture().onEnded { value in
-							guard !animator.isAnimating else { return }
+							guard !animator.isAnimating || model.isLocalHumanTurn else { return }
 							if let hole = BoardGeometry.nearestHole(to: value.location, in: points, maxDistance: max(26, unit * 0.9)) {
 								model.handleTap(hole: hole)
 							}
@@ -95,6 +96,12 @@ struct BoardView: View {
 						trailingOverlay
 							.padding([.top, .trailing], overlayInset)
 							.frame(width: bgRect.width, alignment: .trailing)
+							.offset(x: bgRect.minX, y: bgRect.minY)
+					}
+					if let bottomTrailingOverlay {
+						bottomTrailingOverlay
+							.padding([.bottom, .trailing], overlayInset)
+							.frame(width: bgRect.width, height: bgRect.height, alignment: .bottomTrailing)
 							.offset(x: bgRect.minX, y: bgRect.minY)
 					}
 				}

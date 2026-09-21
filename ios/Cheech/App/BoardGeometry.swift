@@ -126,7 +126,7 @@ enum PegColor {
 		case "blue": return Color(red: 0.15, green: 0.35, blue: 0.80)
 		case "purple": return Color(red: 0.55, green: 0.20, blue: 0.70)
 		case "black": return Color(red: 0.15, green: 0.15, blue: 0.15)
-		case "white": return Color(red: 0.95, green: 0.95, blue: 0.95)
+		case "white": return Color(red: 0.90, green: 0.90, blue: 0.90)
 		default: return .gray
 		}
 	}

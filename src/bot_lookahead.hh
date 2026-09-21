@@ -44,6 +44,13 @@ class BotLookAhead : public BotBase
 		virtual bool supports_parallel_search() const;
 		virtual void prepare_search(GameBoard *board);
 
+		// Weight applied to the root player's own progress relative to the
+		// progress it denies opponents through the paranoid search.  A value
+		// of 3 makes the bot value its own advancement three times as much as
+		// slowing the others down (the inverse of Mean's self-penalty).
+		void set_self_bonus(int self_bonus);
+		int get_self_bonus() const;
+
 	protected:
 		virtual void on_cmd_game_turn(unsigned int posn, 
 									  GameServer::GameStatus status,
@@ -82,6 +89,11 @@ class BotLookAhead : public BotBase
 		unsigned int	_current_depth;
 
 		bool	_paranoid;
+
+		// Root player for the current search (set when a root move is scored)
+		// and the weight applied to that player's own progress.
+		unsigned int	_root_player;
+		int				_self_bonus;
 
 		long	_dist_to_goal[7][GameBoard::SIZE];
 

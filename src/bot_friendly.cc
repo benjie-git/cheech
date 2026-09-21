@@ -24,6 +24,9 @@ BotFriendly::BotFriendly(unsigned int depth) : BotLookAhead(depth)
 {
 	_my_player_num = 0;
 	_self_penalty = 2;
+	// Friendly/Mean express their own weighting through _self_penalty, so do
+	// not inherit LookAhead's self-bonus.
+	_self_bonus = 1;
 	_paranoid = false;
 }
 
@@ -57,6 +60,7 @@ BotBase* BotFriendly::clone_for_search() const
 {
 	BotFriendly *clone = new BotFriendly(_depth);
 	clone->set_self_penalty(_self_penalty);
+	clone->set_self_bonus(_self_bonus);
 	clone->set_tt_bits(18);
 	return clone;
 }

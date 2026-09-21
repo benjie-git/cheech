@@ -37,6 +37,8 @@ BotLookAhead::BotLookAhead(unsigned int depth) : BotBase()
 	_depth = depth;
 	_current_depth = 0;
 	_paranoid = true;
+	_root_player = 0;
+	_self_bonus = 3;
 	_scratch_moves.resize(depth);
 	_search_moves.resize(depth);
 	_tt_gen = 0;
@@ -47,6 +49,21 @@ BotLookAhead::BotLookAhead(unsigned int depth) : BotBase()
 	for (int p = 0; p < 7; p++)
 		for (unsigned int h = 0; h < GameBoard::SIZE; h++)
 			_dist_to_goal[p][h] = 0;
+}
+
+
+void BotLookAhead::set_self_bonus(int self_bonus)
+{
+	if (self_bonus < 1)
+		self_bonus = 1;
+
+	_self_bonus = self_bonus;
+}
+
+
+int BotLookAhead::get_self_bonus() const
+{
+	return _self_bonus;
 }
 
 
@@ -101,6 +118,7 @@ void BotLookAhead::on_cmd_game_turn(unsigned int posn,
 BotBase* BotLookAhead::clone_for_search() const
 {
 	BotLookAhead *clone = new BotLookAhead(_depth);
+	clone->set_self_bonus(_self_bonus);
 	clone->set_tt_bits(18);
 	return clone;
 }
@@ -190,6 +208,12 @@ void BotLookAhead::update_distance_cache(GameBoard *board)
 long BotLookAhead::score_move(GameBoard *board, unsigned int player,
 							  MoveList *move)
 {
+	// score_move() is only ever called to score a root move, but it is also
+	// reached with deeper players during the cooperative recursion, so only
+	// record the root when we are actually at the root depth.
+	if (_current_depth == _depth)
+		_root_player = player;
+
 	if (_paranoid)
 		return paranoid_move_value(board, player, move);
 
@@ -437,8 +461,14 @@ long BotLookAhead::score_this_move(GameBoard *board,
 								   unsigned int player,
 								   MoveList *move)
 {
-	return score_progress(board, player, move)
-		+ goal_block_penalty(board, player, move);
+	long progress = score_progress(board, player, move);
+
+	// The root player values its own advancement more than the progress it
+	// denies the others; the sportsmanship penalty is not scaled.
+	if (player == _root_player)
+		progress *= _self_bonus;
+
+	return progress + goal_block_penalty(board, player, move);
 }
 
 
