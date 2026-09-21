@@ -68,7 +68,10 @@ struct Snapshot
 	int playerCount = 0;
 	std::string serverHost;
 	int serverPort = 0;
-	std::vector<PlayerInfo> players; // 1-based
+	// 1-based (index 0 unused).  Always sized so that callers querying players
+	// 1..6 never index an empty vector before the first rebuildSnapshot() (the
+	// UI can render the game screen before the loop thread populates it).
+	std::vector<PlayerInfo> players = std::vector<PlayerInfo>(7);
 	bool finished[7] = {false};
 	int finishedInMoves[7] = {0};
 	int movesTaken[7] = {0};
@@ -1112,14 +1115,14 @@ struct SessionImpl
 - (NSInteger)colorForPlayer:(NSInteger)playerNumber
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
-	if (playerNumber < 1 || playerNumber > 6) return 0;
+	if (playerNumber < 1 || playerNumber >= (NSInteger)_impl->snap.players.size()) return 0;
 	return _impl->snap.players[playerNumber].color;
 }
 
 - (NSString *)nameForPlayer:(NSInteger)playerNumber
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
-	if (playerNumber < 1 || playerNumber > 6) return @"";
+	if (playerNumber < 1 || playerNumber >= (NSInteger)_impl->snap.players.size()) return @"";
 	return ns(_impl->snap.players[playerNumber].name);
 }
 

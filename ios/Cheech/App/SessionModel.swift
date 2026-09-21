@@ -160,14 +160,13 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		let defaults = UserDefaults.standard
 		playerName = defaults.string(forKey: PrefKey.playerName) ?? "Player"
 		playerColor = defaults.object(forKey: PrefKey.playerColor) as? Int ?? 1
-		hostPort = defaults.object(forKey: PrefKey.hostPort) as? Int ?? 34567
+		hostPort = defaults.object(forKey: PrefKey.hostPort) as? Int ?? 3838
 		longJumps = defaults.object(forKey: PrefKey.longJumps) as? Bool ?? false
 		hopOthers = defaults.object(forKey: PrefKey.hopOthers) as? Bool ?? true
 		stopOthers = defaults.object(forKey: PrefKey.stopOthers) as? Bool ?? true
 		joinHost = defaults.string(forKey: PrefKey.joinHost) ?? "127.0.0.1"
-		joinPort = defaults.object(forKey: PrefKey.joinPort) as? Int ?? 34567
-		lastBotType = defaults.string(forKey: PrefKey.lastBotType)
-			?? GameScreenView.botTypes.first ?? "LookAhead(2)"
+		joinPort = defaults.object(forKey: PrefKey.joinPort) as? Int ?? 3838
+		lastBotType = defaults.string(forKey: PrefKey.lastBotType) ?? "LookAhead(4)"
 		opponentStepMs = min(max(defaults.object(forKey: PrefKey.opponentStepMs) as? Int ?? 250, 0), 500)
 		computerSmarts = min(max(defaults.object(forKey: PrefKey.computerSmarts) as? Int ?? 100, 50), 100)
 		if let data = defaults.data(forKey: PrefKey.seats),
@@ -267,8 +266,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		screen = .setup
 	}
 
-	// Handle an invite link such as cheech://join?host=192.168.1.5&port=34567
-	// (also accepts cheech://192.168.1.5:34567) by joining that game.
+	// Handle an invite link such as cheech://join?host=192.168.1.5&port=3838
+	// (also accepts cheech://192.168.1.5:3838) by joining that game.
 	func handle(url: URL) {
 		guard url.scheme?.lowercased() == "cheech" else { return }
 		let components = URLComponents(url: url, resolvingAgainstBaseURL: false)

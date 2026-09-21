@@ -41,13 +41,38 @@ struct GameSetupView: View {
 
 	var body: some View {
 		VStack(spacing: 0) {
-			VStack(spacing: 2) {
-				Text("Cheech")
-					.font(.system(size: 44, weight: .bold, design: .rounded))
-				Text("Chinese Checkers")
-					.font(.headline)
-					.foregroundStyle(.secondary)
+			HStack(alignment: .center) {
+				VStack(alignment: .leading, spacing: 2) {
+					Text("Cheech")
+						.font(.system(size: 44, weight: .bold, design: .rounded))
+						.lineLimit(1)
+						.minimumScaleFactor(0.6)
+					Text("Chinese Checkers")
+						.font(.headline)
+						.foregroundStyle(.secondary)
+				}
+				Spacer(minLength: 12)
+				if model.setupMode == .start {
+					Button {
+						model.startGame()
+					} label: {
+						Text("Start Game").font(.headline)
+					}
+					.buttonStyle(.borderedProminent)
+					.tint(.green)
+					.controlSize(.large)
+				} else {
+					Button {
+						model.joinGame(spectator: model.spectator)
+					} label: {
+						Text("Join Game").font(.headline)
+					}
+					.buttonStyle(.borderedProminent)
+					.tint(.green)
+					.controlSize(.large)
+				}
 			}
+			.padding(.horizontal, 20)
 			.padding(.top, 20)
 			.padding(.bottom, 6)
 
@@ -62,23 +87,11 @@ struct GameSetupView: View {
 				}
 
 				if model.setupMode == .start {
-					Section("Game") {
+					Section("Game Settings") {
 						Stepper("Players: \(model.numPlayers)", value: $model.numPlayers, in: 2...6)
 						Toggle("Allow long jumps", isOn: $model.longJumps)
 						Toggle("Can Enter Opponents' Goal", isOn: $model.hopOthers)
 						Toggle("Can Stop in Opponents' Goal", isOn: $model.stopOthers)
-					}
-					Section {
-						Button {
-							model.startGame()
-						} label: {
-							Text("Start Game")
-								.font(.headline)
-								.frame(maxWidth: .infinity)
-						}
-						.buttonStyle(.borderedProminent)
-						.tint(.green)
-						.controlSize(.large)
 					}
 					Section("Players") {
 						ForEach($model.seats) { $seat in
@@ -120,7 +133,7 @@ struct GameSetupView: View {
 						}
 					}
 				} else {
-					Section("Game") {
+					Section("Server") {
 						HStack {
 							Text("Host")
 							TextField("Host", text: $model.joinHost)
@@ -145,18 +158,6 @@ struct GameSetupView: View {
 							ColorPickerRow(selection: $model.playerColor)
 						}
 						Toggle("Join as spectator", isOn: $model.spectator)
-					}
-					Section {
-						Button {
-							model.joinGame(spectator: model.spectator)
-						} label: {
-							Text("Join Game")
-								.font(.headline)
-								.frame(maxWidth: .infinity)
-						}
-						.buttonStyle(.borderedProminent)
-						.tint(.green)
-						.controlSize(.large)
 					}
 				}
 			}

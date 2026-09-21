@@ -116,11 +116,6 @@ enum BoardGeometry {
 enum PegColor {
 	static let names = ["", "red", "orange", "yellow", "green", "blue", "purple", "black", "white"]
 
-	static func imageName(_ color: Int) -> String? {
-		guard color >= 1 && color < names.count else { return nil }
-		return "peg-" + names[color] + ".png"
-	}
-
 	static func swiftUIColor(_ color: Int) -> Color {
 		guard color >= 1 && color < names.count else { return .gray }
 		switch names[color] {

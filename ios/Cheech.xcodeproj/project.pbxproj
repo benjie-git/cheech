@@ -7,46 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		153EBFD20727FABDEFFD523B /* peg-purple.png in Resources */ = {isa = PBXBuildFile; fileRef = 91418494E09DC01A28BD2B61 /* peg-purple.png */; };
-		17B5F2341894FF5CEAEA3145 /* hole-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = C7A5FAA0A2D858C36C9D6801 /* hole-hi.png */; };
 		24FC4E0D144270C0AC1D4654 /* bot_friendly.cc in Sources */ = {isa = PBXBuildFile; fileRef = 07F91E3FD8296B16D384801B /* bot_friendly.cc */; };
-		2A43FD15BC44F67037A205F7 /* peg-yellow.png in Resources */ = {isa = PBXBuildFile; fileRef = E6763A79678B16CCD99C4A43 /* peg-yellow.png */; };
 		2BC93DCEECCAACDC740D86E8 /* CheechSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F7D20F2EEEA7290E3CA703F /* CheechSession.mm */; };
-		2CD1642C944EE5B3303EDDF7 /* peg-green-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FF80006B63EC74E99A682AE /* peg-green-hi.png */; };
 		2EEA7F95DAFCBEB9838776CD /* utility.cc in Sources */ = {isa = PBXBuildFile; fileRef = B55A9D589E2972950E4DA9D2 /* utility.cc */; };
 		32A9485275D562A7ABE47249 /* bot_mean.cc in Sources */ = {isa = PBXBuildFile; fileRef = 447C808B584AE3DAAD4C9559 /* bot_mean.cc */; };
-		37246759563FA888F2A8B949 /* peg-black-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = D5D7BA12113E88EF9945D95B /* peg-black-hi.png */; };
-		378C10312B41C9C612C0D3E1 /* peg-orange-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = 8343F48C353715ACFC3515DC /* peg-orange-hi.png */; };
 		3B3F7CED5FB174F201B8AC90 /* SessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49860C0319D6646DAAABBB2 /* SessionModel.swift */; };
-		451187F8602298B55434566B /* peg-green.png in Resources */ = {isa = PBXBuildFile; fileRef = E8A7FC25BA002B17B4B62813 /* peg-green.png */; };
 		53C306B8A7D71AA3255C5465 /* gnet_server_ios.cc in Sources */ = {isa = PBXBuildFile; fileRef = BF62F4E867676139EFD5C348 /* gnet_server_ios.cc */; };
 		615B93D7EDB61DA1DF2E3394 /* bot_lookahead.cc in Sources */ = {isa = PBXBuildFile; fileRef = C89A48EB168041539B0A3F4E /* bot_lookahead.cc */; };
 		6668CF3566E023F44524BCB3 /* CheechApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576C28E40D255F8863D201D8 /* CheechApp.swift */; };
-		72CAAFF7D4D3B41C8FC739D9 /* peg-blue.png in Resources */ = {isa = PBXBuildFile; fileRef = AF03FC5E93AA1A496A67673C /* peg-blue.png */; };
 		7C16BE24C89133C5A6F68EBD /* game_client.cc in Sources */ = {isa = PBXBuildFile; fileRef = 36CB4E0968B41423A9C36A65 /* game_client.cc */; };
-		7C7FF0F876B50711B5AD01B4 /* peg-blue-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = 766CC4809E332B980C050525 /* peg-blue-hi.png */; };
 		7F253E9CC59694BFE04ED97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 239B2D8E58AF1AEC99860400 /* Assets.xcassets */; };
 		7F30679C2B722CB54DE8D96C /* game_hole.cc in Sources */ = {isa = PBXBuildFile; fileRef = AE97CD579EC816ED8286C279 /* game_hole.cc */; };
-		8A6161BAB589B2C9634F1807 /* peg-white-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = B9FA542E7A5B71ECA1B468C0 /* peg-white-hi.png */; };
 		8CFCC29A367BB90B70F752C6 /* BoardGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE62D51F3549948E0189E520 /* BoardGeometry.swift */; };
 		91F1C5DB6E4E87CFFDD40E58 /* game_board.cc in Sources */ = {isa = PBXBuildFile; fileRef = 400F69BEB88DB0C86F14EE4C /* game_board.cc */; };
-		949D5B03E3F4BB62CE7361E6 /* peg-red.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA3B6841DADDB13748F33CA /* peg-red.png */; };
 		989E636C20C3B71DE608822C /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D42CCE86746645C07DE88 /* BoardView.swift */; };
-		9BC151E2B5F04C0B0F305251 /* cheech.png in Resources */ = {isa = PBXBuildFile; fileRef = 5A753FF0E514122B04FF1A0D /* cheech.png */; };
-		B32E3C292783C2F12CEFE4A5 /* peg-red-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DF2DAC0174CAC1877DF6988 /* peg-red-hi.png */; };
 		B75ACC5FF7EE070E4DBA687F /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9682D75E5AF207419F01BD81 /* GameViews.swift */; };
-		B7DB3BE54566C4D70CC796C6 /* peg-yellow-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = 7291B602D99583CDE4E28616 /* peg-yellow-hi.png */; };
 		B831237FA49E91956CD83AA5 /* bot_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1AC7352863126B1A1BB25C09 /* bot_simple.cc */; };
-		BD5057B62CBE579FC10E8689 /* hole.png in Resources */ = {isa = PBXBuildFile; fileRef = EFF87BAE5F91D6BB948670A4 /* hole.png */; };
 		C7A71A0BF8C0BCBFE69FC9B7 /* bot_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = D54821F57EF905F5EA9D6607 /* bot_base.cc */; };
-		CACED0936F49099D55A459EF /* peg-orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D75E02599F5AAF0A284E1CE /* peg-orange.png */; };
 		CF7DC5F1C8847BED0916B410 /* gnet_conn_ios.cc in Sources */ = {isa = PBXBuildFile; fileRef = CC436C67B41D44382A119C0C /* gnet_conn_ios.cc */; };
 		D57CFE04C5B48007A1F7C2C9 /* cheech_loop.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */; };
 		D84DF6ADACFB57E7D54478C3 /* game_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 780ED87958C8C9D384FCF1DC /* game_server.cc */; };
 		D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */ = {isa = PBXBuildFile; fileRef = 84F81ACCF3A3D392E4E3A59D /* bot_random.cc */; };
-		D9900979950EC648902C4783 /* peg-white.png in Resources */ = {isa = PBXBuildFile; fileRef = A3A8B63ABD065C1221BBB716 /* peg-white.png */; };
-		EBC9F6B46AB587661986DDB9 /* peg-purple-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = B5BFA3C62C6FE15FF71AC3CE /* peg-purple-hi.png */; };
-		F1DEE7E12822BD0DC5DD42DC /* peg-black.png in Resources */ = {isa = PBXBuildFile; fileRef = 758F3FEC345028779DE6ABEB /* peg-black.png */; };
 		F53CA6D2A2D1B2E016BAAE5F /* MoveAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */; };
 /* End PBXBuildFile section */
 
@@ -56,59 +37,40 @@
 		0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cheech_loop.cc; sourceTree = "<group>"; };
 		108B17528B6C1984070A2A6B /* bind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind.h; sourceTree = "<group>"; };
 		1AC7352863126B1A1BB25C09 /* bot_simple.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_simple.cc; path = ../src/bot_simple.cc; sourceTree = "<group>"; };
-		1D75E02599F5AAF0A284E1CE /* peg-orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-orange.png"; sourceTree = "<group>"; };
 		239B2D8E58AF1AEC99860400 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24D2EA16174B93D0CC5E91DA /* random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
-		2FF80006B63EC74E99A682AE /* peg-green-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-green-hi.png"; sourceTree = "<group>"; };
 		36CB4E0968B41423A9C36A65 /* game_client.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_client.cc; path = ../src/game_client.cc; sourceTree = "<group>"; };
 		38B0C2053EE54F7951C08DB8 /* sigc++.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "sigc++.h"; sourceTree = "<group>"; };
 		400F69BEB88DB0C86F14EE4C /* game_board.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_board.cc; path = ../src/game_board.cc; sourceTree = "<group>"; };
 		441F8B72168CE348717FEBB6 /* cheech_ios_gnet_private.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_ios_gnet_private.hh; sourceTree = "<group>"; };
 		447C808B584AE3DAAD4C9559 /* bot_mean.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_mean.cc; path = ../src/bot_mean.cc; sourceTree = "<group>"; };
-		4DF2DAC0174CAC1877DF6988 /* peg-red-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-red-hi.png"; sourceTree = "<group>"; };
 		4E22C9A0C11460F0BF3F332F /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		4FAE32C1F30EC5F38E390D08 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		576C28E40D255F8863D201D8 /* CheechApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheechApp.swift; sourceTree = "<group>"; };
-		5A753FF0E514122B04FF1A0D /* cheech.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cheech.png; sourceTree = "<group>"; };
 		61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAnimator.swift; sourceTree = "<group>"; };
 		68A098F4E292BDC98D1ACF56 /* bind_return.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind_return.h; sourceTree = "<group>"; };
 		6975ABB3726E4F7BD041F6BC /* glibmm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glibmm.h; sourceTree = "<group>"; };
-		7291B602D99583CDE4E28616 /* peg-yellow-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-yellow-hi.png"; sourceTree = "<group>"; };
-		758F3FEC345028779DE6ABEB /* peg-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-black.png"; sourceTree = "<group>"; };
-		766CC4809E332B980C050525 /* peg-blue-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-blue-hi.png"; sourceTree = "<group>"; };
 		780ED87958C8C9D384FCF1DC /* game_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = ../src/game_server.cc; sourceTree = "<group>"; };
-		8343F48C353715ACFC3515DC /* peg-orange-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-orange-hi.png"; sourceTree = "<group>"; };
 		84F81ACCF3A3D392E4E3A59D /* bot_random.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_random.cc; path = ../src/bot_random.cc; sourceTree = "<group>"; };
-		91418494E09DC01A28BD2B61 /* peg-purple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-purple.png"; sourceTree = "<group>"; };
 		9682D75E5AF207419F01BD81 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
 		9B015182237E4F02407BE079 /* cheech_move_gate.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_move_gate.hh; sourceTree = "<group>"; };
 		9C2DBF0FF3FC95B12BAA5CEC /* cheech_loop.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_loop.hh; sourceTree = "<group>"; };
 		9F76DCAE23C97BE1884CF2A5 /* cheech_ios_gnet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_ios_gnet.hh; sourceTree = "<group>"; };
 		9F7D20F2EEEA7290E3CA703F /* CheechSession.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CheechSession.mm; sourceTree = "<group>"; };
-		A3A8B63ABD065C1221BBB716 /* peg-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-white.png"; sourceTree = "<group>"; };
 		AE97CD579EC816ED8286C279 /* game_hole.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_hole.cc; path = ../src/game_hole.cc; sourceTree = "<group>"; };
-		AF03FC5E93AA1A496A67673C /* peg-blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-blue.png"; sourceTree = "<group>"; };
 		B3210A8DFBCEC6E04C60A4B2 /* ustring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ustring.h; sourceTree = "<group>"; };
 		B55A9D589E2972950E4DA9D2 /* utility.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = utility.cc; path = ../src/utility.cc; sourceTree = "<group>"; };
-		B5BFA3C62C6FE15FF71AC3CE /* peg-purple-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-purple-hi.png"; sourceTree = "<group>"; };
-		B9FA542E7A5B71ECA1B468C0 /* peg-white-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-white-hi.png"; sourceTree = "<group>"; };
 		BDFF1A52879B516689F2BF5B /* Cheech-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Cheech-Bridging-Header.h"; sourceTree = "<group>"; };
 		BF62F4E867676139EFD5C348 /* gnet_server_ios.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gnet_server_ios.cc; sourceTree = "<group>"; };
-		C7A5FAA0A2D858C36C9D6801 /* hole-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "hole-hi.png"; sourceTree = "<group>"; };
 		C89A48EB168041539B0A3F4E /* bot_lookahead.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_lookahead.cc; path = ../src/bot_lookahead.cc; sourceTree = "<group>"; };
 		CC436C67B41D44382A119C0C /* gnet_conn_ios.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gnet_conn_ios.cc; sourceTree = "<group>"; };
 		CE62D51F3549948E0189E520 /* BoardGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardGeometry.swift; sourceTree = "<group>"; };
 		D29ACBE856613BDFD0EA9868 /* CheechSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CheechSession.h; sourceTree = "<group>"; };
 		D54821F57EF905F5EA9D6607 /* bot_base.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_base.cc; path = ../src/bot_base.cc; sourceTree = "<group>"; };
-		D5D7BA12113E88EF9945D95B /* peg-black-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-black-hi.png"; sourceTree = "<group>"; };
 		D7C58C8E94272729AC183B2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E49860C0319D6646DAAABBB2 /* SessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModel.swift; sourceTree = "<group>"; };
-		E6763A79678B16CCD99C4A43 /* peg-yellow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-yellow.png"; sourceTree = "<group>"; };
-		E8A7FC25BA002B17B4B62813 /* peg-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-green.png"; sourceTree = "<group>"; };
-		EFF87BAE5F91D6BB948670A4 /* hole.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hole.png; sourceTree = "<group>"; };
 		F8B823D14EB778B142E42641 /* glib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glib.h; sourceTree = "<group>"; };
-		F90EF65352CC217504CB5682 /* Cheech.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Cheech.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FCA3B6841DADDB13748F33CA /* peg-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "peg-red.png"; sourceTree = "<group>"; };
+		F90EF65352CC217504CB5682 /* Cheech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cheech.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -139,32 +101,6 @@
 			path = Bridge;
 			sourceTree = "<group>";
 		};
-		8553C51270F8AA87ED0A3E15 /* images */ = {
-			isa = PBXGroup;
-			children = (
-				5A753FF0E514122B04FF1A0D /* cheech.png */,
-				C7A5FAA0A2D858C36C9D6801 /* hole-hi.png */,
-				EFF87BAE5F91D6BB948670A4 /* hole.png */,
-				D5D7BA12113E88EF9945D95B /* peg-black-hi.png */,
-				758F3FEC345028779DE6ABEB /* peg-black.png */,
-				766CC4809E332B980C050525 /* peg-blue-hi.png */,
-				AF03FC5E93AA1A496A67673C /* peg-blue.png */,
-				2FF80006B63EC74E99A682AE /* peg-green-hi.png */,
-				E8A7FC25BA002B17B4B62813 /* peg-green.png */,
-				8343F48C353715ACFC3515DC /* peg-orange-hi.png */,
-				1D75E02599F5AAF0A284E1CE /* peg-orange.png */,
-				B5BFA3C62C6FE15FF71AC3CE /* peg-purple-hi.png */,
-				91418494E09DC01A28BD2B61 /* peg-purple.png */,
-				4DF2DAC0174CAC1877DF6988 /* peg-red-hi.png */,
-				FCA3B6841DADDB13748F33CA /* peg-red.png */,
-				B9FA542E7A5B71ECA1B468C0 /* peg-white-hi.png */,
-				A3A8B63ABD065C1221BBB716 /* peg-white.png */,
-				7291B602D99583CDE4E28616 /* peg-yellow-hi.png */,
-				E6763A79678B16CCD99C4A43 /* peg-yellow.png */,
-			);
-			path = images;
-			sourceTree = "<group>";
-		};
 		A05F2FDCD70B05F59F17FE34 /* glibmm */ = {
 			isa = PBXGroup;
 			children = (
@@ -190,7 +126,6 @@
 			isa = PBXGroup;
 			children = (
 				239B2D8E58AF1AEC99860400 /* Assets.xcassets */,
-				8553C51270F8AA87ED0A3E15 /* images */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -295,7 +230,6 @@
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					447C04D667C9AFABFDF3C7E2 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -325,25 +259,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F253E9CC59694BFE04ED97D /* Assets.xcassets in Resources */,
-				9BC151E2B5F04C0B0F305251 /* cheech.png in Resources */,
-				17B5F2341894FF5CEAEA3145 /* hole-hi.png in Resources */,
-				BD5057B62CBE579FC10E8689 /* hole.png in Resources */,
-				37246759563FA888F2A8B949 /* peg-black-hi.png in Resources */,
-				F1DEE7E12822BD0DC5DD42DC /* peg-black.png in Resources */,
-				7C7FF0F876B50711B5AD01B4 /* peg-blue-hi.png in Resources */,
-				72CAAFF7D4D3B41C8FC739D9 /* peg-blue.png in Resources */,
-				2CD1642C944EE5B3303EDDF7 /* peg-green-hi.png in Resources */,
-				451187F8602298B55434566B /* peg-green.png in Resources */,
-				378C10312B41C9C612C0D3E1 /* peg-orange-hi.png in Resources */,
-				CACED0936F49099D55A459EF /* peg-orange.png in Resources */,
-				EBC9F6B46AB587661986DDB9 /* peg-purple-hi.png in Resources */,
-				153EBFD20727FABDEFFD523B /* peg-purple.png in Resources */,
-				B32E3C292783C2F12CEFE4A5 /* peg-red-hi.png in Resources */,
-				949D5B03E3F4BB62CE7361E6 /* peg-red.png in Resources */,
-				8A6161BAB589B2C9634F1807 /* peg-white-hi.png in Resources */,
-				D9900979950EC648902C4783 /* peg-white.png in Resources */,
-				B7DB3BE54566C4D70CC796C6 /* peg-yellow-hi.png in Resources */,
-				2A43FD15BC44F67037A205F7 /* peg-yellow.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,7 +304,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"CHEECH_IOS=1",
@@ -477,7 +392,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PREPROCESSOR_DEFINITIONS = (
