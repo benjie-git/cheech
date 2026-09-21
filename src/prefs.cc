@@ -50,7 +50,7 @@ void Prefs::set_defaults()
 	join_port = 3838;
 	spectator = false;
 
-	bot_type = "LookAhead(2)";
+	bot_type = "LookAhead(4)";
 	move_delay = 400;
 	done_delay = 600;
 	think_delay = 0;

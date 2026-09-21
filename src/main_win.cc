@@ -479,7 +479,7 @@ void main_win::on_add_computer_player_activate()
 		BotBase *bot = BotBase::new_bot_of_type(prefs.bot_type);
 		if (!bot)
 		{
-			prefs.bot_type = "LookAhead(3)";
+			prefs.bot_type = "LookAhead(4)";
 			prefs.write();
 			bot = BotBase::new_bot_of_type(prefs.bot_type);
 		}

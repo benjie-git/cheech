@@ -326,7 +326,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			numPlayers: numPlayers,
 			longJumps: longJumps,
 			hopOthers: hopOthers,
-			stopOthers: stopOthers,
+			stopOthers: hopOthers && stopOthers,
 			seats: seatSpecs
 		)
 		screen = .game
@@ -347,7 +347,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			numPlayers: numPlayers,
 			longJumps: longJumps,
 			hopOthers: hopOthers,
-			stopOthers: stopOthers
+			stopOthers: hopOthers && stopOthers
 		)
 	}
 

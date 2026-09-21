@@ -90,16 +90,14 @@ Glib::ustring BotLookAhead::get_default_name() const
 {
 	switch (_depth)
 	{
-		case 1:
-			return "Batty";
 		case 2:
 			return "Earl";
 		case 3:
-			return "Sharon";
+			return "Luz";
 		case 4:
 			return "Cosmo";
 		case 5:
-			return "Sloth";
+			return "Lela";
 		default:
 			return "Who,Now?";
 	}

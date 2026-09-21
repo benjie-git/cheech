@@ -31,16 +31,16 @@ Glib::ustring BotMean::get_default_name() const
 {
 	switch (_depth)
 	{
-		case 1:
-			return "Mean";
 		case 2:
 			return "Jimbo";
 		case 3:
 			return "Nelson";
-		case 4:
-			return "Burns";
+        case 4:
+            return "Burns";
+        case 5:
+            return "Scorpio";
 		default:
-			return "Badger";
+			return "Who,Now?";
 	}
 }
 

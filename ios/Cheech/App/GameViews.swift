@@ -91,7 +91,9 @@ struct GameSetupView: View {
 						Stepper("Players: \(model.numPlayers)", value: $model.numPlayers, in: 2...6)
 						Toggle("Allow long jumps", isOn: $model.longJumps)
 						Toggle("Can Enter Opponents' Goal", isOn: $model.hopOthers)
-						Toggle("Can Stop in Opponents' Goal", isOn: $model.stopOthers)
+						if model.hopOthers {
+							Toggle("Can Stop in Opponents' Goal", isOn: $model.stopOthers)
+						}
 					}
 					Section("Players") {
 						ForEach($model.seats) { $seat in
@@ -269,22 +271,67 @@ struct BotTypePickerRow: View {
 		HStack {
 			Text(title)
 			Spacer(minLength: 8)
-			Menu {
-				ForEach(GameScreenView.botTypes, id: \.self) { type in
-					Button(GameScreenView.botLabel(type)) { selection = type }
-				}
-			} label: {
-				HStack(spacing: 4) {
-					Text(GameScreenView.botLabel(selection))
-						.lineLimit(1)
-						.minimumScaleFactor(0.7)
-					Image(systemName: "chevron.up.chevron.down")
-						.font(.caption2.weight(.semibold))
-						.foregroundStyle(.tertiary)
-				}
-			}
+			BotTypeDropdown(selection: $selection)
 		}
 	}
+}
+
+// A custom dropdown, since a Menu cannot style its option rows (and a Picker
+// wheel needs a whole new presentation).  The trigger shows the combined
+// label; the expanded list shows the cute name (leading, blue) and the type
+// and depth (trailing, dark grey).
+struct BotTypeDropdown: View {
+	@Binding var selection: String
+	@StateObject private var state = BotDropdownState()
+
+	private let types = GameScreenView.botTypes
+
+	var body: some View {
+		Button {
+			state.isExpanded.toggle()
+		} label: {
+			HStack(spacing: 4) {
+				Text(GameScreenView.botLabel(selection))
+					.lineLimit(1)
+					.minimumScaleFactor(0.7)
+				Image(systemName: "chevron.up.chevron.down")
+					.font(.caption2.weight(.semibold))
+					.foregroundStyle(.tertiary)
+			}
+		}
+		.buttonStyle(.plain)
+		.popover(isPresented: $state.isExpanded) {
+			VStack(spacing: 0) {
+				ForEach(types, id: \.self) { type in
+					Button {
+						selection = type
+						state.isExpanded = false
+					} label: {
+						HStack(spacing: 16) {
+							Text(GameScreenView.botCuteName(type))
+								.foregroundStyle(.blue)
+								.lineLimit(1)
+							Spacer(minLength: 24)
+							Text(GameScreenView.botTypeDescription(type))
+								.foregroundStyle(Color(.darkGray))
+								.lineLimit(1)
+						}
+						.padding(.vertical, 10)
+						.padding(.horizontal, 16)
+						.contentShape(Rectangle())
+					}
+					.buttonStyle(.plain)
+					if type != types.last { Divider() }
+				}
+			}
+			.frame(width: 260)
+			.presentationCompactAdaptation(.popover)
+		}
+	}
+}
+
+final class BotDropdownState: ObservableObject {
+	@Published var isExpanded = false
 }
 
 struct SeatEditorView: View {
@@ -358,17 +405,27 @@ struct GameScreenView: View {
 
 	static let botTypes = [
 		"Random", "Simple(1)",
-		"LookAhead(2)", "LookAhead(3)", "LookAhead(4)", "LookAhead(5)",
-		"Friendly(2)", "Friendly(3)", "Friendly(4)",
-		"Mean(2)", "Mean(3)", "Mean(4)", "Mean(5)",
+		"LookAhead(4)", "LookAhead(5)",
+		"Mean(4)", "Mean(5)",
+		"Friendly(3)", "Friendly(4)",
 	]
 
-	// Human-friendly name for a computer-player type, e.g. "Cosmo (LookAhead 4)".
-	static func botLabel(_ type: String) -> String {
-		let name = CheechSession.defaultName(forComputerType: type)
-		let description = type
+	// Human-friendly name for a computer-player type, e.g. "Cosmo".
+	static func botCuteName(_ type: String) -> String {
+		CheechSession.defaultName(forComputerType: type)
+	}
+
+	// The type and depth for a computer-player type, e.g. "LookAhead 4".
+	static func botTypeDescription(_ type: String) -> String {
+		type
 			.replacingOccurrences(of: "(", with: " ")
 			.replacingOccurrences(of: ")", with: "")
+	}
+
+	// Combined label, e.g. "Cosmo (LookAhead 4)".
+	static func botLabel(_ type: String) -> String {
+		let name = botCuteName(type)
+		let description = botTypeDescription(type)
 		return name.isEmpty ? description : "\(name) (\(description))"
 	}
 
@@ -841,6 +898,7 @@ final class GameSetupDraft: ObservableObject {
 	@Published var hopOthers = true
 	@Published var stopOthers = true
 	@Published var botType = "LookAhead(4)"
+	@Published var confirmApply = false
 }
 
 struct GameSetupSheet: View {
@@ -851,6 +909,31 @@ struct GameSetupSheet: View {
 
 	private var canAddComputer: Bool {
 		Int(session.playerCount) < draft.numPlayers
+	}
+
+	private var allPlayersFinished: Bool {
+		let count = Int(session.numPlayers)
+		guard count > 0 else { return false }
+		for p in 1...count where !session.finished(forPlayer: p) {
+			return false
+		}
+		return true
+	}
+
+	// Applying restarts the game, so only confirm once any move has been played
+	// and the game is not already over.
+	private var gameInProgress: Bool {
+		session.moveNumber > 0 && !allPlayersFinished
+	}
+
+	private func apply() {
+		model.reconfigureGame(
+			numPlayers: draft.numPlayers,
+			longJumps: draft.longJumps,
+			hopOthers: draft.hopOthers,
+			stopOthers: draft.stopOthers
+		)
+		model.showGameSetup = false
 	}
 
 	var body: some View {
@@ -869,7 +952,9 @@ struct GameSetupSheet: View {
 				Section("Rules") {
 					Toggle("Allow long jumps", isOn: $draft.longJumps)
 					Toggle("Can Enter Opponents' Goal", isOn: $draft.hopOthers)
-					Toggle("Can Stop in Opponents' Goal", isOn: $draft.stopOthers)
+					if draft.hopOthers {
+						Toggle("Can Stop in Opponents' Goal", isOn: $draft.stopOthers)
+					}
 				}
 
 				Section("Computer Players") {
@@ -900,22 +985,30 @@ struct GameSetupSheet: View {
 				}
 				ToolbarItem(placement: .confirmationAction) {
 					Button("Apply") {
-						model.reconfigureGame(
-							numPlayers: draft.numPlayers,
-							longJumps: draft.longJumps,
-							hopOthers: draft.hopOthers,
-							stopOthers: draft.stopOthers
-						)
-						model.showGameSetup = false
+						if gameInProgress {
+							draft.confirmApply = true
+						} else {
+							apply()
+						}
 					}
 				}
+			}
+			.confirmationDialog(
+				"Start a new game?",
+				isPresented: $draft.confirmApply,
+				titleVisibility: .visible
+			) {
+				Button("Restart Game", role: .destructive) { apply() }
+				Button("Cancel", role: .cancel) {}
+			} message: {
+				Text("Applying these settings restarts the game for all players.")
 			}
 			.onAppear {
 				let players = Int(session.numPlayers)
 				draft.numPlayers = min(max(players > 0 ? players : model.numPlayers, 2), 6)
 				draft.longJumps = session.longJumps
 				draft.hopOthers = session.hopOthers
-				draft.stopOthers = session.stopOthers
+				draft.stopOthers = session.hopOthers ? session.stopOthers : model.stopOthers
 				draft.botType = model.lastBotType
 			}
 		}

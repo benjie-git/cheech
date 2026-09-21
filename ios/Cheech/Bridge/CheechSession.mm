@@ -348,7 +348,7 @@ struct SessionImpl
 			else if (seat.kind == CheechSeatComputer)
 			{
 				BotBase *bot = BotBase::new_bot_of_type(seat.botType);
-				if (!bot) bot = BotBase::new_bot_of_type("LookAhead(2)");
+				if (!bot) bot = BotBase::new_bot_of_type("LookAhead(4)");
 				if (!bot) bot = BotBase::new_bot_of_type("Simple(1)");
 				if (!bot) continue;
 
@@ -565,7 +565,7 @@ struct SessionImpl
 		if (host.empty() || port == 0) return;
 
 		BotBase *bot = BotBase::new_bot_of_type(typeStr);
-		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(3)");
+		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(4)");
 		if (!bot) return;
 
 		bot->set_think_delay(0);

@@ -42,16 +42,16 @@ Glib::ustring BotFriendly::get_default_name() const
 {
 	switch (_depth)
 	{
-		case 1:
-			return "Bonk";
 		case 2:
-			return "Pony";
+			return "Earl";
 		case 3:
-			return "Nibbler";
-		case 4:
 			return "Unicorn";
-		default:
-			return "Princess";
+        case 4:
+            return "Nibbler";
+        case 5:
+            return "Princess";
+        default:
+            return "Who,Now?";
 	}
 }
 
