@@ -594,7 +594,7 @@ struct GameScreenView: View {
 			let round = moveRound
 			let showRound = session.connected && session.status != .waiting
 			Text(showRound ? "Move \(round)" : " ")
-				.font(.caption)
+				.font(.system(size: 16, weight: .bold))
 				.foregroundStyle(.secondary)
 
 			BoardView(
@@ -808,31 +808,35 @@ struct GameScreenView: View {
 	}
 
 	private var playerList: some View {
-		ScrollView(.horizontal, showsIndicators: false) {
-			HStack(spacing: 14) {
-				ForEach(1...6, id: \.self) { p in
-					let name = session.name(forPlayer: p)
-					if !name.isEmpty {
-						HStack(spacing: 5) {
-							Circle()
-								.fill(PegColor.swiftUIColor(Int(session.color(forPlayer: p))))
-								.frame(width: 14, height: 14)
-							Text(name).font(.caption)
-							if session.finished(forPlayer: p) {
-								let own = Int(session.movesTaken(forPlayer: p))
-								let moves = own > 0 ? own : Int(session.finishedInMoves(forPlayer: p))
-								if moves > 0 {
-									Text("(\(moves))").font(.caption)
+		GeometryReader { geo in
+			ScrollView(.horizontal, showsIndicators: false) {
+				HStack(spacing: 14) {
+					ForEach(1...6, id: \.self) { p in
+						let name = session.name(forPlayer: p)
+						if !name.isEmpty {
+							HStack(spacing: 5) {
+								Circle()
+									.fill(PegColor.swiftUIColor(Int(session.color(forPlayer: p))))
+									.frame(width: 14, height: 14)
+								Text(name).font(.system(size: 16))
+								if session.finished(forPlayer: p) {
+									let own = Int(session.movesTaken(forPlayer: p))
+									let moves = own > 0 ? own : Int(session.finishedInMoves(forPlayer: p))
+									if moves > 0 {
+										Text("(\(moves))").font(.caption)
+									}
+									Image(systemName: "checkmark.seal.fill").font(.caption2)
 								}
-								Image(systemName: "checkmark.seal.fill").font(.caption2)
 							}
+							.opacity(Int(session.currentPlayer) == p ? 1 : 0.6)
 						}
-						.opacity(Int(session.currentPlayer) == p ? 1 : 0.6)
 					}
 				}
+				.padding(.horizontal)
+				.frame(minWidth: geo.size.width, alignment: .center)
 			}
-			.padding(.horizontal)
 		}
+		.frame(height: 24)
 	}
 
 	private var messageStrip: some View {
