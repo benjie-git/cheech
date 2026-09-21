@@ -94,8 +94,19 @@ class BotBase : public sigc::trackable
 		bool is_still_my_turn();
 		bool is_blocking_pegs(GameBoard *board, unsigned int player);
 
+		// Strong, unscaled penalty for ending a move in another player's goal.
+		// Bots may still pass through or (when forced) stop there, but they
+		// must not park a peg in an opponent's goal to block them from
+		// finishing.  Returns 0 for own/neutral holes.
+		long goal_block_penalty(GameBoard *board, unsigned int player,
+								MoveList *move) const;
+
 		void make_best_move();
 		void make_move(MoveList *list);
+#ifdef CHEECH_IOS
+		// Returns true while still waiting for the animation gate to open.
+		bool try_commit_move(MoveList move);
+#endif
 
 		void find_better_move(GameBoard *board, unsigned int player,
 			MoveList *move,	std::vector<MoveList> *best_moves, long *best_score);

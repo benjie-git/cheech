@@ -24,7 +24,11 @@
 #include <atomic>
 
 #include "bot_base.hh"
+#ifndef CHEECH_IOS
 #include "game_images.hh"
+#else
+#include "cheech_move_gate.hh"
+#endif
 #include "utility.hh"
 
 #include "bot_random.hh"
@@ -206,7 +210,13 @@ void BotBase::on_cmd_choose_new_name(Glib::ustring name)
 
 void BotBase::on_cmd_choose_new_color(Glib::ustring name, int color)
 {
-	for (unsigned int c = 1; c < GameImages::get_num_colors(); c++)
+	for (unsigned int c = 1; c <
+#ifdef CHEECH_IOS
+		8
+#else
+		GameImages::get_num_colors()
+#endif
+		; c++)
 	{
 		bool taken = false;
 
@@ -615,6 +625,18 @@ void BotBase::make_move(MoveList *list)
 	if (list->empty())
 		return;
 
+#ifdef CHEECH_IOS
+	// Non-blocking pacing: the move is committed on a timer once the previous
+	// move's UI animation has finished.  This lets the next player's search
+	// start as soon as the turn arrives, while its commit waits for the gate.
+	if (!is_still_my_turn())
+		return;
+
+	MoveList move_copy = *list;
+	Glib::signal_timeout().connect(sigc::bind(
+		sigc::mem_fun(*this, &BotBase::try_commit_move), move_copy), 30);
+	return;
+#else
 	if (_move_step_delay > 0)
 	{
 		MoveList partial(0);
@@ -647,7 +669,28 @@ void BotBase::make_move(MoveList *list)
 
 	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(&_client,
 								   &GameClient::hide_move), false), 0);
+#endif
 }
+
+
+#ifdef CHEECH_IOS
+bool BotBase::try_commit_move(MoveList move)
+{
+	if (!is_still_my_turn())
+		return false;
+
+	// Keep polling until the in-flight animation has finished.
+	if (!cheech::move_gate_open())
+		return true;
+
+	_client.make_move(&move);
+
+	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(&_client,
+								   &GameClient::hide_move), false), 0);
+
+	return false;
+}
+#endif
 
 
 bool BotBase::is_blocking_pegs(GameBoard *board, unsigned int player)
@@ -699,4 +742,33 @@ bool BotBase::is_blocking_pegs(GameBoard *board, unsigned int player)
 			return true;
 
 	return false;
+}
+
+
+long BotBase::goal_block_penalty(GameBoard *board, unsigned int player,
+								 MoveList *move) const
+{
+	if (!move || move->empty())
+		return 0;
+
+	GameHole *hole = (*board)[move->back()];
+	if (!hole)
+		return 0;
+
+	unsigned int owner = hole->get_end_player();
+
+	// Own goal or a hole that is nobody's goal: nothing to penalize.
+	if (owner == 0 || owner == player || owner > board->get_num_players())
+		return 0;
+
+	// Ending a move inside an opponent's goal takes one of their ten slots,
+	// so they can never finish while the peg sits there.  Discourage it
+	// strongly; it is still chosen if no other move exists.
+	long penalty = 20000;
+
+	// Extra deterrent when it is that opponent's very last free hole.
+	if (board->get_num_pegs_in_goal(owner) == 9)
+		penalty += 10000;
+
+	return -penalty;
 }

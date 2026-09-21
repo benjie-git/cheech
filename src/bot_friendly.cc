@@ -75,10 +75,14 @@ long BotFriendly::score_move_recurse(GameBoard *board, unsigned int player,
 long BotFriendly::score_this_move(GameBoard *board, unsigned int player,
 								  MoveList *move)
 {
-	long total_score = BotLookAhead::score_this_move(board, player, move);
+	// Own progress is scaled down by the self-penalty, but the sportsmanship
+	// penalty must not be diluted, so it is added after the division.
+	long total_score = score_progress(board, player, move);
 
 	if (player == _my_player_num)
 		total_score = total_score / _self_penalty;
+
+	total_score += goal_block_penalty(board, player, move);
 
 	return total_score;
 }

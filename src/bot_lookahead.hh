@@ -56,6 +56,12 @@ class BotLookAhead : public BotBase
 									 unsigned int player,
 									 MoveList *move);
 
+		// Progress/finish component of a move's score, without the
+		// sportsmanship penalty (see BotBase::goal_block_penalty).
+		long score_progress(GameBoard *board,
+							unsigned int player,
+							MoveList *move);
+
 		void update_distance_cache(GameBoard *board);
 
 		// Paranoid alpha-beta search.  Returns the value of the remaining

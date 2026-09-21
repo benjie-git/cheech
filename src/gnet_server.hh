@@ -24,7 +24,12 @@
 
 #include <glibmm/ustring.h>
 #include <sigc++/sigc++.h>
+#ifdef CHEECH_IOS
+#include <glib.h>
+#include "cheech_ios_gnet.hh"
+#else
 #include "gnet-2.0/gnet.h"
+#endif
 
 #include "gnet_conn.hh"
 
@@ -47,7 +52,9 @@ public:
 	void close();
 
 private:
+#ifndef CHEECH_IOS
 	static void handle_accept_static(GServer* server, GConn* client, gpointer data);
+#endif
 	void handle_accept(GServer* server, GConn* client);
 
 	GServer*		_server;

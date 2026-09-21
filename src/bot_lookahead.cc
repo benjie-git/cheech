@@ -437,6 +437,15 @@ long BotLookAhead::score_this_move(GameBoard *board,
 								   unsigned int player,
 								   MoveList *move)
 {
+	return score_progress(board, player, move)
+		+ goal_block_penalty(board, player, move);
+}
+
+
+long BotLookAhead::score_progress(GameBoard *board, 
+								   unsigned int player,
+								   MoveList *move)
+{
 	unsigned int front = move->front();
 	unsigned int back = move->back();
 

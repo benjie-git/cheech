@@ -41,5 +41,7 @@ long BotSimple::score_move(GameBoard *board, unsigned int player,
 	else if (new_dist > 200 && new_dist < 300 && old_dist == 300)
 		score -= 100;
 
+	score += goal_block_penalty(board, player, move);
+
 	return score;
 }

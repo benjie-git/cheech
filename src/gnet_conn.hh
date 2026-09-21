@@ -25,7 +25,12 @@
 
 #include <glibmm/ustring.h>
 #include <sigc++/sigc++.h>
+#ifdef CHEECH_IOS
+#include <glib.h>
+#include "cheech_ios_gnet.hh"
+#else
 #include "gnet-2.0/gnet.h"
+#endif
 
 
 namespace Gnet {
@@ -67,9 +72,15 @@ class Gnet::Conn : public sigc::trackable
 	
 	protected:
 		virtual void do_read();
+#ifndef CHEECH_IOS
 		static void handle_event_static(GConn *conn, GConnEvent *event,
 										gpointer data);
 		void handle_event(GConn *conn, GConnEvent *event);
+#else
+		void flush();
+		void ensure_watch();
+		void handle_events(bool readable, bool writable, bool error);
+#endif
 	
 		GConn*						_conn;
 		Status						_status;

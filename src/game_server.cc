@@ -20,18 +20,35 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#ifdef CHEECH_IOS
+#include <random>
+#endif
 #include <glibmm/main.h>
 #include <sigc++/bind.h>
 #include <sigc++/bind_return.h>
 
 #include "utility.hh"
 #include "game_server.hh"
+#ifndef CHEECH_IOS
 #include "ajax_server.hh"
+#endif
 
 // #define DEBUG_SERVER 1
 
 
 using namespace std;
+
+#ifdef CHEECH_IOS
+// std::random_shuffle was removed in C++17; provide an equivalent for iOS.
+namespace {
+template <class It>
+void random_shuffle(It first, It last)
+{
+	static std::mt19937 gen(std::random_device{}());
+	std::shuffle(first, last, gen);
+}
+}
+#endif
 using namespace Gnet;
 
 GameServer::Player::Player(Conn *socket_, Glib::ustring name_,
@@ -72,6 +89,28 @@ GameServer::GameServer(unsigned int port, unsigned int num_players,
 
 GameServer::~GameServer()
 {
+#ifdef CHEECH_IOS
+	// The iOS event loop keeps running after the server is destroyed, so the
+	// accepted connections (owned by the player/spectator entries) must be
+	// closed and freed here.  Otherwise their still-registered fd watches
+	// would later invoke remove_client() on this freed server.
+	_socket.close();
+
+	for (unsigned int i = 1; i <= 6; i++)
+	{
+		Gnet::Conn *c = _players[i].socket;
+		_players[i].socket = NULL;
+		if (c) { c->close(); delete c; }
+	}
+
+	for (unsigned int i = 0; i < _spectators.size(); i++)
+	{
+		Gnet::Conn *c = _spectators[i].socket;
+		_spectators[i].socket = NULL;
+		if (c) { c->close(); delete c; }
+	}
+#endif
+
 	if (_board)
 		delete _board;
 }
@@ -558,6 +597,9 @@ void GameServer::add_client(Conn* socket)
 void GameServer::remove_client(Conn* socket)
 {
 	Player *sad_player = get_client_player(socket);
+
+	if (!sad_player)
+		return;
 
 	if (sad_player->spectator)
 	{
