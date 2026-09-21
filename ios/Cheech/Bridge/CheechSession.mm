@@ -95,6 +95,7 @@ struct Seat
 	std::string botType;
 	std::string name;
 	int color = 0;
+	int smarts = 100;
 	GameClient *client = nullptr; // when kind == CheechSeatHuman
 	BotBase *bot = nullptr;       // when kind == CheechSeatComputer
 	int playerNumber = 0;         // assigned after connect
@@ -167,6 +168,7 @@ struct SessionImpl
 	seat.botType = @"";
 	seat.name = name;
 	seat.color = color;
+	seat.smarts = 100;
 	return seat;
 }
 
@@ -179,6 +181,7 @@ struct SessionImpl
 	seat.botType = type;
 	seat.name = name;
 	seat.color = color;
+	seat.smarts = 100;
 	return seat;
 }
 
@@ -189,6 +192,7 @@ struct SessionImpl
 	seat.botType = @"";
 	seat.name = @"";
 	seat.color = 0;
+	seat.smarts = 100;
 	return seat;
 }
 
@@ -312,6 +316,7 @@ struct SessionImpl
 		spec.botType = seat.botType ? [seat.botType UTF8String] : "";
 		spec.name = seat.name ? [seat.name UTF8String] : "";
 		spec.color = (int)seat.color;
+		spec.smarts = (int)seat.smarts;
 		specs.push_back(spec);
 	}
 
@@ -407,14 +412,14 @@ struct SessionImpl
 	else if (seat.kind == CheechSeatComputer)
 	{
 		BotBase *bot = BotBase::new_bot_of_type(seat.botType);
-		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(4)");
+		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(3)");
 		if (!bot) bot = BotBase::new_bot_of_type("Simple(1)");
 		if (bot)
 		{
 			// Let the bot apply its move immediately; the UI replays it.
 			bot->set_think_delay(0);
 			bot->set_move_delay(0, 0);
-			bot->set_smarts(impl->computerSmarts);
+			bot->set_smarts(seat.smarts);
 			if (!seat.name.empty())
 				bot->set_name(seat.name);
 			bot->set_color(seat.color);
@@ -638,7 +643,7 @@ struct SessionImpl
 		if (host.empty() || port == 0) return;
 
 		BotBase *bot = BotBase::new_bot_of_type(typeStr);
-		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(4)");
+		if (!bot) bot = BotBase::new_bot_of_type("LookAhead(3)");
 		if (!bot) return;
 
 		bot->set_think_delay(0);

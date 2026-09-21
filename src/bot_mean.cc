@@ -22,7 +22,7 @@
 
 BotMean::BotMean(unsigned int depth) : BotFriendly(depth)
 {
-	_self_penalty = 3;
+	_self_penalty = 1;
 	_paranoid = true;
 }
 

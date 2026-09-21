@@ -36,9 +36,13 @@ BotLookAhead::BotLookAhead(unsigned int depth) : BotBase()
 {
 	_depth = depth;
 	_current_depth = 0;
-	_paranoid = true;
+	// LookAhead plans its own sequence of moves only: opponents are treated
+	// as static obstacles and never get a turn in the search, so the bot
+	// never spends tempo denying another player.  Mean keeps the paranoid
+	// adversarial search (it sets _paranoid back to true).
+	_paranoid = false;
 	_root_player = 0;
-	_self_bonus = 3;
+	_self_bonus = 1;
 	_scratch_moves.resize(depth);
 	_search_moves.resize(depth);
 	_tt_gen = 0;
@@ -93,11 +97,11 @@ Glib::ustring BotLookAhead::get_default_name() const
 		case 2:
 			return "Earl";
 		case 3:
-			return "Luz";
+			return "Lela";
 		case 4:
 			return "Cosmo";
 		case 5:
-			return "Lela";
+			return "Nate";
 		default:
 			return "Who,Now?";
 	}
@@ -229,7 +233,7 @@ long BotLookAhead::score_move_recurse(GameBoard *board, unsigned int player,
 
 	long total_score = score_this_move(board, player, move);
 
-	if (total_score > 9000 /* || total_score < -100*/)
+	if (board->player_finished(player) || total_score > 9000 /* || total_score < -100*/)
 	{
 		board->move_peg(back, front);
 		return total_score * _current_depth;
@@ -280,7 +284,7 @@ long BotLookAhead::paranoid_move_value(GameBoard *board, unsigned int player,
 
 	// A move that finishes the player ends the branch (own finishes are
 	// scaled by the self-penalty, matching score_move_recurse).
-	if (total_score > 9000)
+	if (board->player_finished(player) || total_score > 9000)
 	{
 		board->move_peg(back, front);
 		return total_score * _depth;
@@ -466,7 +470,8 @@ long BotLookAhead::score_this_move(GameBoard *board,
 	if (player == _root_player)
 		progress *= _self_bonus;
 
-	return progress + goal_block_penalty(board, player, move);
+	return progress + goal_block_penalty(board, player, move)
+				  + goal_exit_penalty(board, player, move);
 }
 
 

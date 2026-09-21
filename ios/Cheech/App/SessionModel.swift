@@ -58,6 +58,9 @@ struct SeatConfig: Identifiable, Equatable, Codable {
 	// The last name used while this seat was Human, so switching a seat back to
 	// Human restores the player's own name instead of the computer default.
 	var humanName: String?
+	// Computer-seat skill (50...100).  nil means full smarts (100).  Optional so
+	// previously saved seat setups still decode.
+	var smarts: Int?
 }
 
 // A destructive action that should be confirmed once a game is underway.
@@ -177,7 +180,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		stopOthers = defaults.object(forKey: PrefKey.stopOthers) as? Bool ?? true
 		joinHost = defaults.string(forKey: PrefKey.joinHost) ?? "127.0.0.1"
 		joinPort = defaults.object(forKey: PrefKey.joinPort) as? Int ?? 3838
-		lastBotType = defaults.string(forKey: PrefKey.lastBotType) ?? "LookAhead(4)"
+		lastBotType = defaults.string(forKey: PrefKey.lastBotType) ?? "LookAhead(3)"
 		opponentStepMs = min(max(defaults.object(forKey: PrefKey.opponentStepMs) as? Int ?? 250, 0), 500)
 		computerSmarts = min(max(defaults.object(forKey: PrefKey.computerSmarts) as? Int ?? 100, 50), 100)
 		if let data = defaults.data(forKey: PrefKey.seats),
@@ -214,7 +217,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 					botType: lastBotType,
 					name: defaultName,
 					color: i % 8 + 1,
-					humanName: defaultName
+					humanName: defaultName,
+					smarts: nil
 				))
 			}
 		} else if seats.count > count {
@@ -324,7 +328,9 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			case .human:
 				return CheechSeat.human(withName: seat.name, color: seat.color)
 			case .computer:
-				return CheechSeat.computer(withType: seat.botType, name: seat.name, color: seat.color)
+				let spec = CheechSeat.computer(withType: seat.botType, name: seat.name, color: seat.color)
+				spec.smarts = seat.smarts ?? 100
+				return spec
 			case .remote:
 				return CheechSeat.remote()
 			}

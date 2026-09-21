@@ -44,10 +44,11 @@ class BotLookAhead : public BotBase
 		virtual bool supports_parallel_search() const;
 		virtual void prepare_search(GameBoard *board);
 
-		// Weight applied to the root player's own progress relative to the
-		// progress it denies opponents through the paranoid search.  A value
-		// of 3 makes the bot value its own advancement three times as much as
-		// slowing the others down (the inverse of Mean's self-penalty).
+		// Weight applied to the root player's own progress.  Only meaningful
+		// in the paranoid (Mean) search, where a value of 3 makes the bot
+		// value its own advancement three times as much as slowing the
+		// others down (the inverse of Mean's self-penalty).  The solo
+		// LookAhead search has no opponent term, so it uses 1.
 		void set_self_bonus(int self_bonus);
 		int get_self_bonus() const;
 
@@ -88,6 +89,12 @@ class BotLookAhead : public BotBase
 		unsigned int	_depth;
 		unsigned int	_current_depth;
 
+		// When true the paranoid alpha-beta search is used (Mean's
+		// adversarial model: every other player minimises the root player's
+		// score).  When false the cooperative max-max recursion
+		// (score_move_recurse) is used; for plain LookAhead, which does not
+		// advance the player between plies, that means planning a run of its
+		// own moves with the opponents frozen.
 		bool	_paranoid;
 
 		// Root player for the current search (set when a root move is scored)

@@ -30,10 +30,10 @@ setup_bot_win::setup_bot_win()
 	type_box->signal_changed().connect(sigc::mem_fun(*this,
 		&setup_bot_win::on_bot_type_changed));
 
-	type_box->append_text("Random");
-	type_box->append_text("Simple(1)");
+	type_box->append_text("LookAhead(3)");
 	type_box->append_text("LookAhead(4)");
 	type_box->append_text("LookAhead(5)");
+	type_box->append_text("Mean(3)");
 	type_box->append_text("Mean(4)");
 	type_box->append_text("Mean(5)");
 	type_box->append_text("Friendly(3)");

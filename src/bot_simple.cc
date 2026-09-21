@@ -42,6 +42,7 @@ long BotSimple::score_move(GameBoard *board, unsigned int player,
 		score -= 100;
 
 	score += goal_block_penalty(board, player, move);
+	score += goal_exit_penalty(board, player, move);
 
 	return score;
 }

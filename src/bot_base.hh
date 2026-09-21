@@ -108,6 +108,13 @@ class BotBase : public sigc::trackable
 		long goal_block_penalty(GameBoard *board, unsigned int player,
 								MoveList *move) const;
 
+		// Strong, unscaled penalty for pulling a peg back out of the player's
+		// own goal.  A peg that has reached the goal should never leave it, so
+		// detuned bots must not throw away goal progress.  Returns 0 unless the
+		// move starts inside the player's own goal and ends outside it.
+		long goal_exit_penalty(GameBoard *board, unsigned int player,
+							   MoveList *move) const;
+
 		void make_best_move();
 		void make_move(MoveList *list);
 #ifdef CHEECH_IOS
@@ -143,9 +150,12 @@ class BotBase : public sigc::trackable
 			bool allow_parallel);
 
 		// Fills *best_moves with every move whose score falls in the top
-		// `tiers` distinct score values (tiers >= 1).  *best_score is set to
-		// the best score.  Moves that were never scored (LONG_MIN) are
-		// skipped.
+		// `tiers` distinct score values (tiers >= 1), excluding any move that
+		// is far enough below the best one that it is clearly dominant (see
+		// kDetuneGapPerTier).  When at least one move scores above zero,
+		// negative-scoring moves are excluded too; if every move is negative
+		// they are still considered.  *best_score is set to the best score.
+		// Moves that were never scored (LONG_MIN) are skipped.
 		void select_top_moves(const std::vector<MoveList> &root_moves,
 			const std::vector<long> &scores, int tiers,
 			std::vector<MoveList> *best_moves, long *best_score);

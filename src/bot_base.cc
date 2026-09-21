@@ -39,6 +39,16 @@
 #include "bot_mean.hh"
 
 
+namespace {
+	// Detuned bots normally choose among the top score tiers.  This rail stops
+	// them from ever considering a move that is far worse than the best one, so
+	// a clearly dominant line (e.g. one that finishes the player, worth tens of
+	// thousands) is always played alone instead of being diluted by the tier
+	// selection.  It scales with detune: 0 at 100% smarts, 5000 at 50%.
+	const long kDetuneGapPerTier = 1000;
+}
+
+
 BotBase::BotBase()
 {
 	_think_delay = 0;
@@ -736,12 +746,32 @@ void BotBase::select_top_moves(const std::vector<MoveList> &root_moves,
 			return scores[a] > scores[b];
 		});
 
+	if (order.empty())
+		return;
+
+	long best = scores[order[0]];
+
+	// Dominance safety rail: never consider a move that is this far below the
+	// best one, however many tiers are in play.
+	long max_gap = kDetuneGapPerTier * (tiers - 1);
+	long limit = best - max_gap;
+
+	// If any move actually improves the position, never pick one that scores
+	// below zero (shuffling a peg backwards, leaving a goal, etc.) just
+	// because detuning widened the tier selection.  When every move is
+	// negative the player is stuck, so keep the usual tier choice among them.
+	if (best >= 0 && limit < 0)
+		limit = 0;
+
 	int tier = -1;
 	long current = LONG_MIN;
 
 	for (unsigned int k = 0; k < order.size(); k++)
 	{
 		unsigned int i = order[k];
+
+		if (scores[i] < limit)
+			break;
 
 		if (tier < 0 || scores[i] != current)
 		{
@@ -912,4 +942,27 @@ long BotBase::goal_block_penalty(GameBoard *board, unsigned int player,
 		penalty += 10000;
 
 	return -penalty;
+}
+
+
+long BotBase::goal_exit_penalty(GameBoard *board, unsigned int player,
+								MoveList *move) const
+{
+	if (!move || move->empty())
+		return 0;
+
+	GameHole *from = (*board)[move->front()];
+	GameHole *to = (*board)[move->back()];
+	if (!from || !to)
+		return 0;
+
+	// Only a peg that is giving up its slot in the player's own goal matters.
+	if (from->get_end_player() != player)
+		return 0;
+	if (to->get_end_player() == player)
+		return 0;
+
+	// Never worth walking a peg back out of the goal; keep the penalty well
+	// above anything detuning can overlook.
+	return -20000;
 }

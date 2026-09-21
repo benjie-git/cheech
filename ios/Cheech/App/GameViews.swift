@@ -33,10 +33,9 @@ struct ColorPickerRow: View {
 struct GameSetupView: View {
 	@EnvironmentObject var model: SessionModel
 
-	private var smartsLabel: String {
-		if model.computerSmarts >= 100 { return "100% · best move" }
-		let tiers = 1 + (100 - model.computerSmarts) / 10
-		return "\(model.computerSmarts)% · top \(tiers) moves"
+	private var speedLabel: String {
+		let ms = model.opponentStepMs
+		return ms == 0 ? "Instant" : "\(ms) ms"
 	}
 
 	var body: some View {
@@ -94,38 +93,23 @@ struct GameSetupView: View {
 						if model.hopOthers {
 							Toggle("Can Stop in Opponents' Goal", isOn: $model.stopOthers)
 						}
-					}
-					Section("Players") {
-						ForEach($model.seats) { $seat in
-							SeatEditorView(seat: $seat)
-						}
-					}
-					if model.seats.contains(where: { $0.kind == .computer }) {
-						Section("Computer Smarts") {
+						VStack(alignment: .leading, spacing: 6) {
 							HStack {
-								Text("Skill")
+								Text("Animation Speed")
 								Spacer()
-								Text(smartsLabel)
-									.foregroundStyle(.secondary)
-							}
-							Slider(value: Binding(
-								get: { Double(model.computerSmarts) },
-								set: { model.computerSmarts = Int($0.rounded()) }
-							), in: 50...100, step: 10)
-						}
-					}
-					if model.seats.contains(where: { $0.kind == .computer || $0.kind == .remote }) {
-						Section("Move Animations") {
-							HStack {
-								Text("Speed")
-								Spacer()
-								Text(model.opponentStepMs == 0 ? "Instant" : "\(model.opponentStepMs) ms")
+								Text(speedLabel)
 									.foregroundStyle(.secondary)
 							}
 							Slider(value: Binding(
 								get: { Double(model.opponentStepMs) },
 								set: { model.opponentStepMs = Int($0.rounded()) }
 							), in: 0...500, step: 10)
+						}
+						.padding(.vertical, 2)
+					}
+					Section("Players") {
+						ForEach($model.seats) { $seat in
+							SeatEditorView(seat: $seat)
 						}
 					}
 					if model.seats.contains(where: { $0.kind == .remote }) {
@@ -324,7 +308,7 @@ struct BotTypeDropdown: View {
 					if type != types.last { Divider() }
 				}
 			}
-			.frame(width: 260)
+			.fixedSize(horizontal: true, vertical: false)
 			.presentationCompactAdaptation(.popover)
 		}
 	}
@@ -334,9 +318,96 @@ final class BotDropdownState: ObservableObject {
 	@Published var isExpanded = false
 }
 
+struct SkillOption: Identifiable {
+	let label: String
+	let value: Int
+	var id: Int { value }
+}
+
+struct SkillPickerRow: View {
+	let title: String
+	@Binding var selection: Int
+
+	var body: some View {
+		HStack {
+			Text(title)
+			Spacer(minLength: 8)
+			SkillDropdown(selection: $selection)
+		}
+	}
+}
+
+struct SkillDropdown: View {
+	@Binding var selection: Int
+	@StateObject private var state = BotDropdownState()
+
+	private let options: [SkillOption] = [
+		SkillOption(label: "Nerfed", value: 50),
+		SkillOption(label: "Mid", value: 60),
+		SkillOption(label: "Good", value: 70),
+		SkillOption(label: "Better", value: 80),
+		SkillOption(label: "Great", value: 90),
+		SkillOption(label: "Best", value: 100),
+	]
+	private func label(for value: Int) -> String {
+		options.min(by: { abs($0.value - value) < abs($1.value - value) })?.label ?? "Best"
+	}
+	private func detail(for value: Int) -> String {
+		let tiers = 1 + (100 - value) / 10
+		return tiers <= 1 ? "Best Move" : "Top \(tiers) Moves"
+	}
+
+	var body: some View {
+		Button {
+			state.isExpanded.toggle()
+		} label: {
+			HStack(spacing: 4) {
+				Text(label(for: selection))
+					.lineLimit(1)
+					.minimumScaleFactor(0.7)
+				Image(systemName: "chevron.up.chevron.down")
+					.font(.caption2.weight(.semibold))
+					.foregroundStyle(.tertiary)
+			}
+		}
+		.buttonStyle(.plain)
+		.popover(isPresented: $state.isExpanded) {
+			VStack(spacing: 0) {
+				ForEach(options) { option in
+					Button {
+						selection = option.value
+						state.isExpanded = false
+					} label: {
+						HStack(spacing: 16) {
+							Text(option.label)
+								.foregroundStyle(.blue)
+								.lineLimit(1)
+							Spacer(minLength: 24)
+							Text(detail(for: option.value))
+								.foregroundStyle(Color(.darkGray))
+								.lineLimit(1)
+						}
+						.padding(.vertical, 10)
+						.padding(.horizontal, 16)
+						.contentShape(Rectangle())
+					}
+					.buttonStyle(.plain)
+					if option.id != options.last?.id { Divider() }
+				}
+			}
+			.fixedSize(horizontal: true, vertical: false)
+			.presentationCompactAdaptation(.popover)
+		}
+	}
+}
+
 struct SeatEditorView: View {
 	@EnvironmentObject var model: SessionModel
 	@Binding var seat: SeatConfig
+
+	private func nearestSmarts(_ value: Int) -> Int {
+		[50, 60, 70, 80, 90, 100].min(by: { abs($0 - value) < abs($1 - value) }) ?? 100
+	}
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 10) {
@@ -389,6 +460,10 @@ struct SeatEditorView: View {
 						seat.name = CheechSession.defaultName(forComputerType: newType)
 					}
 				))
+				SkillPickerRow(title: "Skill", selection: Binding(
+					get: { nearestSmarts(seat.smarts ?? 100) },
+					set: { seat.smarts = $0 }
+				))
 				ColorPickerRow(selection: $seat.color)
 			case .remote:
 				Text("Open seat — another device can join")
@@ -405,9 +480,8 @@ struct GameScreenView: View {
 	@Environment(\.verticalSizeClass) private var verticalSizeClass
 
 	static let botTypes = [
-		"Random", "Simple(1)",
-		"LookAhead(4)", "LookAhead(5)",
-		"Mean(4)", "Mean(5)",
+		"LookAhead(3)", "LookAhead(4)", "LookAhead(5)",
+		"Mean(3)", "Mean(4)", "Mean(5)",
 		"Friendly(3)", "Friendly(4)",
 	]
 
@@ -914,7 +988,7 @@ final class GameSetupDraft: ObservableObject {
 	@Published var longJumps = false
 	@Published var hopOthers = true
 	@Published var stopOthers = true
-	@Published var botType = "LookAhead(4)"
+	@Published var botType = "LookAhead(3)"
 	@Published var confirmApply = false
 }
 

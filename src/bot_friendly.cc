@@ -87,6 +87,7 @@ long BotFriendly::score_this_move(GameBoard *board, unsigned int player,
 		total_score = total_score / _self_penalty;
 
 	total_score += goal_block_penalty(board, player, move);
+	total_score += goal_exit_penalty(board, player, move);
 
 	return total_score;
 }

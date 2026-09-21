@@ -36,6 +36,8 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 @property (nonatomic, copy) NSString *botType;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic) NSInteger color;
+// Computer-seat skill (50...100); 100 = always play the single best move.
+@property (nonatomic) NSInteger smarts;
 + (instancetype)humanWithName:(NSString *)name color:(NSInteger)color;
 + (instancetype)computerWithType:(NSString *)type
 							name:(NSString *)name
