@@ -402,6 +402,7 @@ struct SeatEditorView: View {
 
 struct GameScreenView: View {
 	@EnvironmentObject var model: SessionModel
+	@Environment(\.verticalSizeClass) private var verticalSizeClass
 
 	static let botTypes = [
 		"Random", "Simple(1)",
@@ -452,11 +453,6 @@ struct GameScreenView: View {
 		return BoardGeometry.rotation(numPlayers: Int(session.numPlayers), player: player)
 	}
 
-	private var statusText: String {
-		if !session.connected { return session.isHost ? "Starting…" : "Connecting…" }
-		return turnLabel
-	}
-
 	var body: some View {
 		Group {
 			if model.fullScreen {
@@ -468,19 +464,23 @@ struct GameScreenView: View {
 		.background(keyboardShortcuts)
 		.confirmationDialog(
 			model.confirmAction.map(confirmTitle) ?? "Are you sure?",
-			isPresented: Binding(
-				get: { model.confirmAction != nil },
-				set: { if !$0 { model.confirmAction = nil } }
-			),
+			isPresented: $model.showConfirm,
 			presenting: model.confirmAction
 		) { action in
 			Button(confirmButtonTitle(action), role: .destructive) {
+				model.showConfirm = false
 				model.confirmAction = nil
 				execute(action)
 			}
-			Button("Cancel", role: .cancel) { model.confirmAction = nil }
+			Button("Cancel", role: .cancel) {
+				model.showConfirm = false
+				model.confirmAction = nil
+			}
 		} message: { _ in
 			Text("The current game will be lost.")
+		}
+		.onChange(of: model.showConfirm) { _, showing in
+			if !showing { model.confirmAction = nil }
 		}
 		.sheet(isPresented: $model.showProfile) {
 			ProfileEditorView()
@@ -502,6 +502,7 @@ struct GameScreenView: View {
 	private func perform(_ action: GameAction) {
 		if session.moveNumber > 0 && !allPlayersFinished {
 			model.confirmAction = action
+			model.showConfirm = true
 		} else {
 			execute(action)
 		}
@@ -534,13 +535,32 @@ struct GameScreenView: View {
 		}
 	}
 
+	// Label for how this device is taking part, shown bottom-left, with the
+	// server-log toggle beside it.
+	private var roleLabel: String {
+		if session.isHost { return "Hosting" }
+		if session.isSpectator { return "Spectator" }
+		return "Joined"
+	}
+
 	private var normalBody: some View {
 		VStack(spacing: 8) {
 			HStack {
-				Button("Menu") { perform(.leave) }
+				Button("Close") { perform(.leave) }
 				Spacer()
-				Text(statusText).font(.headline)
-				Spacer()
+				if !session.isHost && !session.isSpectator {
+					Button { model.showProfile = true } label: {
+						HStack(spacing: 4) {
+							Circle()
+								.fill(PegColor.swiftUIColor(myColor))
+								.frame(width: 12, height: 12)
+							Text(myName).font(.subheadline)
+							Image(systemName: "pencil").font(.caption2)
+						}
+					}
+					.foregroundStyle(.secondary)
+					.padding(.trailing, 8)
+				}
 				if session.connected {
 					Menu {
 						if session.isHost && session.hasLocalHumanSeat {
@@ -557,6 +577,7 @@ struct GameScreenView: View {
 					} label: {
 						Image(systemName: "ellipsis.circle")
 					}
+					.padding(.trailing, 8)
 				}
 				Button {
 					model.fullScreen = true
@@ -564,30 +585,11 @@ struct GameScreenView: View {
 					Image(systemName: "arrow.up.left.and.arrow.down.right")
 				}
 				.accessibilityLabel("Full Screen")
-				if session.isHost {
-					Text("Hosting")
-						.font(.subheadline)
-						.foregroundStyle(.secondary)
-				} else if session.isSpectator {
-					Text("Spectator")
-						.font(.subheadline)
-						.foregroundStyle(.secondary)
-				} else {
-					Button { model.showProfile = true } label: {
-						HStack(spacing: 4) {
-							Circle()
-								.fill(PegColor.swiftUIColor(myColor))
-								.frame(width: 12, height: 12)
-							Text(myName).font(.subheadline)
-							Image(systemName: "pencil").font(.caption2)
-						}
-					}
-					.foregroundStyle(.secondary)
-				}
 			}
 			.padding(.horizontal)
 
 			playerList
+				.padding(.top, verticalSizeClass == .regular ? 6 : 0)
 
 			let round = moveRound
 			let showRound = session.connected && session.status != .waiting
@@ -595,33 +597,60 @@ struct GameScreenView: View {
 				.font(.caption)
 				.foregroundStyle(.secondary)
 
-			BoardView(model: model, animator: model.animator, rotation: rotation)
-				.frame(maxWidth: .infinity, maxHeight: .infinity)
+			BoardView(
+				model: model,
+				animator: model.animator,
+				rotation: rotation,
+				leadingOverlay: AnyView(turnBadge),
+				bottomTrailingOverlay: AnyView(moveControls)
+			)
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
 
-			messageStrip
-
-			controls
+			if model.showServerLog {
+				messageStrip
+			}
 		}
 		.padding(.vertical, 8)
+		.overlay(alignment: .bottomLeading) {
+			if model.canShowServerLog {
+				HStack(spacing: 6) {
+					Text(roleLabel)
+						.font(.subheadline)
+						.foregroundStyle(.secondary)
+					Button {
+						model.showServerLog.toggle()
+					} label: {
+						Image(systemName: model.showServerLog ? "xmark.circle" : "info.circle")
+					}
+					.accessibilityLabel(model.showServerLog ? "Hide Server Log" : "Show Server Log")
+				}
+				.padding(.leading)
+			}
+		}
 	}
 
 	private var fullScreenBody: some View {
-		BoardView(
-			model: model,
-			animator: model.animator,
-			rotation: rotation,
-			leadingOverlay: AnyView(turnBadge),
-			trailingOverlay: AnyView(fullScreenExit),
-			bottomTrailingOverlay: AnyView(fullScreenControls)
-		)
-		.frame(maxWidth: .infinity, maxHeight: .infinity)
-		.background(Color.black.ignoresSafeArea())
-		.ignoresSafeArea()
+		ZStack(alignment: .topTrailing) {
+			BoardView(
+				model: model,
+				animator: model.animator,
+				rotation: rotation,
+				leadingOverlay: AnyView(turnBadge),
+				bottomTrailingOverlay: AnyView(moveControls)
+			)
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.background(Color.black.ignoresSafeArea())
+			.ignoresSafeArea()
+
+			fullScreenExit
+				.padding(.trailing)
+				.padding(.top, 4)
+		}
 	}
 
 	// Move/Cancel for the in-progress path, pinned to the bottom-right corner
 	// of the board (which has no holes).
-	@ViewBuilder private var fullScreenControls: some View {
+	@ViewBuilder private var moveControls: some View {
 		let canControl = !session.isSpectator && (!session.isHost || session.activeSeatKind == .human)
 		let selectedCount = session.selectedHoles().count
 		if selectedCount > 0 && canControl {
@@ -834,22 +863,6 @@ struct GameScreenView: View {
 		.frame(width: 0, height: 0)
 		.opacity(0)
 		.accessibilityHidden(true)
-	}
-
-	private var controls: some View {
-		HStack(spacing: 16) {
-			let canControl = !session.isSpectator && (!session.isHost || session.activeSeatKind == .human)
-			let selectedCount = session.selectedHoles().count
-			if selectedCount > 0 && canControl {
-				Button("Cancel") { session.clearSelection() }
-					.buttonStyle(.bordered)
-				Button("Move") { session.confirmMove() }
-					.buttonStyle(.borderedProminent)
-					.disabled(selectedCount < 2)
-			}
-		}
-		.frame(minHeight: 44)
-		.padding(.bottom, 4)
 	}
 }
 

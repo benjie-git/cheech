@@ -60,6 +60,7 @@ struct Snapshot
 	bool isSpectator = false;
 	int activeSeatKind = CheechSeatUnassigned;
 	bool hasLocalHumanSeat = false;
+	bool hasRemoteSeat = false;
 	int localHumanPlayerNumber = 0;
 	int status = 0;
 	int numPlayers = 0;
@@ -1065,6 +1066,9 @@ struct SessionImpl
 	snap.isSpectator = impl->isSpectator;
 	snap.activeSeatKind = CheechSeatUnassigned;
 	snap.hasLocalHumanSeat = !impl->clientByNumber.empty();
+	snap.hasRemoteSeat = false;
+	for (const Seat &seat : impl->seats)
+		if (seat.kind == CheechSeatRemote) { snap.hasRemoteSeat = true; break; }
 	// The player number of the sole local human seat, or 0 when there is not
 	// exactly one (no local humans, or a hotseat game with several).  Human
 	// players connected from other devices (remote seats) do not count, so a
@@ -1206,6 +1210,12 @@ struct SessionImpl
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
 	return _impl->snap.hasLocalHumanSeat;
+}
+
+- (BOOL)hasRemoteSeat
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return _impl->snap.hasRemoteSeat;
 }
 
 - (NSInteger)localHumanPlayerNumber

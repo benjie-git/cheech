@@ -116,11 +116,17 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	@Published var showProfile = false
 	@Published var spectator = false
 	@Published var fullScreen = false
+	// Whether the server log strip is revealed on the game screen.  Hidden for
+	// fully local games and behind an (i) button otherwise.
+	@Published var showServerLog = false
 	// In-game "Setup Game" sheet (change rules/player count, add bots).
 	@Published var showGameSetup = false
 	// A destructive action awaiting confirmation (only when a game is
 	// underway).  The game screen presents a dialog while this is non-nil.
 	@Published var confirmAction: GameAction? = nil
+	// Backs the dialog's presentation so its binding setter never mutates
+	// another @Published property during a SwiftUI view update.
+	@Published var showConfirm = false
 
 	// Preferences (persisted to UserDefaults on every change).
 	@Published var playerName: String { didSet { save(playerName, PrefKey.playerName) } }
@@ -252,6 +258,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		lastMoveSerial = session.moveSerial
 		animator.stop()
 		animatingPlayer = 0
+		showServerLog = false
 		session.setAnimationStepMs(opponentStepMs)
 		session.joinHost(
 			joinHost,
@@ -272,6 +279,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		messages.removeAll()
 		fullScreen = false
 		confirmAction = nil
+		showConfirm = false
+		showServerLog = false
 		screen = .setup
 	}
 
@@ -309,6 +318,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		lastTapHole = -1
 		lastTapWasTerminal = false
 		messages.removeAll()
+		showServerLog = false
 		let seatSpecs: [CheechSeat] = seats.map { seat in
 			switch seat.kind {
 			case .human:
@@ -370,6 +380,12 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		return !session.isSpectator
 			&& session.myPlayerNumber != 0
 			&& session.currentPlayer == session.myPlayerNumber
+	}
+
+	// Whether the server log can be shown at all.  A fully local game (hosted
+	// with no remote seats) has no server log.
+	var canShowServerLog: Bool {
+		!session.isHost || session.hasRemoteSeat
 	}
 
 	// Removes just the last hop from the in-progress move path (backspace/delete).

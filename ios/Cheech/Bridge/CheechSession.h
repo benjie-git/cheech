@@ -135,6 +135,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 @property (nonatomic, readonly) CheechSeatKind activeSeatKind;
 // Whether any seat is played locally by a human.
 @property (nonatomic, readonly) BOOL hasLocalHumanSeat;
+// Whether this hosted game has a seat left open for another device to join.
+// A "fully local" game (hosted with no remote seats) has no server log to show.
+@property (nonatomic, readonly) BOOL hasRemoteSeat;
 // The player number of the sole locally played human seat, or 0 if there is
 // not exactly one local human (e.g. no humans, or a hotseat game with several).
 @property (nonatomic, readonly) NSInteger localHumanPlayerNumber;
