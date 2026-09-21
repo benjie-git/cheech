@@ -33,6 +33,12 @@ struct ColorPickerRow: View {
 struct GameSetupView: View {
 	@EnvironmentObject var model: SessionModel
 
+	private var smartsLabel: String {
+		if model.computerSmarts >= 100 { return "100% · best move" }
+		let tiers = 1 + (100 - model.computerSmarts) / 10
+		return "\(model.computerSmarts)% · top \(tiers) moves"
+	}
+
 	var body: some View {
 		VStack(spacing: 0) {
 			VStack(spacing: 2) {
@@ -77,6 +83,20 @@ struct GameSetupView: View {
 					Section("Players") {
 						ForEach($model.seats) { $seat in
 							SeatEditorView(seat: $seat)
+						}
+					}
+					if model.seats.contains(where: { $0.kind == .computer }) {
+						Section("Computer smarts") {
+							HStack {
+								Text("Skill")
+								Spacer()
+								Text(smartsLabel)
+									.foregroundStyle(.secondary)
+							}
+							Slider(value: Binding(
+								get: { Double(model.computerSmarts) },
+								set: { model.computerSmarts = Int($0.rounded()) }
+							), in: 50...100, step: 10)
 						}
 					}
 					if model.seats.contains(where: { $0.kind == .computer || $0.kind == .remote }) {

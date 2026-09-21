@@ -57,6 +57,7 @@ class Prefs
 		unsigned int move_delay;
 		unsigned int done_delay;
 		unsigned int think_delay;
+		unsigned int smarts;
 };
 
 #endif   // #ifndef INCL_PREFS_HH

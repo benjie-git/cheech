@@ -22,6 +22,7 @@
 
 #include <thread>
 #include <atomic>
+#include <algorithm>
 
 #include "bot_base.hh"
 #ifndef CHEECH_IOS
@@ -43,6 +44,7 @@ BotBase::BotBase()
 	_think_delay = 0;
 	_move_step_delay = 400;
 	_move_done_delay = 600;
+	_smarts = 100;
 	_abort = FALSE;
 	_search_clone = false;
 	_search_abort = NULL;
@@ -114,6 +116,37 @@ void BotBase::set_move_delay(int delay, int done_delay)
 {
 	_move_step_delay = delay;
 	_move_done_delay = done_delay;
+}
+
+
+void BotBase::set_smarts(int percent)
+{
+	if (percent < 0)
+		percent = 0;
+	if (percent > 100)
+		percent = 100;
+
+	_smarts = percent;
+}
+
+
+int BotBase::get_smarts() const
+{
+	return _smarts;
+}
+
+
+int BotBase::top_move_tiers() const
+{
+	// 100% -> 1 tier (play the best move), 50% -> 6 tiers (top six scores).
+	int tiers = 1 + (100 - _smarts) / 10;
+
+	if (tiers < 1)
+		tiers = 1;
+	if (tiers > 6)
+		tiers = 6;
+
+	return tiers;
 }
 
 
@@ -301,8 +334,22 @@ void BotBase::make_best_move()
 	GameBoard board(*_client.get_board());
 	long best_score = LONG_MIN;
 
-	if (!parallel_root_search(&board, _client.get_my_player_number(),
-							  &best_moves, &best_score))
+	int tiers = top_move_tiers();
+
+	if (tiers > 1)
+	{
+		// Detuned: gather every legal root move and its score, then let the
+		// bot choose at random from its top `tiers` score tiers.
+		std::vector<MoveList> root_moves;
+		std::vector<long> scores;
+
+		collect_root_moves(&board, _client.get_my_player_number(), &root_moves);
+		score_moves(&board, _client.get_my_player_number(),
+					&root_moves, &scores, true);
+		select_top_moves(root_moves, scores, tiers, &best_moves, &best_score);
+	}
+	else if (!parallel_root_search(&board, _client.get_my_player_number(),
+								   &best_moves, &best_score))
 	{
 		find_best_move(&board, _client.get_my_player_number(),
 					   &best_moves, &best_score);
@@ -515,6 +562,109 @@ void BotBase::collect_peg_moves(GameBoard *board, unsigned int player,
 }
 
 
+bool BotBase::score_moves(GameBoard *board, unsigned int player,
+						  std::vector<MoveList> *moves,
+						  std::vector<long> *scores, bool allow_parallel)
+{
+	scores->assign(moves->size(), LONG_MIN);
+
+	if (allow_parallel && supports_parallel_search() && _think_delay <= 0
+		&& moves->size() >= 2)
+	{
+		unsigned int hw = std::thread::hardware_concurrency();
+
+		if (hw >= 2)
+		{
+			if (hw > 16)
+				hw = 16;
+
+			unsigned int num_threads = hw;
+			if (num_threads > moves->size())
+				num_threads = (unsigned int)moves->size();
+
+			// Reuse thread-private search clones (and their transposition
+			// tables) across turns.  Each clone's TT is invalidated by the
+			// generation counter, so it needs no per-turn clearing or
+			// reallocation.
+			while (_search_clones.size() < num_threads)
+			{
+				BotBase *clone = clone_for_search();
+
+				if (!clone)
+					break;
+
+				clone->set_search_clone(true);
+				_search_clones.push_back(clone);
+			}
+
+			if (_search_clones.size() >= num_threads)
+			{
+				std::atomic<unsigned int> next(0);
+				std::atomic<unsigned int> done(0);
+				std::atomic<bool> abort_flag(false);
+
+				auto worker = [&](unsigned int t)
+				{
+					BotBase *clone = _search_clones[t];
+					GameBoard local(*board);
+
+					clone->set_search_abort(&abort_flag);
+					clone->prepare_search(&local);
+
+					unsigned int i;
+					while (!abort_flag.load() &&
+						   (i = next.fetch_add(1)) < (unsigned int)moves->size())
+					{
+						MoveList move = (*moves)[i];
+						(*scores)[i] = clone->score_move(&local, player, &move);
+					}
+
+					done.fetch_add(1);
+				};
+
+				std::vector<std::thread> threads;
+				threads.reserve(num_threads);
+
+				for (unsigned int t = 0; t < num_threads; t++)
+					threads.push_back(std::thread(worker, t));
+
+				// Wait for the workers, but keep pumping the main loop so
+				// that an undo is noticed and can abort the search.
+				while (done.load() < num_threads)
+				{
+					if (_abort)
+						abort_flag.store(true);
+
+					util::delay_us(1000);
+				}
+
+				for (unsigned int t = 0; t < num_threads; t++)
+					threads[t].join();
+
+				return true;
+			}
+		}
+	}
+
+	// Serial fallback: score on this bot.  prepare_search() performs the
+	// root-level setup the look-ahead bots need (distance cache, TT
+	// generation, starting depth).
+	prepare_search(board);
+
+	for (unsigned int i = 0; i < moves->size(); i++)
+	{
+		MoveList move = (*moves)[i];
+		(*scores)[i] = score_move(board, player, &move);
+
+		// Abort if it's not my turn anymore (undo/etc)
+		if (!is_still_my_turn())
+			break;
+	}
+
+	return true;
+}
+
+
 bool BotBase::parallel_root_search(GameBoard *board, unsigned int player,
 								   std::vector<MoveList> *best_moves,
 								   long *best_score)
@@ -536,74 +686,19 @@ bool BotBase::parallel_root_search(GameBoard *board, unsigned int player,
 	if (root_moves.size() < 2)
 		return false;
 
-	unsigned int num_threads = hw;
-	if (num_threads > root_moves.size())
-		num_threads = (unsigned int)root_moves.size();
+	std::vector<long> scores;
+	score_moves(board, player, &root_moves, &scores, true);
 
-	// Reuse thread-private search clones (and their transposition tables)
-	// across turns.  Each clone's TT is invalidated by the generation
-	// counter, so it needs no per-turn clearing or reallocation.
-	while (_search_clones.size() < num_threads)
-	{
-		BotBase *clone = clone_for_search();
-
-		if (!clone)
-			return false;
-
-		clone->set_search_clone(true);
-		_search_clones.push_back(clone);
-	}
-
-	std::vector<long> scores(root_moves.size(), LONG_MIN);
-	std::atomic<unsigned int> next(0);
-	std::atomic<unsigned int> done(0);
-	std::atomic<bool> abort_flag(false);
-
-	auto worker = [&](unsigned int t)
-	{
-		BotBase *clone = _search_clones[t];
-		GameBoard local(*board);
-
-		clone->set_search_abort(&abort_flag);
-		clone->prepare_search(&local);
-
-		unsigned int i;
-		while (!abort_flag.load() &&
-			   (i = next.fetch_add(1)) < (unsigned int)root_moves.size())
-		{
-			MoveList move = root_moves[i];
-			scores[i] = clone->score_move(&local, player, &move);
-		}
-
-		done.fetch_add(1);
-	};
-
-	std::vector<std::thread> threads;
-	threads.reserve(num_threads);
-
-	for (unsigned int t = 0; t < num_threads; t++)
-		threads.push_back(std::thread(worker, t));
-
-	// Wait for the workers, but keep pumping the main loop so that an undo
-	// is noticed and can abort the search.
-	while (done.load() < num_threads)
-	{
-		if (_abort)
-			abort_flag.store(true);
-
-		util::delay_us(1000);
-	}
-
-	for (unsigned int t = 0; t < num_threads; t++)
-		threads[t].join();
-
-	if (_abort || abort_flag.load())
+	if (_abort)
 		return true;
 
 	// Merge in enumeration order so the chosen move and tie set match the
 	// single-threaded search exactly.
 	for (unsigned int i = 0; i < root_moves.size(); i++)
 	{
+		if (scores[i] == LONG_MIN)
+			continue;
+
 		if (scores[i] > *best_score)
 		{
 			*best_score = scores[i];
@@ -617,6 +712,52 @@ bool BotBase::parallel_root_search(GameBoard *board, unsigned int player,
 	}
 
 	return true;
+}
+
+
+void BotBase::select_top_moves(const std::vector<MoveList> &root_moves,
+							   const std::vector<long> &scores, int tiers,
+							   std::vector<MoveList> *best_moves,
+							   long *best_score)
+{
+	*best_score = LONG_MIN;
+	best_moves->clear();
+
+	std::vector<unsigned int> order;
+	order.reserve(root_moves.size());
+
+	for (unsigned int i = 0; i < root_moves.size(); i++)
+		if (scores[i] != LONG_MIN)
+			order.push_back(i);
+
+	std::stable_sort(order.begin(), order.end(),
+		[&scores](unsigned int a, unsigned int b)
+		{
+			return scores[a] > scores[b];
+		});
+
+	int tier = -1;
+	long current = LONG_MIN;
+
+	for (unsigned int k = 0; k < order.size(); k++)
+	{
+		unsigned int i = order[k];
+
+		if (tier < 0 || scores[i] != current)
+		{
+			tier++;
+
+			if (tier >= tiers)
+				break;
+
+			current = scores[i];
+
+			if (tier == 0)
+				*best_score = current;
+		}
+
+		best_moves->push_back(root_moves[i]);
+	}
 }
 
 

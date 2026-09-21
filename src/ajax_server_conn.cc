@@ -595,9 +595,24 @@ void AjaxServerConn::ajax_shuffle()
 
 void AjaxServerConn::ajax_addbot(Glib::ustring arguments)
 {
-	BotBase *bot = BotBase::new_bot_of_type(arguments);
+	// The command may be just a bot type ("l3") or a type followed by a
+	// smarts percentage ("l3 80").
+	Glib::ustring type = arguments;
+	int smarts = 100;
+
+	std::istringstream iss(arguments);
+	std::string token;
+
+	if (iss >> token)
+	{
+		type = token;
+		iss >> smarts;
+	}
+
+	BotBase *bot = BotBase::new_bot_of_type(type);
 	if (!bot)
 		bot = BotBase::new_bot_of_type("l3");
+	bot->set_smarts(smarts);
 	_bots.push_back(bot);
 	bot->join_game(_ajax_server->get_cheechd_hostname(),
 				   _ajax_server->get_cheechd_port());

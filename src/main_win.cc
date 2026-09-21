@@ -485,6 +485,7 @@ void main_win::on_add_computer_player_activate()
 		}
 		bot->set_move_delay(prefs.move_delay, prefs.done_delay);
 		bot->set_think_delay(prefs.think_delay);
+		bot->set_smarts(prefs.smarts);
 
 		add_bot(bot);
 	}

@@ -91,6 +91,11 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // resting time at the destination is always twice this value.
 - (void)setAnimationStepMs:(NSInteger)stepMs;
 
+// How smart locally played computer seats are, as a percentage (50...100).
+// At 100 each bot plays its single best choice; lower values make it choose
+// at random from its top-N moves (see BotBase::set_smarts).
+- (void)setComputerSmarts:(NSInteger)percent;
+
 // Host actions (ignored by the server for non-hosts)
 - (void)undoMove;
 - (void)restartGame;
@@ -150,6 +155,10 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // animationDoneMs before the animation is considered finished.
 @property (nonatomic, readonly) NSInteger animationStepMs;
 @property (nonatomic, readonly) NSInteger animationDoneMs;
+
+// The current computer-smarts percentage (50...100); see
+// -setComputerSmarts:.
+@property (nonatomic, readonly) NSInteger computerSmarts;
 
 @end
 

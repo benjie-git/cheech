@@ -47,6 +47,7 @@ protected:
         class Gtk::HScale * done_scale;
         class Gtk::HScale * move_scale;
         class Gtk::HScale * think_scale;
+        class Gtk::HScale * smarts_scale;
         class Gtk::Button * add_button;
         class Gtk::Button * remove_button;
         

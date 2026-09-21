@@ -53,6 +53,7 @@ setup_bot_win::setup_bot_win()
 	done_scale->set_value(prefs.done_delay * 0.0010001);
 	move_scale->set_value(prefs.move_delay * 0.0010001);
 	think_scale->set_value(prefs.think_delay * 0.0010001);	
+	smarts_scale->set_value(prefs.smarts * 0.01);
 }
 
 
@@ -83,10 +84,12 @@ void setup_bot_win::on_add_button_activate()
 		prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
 		prefs.done_delay = (int)(done_scale->get_value()*1000 + 0.5);
 		prefs.think_delay = (int)(think_scale->get_value()*1000 + 0.5);
+		prefs.smarts = (unsigned int)(smarts_scale->get_value()*100 + 0.5);
 
 		_bot->set_name(name_entry->get_text());
 		_bot->set_move_delay(prefs.move_delay, prefs.done_delay);
 		_bot->set_think_delay(prefs.think_delay);
+		_bot->set_smarts(prefs.smarts);
 
 		prefs.write();
 
@@ -122,6 +125,7 @@ void setup_bot_win::on_ok_button_activate()
 	prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
 	prefs.done_delay = (int)(done_scale->get_value()*1000 + 0.5);
 	prefs.think_delay = (int)(think_scale->get_value()*1000 + 0.5);
+	prefs.smarts = (unsigned int)(smarts_scale->get_value()*100 + 0.5);
 
 	prefs.write();
 
@@ -134,6 +138,7 @@ void setup_bot_win::on_defaults_activate()
 	done_scale->set_value(0.6);
 	move_scale->set_value(0.4);
 	think_scale->set_value(0.0);
+	smarts_scale->set_value(1.0);
 }
 
 

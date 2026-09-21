@@ -113,6 +113,7 @@ struct SessionImpl
 	int nameCounter = 0;
 	int animStepMs = kAnimateStepMs;
 	int animDoneMs = kAnimateStepMs * 2;
+	int computerSmarts = 100;
 };
 
 } // namespace
@@ -342,6 +343,7 @@ struct SessionImpl
 				// Let the bot apply its move immediately; the UI replays it.
 				bot->set_think_delay(0);
 				bot->set_move_delay(0, 0);
+				bot->set_smarts(impl->computerSmarts);
 				if (!seat.name.empty())
 					bot->set_name(seat.name);
 				bot->set_color(seat.color);
@@ -459,6 +461,22 @@ struct SessionImpl
 		std::lock_guard<std::mutex> lock(impl->mutex);
 		impl->animStepMs = (int)stepMs;
 		impl->animDoneMs = (int)stepMs * 2;
+	});
+}
+
+- (void)setComputerSmarts:(NSInteger)percent
+{
+	if (percent < 0) percent = 0;
+	if (percent > 100) percent = 100;
+
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf, percent]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		SessionImpl *impl = s->_impl;
+		std::lock_guard<std::mutex> lock(impl->mutex);
+		impl->computerSmarts = (int)percent;
 	});
 }
 
@@ -1184,6 +1202,12 @@ struct SessionImpl
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
 	return (NSInteger)_impl->animDoneMs;
+}
+
+- (NSInteger)computerSmarts
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return (NSInteger)_impl->computerSmarts;
 }
 
 @end

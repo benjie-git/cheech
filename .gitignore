@@ -41,3 +41,6 @@ am--include-marker
 # macOS / Xcode user state
 xcuserdata/
 .DS_Store
+
+# editor backups
+*.bak

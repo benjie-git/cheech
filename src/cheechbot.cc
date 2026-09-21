@@ -40,6 +40,7 @@ Glib::ustring bot_type;
 int thinking_delay;
 int move_step_delay;
 int move_done_delay;
+int smarts;
 
 
 void printMessage(Glib::ustring msg)
@@ -115,6 +116,15 @@ void process_options(int &argc, char **&argv)
 			"\t(or s, l[2-5], f[3-5], m[3-5])");
 		opt_group.add_entry(opt_type, bot_type);
 
+		Glib::OptionEntry opt_smarts;
+		opt_smarts.set_long_name("smarts");
+		opt_smarts.set_short_name('s');
+		opt_smarts.set_arg_description("percent");
+		opt_smarts.set_description(
+			"how smart to play, 50-100 percent: 100 plays its best move,\n"
+			"\tlower values choose from the top-N moves (100)");
+		opt_group.add_entry(opt_smarts, smarts);
+
 		Glib::OptionEntry opt_think_delay;
 		opt_think_delay.set_long_name("think-delay");
 		opt_think_delay.set_short_name('T');
@@ -157,6 +167,7 @@ void process_options(int &argc, char **&argv)
 	if (thinking_delay == 0) thinking_delay = 0;
 	if (move_step_delay == 0) move_step_delay = 300;
 	if (move_done_delay == 0) move_done_delay = 600;
+	if (smarts == 0) smarts = 100;
 
 	host_name = "";
 	if (argc == 2)
@@ -205,6 +216,7 @@ int main(int argc, char **argv)
 
 	bot->set_think_delay(thinking_delay);
 	bot->set_move_delay(move_step_delay, move_done_delay);
+	bot->set_smarts(smarts);
 	bot->set_name(name);
 	bot->set_color(color);
 	bot->join_game(host_name, port);

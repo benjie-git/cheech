@@ -54,6 +54,7 @@ void Prefs::set_defaults()
 	move_delay = 400;
 	done_delay = 600;
 	think_delay = 0;
+	smarts = 100;
 }
 
 
@@ -157,6 +158,8 @@ void Prefs::read(void)
 			done_delay = util::from_str<unsigned int>(value);
 		else if (key == "think_delay")
 			think_delay = util::from_str<unsigned int>(value);
+		else if (key == "smarts")
+			smarts = util::from_str<unsigned int>(value);
 	}
 
 	pfile->close();
@@ -212,6 +215,7 @@ void Prefs::write(void)
 	pfile->write("move_delay " + util::to_str(move_delay) + new_line);
 	pfile->write("done_delay " + util::to_str(done_delay) + new_line);
 	pfile->write("think_delay " + util::to_str(think_delay) + new_line);
+	pfile->write("smarts " + util::to_str(smarts) + new_line);
 
 	pfile->close();
 }

@@ -42,6 +42,13 @@ class BotBase : public sigc::trackable
 		void set_color(unsigned int color);
 		void set_think_delay(int delay);
 		void set_move_delay(int delay, int done_delay);
+
+		// How smart the bot plays, as a percentage (0...100).  At 100 it
+		// plays its single best choice (all moves tied for the best score);
+		// lower values widen the choice to the top-N distinct score tiers.
+		void set_smarts(int percent);
+		int get_smarts() const;
+
 		GameClient *get_game_client();
 
 		sigc::signal<void, Glib::ustring> evt_message;
@@ -127,10 +134,31 @@ class BotBase : public sigc::trackable
 			MoveList *move, std::bitset<GameBoard::SIZE> *tos,
 			std::vector<MoveList> *moves);
 
+		// Scores the given root moves, filling *scores in the same order.
+		// Uses the worker-clone pool when allow_parallel permits, otherwise
+		// scores serially on this bot.  Moves that could not be scored are
+		// left as LONG_MIN.
+		bool score_moves(GameBoard *board, unsigned int player,
+			std::vector<MoveList> *moves, std::vector<long> *scores,
+			bool allow_parallel);
+
+		// Fills *best_moves with every move whose score falls in the top
+		// `tiers` distinct score values (tiers >= 1).  *best_score is set to
+		// the best score.  Moves that were never scored (LONG_MIN) are
+		// skipped.
+		void select_top_moves(const std::vector<MoveList> &root_moves,
+			const std::vector<long> &scores, int tiers,
+			std::vector<MoveList> *best_moves, long *best_score);
+
+		// Number of distinct top score tiers to choose from for the current
+		// smarts setting: 1 at 100%, rising to 6 at 50%.
+		int top_move_tiers() const;
+
 		GameClient 		_client;
 		int				_think_delay;
 		int				_move_step_delay;
 		int				_move_done_delay;
+		int				_smarts;
 		bool			_abort;
 		bool			_search_clone;
 		std::atomic<bool>	*_search_abort;

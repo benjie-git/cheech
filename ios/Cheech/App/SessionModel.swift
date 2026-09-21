@@ -89,6 +89,7 @@ private enum PrefKey {
 	static let seats = "seats"
 	static let lastBotType = "lastBotType"
 	static let opponentStepMs = "opponentStepMs"
+	static let computerSmarts = "computerSmarts"
 }
 
 final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
@@ -149,6 +150,12 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		didSet { save(opponentStepMs, PrefKey.opponentStepMs) }
 	}
 
+	// How smart locally hosted computer seats are, as a percentage (50...100).
+	// 100 plays the best move; lower values choose among the top-N moves.
+	@Published var computerSmarts: Int {
+		didSet { save(computerSmarts, PrefKey.computerSmarts) }
+	}
+
 	override init() {
 		let defaults = UserDefaults.standard
 		playerName = defaults.string(forKey: PrefKey.playerName) ?? "Player"
@@ -162,6 +169,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		lastBotType = defaults.string(forKey: PrefKey.lastBotType)
 			?? GameScreenView.botTypes.first ?? "LookAhead(2)"
 		opponentStepMs = min(max(defaults.object(forKey: PrefKey.opponentStepMs) as? Int ?? 250, 0), 500)
+		computerSmarts = min(max(defaults.object(forKey: PrefKey.computerSmarts) as? Int ?? 100, 50), 100)
 		if let data = defaults.data(forKey: PrefKey.seats),
 		   let decoded = try? JSONDecoder().decode([SeatConfig].self, from: data),
 		   decoded.count >= 2, decoded.count <= 6 {
@@ -304,6 +312,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			}
 		}
 		session.setAnimationStepMs(opponentStepMs)
+		session.setComputerSmarts(computerSmarts)
 		session.startGame(
 			onPort: UInt16(hostPort),
 			numPlayers: numPlayers,
