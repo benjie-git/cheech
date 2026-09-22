@@ -757,10 +757,14 @@ void BotBase::select_top_moves(const std::vector<MoveList> &root_moves,
 	long limit = best - max_gap;
 
 	// If any move actually improves the position, never pick one that scores
-	// below zero (shuffling a peg backwards, leaving a goal, etc.) just
-	// because detuning widened the tier selection.  When every move is
-	// negative the player is stuck, so keep the usual tier choice among them.
-	if (best >= 0 && limit < 0)
+	// zero or below (shuffling a peg backwards, leaving a goal, etc.) just
+	// because detuning widened the tier selection.  When the best move only
+	// scores zero the player cannot improve, so keep the usual tier choice
+	// among the non-negative moves; when every move is negative the player is
+	// stuck and the negatives are all that is left.
+	if (best > 0 && limit <= 0)
+		limit = 1;
+	else if (best == 0 && limit < 0)
 		limit = 0;
 
 	int tier = -1;

@@ -67,6 +67,10 @@ class BotBase : public sigc::trackable
 
 		virtual Glib::ustring get_default_name() const = 0;
 
+		// Short display name of this bot family, independent of depth or
+		// skill (e.g. "Neutral" for LookAhead, "Mean", "Friendly").
+		virtual Glib::ustring get_type_name() const = 0;
+
 		// Creates a second bot of the same concrete type/strength that can be
 		// used to search on a worker thread.  Returns NULL if this bot does not
 		// support parallel search.
@@ -153,8 +157,10 @@ class BotBase : public sigc::trackable
 		// `tiers` distinct score values (tiers >= 1), excluding any move that
 		// is far enough below the best one that it is clearly dominant (see
 		// kDetuneGapPerTier).  When at least one move scores above zero,
-		// negative-scoring moves are excluded too; if every move is negative
-		// they are still considered.  *best_score is set to the best score.
+		// zero- and negative-scoring moves are excluded; when the best score
+		// is zero, negatives are excluded but zeros still compete; if every
+		// move is negative they are still considered.  *best_score is set to
+		// the best score.
 		// Moves that were never scored (LONG_MIN) are skipped.
 		void select_top_moves(const std::vector<MoveList> &root_moves,
 			const std::vector<long> &scores, int tiers,

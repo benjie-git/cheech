@@ -29,6 +29,7 @@ class BotMean : public BotFriendly
 		BotMean(unsigned int depth);
 
 		virtual Glib::ustring get_default_name() const;
+		virtual Glib::ustring get_type_name() const;
 
 		virtual BotBase* clone_for_search() const;
 

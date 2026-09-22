@@ -31,6 +31,7 @@ class BotFriendly : public BotLookAhead
 		void set_self_penalty(int self_penalty);
 
 		virtual Glib::ustring get_default_name() const;
+		virtual Glib::ustring get_type_name() const;
 
 		virtual BotBase* clone_for_search() const;
 

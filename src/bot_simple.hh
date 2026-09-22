@@ -30,6 +30,8 @@ class BotSimple : public BotBase
 								MoveList *move);
 
 		virtual Glib::ustring get_default_name() const {return "Chong";}
+
+		virtual Glib::ustring get_type_name() const {return "Simple";}
 };
 
 #endif // _BOT_SIMPLE_HH

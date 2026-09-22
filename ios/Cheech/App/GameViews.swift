@@ -296,7 +296,7 @@ struct BotTypeDropdown: View {
 								.foregroundStyle(.blue)
 								.lineLimit(1)
 							Spacer(minLength: 24)
-							Text(GameScreenView.botTypeDescription(type))
+							Text(GameScreenView.botTypeName(type))
 								.foregroundStyle(Color(.darkGray))
 								.lineLimit(1)
 						}
@@ -308,6 +308,7 @@ struct BotTypeDropdown: View {
 					if type != types.last { Divider() }
 				}
 			}
+			.padding(.vertical, 5)
 			.fixedSize(horizontal: true, vertical: false)
 			.presentationCompactAdaptation(.popover)
 		}
@@ -395,6 +396,7 @@ struct SkillDropdown: View {
 					if option.id != options.last?.id { Divider() }
 				}
 			}
+			.padding(.vertical, 5)
 			.fixedSize(horizontal: true, vertical: false)
 			.presentationCompactAdaptation(.popover)
 		}
@@ -447,11 +449,6 @@ struct SeatEditorView: View {
 				}
 				ColorPickerRow(selection: $seat.color)
 			case .computer:
-				HStack {
-					Text("Name")
-					TextField("Name", text: $seat.name)
-						.multilineTextAlignment(.trailing)
-				}
 				BotTypePickerRow(title: "Computer", selection: Binding(
 					get: { seat.botType },
 					set: { newType in
@@ -479,28 +476,24 @@ struct GameScreenView: View {
 	@EnvironmentObject var model: SessionModel
 	@Environment(\.verticalSizeClass) private var verticalSizeClass
 
-	static let botTypes = [
-		"LookAhead(3)", "LookAhead(4)", "LookAhead(5)",
-		"Mean(3)", "Mean(4)", "Mean(5)",
-		"Friendly(3)", "Friendly(4)",
-	]
+	static let botTypes = ["Friendly(4)", "LookAhead(4)", "Mean(4)"]
 
 	// Human-friendly name for a computer-player type, e.g. "Cosmo".
 	static func botCuteName(_ type: String) -> String {
 		CheechSession.defaultName(forComputerType: type)
 	}
 
-	// The type and depth for a computer-player type, e.g. "LookAhead 4".
-	static func botTypeDescription(_ type: String) -> String {
-		type
-			.replacingOccurrences(of: "(", with: " ")
-			.replacingOccurrences(of: ")", with: "")
+	// The bot family for a computer-player type, e.g. "Neutral" or "Mean",
+	// independent of depth.
+	static func botTypeName(_ type: String) -> String {
+		let name = CheechSession.typeName(forComputerType: type)
+		return name.isEmpty ? type : name
 	}
 
-	// Combined label, e.g. "Cosmo (LookAhead 4)".
+	// Combined label, e.g. "Cosmo (Neutral)".
 	static func botLabel(_ type: String) -> String {
 		let name = botCuteName(type)
-		let description = botTypeDescription(type)
+		let description = botTypeName(type)
 		return name.isEmpty ? description : "\(name) (\(description))"
 	}
 

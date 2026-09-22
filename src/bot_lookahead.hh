@@ -39,6 +39,7 @@ class BotLookAhead : public BotBase
 								MoveList *move);
 
 		virtual Glib::ustring get_default_name() const;
+		virtual Glib::ustring get_type_name() const;
 
 		virtual BotBase* clone_for_search() const;
 		virtual bool supports_parallel_search() const;

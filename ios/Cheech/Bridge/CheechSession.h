@@ -65,6 +65,10 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // if the type is unknown.  Matches the old "Add Computer Player" flow.
 + (NSString *)defaultNameForComputerType:(NSString *)type;
 
+// The family name for a bot type, independent of depth or skill (e.g.
+// "LookAhead(4)" -> "Neutral", "Mean(3)" -> "Mean"), or "" if unknown.
++ (NSString *)typeNameForComputerType:(NSString *)type;
+
 // Connection / setup
 - (void)joinHost:(NSString *)host
 			port:(uint16_t)port

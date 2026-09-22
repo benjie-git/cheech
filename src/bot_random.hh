@@ -30,6 +30,8 @@ class BotRandom : public BotBase
 								MoveList *move);
 
 		virtual Glib::ustring get_default_name() const {return "Randy";}
+
+		virtual Glib::ustring get_type_name() const {return "Random";}
 };
 
 #endif // _BOT_RANDOM_HH

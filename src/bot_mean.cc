@@ -45,6 +45,12 @@ Glib::ustring BotMean::get_default_name() const
 }
 
 
+Glib::ustring BotMean::get_type_name() const
+{
+	return "Mean";
+}
+
+
 BotBase* BotMean::clone_for_search() const
 {
 	BotMean *clone = new BotMean(_depth);

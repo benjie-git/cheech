@@ -368,6 +368,19 @@ LocalSave parseLocalSave(const std::string &text)
 }
 
 
++ (NSString *)typeNameForComputerType:(NSString *)type
+{
+	if (!type || type.length == 0) return @"";
+
+	BotBase *bot = BotBase::new_bot_of_type([type UTF8String]);
+	if (!bot) return @"";
+
+	Glib::ustring name = bot->get_type_name();
+	delete bot;
+	return ns(name);
+}
+
+
 #pragma mark - Setup
 
 - (void)joinHost:(NSString *)host

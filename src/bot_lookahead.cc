@@ -95,16 +95,22 @@ Glib::ustring BotLookAhead::get_default_name() const
 	switch (_depth)
 	{
 		case 2:
-			return "Earl";
+			return "Rosie";
 		case 3:
-			return "Lela";
+			return "Artoo";
 		case 4:
 			return "Cosmo";
 		case 5:
-			return "Nate";
+			return "Brainiac";
 		default:
 			return "Who,Now?";
 	}
+}
+
+
+Glib::ustring BotLookAhead::get_type_name() const
+{
+	return "Neutral";
 }
 
 

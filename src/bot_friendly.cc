@@ -47,12 +47,18 @@ Glib::ustring BotFriendly::get_default_name() const
 		case 3:
 			return "Unicorn";
         case 4:
-            return "Nibbler";
+            return "Leela";
         case 5:
             return "Princess";
-        default:
-            return "Who,Now?";
+		default:
+			return "Who,Now?";
 	}
+}
+
+
+Glib::ustring BotFriendly::get_type_name() const
+{
+	return "Friendly";
 }
 
 

@@ -339,7 +339,11 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			case .human:
 				return CheechSeat.human(withName: seat.name, color: seat.color)
 			case .computer:
-				let spec = CheechSeat.computer(withType: seat.botType, name: seat.name, color: seat.color)
+				let spec = CheechSeat.computer(
+					withType: seat.botType,
+					name: CheechSession.defaultName(forComputerType: seat.botType),
+					color: seat.color
+				)
 				spec.smarts = seat.smarts ?? 100
 				return spec
 			case .remote:
