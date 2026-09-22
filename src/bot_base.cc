@@ -46,6 +46,12 @@ namespace {
 	// thousands) is always played alone instead of being diluted by the tier
 	// selection.  It scales with detune: 0 at 100% smarts, 5000 at 50%.
 	const long kDetuneGapPerTier = 1000;
+
+	// Total cap on the rail.  With tiers now doubling to 32, the per-tier
+	// scaling alone would reach 31000; the rail must stay bounded so a detuned
+	// bot never considers a move far below the best (0 at 100% smarts (1 tier), 5000 at
+	// 6 or more tiers).
+	const long kMaxDetuneGap = 5000;
 }
 
 
@@ -148,15 +154,15 @@ int BotBase::get_smarts() const
 
 int BotBase::top_move_tiers() const
 {
-	// 100% -> 1 tier (play the best move), 50% -> 6 tiers (top six scores).
-	int tiers = 1 + (100 - _smarts) / 10;
+	// 100% -> 1 tier (play the best move), 90% -> 2, 80% -> 4, ... 70% -> 8.
+	int step = (100 - _smarts) / 10;
 
-	if (tiers < 1)
-		tiers = 1;
-	if (tiers > 6)
-		tiers = 6;
+	if (step < 0)
+		step = 0;
+	if (step > 5)
+		step = 5;
 
-	return tiers;
+	return 1 << step;
 }
 
 
@@ -754,6 +760,10 @@ void BotBase::select_top_moves(const std::vector<MoveList> &root_moves,
 	// Dominance safety rail: never consider a move that is this far below the
 	// best one, however many tiers are in play.
 	long max_gap = kDetuneGapPerTier * (tiers - 1);
+
+	if (max_gap > kMaxDetuneGap)
+		max_gap = kMaxDetuneGap;
+
 	long limit = best - max_gap;
 
 	// If any move actually improves the position, never pick one that scores

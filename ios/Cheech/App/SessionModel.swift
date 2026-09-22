@@ -58,9 +58,45 @@ struct SeatConfig: Identifiable, Equatable, Codable {
 	// The last name used while this seat was Human, so switching a seat back to
 	// Human restores the player's own name instead of the computer default.
 	var humanName: String?
-	// Computer-seat skill (50...100).  nil means full smarts (100).  Optional so
+	// Computer-seat skill level (1...4, 1 = Best).  nil means Best.  Optional so
 	// previously saved seat setups still decode.
-	var smarts: Int?
+	var skill: Int?
+}
+
+// A computer seat's skill is a level 1...4 (Best/Great/Mid/Nerfed).  How a
+// level weakens a bot depends on the family: Mean and Friendly keep their
+// four-move search and widen the tier count (1,2,4,8), while LookAhead drops
+// from a four-move to a one-move search for the weaker two levels, because a
+// shallow LookAhead is the only thing that reads as plausibly weak rather than
+// random.  The core still speaks in smarts percentages, so this maps a level
+// to an effective (type, smarts) pair just before the seat is created.
+enum BotSkill {
+	static func level(_ raw: Int?) -> Int {
+		min(max(raw ?? 1, 1), 4)
+	}
+
+	static func label(for level: Int) -> String {
+		["Best", "Great", "Mid", "Nerfed"][Self.level(level) - 1]
+	}
+
+	static func isLookAhead(_ type: String) -> Bool {
+		type.hasPrefix("LookAhead")
+	}
+
+	// Number of distinct score tiers the level allows, for display.
+	static func tiers(type: String, level: Int) -> Int {
+		let l = Self.level(level)
+		return isLookAhead(type) ? [1, 2, 1, 4][l - 1] : (1 << (l - 1))
+	}
+
+	// Effective bot type and smarts percentage for a level.
+	static func resolved(type: String, level: Int) -> (type: String, smarts: Int) {
+		let l = Self.level(level)
+		if isLookAhead(type) {
+			return (l <= 2 ? "LookAhead(4)" : "LookAhead(2)", [100, 90, 100, 80][l - 1])
+		}
+		return (type, [100, 90, 80, 70][l - 1])
+	}
 }
 
 // A destructive action that should be confirmed once a game is underway.
@@ -95,7 +131,6 @@ private enum PrefKey {
 	static let seats = "seats"
 	static let lastBotType = "lastBotType"
 	static let opponentStepMs = "opponentStepMs"
-	static let computerSmarts = "computerSmarts"
 	// Opaque snapshot of an all-local game, written when the app backgrounds and
 	// resumed on the next launch (see persistLocalGame()/resumeSavedGameIfNeeded()).
 	static let savedGame = "savedGame"
@@ -167,12 +202,6 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		didSet { save(opponentStepMs, PrefKey.opponentStepMs) }
 	}
 
-	// How smart locally hosted computer seats are, as a percentage (50...100).
-	// 100 plays the best move; lower values choose among the top-N moves.
-	@Published var computerSmarts: Int {
-		didSet { save(computerSmarts, PrefKey.computerSmarts) }
-	}
-
 	override init() {
 		let defaults = UserDefaults.standard
 		playerName = defaults.string(forKey: PrefKey.playerName) ?? "Player"
@@ -185,7 +214,6 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		joinPort = defaults.object(forKey: PrefKey.joinPort) as? Int ?? 3838
 		lastBotType = defaults.string(forKey: PrefKey.lastBotType) ?? "LookAhead(3)"
 		opponentStepMs = min(max(defaults.object(forKey: PrefKey.opponentStepMs) as? Int ?? 250, 0), 500)
-		computerSmarts = min(max(defaults.object(forKey: PrefKey.computerSmarts) as? Int ?? 100, 50), 100)
 		if let data = defaults.data(forKey: PrefKey.seats),
 		   let decoded = try? JSONDecoder().decode([SeatConfig].self, from: data),
 		   decoded.count >= 2, decoded.count <= 6 {
@@ -222,7 +250,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 					name: defaultName,
 					color: i % 8 + 1,
 					humanName: defaultName,
-					smarts: nil
+					skill: nil
 				))
 			}
 		} else if seats.count > count {
@@ -339,19 +367,19 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			case .human:
 				return CheechSeat.human(withName: seat.name, color: seat.color)
 			case .computer:
+				let resolved = BotSkill.resolved(type: seat.botType, level: seat.skill ?? 1)
 				let spec = CheechSeat.computer(
-					withType: seat.botType,
-					name: CheechSession.defaultName(forComputerType: seat.botType),
+					withType: resolved.type,
+					name: CheechSession.defaultName(forComputerType: resolved.type),
 					color: seat.color
 				)
-				spec.smarts = seat.smarts ?? 100
+				spec.smarts = resolved.smarts
 				return spec
 			case .remote:
 				return CheechSeat.remote()
 			}
 		}
 		session.setAnimationStepMs(opponentStepMs)
-		session.setComputerSmarts(computerSmarts)
 		session.startGame(
 			onPort: UInt16(hostPort),
 			numPlayers: numPlayers,

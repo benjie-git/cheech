@@ -156,7 +156,8 @@ class BotBase : public sigc::trackable
 		// Fills *best_moves with every move whose score falls in the top
 		// `tiers` distinct score values (tiers >= 1), excluding any move that
 		// is far enough below the best one that it is clearly dominant (see
-		// kDetuneGapPerTier).  When at least one move scores above zero,
+		// kDetuneGapPerTier, capped by kMaxDetuneGap).  When at least one
+		// move scores above zero,
 		// zero- and negative-scoring moves are excluded; when the best score
 		// is zero, negatives are excluded but zeros still compete; if every
 		// move is negative they are still considered.  *best_score is set to
@@ -167,7 +168,7 @@ class BotBase : public sigc::trackable
 			std::vector<MoveList> *best_moves, long *best_score);
 
 		// Number of distinct top score tiers to choose from for the current
-		// smarts setting: 1 at 100%, rising to 6 at 50%.
+		// smarts setting: 1 at 100%, doubling every 10% down to 8 at 70%.
 		int top_move_tiers() const;
 
 		GameClient 		_client;

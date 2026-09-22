@@ -327,34 +327,34 @@ struct SkillOption: Identifiable {
 
 struct SkillPickerRow: View {
 	let title: String
+	let botType: String
 	@Binding var selection: Int
 
 	var body: some View {
 		HStack {
 			Text(title)
 			Spacer(minLength: 8)
-			SkillDropdown(selection: $selection)
+			SkillDropdown(botType: botType, selection: $selection)
 		}
 	}
 }
 
 struct SkillDropdown: View {
+	let botType: String
 	@Binding var selection: Int
 	@StateObject private var state = BotDropdownState()
 
 	private let options: [SkillOption] = [
-		SkillOption(label: "Nerfed", value: 50),
-		SkillOption(label: "Mid", value: 60),
-		SkillOption(label: "Good", value: 70),
-		SkillOption(label: "Better", value: 80),
-		SkillOption(label: "Great", value: 90),
-		SkillOption(label: "Best", value: 100),
+		SkillOption(label: "Best", value: 1),
+		SkillOption(label: "Great", value: 2),
+		SkillOption(label: "Mid", value: 3),
+		SkillOption(label: "Nerfed", value: 4),
 	]
-	private func label(for value: Int) -> String {
-		options.min(by: { abs($0.value - value) < abs($1.value - value) })?.label ?? "Best"
+	private func label(for level: Int) -> String {
+		BotSkill.label(for: level)
 	}
-	private func detail(for value: Int) -> String {
-		let tiers = 1 + (100 - value) / 10
+	private func detail(for level: Int) -> String {
+		let tiers = BotSkill.tiers(type: botType, level: level)
 		return tiers <= 1 ? "Best Move" : "Top \(tiers) Moves"
 	}
 
@@ -407,10 +407,6 @@ struct SeatEditorView: View {
 	@EnvironmentObject var model: SessionModel
 	@Binding var seat: SeatConfig
 
-	private func nearestSmarts(_ value: Int) -> Int {
-		[50, 60, 70, 80, 90, 100].min(by: { abs($0 - value) < abs($1 - value) }) ?? 100
-	}
-
 	var body: some View {
 		VStack(alignment: .leading, spacing: 10) {
 			Picker("Type", selection: Binding(
@@ -457,9 +453,9 @@ struct SeatEditorView: View {
 						seat.name = CheechSession.defaultName(forComputerType: newType)
 					}
 				))
-				SkillPickerRow(title: "Skill", selection: Binding(
-					get: { nearestSmarts(seat.smarts ?? 100) },
-					set: { seat.smarts = $0 }
+				SkillPickerRow(title: "Skill", botType: seat.botType, selection: Binding(
+					get: { BotSkill.level(seat.skill) },
+					set: { seat.skill = $0 }
 				))
 				ColorPickerRow(selection: $seat.color)
 			case .remote:
