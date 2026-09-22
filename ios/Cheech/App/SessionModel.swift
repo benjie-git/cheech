@@ -86,14 +86,14 @@ enum BotSkill {
 	// Number of distinct score tiers the level allows, for display.
 	static func tiers(type: String, level: Int) -> Int {
 		let l = Self.level(level)
-		return isLookAhead(type) ? [1, 2, 1, 4][l - 1] : (1 << (l - 1))
+		return isLookAhead(type) ? [1, 2, 4, 6][l - 1] : (1 << (l - 1))
 	}
 
 	// Effective bot type and smarts percentage for a level.
 	static func resolved(type: String, level: Int) -> (type: String, smarts: Int) {
 		let l = Self.level(level)
 		if isLookAhead(type) {
-			return (l <= 2 ? "LookAhead(4)" : "LookAhead(2)", [100, 90, 100, 80][l - 1])
+			return (l <= 2 ? "LookAhead(3)" : "LookAhead(2)", [100, 90, 100, 80][l - 1])
 		}
 		return (type, [100, 90, 80, 70][l - 1])
 	}
