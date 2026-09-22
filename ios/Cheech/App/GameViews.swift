@@ -250,10 +250,32 @@ struct InviteView: View {
 struct BotTypePickerRow: View {
 	let title: String
 	@Binding var selection: String
+	var showsInfo = false
+	@StateObject private var info = InfoPopoverState()
 
 	var body: some View {
 		HStack {
 			Text(title)
+			if showsInfo {
+				Button {
+					info.isShown.toggle()
+				} label: {
+					Image(systemName: "info.circle")
+						.foregroundStyle(.secondary)
+				}
+				.buttonStyle(.plain)
+				.popover(isPresented: $info.isShown) {
+					VStack(alignment: .leading, spacing: 0) {
+						Text("Friendly helps set up good moves for you, Mean actively blocks your moves, and Neutral just does its own thing.")
+							.font(.callout)
+							.multilineTextAlignment(.leading)
+							.fixedSize(horizontal: false, vertical: true)
+					}
+					.frame(width: 280, alignment: .leading)
+					.padding()
+					.presentationCompactAdaptation(.popover)
+				}
+			}
 			Spacer(minLength: 8)
 			BotTypeDropdown(selection: $selection)
 		}
@@ -317,6 +339,10 @@ struct BotTypeDropdown: View {
 
 final class BotDropdownState: ObservableObject {
 	@Published var isExpanded = false
+}
+
+final class InfoPopoverState: ObservableObject {
+	@Published var isShown = false
 }
 
 struct SkillOption: Identifiable {
@@ -445,14 +471,14 @@ struct SeatEditorView: View {
 				}
 				ColorPickerRow(selection: $seat.color)
 			case .computer:
-				BotTypePickerRow(title: "Computer", selection: Binding(
+				BotTypePickerRow(title: "Bot Type", selection: Binding(
 					get: { seat.botType },
 					set: { newType in
 						seat.botType = newType
 						model.lastBotType = newType
 						seat.name = CheechSession.defaultName(forComputerType: newType)
 					}
-				))
+				), showsInfo: true)
 				SkillPickerRow(title: "Skill", botType: seat.botType, selection: Binding(
 					get: { BotSkill.level(seat.skill) },
 					set: { seat.skill = $0 }
