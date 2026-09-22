@@ -53,6 +53,10 @@ class Gnet::Conn : public sigc::trackable
 	
 		void connect(const Glib::ustring& host, unsigned int port);
 		Status get_status() const;
+#ifdef CHEECH_IOS
+		// True for an in-process socketpair connection (no network stack).
+		bool is_local() const;
+#endif
 		Glib::ustring get_host_name() const;
 		unsigned int get_port() const;
 		virtual bool get_buffered() const;

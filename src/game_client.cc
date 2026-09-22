@@ -273,6 +273,14 @@ void GameClient::leave_game()
 
 void GameClient::heartbeat()
 {
+#ifdef CHEECH_IOS
+	// An in-process connection cannot suffer a network partition, and iOS may
+	// suspend the whole app (freezing this timer) while backgrounded, so the
+	// timeout would only ever fire spuriously.  Local games never heartbeat.
+	if (_socket.is_local())
+		return;
+#endif
+
 	_client_heartbeat = (_client_heartbeat + 1) % TIMEOUT_HEARTBEAT;
 
 	if (!ready())

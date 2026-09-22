@@ -94,7 +94,10 @@ bool Gnet::Server::listen(unsigned int port, bool buffered)
 
 	_server = new GServer();
 	_server->fd = fd;
+	_server->port = port;
 	_server->buffered = buffered;
+
+	cheech::ios_gnet::register_local_server(port, this);
 
 	_server->watch = cheech::Loop::instance().add_fd(
 		fd, true, false,
@@ -155,10 +158,34 @@ void Gnet::Server::handle_accept(GServer* server, GConn* client)
 	evt_connection_available(conn);
 }
 
+void Gnet::Server::accept_local(int fd, const Glib::ustring& hostname)
+{
+	if (_server == nullptr || fd < 0)
+	{
+		if (fd >= 0)
+			::close(fd);
+		return;
+	}
+
+	set_socket_options(fd);
+	set_nonblocking(fd);
+
+	GConn* g = new GConn();
+	g->fd = fd;
+	g->connected = true;
+	g->local = true;
+	g->port = static_cast<int>(_server->port);
+	g->hostname = hostname;
+
+	handle_accept(_server, g);
+}
+
 void Gnet::Server::close()
 {
 	if (_server == nullptr)
 		return;
+
+	cheech::ios_gnet::unregister_local_server(_server->port, this);
 
 	if (_server->watch >= 0)
 		cheech::Loop::instance().remove_fd(_server->watch);

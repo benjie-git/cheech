@@ -26,7 +26,7 @@
 #include "gnet_server.hh"
 #include "game_board.hh"
 
-#define PROTO_VERSION "9"
+#define PROTO_VERSION "10"
 
 
 class GameServer : public sigc::trackable
@@ -45,6 +45,12 @@ private:
 			Player(Gnet::Conn *socket_ = NULL, Glib::ustring name_ = "",
 				   unsigned int color_ = 0, Glib::ustring location_ = "",
 				   unsigned int heartbeat_ = 0, bool spectator = false);
+	};
+
+	struct UndoEntry
+	{
+		MoveList move;
+		unsigned int player;
 	};
 
 public:
@@ -76,8 +82,8 @@ private:
 	bool					_stop_others;
 	unsigned int			_current_player;
 	unsigned int			_move_count;
-	std::vector<MoveList>	_undo_stack;
-	std::vector<MoveList>	_redo_stack;
+	std::vector<UndoEntry>	_undo_stack;
+	std::vector<UndoEntry>	_redo_stack;
 
 public:
 	const Gnet::Server& getSocket() const;
@@ -99,6 +105,14 @@ public:
 	void shuffle_players();
 
 	void kick_player(unsigned int posn);
+
+	// Serialise/deserialise the in-progress game (board layout, turn and move
+	// count) as a compact text blob.  Used by the iOS app to restore a fully
+	// local game after the app has been killed.  load_state() must be called
+	// after new_game() has created the board and before seats connect, so each
+	// client receives the restored board via prepare_player().
+	Glib::ustring save_state() const;
+	bool load_state(const Glib::ustring& state);
 
 public:
 	sigc::signal<void, Glib::ustring> evt_message;

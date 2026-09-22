@@ -83,6 +83,17 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 			 stopOthers:(BOOL)stopOthers
 				  seats:(NSArray<CheechSeat *> *)seats;
 
+// Opaque snapshot of a fully local hosted game in progress (no remote seats),
+// suitable for persisting across launches.  Returns nil when the current game
+// cannot be restored (not hosted, has remote seats, has not started, or has
+// already ended).  Never returns a snapshot of a networked game.
+- (nullable NSString *)localGameSave;
+// Resumes a game previously captured with -localGameSave, recreating the
+// in-process server and seats and restoring the board and turn.  Only valid for
+// fully local games.  Returns NO (and does nothing) if the snapshot cannot be
+// parsed.
+- (BOOL)resumeLocalGame:(NSString *)save;
+
 - (void)leave;
 
 // Change this player's name/color while connected.

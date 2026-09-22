@@ -96,6 +96,9 @@ private enum PrefKey {
 	static let lastBotType = "lastBotType"
 	static let opponentStepMs = "opponentStepMs"
 	static let computerSmarts = "computerSmarts"
+	// Opaque snapshot of an all-local game, written when the app backgrounds and
+	// resumed on the next launch (see persistLocalGame()/resumeSavedGameIfNeeded()).
+	static let savedGame = "savedGame"
 }
 
 final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
@@ -195,6 +198,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		super.init()
 		session.delegate = self
 		syncSeatCount()
+		resumeSavedGameIfNeeded()
 	}
 
 	private func save(_ value: Any, _ key: String) {
@@ -228,6 +232,11 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 
 	func cheechSessionDidUpdate(_ session: CheechSession) {
 		updateToken += 1
+
+		// A finished all-local game should not be auto-resumed on next launch.
+		if session.status == .won {
+			clearSavedGame()
+		}
 
 		let serial = session.moveSerial
 		if serial != lastMoveSerial {
@@ -275,6 +284,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	}
 
 	func leave() {
+		clearSavedGame()
 		session.leave()
 		animator.stop()
 		animatingPlayer = 0
@@ -316,6 +326,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	}
 
 	func startGame() {
+		clearSavedGame()
 		lastMoveSerial = session.moveSerial
 		animator.stop()
 		animatingPlayer = 0
@@ -345,6 +356,43 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			stopOthers: hopOthers && stopOthers,
 			seats: seatSpecs
 		)
+		screen = .game
+	}
+
+	// MARK: - Local game persistence
+
+	// Writes (or removes) the snapshot of an in-progress all-local game.  Called
+	// when the app leaves the foreground; a networked game yields no snapshot, so
+	// any previous save is dropped.
+	func persistLocalGame() {
+		if let save = session.localGameSave() {
+			UserDefaults.standard.set(save, forKey: PrefKey.savedGame)
+		} else {
+			clearSavedGame()
+		}
+	}
+
+	private func clearSavedGame() {
+		UserDefaults.standard.removeObject(forKey: PrefKey.savedGame)
+	}
+
+	// Resumes an all-local game saved by a previous run, if any.  The snapshot
+	// carries the seats, rules, board and turn, so no setup is needed.
+	private func resumeSavedGameIfNeeded() {
+		guard let save = UserDefaults.standard.string(forKey: PrefKey.savedGame),
+		      !save.isEmpty else { return }
+		lastMoveSerial = session.moveSerial
+		animator.stop()
+		animatingPlayer = 0
+		lastTapHole = -1
+		lastTapWasTerminal = false
+		messages.removeAll()
+		showServerLog = false
+		session.setAnimationStepMs(opponentStepMs)
+		guard session.resumeLocalGame(save) else {
+			clearSavedGame()
+			return
+		}
 		screen = .game
 	}
 

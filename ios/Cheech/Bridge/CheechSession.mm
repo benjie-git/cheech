@@ -11,6 +11,7 @@
 #include <cmath>
 #include <memory>
 #include <mutex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -118,6 +119,22 @@ struct SessionImpl
 	// are kept separate from the bots that back locally hosted computer seats.
 	std::vector<BotBase *> extraBots;
 
+	// Specs for the in-game computer players above (parallel to extraBots), so
+	// a fully local game can recreate them when it is restored.
+	struct ExtraBotInfo
+	{
+		std::string type;
+		std::string name;
+		int color = 0;
+		int smarts = 100;
+	};
+	std::vector<ExtraBotInfo> extraBotInfos;
+
+	// Opaque snapshot of the current fully local game, kept up to date as the
+	// board changes so it can be persisted when the app is backgrounded.  Empty
+	// whenever the current game is not a restorable all-local game.
+	std::string savedState;
+
 	std::vector<unsigned int> selection;
 	int configuredPlayers = 0;
 	int status = 0;
@@ -139,6 +156,92 @@ struct SessionImpl
 	sigc::connection joinTimer;
 	int joinWaitTicks = 0;
 };
+
+// A fully local game is serialised as text lines.  GameServer parses the keys
+// it owns (players/rules/turn/moves/pegs); the bridge owns port/seats/seat.  It
+// is only ever produced for hosted games with no remote seats, so a networked
+// game is never persisted or restored.
+std::string buildLocalSave(SessionImpl *impl)
+{
+	std::ostringstream out;
+	out << "CHEECHSAVE 1\n";
+	out << "port " << impl->hostPort << "\n";
+	out << "seats " << (impl->seats.size() + impl->extraBotInfos.size()) << "\n";
+	for (const Seat &seat : impl->seats)
+	{
+		out << "seat " << (int)seat.kind << " " << seat.color << " "
+			<< seat.smarts << " "
+			<< (seat.botType.empty() ? std::string("-") : seat.botType) << " "
+			<< seat.name << "\n";
+	}
+	for (const SessionImpl::ExtraBotInfo &bot : impl->extraBotInfos)
+	{
+		out << "seat " << (int)CheechSeatComputer << " " << bot.color << " "
+			<< bot.smarts << " "
+			<< (bot.type.empty() ? std::string("-") : bot.type) << " "
+			<< bot.name << "\n";
+	}
+	out << std::string(impl->server->save_state().c_str());
+	return out.str();
+}
+
+struct LocalSave
+{
+	int port = 0;
+	int numPlayers = 0;
+	bool longJumps = false;
+	bool hopOthers = true;
+	bool stopOthers = true;
+	std::vector<Seat> seats;
+	std::string raw;
+	bool valid = false;
+};
+
+LocalSave parseLocalSave(const std::string &text)
+{
+	LocalSave save;
+	save.raw = text;
+	std::istringstream lines(text);
+	std::string line;
+	while (std::getline(lines, line))
+	{
+		std::istringstream in(line);
+		std::string key;
+		in >> key;
+		if (key == "port")
+			in >> save.port;
+		else if (key == "players")
+			in >> save.numPlayers;
+		else if (key == "rules")
+		{
+			int lj = 0, ho = 1, so = 1;
+			in >> lj >> ho >> so;
+			save.longJumps = lj != 0;
+			save.hopOthers = ho != 0;
+			save.stopOthers = so != 0;
+		}
+		else if (key == "seat")
+		{
+			Seat seat;
+			int kind = CheechSeatHuman, color = 0, smarts = 100;
+			std::string botType;
+			in >> kind >> color >> smarts >> botType;
+			std::string name;
+			std::getline(in, name);
+			if (!name.empty() && name[0] == ' ')
+				name.erase(0, 1);
+			seat.kind = (CheechSeatKind)kind;
+			seat.color = color;
+			seat.smarts = smarts;
+			seat.botType = (botType == "-") ? "" : botType;
+			seat.name = name;
+			save.seats.push_back(seat);
+		}
+	}
+	save.valid = save.port > 0 && save.port <= 65535
+		&& save.numPlayers >= 2 && save.numPlayers <= 6 && !save.seats.empty();
+	return save;
+}
 
 } // namespace
 
@@ -358,6 +461,51 @@ struct SessionImpl
 	});
 }
 
+// Resumes a fully local game captured earlier with -localGameSave:.  The
+// in-process server and its seats are recreated and the saved board and turn
+// are restored before the seats connect, so every client receives the restored
+// position through the normal GAME_BOARD sync.
+- (BOOL)resumeLocalGame:(NSString *)save
+{
+	if (save.length == 0) return NO;
+	LocalSave parsed = parseLocalSave(std::string([save UTF8String]));
+	if (!parsed.valid) return NO;
+
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf, parsed]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		[s stopCore];
+
+		SessionImpl *impl = s->_impl;
+		impl->isHost = true;
+		impl->isSpectator = false;
+		impl->configuredPlayers = parsed.numPlayers;
+		impl->status = 0;
+		impl->hostPort = parsed.port;
+
+		impl->server = new GameServer((unsigned int)parsed.port,
+									  (unsigned int)parsed.numPlayers,
+									  parsed.longJumps, parsed.hopOthers,
+									  parsed.stopOthers);
+		impl->server->new_game();
+		impl->server->load_state(Glib::ustring(parsed.raw));
+
+		impl->client = new GameClient();
+		[s connectDisplaySignals];
+		impl->client->change_name("Display");
+		impl->client->change_color(0);
+		impl->client->join_game("127.0.0.1", (unsigned int)parsed.port, true);
+
+		impl->seats = parsed.seats;
+		[s joinHostedSeatsFromIndex:0];
+
+		[s rebuildAndNotify];
+	});
+	return YES;
+}
+
 // Returns YES once the seat at the given index has been assigned a player
 // number by the server (remote seats are never joined and count as done).
 - (BOOL)seatIsJoinedAtIndex:(int)index
@@ -470,11 +618,11 @@ struct SessionImpl
 		SessionImpl *impl = s->_impl;
 		GameClient *target = [s activeClient];
 
-		// Host actions (undo/restart/rotate/shuffle) must come from a player,
-		// not the spectator display client, and should still work while a
-		// computer or remote seat is the active turn.  Fall back to any human
-		// seat, then to a bot's player socket (a hosted game may have no local
-		// human seat at all).
+		// Host actions (change name/color) must come from a player, not the
+		// spectator display client, and should still work while a computer or
+		// remote seat is the active turn.  Fall back to any human seat, then to
+		// a bot's player socket (a hosted game may have no local human seat at
+		// all).
 		if (!target && impl->isHost)
 			for (Seat &seat : impl->seats)
 				if (seat.client) { target = seat.client; break; }
@@ -521,7 +669,29 @@ struct SessionImpl
 	return nil;
 }
 
-- (void)undoMove { [self performAction:^(GameClient *c) { c->undo_move(); }]; }
+- (void)undoMove
+{
+	__weak CheechSession *weakSelf = self;
+	cheech::Loop::instance().post([weakSelf]()
+	{
+		CheechSession *s = weakSelf;
+		if (!s) return;
+		SessionImpl *impl = s->_impl;
+
+		// Undo is relative to the requesting player: the server rolls back to
+		// just before their last move, taking any computer/remote replies with
+		// it.  So send it from a local human seat when one exists, rather than
+		// from whichever player (possibly a computer) happens to be to move.
+		GameClient *target = nullptr;
+		if (impl->isHost)
+			for (Seat &seat : impl->seats)
+				if (seat.client && seat.client->ready()) { target = seat.client; break; }
+		if (!target) target = [s activeClient];
+		if (!target) target = impl->client;
+		if (!target) return;
+		target->undo_move();
+	});
+}
 - (void)restartGame { [self performServerAction:^(GameServer *server) { server->restart_game(); }]; }
 - (void)rotatePlayers { [self performServerAction:^(GameServer *server) { server->rotate_players(); }]; }
 - (void)shufflePlayers { [self performServerAction:^(GameServer *server) { server->shuffle_players(); }]; }
@@ -653,6 +823,8 @@ struct SessionImpl
 		if (color > 0) bot->set_color((int)color);
 		bot->join_game(host, port);
 		impl->extraBots.push_back(bot);
+		impl->extraBotInfos.push_back({typeStr, nameStr, (int)color,
+									   impl->computerSmarts});
 
 		[s rebuildAndNotify];
 	});
@@ -672,6 +844,7 @@ struct SessionImpl
 			delete bot;
 		}
 		impl->extraBots.clear();
+		impl->extraBotInfos.clear();
 		[s rebuildAndNotify];
 	});
 }
@@ -1097,6 +1270,7 @@ struct SessionImpl
 		delete bot;
 	}
 	impl->extraBots.clear();
+	impl->extraBotInfos.clear();
 
 	// leave_game() closes the socket first so ~GameClient() does not
 	// double-free the board (see GameClient::disconnected).
@@ -1130,6 +1304,7 @@ struct SessionImpl
 	impl->isHost = false;
 	impl->isSpectator = false;
 	impl->configuredPlayers = 0;
+	impl->savedState.clear();
 }
 
 - (void)rebuildSnapshot
@@ -1218,6 +1393,19 @@ struct SessionImpl
 		}
 	}
 
+	// Keep an opaque snapshot of a fully local game so the app can restore it
+	// after being killed.  Networked games (remote seats, or a joined game) are
+	// never saved, nor are games that have not started or have already ended.
+	bool fullyLocal = impl->isHost && impl->server && board
+		&& impl->configuredPlayers > 0;
+	if (fullyLocal)
+		for (const Seat &seat : impl->seats)
+			if (seat.kind == CheechSeatRemote) { fullyLocal = false; break; }
+	if (fullyLocal && (snap.playerCount < snap.numPlayers
+					   || board->game_finished()))
+		fullyLocal = false;
+	impl->savedState = fullyLocal ? buildLocalSave(impl) : std::string();
+
 	if (impl->isHost)
 	{
 		int current = (int)client->get_current_player();
@@ -1260,6 +1448,14 @@ struct SessionImpl
 
 
 #pragma mark - State accessors
+
+- (NSString *)localGameSave
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	if (_impl->savedState.empty()) return nil;
+	NSString *result = [NSString stringWithUTF8String:_impl->savedState.c_str()];
+	return result;
+}
 
 - (BOOL)connected
 {

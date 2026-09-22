@@ -28,6 +28,7 @@
 		D57CFE04C5B48007A1F7C2C9 /* cheech_loop.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */; };
 		D84DF6ADACFB57E7D54478C3 /* game_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 780ED87958C8C9D384FCF1DC /* game_server.cc */; };
 		D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */ = {isa = PBXBuildFile; fileRef = 84F81ACCF3A3D392E4E3A59D /* bot_random.cc */; };
+		D9BDA79566D00A4010A73640 /* cheech_ios_gnet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7727744C76D64EAF6818357E /* cheech_ios_gnet.cc */; };
 		F53CA6D2A2D1B2E016BAAE5F /* MoveAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAnimator.swift; sourceTree = "<group>"; };
 		68A098F4E292BDC98D1ACF56 /* bind_return.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind_return.h; sourceTree = "<group>"; };
 		6975ABB3726E4F7BD041F6BC /* glibmm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glibmm.h; sourceTree = "<group>"; };
+		7727744C76D64EAF6818357E /* cheech_ios_gnet.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cheech_ios_gnet.cc; sourceTree = "<group>"; };
 		780ED87958C8C9D384FCF1DC /* game_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = ../src/game_server.cc; sourceTree = "<group>"; };
 		84F81ACCF3A3D392E4E3A59D /* bot_random.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_random.cc; path = ../src/bot_random.cc; sourceTree = "<group>"; };
 		9682D75E5AF207419F01BD81 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				441F8B72168CE348717FEBB6 /* cheech_ios_gnet_private.hh */,
+				7727744C76D64EAF6818357E /* cheech_ios_gnet.cc */,
 				9F76DCAE23C97BE1884CF2A5 /* cheech_ios_gnet.hh */,
 				0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */,
 				9C2DBF0FF3FC95B12BAA5CEC /* cheech_loop.hh */,
@@ -282,6 +285,7 @@
 				32A9485275D562A7ABE47249 /* bot_mean.cc in Sources */,
 				D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */,
 				B831237FA49E91956CD83AA5 /* bot_simple.cc in Sources */,
+				D9BDA79566D00A4010A73640 /* cheech_ios_gnet.cc in Sources */,
 				D57CFE04C5B48007A1F7C2C9 /* cheech_loop.cc in Sources */,
 				91F1C5DB6E4E87CFFDD40E58 /* game_board.cc in Sources */,
 				7C16BE24C89133C5A6F68EBD /* game_client.cc in Sources */,

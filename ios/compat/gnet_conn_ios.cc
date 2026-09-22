@@ -21,6 +21,7 @@
 
 #include "cheech_ios_gnet_private.hh"
 #include "cheech_loop.hh"
+#include "gnet_server.hh"
 
 namespace
 {
@@ -35,6 +36,11 @@ namespace
 	{
 		int one = 1;
 		::setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
+	}
+
+	bool is_loopback_host(const Glib::ustring& host)
+	{
+		return host == "127.0.0.1" || host == "localhost" || host == "::1";
 	}
 
 	// Split complete lines out of buf. Terminators are '\n', '\r' or '\0',
@@ -88,6 +94,41 @@ Gnet::Conn::~Conn()
 void Gnet::Conn::connect(const Glib::ustring& host, unsigned int port)
 {
 	close();
+
+	// A loopback connection to a server hosted in this same process never
+	// needs the network stack.  Use an in-process socketpair so that iOS
+	// suspending the app (which can reclaim network connections) cannot tear
+	// the game apart.
+	if (is_loopback_host(host))
+	{
+		Gnet::Server* server = cheech::ios_gnet::find_local_server(port);
+		if (server != nullptr)
+		{
+			int sv[2];
+			if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sv) == 0)
+			{
+				set_socket_options(sv[0]);
+				set_nonblocking(sv[0]);
+
+				GConn* c = new GConn();
+				c->fd = sv[0];
+				c->hostname = host;
+				c->port = static_cast<int>(port);
+				c->connected = true;
+				c->local = true;
+
+				_conn = c;
+				_status = statConnected;
+
+				server->accept_local(sv[1], host);
+
+				evt_connected();
+				if (_status == statConnected)
+					do_read();
+				return;
+			}
+		}
+	}
 
 	GConn* c = new GConn();
 	c->hostname = host;
@@ -385,6 +426,11 @@ void Gnet::Conn::flush()
 Gnet::Conn::Status Gnet::Conn::get_status() const
 {
 	return _status;
+}
+
+bool Gnet::Conn::is_local() const
+{
+	return _conn != nullptr && _conn->local;
 }
 
 Glib::ustring Gnet::Conn::get_host_name() const

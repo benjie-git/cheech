@@ -5,7 +5,7 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
-      buildArchitectures = "Automatic">
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -17,6 +17,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "447C04D667C9AFABFDF3C7E2"
                BuildableName = "Cheech.app"
+               BlueprintName = "Cheech"
                ReferencedContainer = "container:Cheech.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,28 +28,41 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "447C04D667C9AFABFDF3C7E2"
+            BuildableName = "Cheech.app"
+            BlueprintName = "Cheech"
+            ReferencedContainer = "container:Cheech.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <Testables>
+      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES"
-      queueDebuggingEnabled = "No">
+      allowLocationSimulation = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "447C04D667C9AFABFDF3C7E2"
             BuildableName = "Cheech.app"
+            BlueprintName = "Cheech"
             ReferencedContainer = "container:Cheech.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -62,6 +76,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "447C04D667C9AFABFDF3C7E2"
             BuildableName = "Cheech.app"
+            BlueprintName = "Cheech"
             ReferencedContainer = "container:Cheech.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

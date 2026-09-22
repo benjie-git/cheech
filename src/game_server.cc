@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <algorithm>
 #ifdef CHEECH_IOS
@@ -292,6 +293,59 @@ void GameServer::end_game()
 }
 
 
+Glib::ustring GameServer::save_state() const
+{
+	Glib::ustring out = "players "
+		+ util::to_str(_board ? _board->get_num_players() : _num_players)
+		+ "\nrules "
+		+ util::to_str(_long_jumps ? 1 : 0) + " "
+		+ util::to_str(_hop_others ? 1 : 0) + " "
+		+ util::to_str(_stop_others ? 1 : 0)
+		+ "\nturn " + util::to_str(_current_player)
+		+ "\nmoves " + util::to_str(_move_count)
+		+ "\npegs";
+	for (unsigned int i = 0; i < GameBoard::SIZE; i++)
+		out += " " + util::to_str(_board && (*_board)[i]
+			? (*_board)[i]->get_current_player() : 0);
+	out += "\n";
+	return out;
+}
+
+
+bool GameServer::load_state(const Glib::ustring& state)
+{
+	if (!_board)
+		return false;
+
+	std::istringstream lines(std::string(state.c_str()));
+	std::string line;
+	while (std::getline(lines, line))
+	{
+		std::istringstream in(line);
+		std::string key;
+		in >> key;
+		if (key == "turn")
+			in >> _current_player;
+		else if (key == "moves")
+			in >> _move_count;
+		else if (key == "pegs")
+		{
+			for (unsigned int i = 0; i < GameBoard::SIZE; i++)
+			{
+				unsigned int player = 0;
+				in >> player;
+				if ((*_board)[i])
+					(*_board)[i]->set_current_player(player);
+			}
+		}
+	}
+
+	_board->reset_peg_lists();
+	_board->recompute_zobrist();
+	return true;
+}
+
+
 void GameServer::reconfigure_game(unsigned int num_players, bool long_jumps,
 								  bool hop_others, bool stop_others)
 {
@@ -405,6 +459,11 @@ void GameServer::heartbeat_players()
 	for (unsigned int i = 1; i <= 6; i++)
 		if (_players[i].socket != NULL && _players[i].heartbeat == _heartbeat)
 		{
+#ifdef CHEECH_IOS
+			// In-process players have no network to time out on; keep them.
+			if (_players[i].socket->is_local())
+				continue;
+#endif
 			*this << "CLIENT_MESSAGE " + _players[i].name +
 				" (#" + util::to_str(i) + ") has timed out.\n";
 			_players[i].socket->close();
@@ -911,7 +970,7 @@ void GameServer::command_GAME_MAKEMOVE(Conn *socket,
 	}
 	else
 	{
-		_undo_stack.push_back(move_list);
+		_undo_stack.push_back({move_list, _current_player});
 		_redo_stack.clear();
 
 		_board->make_move_list(move_list);
@@ -936,22 +995,35 @@ void GameServer::command_GAME_UNDOMOVE(Conn *socket,
 
 	if (_num_connected_players == _board->get_num_players())
 	{
-		MoveList move = _undo_stack.back();
-		unsigned int was_player = _current_player;
+		unsigned int requester = get_client_posn(socket);
 
-		_board->move_peg(move.back(), move.front());
-		_redo_stack.push_back(move);
-		_undo_stack.pop_back();
+		// Undo far enough back to take back the requesting player's last move,
+		// which also rolls back any computer/remote replies made since.  This
+		// means one Undo restores the position just before that player's move
+		// instead of only reversing the most recent (possibly automated) move.
+		// Spectators have no player number, so they just undo a single move.
+		while (!_undo_stack.empty())
+		{
+			UndoEntry entry = _undo_stack.back();
+			unsigned int was_player = _current_player;
 
-		_current_player = (*_board)[move.front()]->get_current_player();
+			_board->move_peg(entry.move.back(), entry.move.front());
+			_redo_stack.push_back(entry);
+			_undo_stack.pop_back();
 
-		*this << "GAME_UNDOMOVE " << util::to_str(move.back()) << " "
-			<< util::to_str(move.front()) << "\n";
+			_current_player = (*_board)[entry.move.front()]->get_current_player();
 
-		if (_current_player >= was_player)
-			_move_count--;
+			*this << "GAME_UNDOMOVE " << util::to_str(entry.move.back()) << " "
+				<< util::to_str(entry.move.front()) << "\n";
 
-		game_turn(_current_player);
+			if (_current_player >= was_player)
+				_move_count--;
+
+			game_turn(_current_player);
+
+			if (requester == 0 || entry.player == requester)
+				break;
+		}
 	}
 }
 
@@ -964,18 +1036,18 @@ void GameServer::command_GAME_REDOMOVE(Conn *socket,
 
 	if (_num_connected_players == _board->get_num_players())
 	{
-		MoveList move = _redo_stack.back();
+		UndoEntry entry = _redo_stack.back();
 		unsigned int was_player = _current_player;
 
-		_board->move_peg(move.front(), move.back());
-		_undo_stack.push_back(move);
+		_board->move_peg(entry.move.front(), entry.move.back());
+		_undo_stack.push_back(entry);
 		_redo_stack.pop_back();
 
 		_current_player = _board->get_next_player(
-			(*_board)[move.back()]->get_current_player());
+			(*_board)[entry.move.back()]->get_current_player());
 
-		*this << "GAME_UNDOMOVE " << util::to_str(move.front()) << " "
-			<< util::to_str(move.back()) << "\n";
+		*this << "GAME_UNDOMOVE " << util::to_str(entry.move.front()) << " "
+			<< util::to_str(entry.move.back()) << "\n";
 
 		if (_current_player <= was_player)
 			_move_count++;
