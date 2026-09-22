@@ -97,9 +97,9 @@ Glib::ustring BotLookAhead::get_default_name() const
 		case 2:
 			return "Rosie";
 		case 3:
-			return "Artoo";
-		case 4:
 			return "Cosmo";
+		case 4:
+			return "Artoo";
 		case 5:
 			return "Brainiac";
 		default:

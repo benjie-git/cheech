@@ -498,7 +498,7 @@ struct GameScreenView: View {
 	@EnvironmentObject var model: SessionModel
 	@Environment(\.verticalSizeClass) private var verticalSizeClass
 
-	static let botTypes = ["Friendly(4)", "LookAhead(4)", "Mean(4)"]
+	static let botTypes = ["Friendly(4)", "LookAhead(3)", "Mean(4)"]
 
 	// Human-friendly name for a computer-player type, e.g. "Cosmo".
 	static func botCuteName(_ type: String) -> String {
