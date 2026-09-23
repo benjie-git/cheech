@@ -177,7 +177,7 @@ cat > "$app/Contents/Info.plist" <<EOF
 	<key>CFBundleExecutable</key>
 	<string>cheech</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.benjie.cheech</string>
+	<string>com.octopilot.cheech</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

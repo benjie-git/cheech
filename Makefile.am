@@ -12,13 +12,13 @@ dist_doc_DATA = \
 	NEWS \
 	TODO
 
-EXTRA_DIST = m4/ChangeLog macosx/make-bundle.sh
+EXTRA_DIST = m4/ChangeLog macos/make-bundle.sh
 
 # Build a relocatable Mac OS X .app bundle containing the GUI.
 # Requires configure --enable-macos-app and dylibbundler.
 .PHONY: bundle
 bundle: all
-	$(SHELL) "$(abs_top_srcdir)/macosx/make-bundle.sh" \
+	$(SHELL) "$(abs_top_srcdir)/macos/make-bundle.sh" \
 		--srcdir "$(abs_top_srcdir)" \
 		--builddir "$(abs_top_builddir)" \
 		--name "Cheech" \
