@@ -50,14 +50,67 @@
 #include <gtkmm/image.h>
 #include <gtkmm/menubar.h>
 #include <gtkmm/separatormenuitem.h>
-#include <gtkmm/frame.h>
+#include <gtkmm/overlay.h>
 #include <gtkmm/box.h>
-#include <gtkmm/alignment.h>
 #include <gtkmm/label.h>
 #include <gtkmm/table.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/paned.h>
 #include <gtkmm/statusbar.h>
+#include <gtkmm/cssprovider.h>
+#include <gtkmm/stylecontext.h>
+#include <gdkmm/screen.h>
+#include "game_images.hh"
+
+static const double PEG_SWATCH_PI = 3.14159265358979;
+
+PegColorSwatch::PegColorSwatch() : _color(0)
+{
+   set_size_request(18, 18);
+}
+
+void PegColorSwatch::set_color(int color)
+{
+   _color = color;
+   queue_draw();
+}
+
+void PegColorSwatch::clear()
+{
+   _color = 0;
+   queue_draw();
+}
+
+bool PegColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+{
+   if (_color <= 0)
+      return true;
+
+   double w = get_width();
+   double h = get_height();
+   double r = (w < h ? w : h) / 2.0 - 1.0;
+   if (r <= 0)
+      return true;
+   double cx = w / 2.0;
+   double cy = h / 2.0;
+
+   Gdk::RGBA fill = GameImages::get_peg_fill(_color);
+   Gdk::RGBA edge = GameImages::get_peg_edge(_color);
+
+   cr->set_source_rgb(edge.get_red(), edge.get_green(), edge.get_blue());
+   cr->arc(cx, cy, r, 0, 2 * PEG_SWATCH_PI);
+   cr->fill();
+
+   cr->set_source_rgb(fill.get_red(), fill.get_green(), fill.get_blue());
+   cr->arc(cx, cy, r * 0.88, 0, 2 * PEG_SWATCH_PI);
+   cr->fill();
+
+   cr->set_source_rgba(1.0, 1.0, 1.0, 0.35);
+   cr->arc(cx - r * 0.28, cy - r * 0.34, r * 0.30, 0, 2 * PEG_SWATCH_PI);
+   cr->fill();
+
+   return true;
+}
 
 main_win_glade::main_win_glade(
 ) : Gtk::Window(Gtk::WINDOW_TOPLEVEL)
@@ -78,7 +131,7 @@ main_win_glade::main_win_glade(
    restart_game = NULL;
    Gtk::Menu *restart_submenu_menu = Gtk::manage(new class Gtk::Menu());
    restart_submenu = NULL;
-   Gtk::MenuItem *separator7 = NULL;
+   Gtk::MenuItem *   separator7 = NULL;
    Gtk::ImageMenuItem *quit = NULL;
    Gtk::Menu *menuitem1_menu = Gtk::manage(new class Gtk::Menu());
    Gtk::MenuItem *menuitem1 = NULL;
@@ -100,6 +153,7 @@ main_win_glade::main_win_glade(
    add_computer_player = NULL;
    remove_computer_players = NULL;
    setup_computer_player = NULL;
+   show_chat = NULL;
    Gtk::Menu *player_menu = Gtk::manage(new class Gtk::Menu());
    Gtk::MenuItem *player = NULL;
    Gtk::MenuItem *how_to_play = NULL;
@@ -109,44 +163,34 @@ main_win_glade::main_win_glade(
    Gtk::MenuBar *menubar1 = Gtk::manage(new class Gtk::MenuBar());
    game_view = new class game_view();
 
-   Gtk::Frame *frame4 = Gtk::manage(new class Gtk::Frame());
-   logo = new class GtkImage();
-   rule_label = Gtk::manage(new class Gtk::Label(_("")));
+   Gtk::Overlay *overlay1 = Gtk::manage(new class Gtk::Overlay());
 
-   Gtk::VBox *vbox12 = Gtk::manage(new class Gtk::VBox(false, 0));
-   Gtk::Alignment *alignment16 = Gtk::manage(new class Gtk::Alignment(0.5, 0.5, 1, 1));
-   Gtk::Label *label49 = Gtk::manage(new class Gtk::Label(_("<b>Game</b>")));
-   Gtk::Frame *frame11 = Gtk::manage(new class Gtk::Frame());
+   Gtk::VBox *vbox13 = Gtk::manage(new class Gtk::VBox(false, 6));
+   Gtk::VBox *vbox12 = Gtk::manage(new class Gtk::VBox(false, 6));
+   Gtk::Label *label49 = Gtk::manage(new class Gtk::Label(_("<b>Players</b>")));
    player_name1 = Gtk::manage(new class Gtk::Label(_("")));
    player_name2 = Gtk::manage(new class Gtk::Label(_("")));
    player_name3 = Gtk::manage(new class Gtk::Label(_("")));
    player_name4 = Gtk::manage(new class Gtk::Label(_("")));
    player_name5 = Gtk::manage(new class Gtk::Label(_("")));
    player_name6 = Gtk::manage(new class Gtk::Label(_("")));
-   player_peg1 = new class GtkImage();
-   player_peg2 = new class GtkImage();
-   player_peg3 = new class GtkImage();
-   player_peg4 = new class GtkImage();
-   player_peg5 = new class GtkImage();
-   player_peg6 = new class GtkImage();
+   player_peg1 = new class PegColorSwatch();
+   player_peg2 = new class PegColorSwatch();
+   player_peg3 = new class PegColorSwatch();
+   player_peg4 = new class PegColorSwatch();
+   player_peg5 = new class PegColorSwatch();
+   player_peg6 = new class PegColorSwatch();
 
-   Gtk::Table *table1 = Gtk::manage(new class Gtk::Table(2, 2, false));
-   Gtk::Alignment *alignment5 = Gtk::manage(new class Gtk::Alignment(0.5, 0.5, 1, 1));
-   Gtk::Label *label11 = Gtk::manage(new class Gtk::Label(_("<b>Players</b>")));
-   Gtk::Frame *frame5 = Gtk::manage(new class Gtk::Frame());
+   Gtk::Table *table1 = Gtk::manage(new class Gtk::Table(3, 4, false));
+   Gtk::Label *label47 = Gtk::manage(new class Gtk::Label(_("<b>Move</b>")));
    move_counter = Gtk::manage(new class Gtk::Label(_("")));
 
-   Gtk::Alignment *alignment15 = Gtk::manage(new class Gtk::Alignment(0.5, 0.5, 1, 1));
-   Gtk::Label *label47 = Gtk::manage(new class Gtk::Label(_("<b>Move</b>")));
-   Gtk::Frame *frame10 = Gtk::manage(new class Gtk::Frame());
-   Gtk::VBox *vbox3 = Gtk::manage(new class Gtk::VBox(false, 0));
-   Gtk::HBox *hbox1 = Gtk::manage(new class Gtk::HBox(false, 0));
    message_view = Gtk::manage(new class Gtk::TextView());
 
    Gtk::ScrolledWindow *scrolledwindow1 = Gtk::manage(new class Gtk::ScrolledWindow());
    chat_entry = Gtk::manage(new class Gtk::Entry());
 
-   Gtk::VBox *vbox2 = Gtk::manage(new class Gtk::VBox(false, 0));
+   chat_area = Gtk::manage(new class Gtk::VBox(false, 0));
    Gtk::VPaned *vpaned1 = Gtk::manage(new class Gtk::VPaned());
    Gtk::Statusbar *statusbar = Gtk::manage(new class Gtk::Statusbar());
    Gtk::VBox *vbox1 = Gtk::manage(new class Gtk::VBox(false, 0));
@@ -192,6 +236,9 @@ main_win_glade::main_win_glade(
    restart_submenu = Gtk::manage(new class Gtk::MenuItem(_("_Restart Game"), true));
    restart_submenu->set_submenu(*restart_submenu_menu);
    menuitem1_menu->append(*restart_submenu);
+
+   show_chat = Gtk::manage(new class Gtk::MenuItem(_("Show _Chat"), true));
+   menuitem1_menu->append(*show_chat);
 
    separator7 = Gtk::manage(new class Gtk::SeparatorMenuItem());
    menuitem1_menu->append(*separator7);
@@ -274,31 +321,12 @@ main_win_glade::main_win_glade(
    image47->set_padding(0,0);
    game_view->set_events(Gdk::EXPOSURE_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::KEY_PRESS_MASK);
    game_view->set_can_focus(true);
-   frame4->set_border_width(6);
-   frame4->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-   frame4->set_label_align(0,0.5);
-   frame4->add(*game_view);
-   logo->set_size_request(10,10);
-   rule_label->set_alignment(0.5,0.5);
-   rule_label->set_padding(0,0);
-   rule_label->set_justify(Gtk::JUSTIFY_CENTER);
-   rule_label->set_line_wrap(false);
-   rule_label->set_use_markup(false);
-   rule_label->set_selectable(false);
-   vbox12->pack_start(*logo);
-   vbox12->pack_start(*rule_label, Gtk::PACK_SHRINK, 0);
-   alignment16->add(*vbox12);
    label49->set_alignment(0.5,0.5);
    label49->set_padding(0,0);
    label49->set_justify(Gtk::JUSTIFY_LEFT);
    label49->set_line_wrap(false);
    label49->set_use_markup(true);
    label49->set_selectable(false);
-   frame11->set_border_width(6);
-   frame11->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-   frame11->set_label_align(0,0.5);
-   frame11->add(*alignment16);
-   frame11->set_label_widget(*label49);
    player_name1->set_alignment(0,0.5);
    player_name1->set_padding(0,0);
    player_name1->set_justify(Gtk::JUSTIFY_LEFT);
@@ -335,57 +363,78 @@ main_win_glade::main_win_glade(
    player_name6->set_line_wrap(false);
    player_name6->set_use_markup(false);
    player_name6->set_selectable(false);
-   player_peg1->set_size_request(10,10);
    table1->set_row_spacings(2);
    table1->set_col_spacings(3);
    table1->attach(*player_name1, 1, 2, 0, 1, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table1->attach(*player_name2, 1, 2, 1, 2, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table1->attach(*player_name3, 1, 2, 2, 3, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table1->attach(*player_name4, 1, 2, 3, 4, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table1->attach(*player_name5, 1, 2, 4, 5, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table1->attach(*player_name6, 1, 2, 5, 6, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+   table1->attach(*player_name4, 3, 4, 0, 1, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+   table1->attach(*player_name5, 3, 4, 1, 2, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+   table1->attach(*player_name6, 3, 4, 2, 3, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table1->attach(*player_peg1, 0, 1, 0, 1, Gtk::FILL, Gtk::FILL, 3, 3);
    table1->attach(*player_peg2, 0, 1, 1, 2, Gtk::FILL, Gtk::FILL, 3, 3);
    table1->attach(*player_peg3, 0, 1, 2, 3, Gtk::FILL, Gtk::FILL, 3, 3);
-   table1->attach(*player_peg4, 0, 1, 3, 4, Gtk::FILL, Gtk::FILL, 3, 3);
-   table1->attach(*player_peg5, 0, 1, 4, 5, Gtk::FILL, Gtk::FILL, 3, 3);
-   table1->attach(*player_peg6, 0, 1, 5, 6, Gtk::FILL, Gtk::FILL, 3, 3);
-   alignment5->add(*table1);
-   label11->set_alignment(0.5,0.5);
-   label11->set_padding(0,0);
-   label11->set_justify(Gtk::JUSTIFY_LEFT);
-   label11->set_line_wrap(false);
-   label11->set_use_markup(true);
-   label11->set_selectable(false);
-   frame5->set_border_width(6);
-   frame5->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-   frame5->set_label_align(0,0.5);
-   frame5->add(*alignment5);
-   frame5->set_label_widget(*label11);
+   table1->attach(*player_peg4, 2, 3, 0, 1, Gtk::FILL, Gtk::FILL, 15, 3);
+   table1->attach(*player_peg5, 2, 3, 1, 2, Gtk::FILL, Gtk::FILL, 15, 3);
+   table1->attach(*player_peg6, 2, 3, 2, 3, Gtk::FILL, Gtk::FILL, 15, 3);
    move_counter->set_alignment(0.5,0.5);
    move_counter->set_padding(0,0);
    move_counter->set_justify(Gtk::JUSTIFY_CENTER);
    move_counter->set_line_wrap(false);
    move_counter->set_use_markup(false);
    move_counter->set_selectable(false);
-   alignment15->add(*move_counter);
    label47->set_alignment(0.5,0.5);
    label47->set_padding(0,0);
    label47->set_justify(Gtk::JUSTIFY_LEFT);
    label47->set_line_wrap(false);
    label47->set_use_markup(true);
    label47->set_selectable(false);
-   frame10->set_border_width(6);
-   frame10->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-   frame10->set_label_align(0,0.5);
-   frame10->add(*alignment15);
-   frame10->set_label_widget(*label47);
-   vbox3->pack_start(*frame11, Gtk::PACK_SHRINK, 0);
-   vbox3->pack_start(*frame5, Gtk::PACK_SHRINK, 0);
-   vbox3->pack_start(*frame10, Gtk::PACK_SHRINK, 0);
-   hbox1->set_border_width(6);
-   hbox1->pack_start(*frame4);
-   hbox1->pack_start(*vbox3, Gtk::PACK_SHRINK, 0);
+   vbox12->pack_start(*label49, Gtk::PACK_SHRINK, 0);
+   vbox12->pack_start(*table1, Gtk::PACK_SHRINK, 0);
+   vbox12->set_halign(Gtk::ALIGN_START);
+   vbox12->set_valign(Gtk::ALIGN_START);
+   vbox12->set_margin_top(6);
+   vbox12->set_margin_start(24);
+   vbox13->pack_start(*label47, Gtk::PACK_SHRINK, 0);
+   vbox13->pack_start(*move_counter, Gtk::PACK_SHRINK, 0);
+   vbox13->set_halign(Gtk::ALIGN_END);
+   vbox13->set_valign(Gtk::ALIGN_START);
+   vbox13->set_margin_top(6);
+   vbox13->set_margin_end(24);
+
+   vbox12->get_style_context()->add_class("board-info");
+   vbox13->get_style_context()->add_class("board-info");
+   {
+      static Glib::RefPtr<Gtk::CssProvider> board_info_css;
+      if (!board_info_css)
+      {
+         board_info_css = Gtk::CssProvider::create();
+         board_info_css->load_from_data(
+            ".board-info label { font-size: 150%; color: #000000; }\n"
+            ".board-info label:backdrop { color: #000000; opacity: 1; }");
+         Gtk::StyleContext::add_provider_for_screen(
+            Gdk::Screen::get_default(), board_info_css,
+            GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+      }
+   }
+   overlay1->add(*game_view);
+   overlay1->add_overlay(*vbox12);
+   overlay1->set_overlay_pass_through(*vbox12, true);
+   overlay1->add_overlay(*vbox13);
+   overlay1->set_overlay_pass_through(*vbox13, true);
+   game_view->evt_board_resized.connect([this, vbox12, vbox13]() {
+      double s = game_view->get_scale();
+      double bw = game_view->get_base_width() * s;
+      double bh = game_view->get_base_height() * s;
+      Gdk::Point c = game_view->get_view_center();
+      double bx = c.get_x() - bw / 2.0;
+      double by = c.get_y() - bh / 2.0;
+      int inset = 12;
+      vbox12->set_margin_start((int)bx + inset);
+      vbox12->set_margin_top((int)by + inset);
+      vbox13->set_margin_end((int)(game_view->get_width() - (bx + bw)) + inset + 20);
+      vbox13->set_margin_top((int)by + inset);
+   });
    message_view->set_editable(false);
    message_view->set_cursor_visible(false);
    message_view->set_pixels_above_lines(0);
@@ -411,12 +460,12 @@ main_win_glade::main_win_glade(
    chat_entry->set_text(_(""));
    chat_entry->set_has_frame(true);
    chat_entry->set_activates_default(false);
-   vbox2->set_border_width(3);
-   vbox2->pack_start(*scrolledwindow1);
-   vbox2->pack_start(*chat_entry, Gtk::PACK_SHRINK, 0);
+   chat_area->set_border_width(3);
+   chat_area->pack_start(*scrolledwindow1);
+   chat_area->pack_start(*chat_entry, Gtk::PACK_SHRINK, 0);
    vpaned1->set_can_focus(true);
-   vpaned1->pack1(*hbox1, Gtk::EXPAND|Gtk::SHRINK);
-   vpaned1->pack2(*vbox2, Gtk::EXPAND|Gtk::SHRINK);
+   vpaned1->pack1(*overlay1, Gtk::EXPAND|Gtk::SHRINK);
+   vpaned1->pack2(*chat_area, Gtk::EXPAND|Gtk::SHRINK);
    vbox1->pack_start(*menubar1, Gtk::PACK_SHRINK, 0);
    vbox1->pack_start(*vpaned1);
    vbox1->pack_start(*statusbar, Gtk::PACK_SHRINK, 0);
@@ -424,8 +473,8 @@ main_win_glade::main_win_glade(
    int board_width = 0;
    int board_height = 0;
    game_view->get_size_request(board_width, board_height);
-   main_win->set_default_size(board_width + 260, board_height + 240);
-   main_win->set_size_request(board_width + 260, board_height + 240);
+   main_win->set_default_size(board_width + 120, board_height + 200);
+   main_win->set_size_request(board_width + 20, board_height + 120);
    main_win->set_modal(false);
    main_win->property_window_position().set_value(Gtk::WIN_POS_NONE);
    main_win->set_resizable(true);
@@ -442,6 +491,7 @@ main_win_glade::main_win_glade(
    shuffle->show();
    restart_game->show();
    restart_submenu->show();
+   show_chat->show();
    separator7->show();
    quit->show();
    menuitem1->show();
@@ -468,13 +518,10 @@ main_win_glade::main_win_glade(
    menuitem4->show();
    menubar1->show();
    game_view->show();
-   frame4->show();
-   logo->show();
-   rule_label->show();
+   overlay1->show();
    vbox12->show();
-   alignment16->show();
+   vbox13->show();
    label49->show();
-   frame11->show();
    player_name1->show();
    player_name2->show();
    player_name3->show();
@@ -488,21 +535,13 @@ main_win_glade::main_win_glade(
    player_peg5->show();
    player_peg6->show();
    table1->show();
-   alignment5->show();
-   label11->show();
-   frame5->show();
    move_counter->show();
-   alignment15->show();
    label47->show();
-   frame10->show();
-   vbox3->show();
-   hbox1->show();
    message_view->show();
    scrolledwindow1->show();
    chat_entry->show();
-   vbox2->show();
    vpaned1->show();
-   statusbar->show();
+   statusbar->hide();
    vbox1->show();
    main_win->show();
    new_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_new_game_activate), false);
@@ -513,6 +552,7 @@ main_win_glade::main_win_glade(
    rotate->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_rotate_activate), false);
    shuffle->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_shuffle_activate), false);
    restart_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_restart_game_activate), false);
+   show_chat->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_show_chat_activate), false);
    quit->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_quit_activate), false);
    undo->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_undo_activate), false);
    redo->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_redo_activate), false);
@@ -533,7 +573,6 @@ main_win_glade::main_win_glade(
 
 main_win_glade::~main_win_glade()
 {  delete game_view;
-   delete logo;
    delete player_peg1;
    delete player_peg2;
    delete player_peg3;

@@ -35,10 +35,24 @@ public:
 #include <gtkmm/menuitem.h>
 #include <gtkmm/imagemenuitem.h>
 #include "game_view.hh"
-#include "GtkImage.hh"
+#include <gtkmm/drawingarea.h>
+#include <cairomm/context.h>
 #include <gtkmm/label.h>
+#include <gtkmm/box.h>
 #include <gtkmm/textview.h>
 #include <gtkmm/entry.h>
+
+class PegColorSwatch : public Gtk::DrawingArea
+{
+	public:
+		PegColorSwatch();
+		void set_color(int color);
+		void clear();
+	protected:
+		bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
+	private:
+		int _color;
+};
 
 class main_win_glade : public Gtk::Window
 {  
@@ -62,24 +76,24 @@ protected:
         class Gtk::MenuItem * add_computer_player;
         class Gtk::MenuItem * remove_computer_players;
         class Gtk::MenuItem * setup_computer_player;
+        class Gtk::MenuItem * show_chat;
         class game_view * game_view;
-        class GtkImage * logo;
-        class Gtk::Label * rule_label;
         class Gtk::Label * player_name1;
         class Gtk::Label * player_name2;
         class Gtk::Label * player_name3;
         class Gtk::Label * player_name4;
         class Gtk::Label * player_name5;
         class Gtk::Label * player_name6;
-        class GtkImage * player_peg1;
-        class GtkImage * player_peg2;
-        class GtkImage * player_peg3;
-        class GtkImage * player_peg4;
-        class GtkImage * player_peg5;
-        class GtkImage * player_peg6;
+        class PegColorSwatch * player_peg1;
+        class PegColorSwatch * player_peg2;
+        class PegColorSwatch * player_peg3;
+        class PegColorSwatch * player_peg4;
+        class PegColorSwatch * player_peg5;
+        class PegColorSwatch * player_peg6;
         class Gtk::Label * move_counter;
         class Gtk::TextView * message_view;
         class Gtk::Entry * chat_entry;
+        class Gtk::VBox * chat_area;
         
         main_win_glade();
         
@@ -106,6 +120,7 @@ private:
         virtual void on_add_computer_player_activate() = 0;
         virtual void on_remove_computer_players_activate() = 0;
         virtual void on_setup_computer_player_activate() = 0;
+        virtual void on_show_chat_activate() = 0;
         virtual void on_how_to_play_activate() = 0;
         virtual void on_about_activate() = 0;
         virtual void on_chat_entry_activate() = 0;

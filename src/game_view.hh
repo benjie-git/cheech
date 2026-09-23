@@ -39,6 +39,7 @@ class game_view : public Gtk::DrawingArea
 
 		sigc::signal<void, unsigned int> evt_unhandled_key;
 		sigc::signal<void> evt_user_action;  // e.g. For turning off urgency
+		sigc::signal<void> evt_board_resized;
 
 		void set_client(GameClient *c);
 		void rebuild_board();
@@ -46,6 +47,11 @@ class game_view : public Gtk::DrawingArea
 		void rotate_to_local_player(unsigned int posn);
 		void show_move(MoveList *list);
 		void hide_move();
+
+		Gdk::Point get_view_center() const { return _center; }
+		double get_scale() const { return _scale; }
+		int get_base_width() const { return _base_width; }
+		int get_base_height() const { return _base_height; }
 
 	protected:
 		void create_holes();
@@ -73,6 +79,10 @@ class game_view : public Gtk::DrawingArea
 		GameBoard *_board;
 		bool _locked;
 		Gdk::Point _center;
+		Gdk::Point _board_center;
+		double _scale;
+		int _base_width;
+		int _base_height;
 };
 
 #endif // _GAME_VIEW_HH

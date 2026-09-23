@@ -69,6 +69,7 @@ class main_win : public main_win_glade
 		void on_add_computer_player_activate();
         void on_setup_computer_player_activate();
 		void on_remove_computer_players_activate();
+		void on_show_chat_activate();
 
 		void on_undo_activate();
 		void on_redo_activate();
@@ -115,7 +116,7 @@ class main_win : public main_win_glade
 		AjaxServer		*_ajax_server;
 		GameClient		*_client;
 		Gtk::Label		*_player_name[6];
-		Gtk::Image		*_player_peg[6];
+		PegColorSwatch	*_player_peg[6];
 		MoveList		_last_move;
 		unsigned int	_finished_in_moves[6];
 

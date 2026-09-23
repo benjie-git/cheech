@@ -17,123 +17,80 @@
  * 
  */
 
-#ifdef WIN32
-#include <windows.h>
-#include <shlwapi.h>
-#endif
-
-#include "config.h"
 #include "game_images.hh"
 
-#ifdef MACOS_APP
-#include <limits.h>
-#include <CoreFoundation/CoreFoundation.h>
-#endif
-
 using namespace std;
-using Gdk::Pixbuf;
 
-Glib::RefPtr<Pixbuf> GameImages::_highlight;
-Glib::RefPtr<Pixbuf> GameImages::_pegs[NUM_COLORS+1];
-Glib::RefPtr<Pixbuf> GameImages::_logos[2];
-
-Gdk::Point GameImages::_highlight_size;
 Gdk::Point GameImages::_peg_size;
+
+Gdk::RGBA GameImages::_peg_fill[GameImages::NUM_COLORS+1];
+Gdk::RGBA GameImages::_peg_edge[GameImages::NUM_COLORS+1];
+
+namespace {
+struct Rgb { double r, g, b; };
+
+const unsigned int kNumColors = 8;
+
+// Fill and rim colours for the vector pegs (id 0 is an empty hole).
+const Rgb fill_rgb[kNumColors+1] = {
+	{0.40,      0.26,      0.15},      // 0 empty hole (iOS board colour)
+	{226/255.0, 0/255.0,   0/255.0},   // 1 red
+	{252/255.0, 142/255.0, 0/255.0},   // 2 orange
+	{246/255.0, 243/255.0, 0/255.0},   // 3 yellow
+	{0/255.0,   214/255.0, 0/255.0},   // 4 green
+	{0/255.0,   149/255.0, 226/255.0}, // 5 blue
+	{181/255.0, 0/255.0,   226/255.0}, // 6 purple
+	{32/255.0,  32/255.0,  32/255.0},  // 7 black
+	{247/255.0, 247/255.0, 247/255.0}  // 8 white
+};
+
+const Rgb edge_rgb[kNumColors+1] = {
+	{0.40,      0.26,      0.15},      // 0 empty hole
+	{112/255.0, 35/255.0,  35/255.0},  // 1 red
+	{182/255.0, 103/255.0, 0/255.0},   // 2 orange
+	{135/255.0, 134/255.0, 39/255.0},  // 3 yellow
+	{0/255.0,   140/255.0, 0/255.0},   // 4 green
+	{35/255.0,  86/255.0,  113/255.0}, // 5 blue
+	{118/255.0, 0/255.0,   148/255.0}, // 6 purple
+	{26/255.0,  26/255.0,  26/255.0},  // 7 black
+	{191/255.0, 191/255.0, 191/255.0}  // 8 white
+};
+
+const int peg_size = 19;
+}
 
 const char* GameImages::color_names[GameImages::NUM_COLORS] =
 	{"red", "orange", "yellow", "green", "blue", "purple", "black", "white"};
 
 void GameImages::init()
 {
-	Glib::ustring pixmaps_dir;
-
-#ifdef WIN32
-	char module_path[PATH_MAX];
-	char *program_dir;
-
-	GetModuleFileName(NULL, module_path, PATH_MAX);
-	PathRemoveFileSpec(module_path);
-	program_dir = g_locale_to_utf8(module_path, -1, NULL, NULL, NULL);
-	pixmaps_dir = g_strdup_printf("%s\\pixmaps\\", program_dir);
-#elif MACOS_APP
-	// CFBundleCopyResourcesDirectoryURL can return a path relative to the
-	// current directory, so build an absolute path from the bundle URL.
-	CFBundleRef mainBundle = CFBundleGetMainBundle();
-	CFURLRef burl = mainBundle ? CFBundleCopyBundleURL(mainBundle) : NULL;
-	if (burl) {
-		char path[PATH_MAX];
-		CFStringRef bstr = CFURLCopyFileSystemPath(burl, kCFURLPOSIXPathStyle);
-		if (bstr) {
-			if (CFStringGetCString(bstr, path, sizeof(path),
-								   kCFStringEncodingUTF8)) {
-				pixmaps_dir = path;
-				pixmaps_dir += "/Contents/Resources/";
-			}
-			CFRelease(bstr);
-		}
-		CFRelease(burl);
+	for (unsigned int i = 0; i <= NUM_COLORS; i++)
+	{
+		_peg_fill[i].set_rgba(fill_rgb[i].r, fill_rgb[i].g, fill_rgb[i].b);
+		_peg_edge[i].set_rgba(edge_rgb[i].r, edge_rgb[i].g, edge_rgb[i].b);
 	}
-	if (pixmaps_dir.empty())
-		pixmaps_dir = PACKAGE_PIXMAPS_DIR "/" PACKAGE "/";
-#else
-	pixmaps_dir = PACKAGE_PIXMAPS_DIR "/" PACKAGE "/";
-#endif
-	
-	_highlight = Pixbuf::create_from_file(pixmaps_dir + "highlight.png");
-	
-	if (_highlight) {
-		_highlight_size = Gdk::Point(_highlight->get_width(),
-									 _highlight->get_height());
-	}
-	
-	Glib::RefPtr<Pixbuf> pixbuf = Pixbuf::create_from_file(pixmaps_dir + "pegs.png");
-	if (pixbuf) {
-		Gdk::Point size(pixbuf->get_width() / (NUM_COLORS+1),
-						pixbuf->get_height());
-		for (unsigned int i = 0; i < NUM_COLORS+1; i++)
-		{
-			_pegs[i] = Pixbuf::create_subpixbuf(pixbuf, size.get_x() * i, 0,
-												size.get_x(), size.get_y());
-			_peg_size = Gdk::Point(size.get_x(), size.get_y());
-		}
-	}
-	
-	_logos[0] = Pixbuf::create_from_file(pixmaps_dir + "cheech.png");
-	_logos[1] = Pixbuf::create_from_file(pixmaps_dir + "smiley.png");
-}
 
-Glib::RefPtr<Pixbuf> GameImages::get_highlight()
-{
-	return _highlight;
-}
-
-
-Glib::RefPtr<Pixbuf> GameImages::get_peg(unsigned int id)
-{
-	g_assert(id >= 0 && id <= NUM_COLORS);
-
-	return _pegs[id];
-}
-
-
-Glib::RefPtr<Pixbuf> GameImages::get_logo(bool win)
-{
-	if (win)
-		return _logos[1];
-	else
-		return _logos[0];
-}
-
-
-Gdk::Point GameImages::get_highlight_size()
-{
-	return _highlight_size;
+	_peg_size = Gdk::Point(peg_size, peg_size);
 }
 
 
 Gdk::Point GameImages::get_peg_size()
 {
 	return _peg_size;
+}
+
+
+Gdk::RGBA GameImages::get_peg_fill(unsigned int id)
+{
+	g_assert(id <= NUM_COLORS);
+	return _peg_fill[id];
+}
+
+
+Gdk::RGBA GameImages::get_peg_edge(unsigned int id)
+{
+	g_assert(id <= NUM_COLORS);
+	return _peg_edge[id];
 }
 
 

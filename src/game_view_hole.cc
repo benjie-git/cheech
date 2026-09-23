@@ -19,17 +19,17 @@
 
 #include <cmath>
 
-#include <gdkmm/general.h>
-
 #include "game_view_hole.hh"
 #include "game_images.hh"
 
 
 GameViewHole::GameViewHole(Gdk::Point *view_center, Gdk::Point *orig_offset)
-	:_hole(NULL),
+	:_client(NULL),
+	 _hole(NULL),
 	 _center(view_center),
 	 _orig_offset(*orig_offset),
 	 _offset(*orig_offset),
+	 _scale(1.0),
 	 _hilighted(false)
 {
 }
@@ -50,8 +50,14 @@ void GameViewHole::setup(GameClient *cl, GameHole *h)
 
 Gdk::Point GameViewHole::get_location()
 {
-	return Gdk::Point(_center->get_x() + _offset.get_x(),
-					  _center->get_y() + _offset.get_y());
+	return Gdk::Point((int)lround(_center->get_x() + _offset.get_x() * _scale),
+					  (int)lround(_center->get_y() + _offset.get_y() * _scale));
+}
+
+
+Gdk::Point GameViewHole::get_offset()
+{
+	return _offset;
 }
 
 
@@ -73,45 +79,61 @@ void GameViewHole::set_offset(Gdk::Point p)
 }
 
 
+void GameViewHole::set_scale(double s)
+{
+	_scale = s;
+}
+
+
 void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-	int off_x, off_y;
+	const double PI = 3.14159265359;
 
-	off_x = GameImages::get_peg_size().get_x()/2;
-	off_y = GameImages::get_peg_size().get_y()/2;
+	double r = GameImages::get_peg_size().get_x() / 2.0;
+	double cx = _offset.get_x();
+	double cy = _offset.get_y();
 
-	Glib::RefPtr<Gdk::Pixbuf> peg = GameImages::get_peg(!_hole ? 0 :
-		_client->get_player_color(_hole->get_current_player()));
-	
-	if (peg) {
-		Gdk::Cairo::set_source_pixbuf(cr, peg,
-									  get_location().get_x() - off_x,
-									  get_location().get_y() - off_y);
-		cr->paint();
-	}
-	
+	unsigned int id = (!_hole) ? 0 :
+		_client->get_player_color(_hole->get_current_player());
+
+	Gdk::RGBA fill = GameImages::get_peg_fill(id);
+	Gdk::RGBA edge = GameImages::get_peg_edge(id);
+
+	cr->set_source_rgba(edge.get_red(), edge.get_green(), edge.get_blue(),
+						edge.get_alpha());
+	cr->arc(cx, cy, r, 0, 2.0 * PI);
+	cr->fill();
+
+	cr->set_source_rgba(fill.get_red(), fill.get_green(), fill.get_blue(),
+						fill.get_alpha());
+	cr->arc(cx, cy, r * 0.88, 0, 2.0 * PI);
+	cr->fill();
+
+	cr->set_source_rgba(1.0, 1.0, 1.0, 0.35);
+	cr->arc(cx - r * 0.28, cy - r * 0.34, r * 0.30, 0, 2.0 * PI);
+	cr->fill();
+
 	if (_hilighted)
 	{
-		off_x = GameImages::get_highlight_size().get_x()/2;
-		off_y = GameImages::get_highlight_size().get_y()/2;
-		Glib::RefPtr<Gdk::Pixbuf> hl = GameImages::get_highlight();
-		if (hl) {
-			Gdk::Cairo::set_source_pixbuf(cr, hl,
-										  get_location().get_x() - off_x,
-										  get_location().get_y() - off_y);
-			cr->paint();
-		}
+		cr->set_source_rgba(1.0, 0.9, 0.0, 1.0);
+		cr->set_line_width(r * 0.28);
+		cr->arc(cx, cy, r * 1.25, 0, 2.0 * PI);
+		cr->stroke();
 	}
 }
 
 
 bool GameViewHole::in_bounds(int x, int y)
 {
+	double half_x = GameImages::get_peg_size().get_x() / 2.0 * _scale;
+	double half_y = GameImages::get_peg_size().get_y() / 2.0 * _scale;
+	Gdk::Point location = get_location();
+
 	return (
-		x >= get_location().get_x() - GameImages::get_peg_size().get_x()/2 &&
-		x <= get_location().get_x() + GameImages::get_peg_size().get_x()/2 &&
-		y >= get_location().get_y() - GameImages::get_peg_size().get_y()/2 &&
-		y <= get_location().get_y() + GameImages::get_peg_size().get_y()/2);
+		x >= location.get_x() - half_x &&
+		x <= location.get_x() + half_x &&
+		y >= location.get_y() - half_y &&
+		y <= location.get_y() + half_y);
 }
 
 

@@ -4,8 +4,4 @@ pixmaps1dir = $(datadir)/pixmaps
 dist_pixmaps1_DATA = cheech.png
 
 pixmaps2dir = $(datadir)/pixmaps/$(PACKAGE)
-dist_pixmaps2_DATA = \
-	cheech.png \
-	highlight.png \
-	pegs.png \
-	smiley.png
+dist_pixmaps2_DATA = cheech.png

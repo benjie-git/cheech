@@ -22,7 +22,7 @@
 #define INCL_GAME_IMAGES_HH
 
 #include <gdkmm/types.h>
-#include <gdkmm/pixbuf.h>
+#include <gdkmm/rgba.h>
 
 
 class GameImages 
@@ -30,12 +30,10 @@ class GameImages
 private:
 	static const unsigned int NUM_COLORS=8;
 
-	static Glib::RefPtr<Gdk::Pixbuf> _highlight;
-	static Glib::RefPtr<Gdk::Pixbuf> _pegs[NUM_COLORS+1];
-
-	static Glib::RefPtr<Gdk::Pixbuf> _logos[2];
-	static Gdk::Point _highlight_size;
 	static Gdk::Point _peg_size;
+
+	static Gdk::RGBA _peg_fill[NUM_COLORS+1];
+	static Gdk::RGBA _peg_edge[NUM_COLORS+1];
 
 	static const char* color_names[NUM_COLORS];
 
@@ -44,13 +42,9 @@ private:
 public:
 	static void init();
 
-	static Glib::RefPtr<Gdk::Pixbuf> get_highlight();
-	static Glib::RefPtr<Gdk::Pixbuf> get_peg(unsigned int id);
-
-	static Glib::RefPtr<Gdk::Pixbuf> get_logo(bool win);
-
-	static Gdk::Point get_highlight_size();
 	static Gdk::Point get_peg_size();
+	static Gdk::RGBA get_peg_fill(unsigned int id);
+	static Gdk::RGBA get_peg_edge(unsigned int id);
 	static unsigned int get_num_colors();
 	static const char* get_color_name(unsigned int color);
 };

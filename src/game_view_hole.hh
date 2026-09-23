@@ -36,8 +36,10 @@ class GameViewHole : public sigc::trackable
 
 		void setup(GameClient *cl, GameHole *h);
 		Gdk::Point get_location();
+		Gdk::Point get_offset();
 		bool get_hilighted();
 		void set_offset(Gdk::Point p);
+		void set_scale(double s);
 		void set_hilighted(bool h);
 		void recenter(Gdk::Point view_center);
 		void draw(const Cairo::RefPtr<Cairo::Context>& cr);
@@ -50,6 +52,7 @@ class GameViewHole : public sigc::trackable
 		Gdk::Point *_center; // Center of game_view
 		Gdk::Point _orig_offset;  // original location with middle peg as 0,0
 		Gdk::Point _offset;  // location with middle peg as 0,0
+		double _scale;  // board scale factor applied by game_view
 		bool _hilighted;
 };
 

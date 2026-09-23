@@ -17,14 +17,15 @@
  *
  */
 
+#include "config.h"
+#include <glibmm/i18n.h>
+
 #include <gtkmm/textview.h>
 #include <gtkmm/messagedialog.h> 
 
 #include "main_win.hh"
 
-#include "game_images.hh"
 #include "utility.hh"
-using Gdk::Pixbuf;
 
 
 main_win::main_win() : main_win_glade()
@@ -53,12 +54,6 @@ main_win::main_win() : main_win_glade()
 	for (int i=0; i<6; i++)
 		_finished_in_moves[i] = 0;
 
-	Glib::RefPtr<Pixbuf> logoPix = GameImages::get_logo(false);
-	if (logoPix) {
-		logo->set(logoPix);
-		logo->set_size_request(logoPix->get_width(), logoPix->get_height());
-	}
-	
 	game_view->evt_unhandled_key.connect(sigc::mem_fun(*this,
 		&main_win::append_to_chat_entry));
 	game_view->evt_user_action.connect(sigc::bind(sigc::mem_fun(*this,
@@ -351,7 +346,6 @@ void main_win::on_leave_game_activate()
 {
 	if (_client)
 	{
-		rule_label->set_label("");
 		game_view->hide_move();
 		game_view->queue_draw();
 		game_view->set_client(NULL);
@@ -510,6 +504,21 @@ void main_win::on_game_settings_activate()
 void main_win::on_setup_computer_player_activate()
 {
 	_setup_bot_win.present();
+}
+
+
+void main_win::on_show_chat_activate()
+{
+	if (chat_area->get_visible())
+	{
+		chat_area->hide();
+		show_chat->set_label(_("Show _Chat"));
+	}
+	else
+	{
+		chat_area->show_all();
+		show_chat->set_label(_("Hide _Chat"));
+	}
 }
 
 
@@ -711,11 +720,7 @@ void main_win::on_cmd_player_add(unsigned int posn,
 {
 	set_player_label(posn, _current_player == posn);
 
-	Glib::RefPtr<Pixbuf> pg = GameImages::get_peg(color);
-	if (pg) {
-		_player_peg[posn-1]->set(pg);
-		_player_peg[posn-1]->set_size_request(pg->get_width(), pg->get_height());
-	}
+	_player_peg[posn-1]->set_color(color);
 	game_view->queue_draw();
 
 	update_menus();
@@ -726,7 +731,6 @@ void main_win::on_cmd_player_remove(unsigned int posn)
 {
 	_player_name[posn-1]->set_text("");
 	_player_peg[posn-1]->clear();
-	_player_peg[posn-1]->queue_draw();
 
 	game_view->queue_draw();
 
@@ -749,16 +753,6 @@ void main_win::on_cmd_game_resync()
 		game_view->rotate_to_local_player(_client->get_my_player_number());
 
 	game_view->queue_draw();
-
-	rule_label->set_markup("<b>" +
-		util::to_str<unsigned int>(_client->get_board()->get_num_players()) +
-		" Players</b>" +
-		((_client->get_board()->get_long_jumps_allowed())
-			? "\nLong Jumps" : "\nNo Long Jumps") +
-		((!_client->get_board()->get_hop_others_allowed())
-			? "\nNo Throughs" : "") +
-		((!_client->get_board()->get_stop_others_allowed())
-			? "\nNo Stops" : ""));
 
 	if (_current_player)
 	{

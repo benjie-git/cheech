@@ -19,7 +19,6 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/main.h>
-#include <gdkmm/general.h>
 #include <sstream>
 #include <cmath>
 
@@ -44,11 +43,40 @@ game_view::game_view() : Gtk::DrawingArea()
 	_board = NULL;
 	_locked = true;
 	_center = Gdk::Point();
+	_board_center = Gdk::Point();
+	_scale = 1.0;
 
-	set_size_request((int)(GameImages::get_peg_size().get_x()
-		* (GameBoard::SIZE_X + 1) * MULTIPLIER), 
-		(int)(GameImages::get_peg_size().get_y() * (GameBoard::SIZE_Y - 1)
-		* MULTIPLIER * sqrt(3.0) / 2.0));
+	double peg_x = GameImages::get_peg_size().get_x();
+	double peg_y = GameImages::get_peg_size().get_y();
+	double min_x = 1e9, max_x = -1e9, min_y = 1e9, max_y = -1e9;
+
+	GameBoard b(1, false, false, false);
+	for (unsigned int i = 0; i < b.get_size(); i++)
+	{
+		if (!b[i])
+			continue;
+
+		double x_offset = (util::even(i / GameBoard::SIZE_X) ? 0.5 : 0.0) + 1.0;
+		double rx = ((i % GameBoard::SIZE_X) + x_offset) * peg_x * MULTIPLIER;
+		double ry = (i / GameBoard::SIZE_X) * peg_y * MULTIPLIER
+					* (sqrt(3.0) / 2.0);
+
+		if (rx < min_x) min_x = rx;
+		if (rx > max_x) max_x = rx;
+		if (ry < min_y) min_y = ry;
+		if (ry > max_y) max_y = ry;
+	}
+
+	// Pad the board bounding box so the background hugs the lattice (keeping
+	// it close to square) instead of filling the whole (tall) widget.
+	double pad = peg_x * MULTIPLIER * 0.8;
+
+	_board_center = Gdk::Point((int)lround((min_x + max_x) / 2.0),
+							   (int)lround((min_y + max_y) / 2.0));
+	_base_width = (int)lround(max_x - min_x + 2.0 * pad);
+	_base_height = (int)lround(max_y - min_y + 2.0 * pad);
+
+	set_size_request(_base_width, _base_height);
 
 	grab_focus();
 }
@@ -67,6 +95,19 @@ bool game_view::on_configure_event(GdkEventConfigure* event)
 {
 	_center = Gdk::Point(event->width/2, event->height/2);
 
+	double sx = (double)event->width / _base_width;
+	double sy = (double)event->height / _base_height;
+	_scale = (sx < sy) ? sx : sy;
+
+	for (std::vector<GameViewHole*>::iterator hole = _holes.begin();
+		hole < _holes.end(); hole++)
+			if (*hole)
+				(*hole)->set_scale(_scale);
+
+	queue_draw();
+
+	evt_board_resized.emit();
+
 	return true;
 }
 
@@ -75,14 +116,9 @@ void game_view::create_holes()
 {
 	GameBoard b(1, false, false, false);
 
-	Gdk::Point board_center((int)(GameImages::get_peg_size().get_x()
-		* (GameBoard::SIZE_X + 1) * MULTIPLIER/2.0), 
-		(int)(GameImages::get_peg_size().get_y() * (GameBoard::SIZE_Y - 1)
-		* MULTIPLIER * sqrt(3.0) / 4.0));
+	_holes.resize(b.get_size());
 
-	_holes.resize(_board->get_size());
-
-	for (unsigned int i=0; i < _board->get_size(); i++)
+	for (unsigned int i=0; i < b.get_size(); i++)
 	{
 		if (b[i])
 		{
@@ -92,15 +128,18 @@ void game_view::create_holes()
 								+ 1.0;
 			double y_offset = 0;
 			Gdk::Point offset((int)(((i % GameBoard::SIZE_X)
-				+ x_offset) * x * MULTIPLIER)-board_center.get_x(),
+				+ x_offset) * x * MULTIPLIER)-_board_center.get_x(),
 				(int)(((i / GameBoard::SIZE_X) + y_offset) * y * MULTIPLIER 
-				* (sqrt(3.0) / 2.0))-board_center.get_y());
+				* (sqrt(3.0) / 2.0))-_board_center.get_y());
 			
 			_holes[i] = new GameViewHole(&_center, &offset);
+			_holes[i]->set_scale(_scale);
 		}
 		else
 			_holes[i] = NULL;
 	}
+
+	rebuild_board();
 }
 
 
@@ -131,7 +170,7 @@ void game_view::rebuild_board()
 	}
 	else
 	{
-		for (unsigned int i=0; i < _board->get_size(); i++)
+		for (unsigned int i=0; i < _holes.size(); i++)
 			if (_holes[i])
 				_holes[i]->setup(NULL, NULL);
 
@@ -226,6 +265,18 @@ void game_view::read_move(unsigned int i)
 	
 	if (!move_list_contains(i))
 	{
+		// Clicking another of the player's pegs clears any path built so
+		// far and starts a fresh selection from that peg.
+		if (_move_list.size() > 0 &&
+			(*_board)[i]->get_current_player() ==
+			_client->get_my_player_number())
+		{
+			erase_move();
+			_move_list.push_back(i);
+			_client->show_move(&_move_list);
+			return;
+		}
+
 		_move_list.push_back(i);
 		if (!((_move_list.size() == 1 &&
 			(*_board)[i]->get_current_player() ==
@@ -324,13 +375,35 @@ bool game_view::move_list_contains(unsigned int i)
 
 bool game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-	// Paint the widget background
-	Glib::RefPtr<Gtk::StyleContext> style = get_style_context();
-	style->render_background(cr, 0, 0, get_width(), get_height());
+	// Fill the widget with black (the letterbox area around the board),
+	// then paint the board background as a rounded rectangle that hugs the
+	// lattice and is centered in the available space.
+	double w = get_width();
+	double h = get_height();
 
-	// Don't draw the board unless we're connected to one
-	if (!_client)
-		return true;
+	cr->set_source_rgb(0, 0, 0);
+	cr->paint();
+
+	double bw = _base_width * _scale;
+	double bh = _base_height * _scale;
+	double bx = _center.get_x() - bw / 2.0;
+	double by = _center.get_y() - bh / 2.0;
+	double r = 24.0;
+	if (r > bw / 2.0) r = bw / 2.0;
+	if (r > bh / 2.0) r = bh / 2.0;
+
+	cr->set_source_rgb(0.55, 0.40, 0.24);
+	cr->begin_new_path();
+	cr->arc(bx + r, by + r, r, PI, 1.5 * PI);
+	cr->arc(bx + bw - r, by + r, r, 1.5 * PI, 2 * PI);
+	cr->arc(bx + bw - r, by + bh - r, r, 0, 0.5 * PI);
+	cr->arc(bx + r, by + bh - r, r, 0.5 * PI, PI);
+	cr->close_path();
+	cr->fill();
+
+	cr->save();
+	cr->translate(_center.get_x(), _center.get_y());
+	cr->scale(_scale, _scale);
 
 	// Draw all the holes
 	for (std::vector<GameViewHole*>::iterator hole = _holes.begin();
@@ -343,14 +416,16 @@ bool game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 		// Draw the arcs beteen holes on the movelist
 		for (MoveList::iterator move = _move_list.begin();
 			move < _move_list.end()-1; move++)
-				draw_move_arc(cr, _holes[*move]->get_location(),
-					_holes[*(move+1)]->get_location());
+				draw_move_arc(cr, _holes[*move]->get_offset(),
+					_holes[*(move+1)]->get_offset());
 	
 		// Then redraw the holes on the move_list on top of the arcs
 		for (MoveList::iterator move = _move_list.begin();
 			move < _move_list.end(); move++)
 				_holes[*move]->draw(cr);
 	}
+
+	cr->restore();
 
 	return true;
 }
