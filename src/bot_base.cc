@@ -25,7 +25,7 @@
 #include <algorithm>
 
 #include "bot_base.hh"
-#if !defined(CHEECH_IOS) && !defined(CHEECH_PORTABLE)
+#if !defined(CHEECH_IOS)
 #include "game_images.hh"
 #else
 #include "cheech_move_gate.hh"
@@ -260,7 +260,7 @@ void BotBase::on_cmd_choose_new_name(Glib::ustring name)
 void BotBase::on_cmd_choose_new_color(Glib::ustring name, int color)
 {
 	for (unsigned int c = 1; c <
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 		8
 #else
 		GameImages::get_num_colors()
@@ -858,7 +858,7 @@ void BotBase::make_move(MoveList *list)
 }
 
 
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 bool BotBase::try_commit_move(MoveList move)
 {
 	if (!is_still_my_turn())

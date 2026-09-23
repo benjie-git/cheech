@@ -27,9 +27,6 @@
 #if defined(CHEECH_IOS)
 #include <glib.h>
 #include "cheech_ios_gnet.hh"
-#elif defined(CHEECH_PORTABLE)
-#include <glib.h>
-#include "cheech_portable_gnet.hh"
 #else
 #include "gnet-2.0/gnet.h"
 #endif
@@ -54,7 +51,7 @@ public:
 	bool ready() const;
 	void close();
 
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 	// Adopts a client connection that was established in-process (no TCP):
 	// the caller passes the server end of a socketpair created by a loopback
 	// Gnet::Conn::connect.  Ownership of fd transfers to the server.
@@ -62,7 +59,7 @@ public:
 #endif
 
 private:
-#if !defined(CHEECH_IOS) && !defined(CHEECH_PORTABLE)
+#if !defined(CHEECH_IOS)
 	static void handle_accept_static(GServer* server, GConn* client, gpointer data);
 #endif
 	void handle_accept(GServer* server, GConn* client);

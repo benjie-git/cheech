@@ -121,7 +121,7 @@ class BotBase : public sigc::trackable
 
 		void make_best_move();
 		void make_move(MoveList *list);
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 		// Returns true while still waiting for the animation gate to open.
 		bool try_commit_move(MoveList move);
 #endif

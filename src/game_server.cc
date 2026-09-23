@@ -21,7 +21,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 #include <random>
 #endif
 #include <glibmm/main.h>
@@ -30,7 +30,7 @@
 
 #include "utility.hh"
 #include "game_server.hh"
-#if !defined(CHEECH_IOS) && !defined(CHEECH_PORTABLE)
+#if !defined(CHEECH_IOS)
 #include "ajax_server.hh"
 #endif
 
@@ -39,7 +39,7 @@
 
 using namespace std;
 
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 // std::random_shuffle was removed in C++17; provide an equivalent for iOS.
 namespace {
 template <class It>
@@ -90,7 +90,7 @@ GameServer::GameServer(unsigned int port, unsigned int num_players,
 
 GameServer::~GameServer()
 {
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 	// The iOS event loop keeps running after the server is destroyed, so the
 	// accepted connections (owned by the player/spectator entries) must be
 	// closed and freed here.  Otherwise their still-registered fd watches
@@ -459,7 +459,7 @@ void GameServer::heartbeat_players()
 	for (unsigned int i = 1; i <= 6; i++)
 		if (_players[i].socket != NULL && _players[i].heartbeat == _heartbeat)
 		{
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
+#if defined(CHEECH_IOS)
 			// In-process players have no network to time out on; keep them.
 			if (_players[i].socket->is_local())
 				continue;
