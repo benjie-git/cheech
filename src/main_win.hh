@@ -64,6 +64,7 @@ class main_win : public main_win_glade
 		bool on_delete_event(GdkEventAny* event);
 		void on_quit_activate();
 		bool confirm_end_game();
+		void on_dialog_hidden();
 		void on_game_settings_activate();
 
 		void on_add_computer_player_activate();

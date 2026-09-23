@@ -78,6 +78,28 @@ main_win::main_win() : main_win_glade()
 	_about_win.set_transient_for(*this);
 	_help_win.set_transient_for(*this);
 	_setup_game_win.set_transient_for(*this);
+
+	_new_game_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+	_setup_bot_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+	_color_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+	_name_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+	_about_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+	_help_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+	_setup_game_win.signal_hide().connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_hidden));
+}
+
+
+void main_win::on_dialog_hidden()
+{
+	if (get_visible())
+		present();
 }
 
 

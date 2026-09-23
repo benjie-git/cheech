@@ -15,6 +15,8 @@ AM_MAINTAINER_MODE([enable])
 
 AC_PREFIX_DEFAULT([/usr/local])
 
+AC_CANONICAL_HOST
+
 dnl ---------------------------------------------------------------
 dnl Programs
 dnl ---------------------------------------------------------------
@@ -146,8 +148,10 @@ dnl .app via CoreFoundation instead of PACKAGE_PIXMAPS_DIR, and the
 dnl CoreFoundation framework is linked in.
 AC_ARG_ENABLE([macos-app],
   [AS_HELP_STRING([--enable-macos-app],
-                  [build the GUI to run from a Mac OS X .app bundle [default=no]])],
-  [], [enable_macos_app=no])
+                  [build the GUI to run from a Mac OS X .app bundle [default=yes on macOS]])],
+  [], [AS_CASE([$host],
+        [*-apple-darwin*], [enable_macos_app=yes],
+        [enable_macos_app=no])])
 
 MACOS_APP_LIBS=
 AS_IF([test "x$enable_macos_app" = "xyes"], [
