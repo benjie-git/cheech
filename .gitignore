@@ -24,6 +24,7 @@ am--include-marker
 .deps/
 .dirstamp
 .libs/
+.vscode/
 *.o
 *.lo
 *.la
