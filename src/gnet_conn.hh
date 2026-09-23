@@ -25,9 +25,12 @@
 
 #include <glibmm/ustring.h>
 #include <sigc++/sigc++.h>
-#ifdef CHEECH_IOS
+#if defined(CHEECH_IOS)
 #include <glib.h>
 #include "cheech_ios_gnet.hh"
+#elif defined(CHEECH_PORTABLE)
+#include <glib.h>
+#include "cheech_portable_gnet.hh"
 #else
 #include "gnet-2.0/gnet.h"
 #endif
@@ -53,7 +56,7 @@ class Gnet::Conn : public sigc::trackable
 	
 		void connect(const Glib::ustring& host, unsigned int port);
 		Status get_status() const;
-#ifdef CHEECH_IOS
+#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
 		// True for an in-process socketpair connection (no network stack).
 		bool is_local() const;
 #endif
@@ -76,7 +79,7 @@ class Gnet::Conn : public sigc::trackable
 	
 	protected:
 		virtual void do_read();
-#ifndef CHEECH_IOS
+#if !defined(CHEECH_IOS) && !defined(CHEECH_PORTABLE)
 		static void handle_event_static(GConn *conn, GConnEvent *event,
 										gpointer data);
 		void handle_event(GConn *conn, GConnEvent *event);

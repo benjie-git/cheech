@@ -19,6 +19,8 @@
 
 #include <cmath>
 
+#include <gdkmm/general.h>
+
 #include "game_view_hole.hh"
 #include "game_images.hh"
 
@@ -67,12 +69,11 @@ void GameViewHole::set_hilighted(bool h)
 
 void GameViewHole::set_offset(Gdk::Point p)
 {
-	_offset = p;
+	_offset = Gdk::Point(p.get_x(), p.get_y());
 }
 
 
-void GameViewHole::draw(Glib::RefPtr<Gdk::Window> window,
-						  Glib::RefPtr<Gdk::GC> gc)
+void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
 	int off_x, off_y;
 
@@ -83,10 +84,10 @@ void GameViewHole::draw(Glib::RefPtr<Gdk::Window> window,
 		_client->get_player_color(_hole->get_current_player()));
 	
 	if (peg) {
-		peg->render_to_drawable(window, gc, 0, 0,
-								get_location().get_x() - off_x,
-								get_location().get_y() - off_y,
-								-1, -1, Gdk::RGB_DITHER_NONE, 0, 0);
+		Gdk::Cairo::set_source_pixbuf(cr, peg,
+									  get_location().get_x() - off_x,
+									  get_location().get_y() - off_y);
+		cr->paint();
 	}
 	
 	if (_hilighted)
@@ -95,10 +96,10 @@ void GameViewHole::draw(Glib::RefPtr<Gdk::Window> window,
 		off_y = GameImages::get_highlight_size().get_y()/2;
 		Glib::RefPtr<Gdk::Pixbuf> hl = GameImages::get_highlight();
 		if (hl) {
-			hl->render_to_drawable(window, gc, 0, 0,
-								   get_location().get_x() - off_x,
-								   get_location().get_y() - off_y,
-								   -1, -1, Gdk::RGB_DITHER_NONE, 0, 0);
+			Gdk::Cairo::set_source_pixbuf(cr, hl,
+										  get_location().get_x() - off_x,
+										  get_location().get_y() - off_y);
+			cr->paint();
 		}
 	}
 }

@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -47,9 +47,9 @@
 #include <gtkmm/menuitem.h>
 #include <gtkmm/menu.h>
 #include <gtkmm/imagemenuitem.h>
-#include <gtk/gtkimagemenuitem.h>
 #include <gtkmm/image.h>
 #include <gtkmm/menubar.h>
+#include <gtkmm/separatormenuitem.h>
 #include <gtkmm/frame.h>
 #include <gtkmm/box.h>
 #include <gtkmm/alignment.h>
@@ -151,110 +151,129 @@ main_win_glade::main_win_glade(
    Gtk::Statusbar *statusbar = Gtk::manage(new class Gtk::Statusbar());
    Gtk::VBox *vbox1 = Gtk::manage(new class Gtk::VBox(false, 0));
 
-   restart_submenu_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("Rot_ate Players"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_A, Gdk::CONTROL_MASK)));
-   rotate = (Gtk::MenuItem *)&restart_submenu_menu->items().back();
+   rotate = Gtk::manage(new class Gtk::MenuItem(_("Rot_ate Players"), true));
+   rotate->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_A, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   restart_submenu_menu->append(*rotate);
 
-   restart_submenu_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("Shu_ffle Players"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_F, Gdk::CONTROL_MASK)));
-   shuffle = (Gtk::MenuItem *)&restart_submenu_menu->items().back();
+   shuffle = Gtk::manage(new class Gtk::MenuItem(_("Shu_ffle Players"), true));
+   shuffle->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_F, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   restart_submenu_menu->append(*shuffle);
 
-   restart_submenu_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Keep Same Order"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_K, Gdk::CONTROL_MASK)));
-   restart_game = (Gtk::MenuItem *)&restart_submenu_menu->items().back();
+   restart_game = Gtk::manage(new class Gtk::MenuItem(_("_Keep Same Order"), true));
+   restart_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_K, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   restart_submenu_menu->append(*restart_game);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("Host _New Board..."), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_N, Gdk::CONTROL_MASK)));
-   new_game = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   new_game = Gtk::manage(new class Gtk::MenuItem(_("Host _New Board..."), true));
+   new_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_N, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   menuitem1_menu->append(*new_game);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("S_top Hosting"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_T, Gdk::CONTROL_MASK)));
-   end_game = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   end_game = Gtk::manage(new class Gtk::MenuItem(_("S_top Hosting"), true));
+   end_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_T, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   menuitem1_menu->append(*end_game);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::SeparatorElem());
-   separator4 = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   separator4 = Gtk::manage(new class Gtk::SeparatorMenuItem());
+   menuitem1_menu->append(*separator4);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Join a Board..."), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_J, Gdk::CONTROL_MASK)));
-   join_game = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   join_game = Gtk::manage(new class Gtk::MenuItem(_("_Join a Board..."), true));
+   join_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_J, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   menuitem1_menu->append(*join_game);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Leave Board"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_L, Gdk::CONTROL_MASK)));
-   leave_game = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   leave_game = Gtk::manage(new class Gtk::MenuItem(_("_Leave Board"), true));
+   leave_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_L, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   menuitem1_menu->append(*leave_game);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::SeparatorElem());
-   separatormenuitem1 = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   separatormenuitem1 = Gtk::manage(new class Gtk::SeparatorMenuItem());
+   menuitem1_menu->append(*separatormenuitem1);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("Change _Game Settings..."), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_G, Gdk::CONTROL_MASK)));
-   game_settings = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   game_settings = Gtk::manage(new class Gtk::MenuItem(_("Change _Game Settings..."), true));
+   game_settings->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_G, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   menuitem1_menu->append(*game_settings);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Restart Game"), *restart_submenu_menu));
-   restart_submenu = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   restart_submenu = Gtk::manage(new class Gtk::MenuItem(_("_Restart Game"), true));
+   restart_submenu->set_submenu(*restart_submenu_menu);
+   menuitem1_menu->append(*restart_submenu);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::SeparatorElem());
-   separator7 = (Gtk::MenuItem *)&menuitem1_menu->items().back();
+   separator7 = Gtk::manage(new class Gtk::SeparatorMenuItem());
+   menuitem1_menu->append(*separator7);
 
-   menuitem1_menu->items().push_back(Gtk::Menu_Helpers::StockMenuElem(Gtk::StockID("gtk-quit")));
-   quit = (Gtk::ImageMenuItem *)&menuitem1_menu->items().back();
+   quit = Gtk::manage(new class Gtk::ImageMenuItem(Gtk::StockID("gtk-quit")));
+   menuitem1_menu->append(*quit);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::ImageMenuElem(_("_Undo"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_Z, Gdk::CONTROL_MASK), *image46));
-   undo = (Gtk::ImageMenuItem *)&edit_menu->items().back();
+   undo = Gtk::manage(new class Gtk::ImageMenuItem(*image46, _("_Undo"), true));
+   undo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Z, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   edit_menu->append(*undo);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::ImageMenuElem(_("_Redo"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_Y, Gdk::CONTROL_MASK), *image47));
-   redo = (Gtk::ImageMenuItem *)&edit_menu->items().back();
+   redo = Gtk::manage(new class Gtk::ImageMenuItem(*image47, _("_Redo"), true));
+   redo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Y, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   edit_menu->append(*redo);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("S_how Last Move"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_H, Gdk::CONTROL_MASK)));
-   show_last_move = (Gtk::MenuItem *)&edit_menu->items().back();
+   show_last_move = Gtk::manage(new class Gtk::MenuItem(_("S_how Last Move"), true));
+   show_last_move->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_H, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   edit_menu->append(*show_last_move);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::SeparatorElem());
-   separator5 = (Gtk::MenuItem *)&edit_menu->items().back();
+   separator5 = Gtk::manage(new class Gtk::SeparatorMenuItem());
+   edit_menu->append(*separator5);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::StockMenuElem(Gtk::StockID("gtk-cut")));
-   cut = (Gtk::ImageMenuItem *)&edit_menu->items().back();
+   cut = Gtk::manage(new class Gtk::ImageMenuItem(Gtk::StockID("gtk-cut")));
+   edit_menu->append(*cut);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::StockMenuElem(Gtk::StockID("gtk-copy")));
-   copy = (Gtk::ImageMenuItem *)&edit_menu->items().back();
+   copy = Gtk::manage(new class Gtk::ImageMenuItem(Gtk::StockID("gtk-copy")));
+   edit_menu->append(*copy);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::StockMenuElem(Gtk::StockID("gtk-paste")));
-   paste = (Gtk::ImageMenuItem *)&edit_menu->items().back();
+   paste = Gtk::manage(new class Gtk::ImageMenuItem(Gtk::StockID("gtk-paste")));
+   edit_menu->append(*paste);
 
-   edit_menu->items().push_back(Gtk::Menu_Helpers::StockMenuElem(Gtk::StockID("gtk-delete")));
-   menu_delete = (Gtk::ImageMenuItem *)&edit_menu->items().back();
+   menu_delete = Gtk::manage(new class Gtk::ImageMenuItem(Gtk::StockID("gtk-delete")));
+   edit_menu->append(*menu_delete);
 
-   player_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("Change Na_me...")));
-   change_name = (Gtk::MenuItem *)&player_menu->items().back();
+   change_name = Gtk::manage(new class Gtk::MenuItem(_("Change Na_me..."), true));
+   player_menu->append(*change_name);
 
-   player_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("C_hange Color...")));
-   change_color = (Gtk::MenuItem *)&player_menu->items().back();
+   change_color = Gtk::manage(new class Gtk::MenuItem(_("C_hange Color..."), true));
+   player_menu->append(*change_color);
 
-   player_menu->items().push_back(Gtk::Menu_Helpers::SeparatorElem());
-   separator6 = (Gtk::MenuItem *)&player_menu->items().back();
+   separator6 = Gtk::manage(new class Gtk::SeparatorMenuItem());
+   player_menu->append(*separator6);
 
-   player_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Add Computer Player"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_D, Gdk::CONTROL_MASK)));
-   add_computer_player = (Gtk::MenuItem *)&player_menu->items().back();
+   add_computer_player = Gtk::manage(new class Gtk::MenuItem(_("_Add Computer Player"), true));
+   add_computer_player->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_D, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   player_menu->append(*add_computer_player);
 
-   player_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("R_emove Computer Players"), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_E, Gdk::CONTROL_MASK)));
-   remove_computer_players = (Gtk::MenuItem *)&player_menu->items().back();
+   remove_computer_players = Gtk::manage(new class Gtk::MenuItem(_("R_emove Computer Players"), true));
+   remove_computer_players->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_E, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   player_menu->append(*remove_computer_players);
 
-   player_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("Setu_p Computer Player..."), Gtk::GMM_GTKMM_22_24(Menu_Helpers::,)AccelKey(GDK_P, Gdk::CONTROL_MASK)));
-   setup_computer_player = (Gtk::MenuItem *)&player_menu->items().back();
+   setup_computer_player = Gtk::manage(new class Gtk::MenuItem(_("Setu_p Computer Player..."), true));
+   setup_computer_player->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_P, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   player_menu->append(*setup_computer_player);
 
-   menuitem4_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("How to _Play")));
-   how_to_play = (Gtk::MenuItem *)&menuitem4_menu->items().back();
+   how_to_play = Gtk::manage(new class Gtk::MenuItem(_("How to _Play"), true));
+   menuitem4_menu->append(*how_to_play);
 
-   menuitem4_menu->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_About")));
-   about = (Gtk::MenuItem *)&menuitem4_menu->items().back();
+   about = Gtk::manage(new class Gtk::MenuItem(_("_About"), true));
+   menuitem4_menu->append(*about);
 
-   menubar1->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Game"), *menuitem1_menu));
-   menuitem1 = (Gtk::MenuItem *)&menubar1->items().back();
+   menuitem1 = Gtk::manage(new class Gtk::MenuItem(_("_Game"), true));
+   menuitem1->set_submenu(*menuitem1_menu);
+   menubar1->append(*menuitem1);
 
-   menubar1->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Edit"), *edit_menu));
-   edit = (Gtk::MenuItem *)&menubar1->items().back();
+   edit = Gtk::manage(new class Gtk::MenuItem(_("_Edit"), true));
+   edit->set_submenu(*edit_menu);
+   menubar1->append(*edit);
 
-   menubar1->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Player"), *player_menu));
-   player = (Gtk::MenuItem *)&menubar1->items().back();
+   player = Gtk::manage(new class Gtk::MenuItem(_("_Player"), true));
+   player->set_submenu(*player_menu);
+   menubar1->append(*player);
 
-   menubar1->items().push_back(Gtk::Menu_Helpers::MenuElem(_("_Help"), *menuitem4_menu));
-   menuitem4 = (Gtk::MenuItem *)&menubar1->items().back();
+   menuitem4 = Gtk::manage(new class Gtk::MenuItem(_("_Help"), true));
+   menuitem4->set_submenu(*menuitem4_menu);
+   menubar1->append(*menuitem4);
    image46->set_alignment(0.5,0.5);
    image46->set_padding(0,0);
    image47->set_alignment(0.5,0.5);
    image47->set_padding(0,0);
    game_view->set_events(Gdk::EXPOSURE_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::KEY_PRESS_MASK);
-   game_view->set_flags(Gtk::CAN_FOCUS);
+   game_view->set_can_focus(true);
    frame4->set_border_width(6);
    frame4->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
    frame4->set_label_align(0,0.5);
@@ -381,10 +400,11 @@ main_win_glade::main_win_glade(
 		"Choose the 'Host New Board' or 'Join A Board' commands to start playing.\n"
 		""));
    scrolledwindow1->set_shadow_type(Gtk::SHADOW_IN);
-   scrolledwindow1->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS);
+   scrolledwindow1->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
+   scrolledwindow1->set_size_request(-1, 120);
    scrolledwindow1->property_window_placement().set_value(Gtk::CORNER_TOP_LEFT);
    scrolledwindow1->add(*message_view);
-   chat_entry->set_flags(Gtk::CAN_FOCUS);
+   chat_entry->set_can_focus(true);
    chat_entry->set_visibility(true);
    chat_entry->set_editable(true);
    chat_entry->set_max_length(0);
@@ -394,14 +414,18 @@ main_win_glade::main_win_glade(
    vbox2->set_border_width(3);
    vbox2->pack_start(*scrolledwindow1);
    vbox2->pack_start(*chat_entry, Gtk::PACK_SHRINK, 0);
-   vpaned1->set_flags(Gtk::CAN_FOCUS);
+   vpaned1->set_can_focus(true);
    vpaned1->pack1(*hbox1, Gtk::EXPAND|Gtk::SHRINK);
    vpaned1->pack2(*vbox2, Gtk::EXPAND|Gtk::SHRINK);
    vbox1->pack_start(*menubar1, Gtk::PACK_SHRINK, 0);
    vbox1->pack_start(*vpaned1);
    vbox1->pack_start(*statusbar, Gtk::PACK_SHRINK, 0);
    main_win->set_title(_("Chinese Checkers"));
-   main_win->set_default_size(500,400);
+   int board_width = 0;
+   int board_height = 0;
+   game_view->get_size_request(board_width, board_height);
+   main_win->set_default_size(board_width + 260, board_height + 240);
+   main_win->set_size_request(board_width + 260, board_height + 240);
    main_win->set_modal(false);
    main_win->property_window_position().set_value(Gtk::WIN_POS_NONE);
    main_win->set_resizable(true);

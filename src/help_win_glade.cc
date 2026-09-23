@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -45,8 +45,6 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/accelgroup.h>
 #include <gtkmm/label.h>
-#include <gtkmm/viewport.h>
-#include <gtkmm/adjustment.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/button.h>
 #include <gtkmm/buttonbox.h>
@@ -92,7 +90,6 @@ help_win_glade::help_win_glade(
 		"\n"
 		"For a more detailed discussion of the rules (including diagrams!), check out the Wikipedia entry on Chinese Checkers.\n"
 		"")));
-   Gtk::Viewport *viewport1 = Gtk::manage(new class Gtk::Viewport(*manage(new Gtk::Adjustment(0,0,1)), *manage(new Gtk::Adjustment(0,0,1))));
    Gtk::ScrolledWindow *scrolledwindow2 = Gtk::manage(new class Gtk::ScrolledWindow());
    Gtk::Button *button1 = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-close")));
    Gtk::HButtonBox *hbuttonbox8 = Gtk::manage(new class Gtk::HButtonBox(Gtk::BUTTONBOX_END, 0));
@@ -103,16 +100,14 @@ help_win_glade::help_win_glade(
    label73->set_line_wrap(true);
    label73->set_use_markup(true);
    label73->set_selectable(false);
-   viewport1->set_shadow_type(Gtk::SHADOW_IN);
-   viewport1->add(*label73);
    scrolledwindow2->set_size_request(428,360);
-   scrolledwindow2->set_flags(Gtk::CAN_FOCUS);
+   scrolledwindow2->set_can_focus(true);
    scrolledwindow2->set_shadow_type(Gtk::SHADOW_NONE);
-   scrolledwindow2->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS);
+   scrolledwindow2->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
    scrolledwindow2->property_window_placement().set_value(Gtk::CORNER_TOP_LEFT);
-   scrolledwindow2->add(*viewport1);
-   button1->set_flags(Gtk::CAN_FOCUS);
-   button1->set_flags(Gtk::CAN_DEFAULT);
+   scrolledwindow2->add(*label73);
+   button1->set_can_focus(true);
+   button1->set_can_default(true);
    button1->set_relief(Gtk::RELIEF_NORMAL);
    hbuttonbox8->set_border_width(6);
    hbuttonbox8->pack_start(*button1);
@@ -125,7 +120,6 @@ help_win_glade::help_win_glade(
    help_win->property_destroy_with_parent().set_value(false);
    help_win->add(*vbox11);
    label73->show();
-   viewport1->show();
    scrolledwindow2->show();
    button1->show();
    hbuttonbox8->show();

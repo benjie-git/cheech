@@ -22,9 +22,9 @@
 #  define _GAME_VIEW_HH
 
 #include <gtkmm/drawingarea.h>
-#include <gdkmm/colormap.h>
-#include <gdkmm/window.h>
+#include <gtkmm/stylecontext.h>
 #include <gdkmm/pixbuf.h>
+#include <cairomm/context.h>
 #include <vector>
 
 #include "game_view_hole.hh"
@@ -53,7 +53,7 @@ class game_view : public Gtk::DrawingArea
 
 		//Override default signal handlers:
 		void on_realize();
-		bool on_expose_event(GdkEventExpose* event);
+		bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 		bool on_configure_event(GdkEventConfigure* event);
 		bool on_button_press_event(GdkEventButton *ev);
 		bool on_key_press_event(GdkEventKey *ev);
@@ -63,7 +63,7 @@ class game_view : public Gtk::DrawingArea
 		void erase_move();
 
 		bool move_list_contains(unsigned int i);
-		void draw_move_arc(Glib::RefPtr<Gdk::Window> window,
+		void draw_move_arc(const Cairo::RefPtr<Cairo::Context>& cr,
 						   Gdk::Point from, Gdk::Point to);
 
 		std::vector<GameViewHole*>  _holes;
@@ -71,8 +71,6 @@ class game_view : public Gtk::DrawingArea
 
 		GameClient *_client;
 		GameBoard *_board;
-		Glib::RefPtr<Gdk::Window> _window;
-		Glib::RefPtr<Gdk::GC> _gc;
 		bool _locked;
 		Gdk::Point _center;
 };

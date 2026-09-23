@@ -19,6 +19,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/main.h>
+#include <gdkmm/general.h>
 #include <sstream>
 #include <cmath>
 
@@ -57,13 +58,6 @@ void game_view::on_realize()
 {
 	// We need to call the base on_realize()
 	Gtk::DrawingArea::on_realize();
-
-	// Now we can allocate any additional resources we need
-	_window = get_window();
-	_gc = Gdk::GC::create(_window);
-	_gc->set_line_attributes(4, Gdk::LINE_SOLID, Gdk::CAP_BUTT,
-		Gdk::JOIN_MITER);
-	_window->clear();
 
 	create_holes();
 }
@@ -200,14 +194,14 @@ bool game_view::on_key_press_event(GdkEventKey *ev)
 
 	switch (ev->keyval)
 	{
-		case GDK_Escape:
+		case GDK_KEY_Escape:
 			if (!_locked)
 			{
 				erase_move();
 				return true;
 			}
-		case GDK_Return:
-		case GDK_space:
+		case GDK_KEY_Return:
+		case GDK_KEY_space:
 			if (!_locked)
 			{
 				write_move();
@@ -328,10 +322,11 @@ bool game_view::move_list_contains(unsigned int i)
 }
 
 
-bool game_view::on_expose_event(GdkEventExpose* event)
+bool game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-	Glib::RefPtr<Gdk::Window> window = get_window();
-	_window->clear();
+	// Paint the widget background
+	Glib::RefPtr<Gtk::StyleContext> style = get_style_context();
+	style->render_background(cr, 0, 0, get_width(), get_height());
 
 	// Don't draw the board unless we're connected to one
 	if (!_client)
@@ -341,30 +336,34 @@ bool game_view::on_expose_event(GdkEventExpose* event)
 	for (std::vector<GameViewHole*>::iterator hole = _holes.begin();
 		hole < _holes.end(); hole++)
 			if (*hole)
-				(*hole)->draw(_window, _gc);
+				(*hole)->draw(cr);
 
 	if (_move_list.size() >=2)
 	{
 		// Draw the arcs beteen holes on the movelist
 		for (MoveList::iterator move = _move_list.begin();
 			move < _move_list.end()-1; move++)
-				draw_move_arc(_window, _holes[*move]->get_location(),
+				draw_move_arc(cr, _holes[*move]->get_location(),
 					_holes[*(move+1)]->get_location());
 	
 		// Then redraw the holes on the move_list on top of the arcs
 		for (MoveList::iterator move = _move_list.begin();
 			move < _move_list.end(); move++)
-				_holes[*move]->draw(_window, _gc);
+				_holes[*move]->draw(cr);
 	}
 
 	return true;
 }
 
 
-void game_view::draw_move_arc(Glib::RefPtr<Gdk::Window> window,
+void game_view::draw_move_arc(const Cairo::RefPtr<Cairo::Context>& cr,
 							  Gdk::Point from, Gdk::Point to)
 {
-	_window->draw_line(_gc, from.get_x(), from.get_y(), to.get_x(), to.get_y());
+	cr->set_source_rgb(0, 0, 0);
+	cr->set_line_width(4);
+	cr->move_to(from.get_x(), from.get_y());
+	cr->line_to(to.get_x(), to.get_y());
+	cr->stroke();
 }
 
 

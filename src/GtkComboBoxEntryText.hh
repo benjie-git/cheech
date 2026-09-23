@@ -4,7 +4,7 @@
 //    (If you know/figure out a way to clean this up, please tell me!!)
 //
 
-#include <gtkmm/comboboxentrytext.h>
+#include <gtkmm/comboboxtext.h>
 
 
-#define GtkComboBoxEntryText Gtk::ComboBoxEntryText
+#define GtkComboBoxEntryText Gtk::ComboBoxText

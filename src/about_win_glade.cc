@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -72,8 +72,8 @@ about_win_glade::about_win_glade(
    label12->set_line_wrap(true);
    label12->set_use_markup(true);
    label12->set_selectable(false);
-   close_button->set_flags(Gtk::CAN_FOCUS);
-   close_button->set_flags(Gtk::CAN_DEFAULT);
+   close_button->set_can_focus(true);
+   close_button->set_can_default(true);
    close_button->set_relief(Gtk::RELIEF_NORMAL);
    hbuttonbox6->set_border_width(6);
    hbuttonbox6->pack_start(*close_button);

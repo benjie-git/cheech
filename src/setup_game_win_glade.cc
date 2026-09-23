@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -62,8 +62,8 @@ setup_game_win_glade::setup_game_win_glade(
    gmm_data = new GlademmData(get_accel_group());
 
    Gtk::Label *label65 = Gtk::manage(new class Gtk::Label(_("Number of Players:")));
-   Gtk::Adjustment *num_players_adj = Gtk::manage(new class Gtk::Adjustment(3, 1, 6, 1, 1, 0));
-   num_players = Gtk::manage(new class Gtk::SpinButton(*num_players_adj, 1, 0));
+   Glib::RefPtr<Gtk::Adjustment> num_players_adj = Gtk::Adjustment::create(3, 1, 6, 1, 1, 0);
+   num_players = Gtk::manage(new class Gtk::SpinButton(num_players_adj, 1, 0));
 
    Gtk::Table *table10 = Gtk::manage(new class Gtk::Table(2, 2, false));
    long_jumps = Gtk::manage(new class Gtk::CheckButton(_("Allow Long Jumps (Sue Wen Rules)")));
@@ -88,8 +88,7 @@ setup_game_win_glade::setup_game_win_glade(
    label65->set_line_wrap(false);
    label65->set_use_markup(false);
    label65->set_selectable(false);
-   num_players->set_flags(Gtk::CAN_FOCUS);
-   num_players->set_update_policy(Gtk::UPDATE_ALWAYS);
+   num_players->set_can_focus(true);
    num_players->set_numeric(false);
    num_players->set_digits(0);
    num_players->set_wrap(true);
@@ -98,15 +97,15 @@ setup_game_win_glade::setup_game_win_glade(
    table10->set_col_spacings(6);
    table10->attach(*label65, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table10->attach(*num_players, 1, 2, 0, 1, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   long_jumps->set_flags(Gtk::CAN_FOCUS);
+   long_jumps->set_can_focus(true);
    long_jumps->set_relief(Gtk::RELIEF_NORMAL);
    long_jumps->set_mode(true);
    long_jumps->set_active(true);
-   hop_others->set_flags(Gtk::CAN_FOCUS);
+   hop_others->set_can_focus(true);
    hop_others->set_relief(Gtk::RELIEF_NORMAL);
    hop_others->set_mode(true);
    hop_others->set_active(true);
-   stop_others->set_flags(Gtk::CAN_FOCUS);
+   stop_others->set_can_focus(true);
    stop_others->set_relief(Gtk::RELIEF_NORMAL);
    stop_others->set_mode(true);
    stop_others->set_active(true);
@@ -125,8 +124,8 @@ setup_game_win_glade::setup_game_win_glade(
    frame14->set_label_align(0,0.5);
    frame14->add(*alignment23);
    frame14->set_label_widget(*label66);
-   cancel_button->set_flags(Gtk::CAN_FOCUS);
-   cancel_button->set_flags(Gtk::CAN_DEFAULT);
+   cancel_button->set_can_focus(true);
+   cancel_button->set_can_default(true);
    cancel_button->set_relief(Gtk::RELIEF_NORMAL);
    image25->set_alignment(0.5,0.5);
    image25->set_padding(0,0);
@@ -139,8 +138,8 @@ setup_game_win_glade::setup_game_win_glade(
    hbox10->pack_start(*image25, Gtk::PACK_SHRINK, 0);
    hbox10->pack_start(*label67, Gtk::PACK_SHRINK, 0);
    alignment24->add(*hbox10);
-   button5->set_flags(Gtk::CAN_FOCUS);
-   button5->set_flags(Gtk::CAN_DEFAULT);
+   button5->set_can_focus(true);
+   button5->set_can_default(true);
    button5->set_relief(Gtk::RELIEF_NORMAL);
    button5->add(*alignment24);
    hbuttonbox13->set_border_width(6);

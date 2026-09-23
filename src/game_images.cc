@@ -94,7 +94,7 @@ void GameImages::init()
 		{
 			_pegs[i] = Pixbuf::create_subpixbuf(pixbuf, size.get_x() * i, 0,
 												size.get_x(), size.get_y());
-			_peg_size = size;
+			_peg_size = Gdk::Point(size.get_x(), size.get_y());
 		}
 	}
 	

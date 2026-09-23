@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -84,7 +84,7 @@ name_win_glade::name_win_glade(
    label53->set_line_wrap(false);
    label53->set_use_markup(false);
    label53->set_selectable(false);
-   name_entry->set_flags(Gtk::CAN_FOCUS);
+   name_entry->set_can_focus(true);
    name_entry->set_visibility(true);
    name_entry->set_editable(true);
    name_entry->set_max_length(0);
@@ -93,8 +93,8 @@ name_win_glade::name_win_glade(
    name_entry->set_activates_default(false);
    hbox7->pack_start(*label53, Gtk::PACK_SHRINK, 0);
    hbox7->pack_start(*name_entry);
-   cancel_button->set_flags(Gtk::CAN_FOCUS);
-   cancel_button->set_flags(Gtk::CAN_DEFAULT);
+   cancel_button->set_can_focus(true);
+   cancel_button->set_can_default(true);
    cancel_button->set_relief(Gtk::RELIEF_NORMAL);
    image16->set_alignment(0.5,0.5);
    image16->set_padding(0,0);
@@ -107,8 +107,8 @@ name_win_glade::name_win_glade(
    hbox6->pack_start(*image16, Gtk::PACK_SHRINK, 0);
    hbox6->pack_start(*label52, Gtk::PACK_SHRINK, 0);
    alignment18->add(*hbox6);
-   change_button->set_flags(Gtk::CAN_FOCUS);
-   change_button->set_flags(Gtk::CAN_DEFAULT);
+   change_button->set_can_focus(true);
+   change_button->set_can_default(true);
    change_button->set_relief(Gtk::RELIEF_NORMAL);
    change_button->add(*alignment18);
    hbuttonbox9->pack_start(*cancel_button);

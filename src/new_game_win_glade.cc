@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -87,8 +87,8 @@ new_game_win_glade::new_game_win_glade(
 
    Gtk::HBox *hbox15 = Gtk::manage(new class Gtk::HBox(false, 6));
    Gtk::Label *label24 = Gtk::manage(new class Gtk::Label(_("Number Of Players:")));
-   Gtk::Adjustment *num_players_adj = Gtk::manage(new class Gtk::Adjustment(3, 1, 6, 1, 1, 0));
-   num_players = Gtk::manage(new class Gtk::SpinButton(*num_players_adj, 1, 0));
+   Glib::RefPtr<Gtk::Adjustment> num_players_adj = Gtk::Adjustment::create(3, 1, 6, 1, 1, 0);
+   num_players = Gtk::manage(new class Gtk::SpinButton(num_players_adj, 1, 0));
 
    Gtk::HBox *hbox14 = Gtk::manage(new class Gtk::HBox(false, 6));
    long_jumps = Gtk::manage(new class Gtk::CheckButton(_("Allow Long Jumps (Sue Wen Rules)")));
@@ -123,7 +123,7 @@ new_game_win_glade::new_game_win_glade(
    Gtk::Label *label16 = Gtk::manage(new class Gtk::Label(_("Host Name:")));
    Gtk::Label *label17 = Gtk::manage(new class Gtk::Label(_("Port Number:")));
    join_port_entry = Gtk::manage(new class Gtk::Entry());
-   join_host_entry = new class GtkComboBoxEntryText();
+   join_host_entry = new class GtkComboBoxEntryText(true);
 
    Gtk::Table *table2 = Gtk::manage(new class Gtk::Table(2, 2, false));
    Gtk::Button *join_cancel_button = Gtk::manage(new class Gtk::Button(Gtk::StockID("gtk-cancel")));
@@ -139,7 +139,7 @@ new_game_win_glade::new_game_win_glade(
    role_notebook = Gtk::manage(new class Gtk::Notebook());
 
    Gtk::VBox *vbox5 = Gtk::manage(new class Gtk::VBox(false, 6));
-   name_entry->set_flags(Gtk::CAN_FOCUS);
+   name_entry->set_can_focus(true);
    name_entry->set_visibility(true);
    name_entry->set_editable(true);
    name_entry->set_max_length(0);
@@ -158,35 +158,35 @@ new_game_win_glade::new_game_win_glade(
    label26->set_line_wrap(false);
    label26->set_use_markup(false);
    label26->set_selectable(false);
-   orange->set_flags(Gtk::CAN_FOCUS);
+   orange->set_can_focus(true);
    orange->set_relief(Gtk::RELIEF_NORMAL);
    orange->set_mode(true);
    orange->set_active(false);
-   yellow->set_flags(Gtk::CAN_FOCUS);
+   yellow->set_can_focus(true);
    yellow->set_relief(Gtk::RELIEF_NORMAL);
    yellow->set_mode(true);
    yellow->set_active(false);
-   white->set_flags(Gtk::CAN_FOCUS);
+   white->set_can_focus(true);
    white->set_relief(Gtk::RELIEF_NORMAL);
    white->set_mode(true);
    white->set_active(false);
-   blue->set_flags(Gtk::CAN_FOCUS);
+   blue->set_can_focus(true);
    blue->set_relief(Gtk::RELIEF_NORMAL);
    blue->set_mode(true);
    blue->set_active(false);
-   purple->set_flags(Gtk::CAN_FOCUS);
+   purple->set_can_focus(true);
    purple->set_relief(Gtk::RELIEF_NORMAL);
    purple->set_mode(true);
    purple->set_active(false);
-   black->set_flags(Gtk::CAN_FOCUS);
+   black->set_can_focus(true);
    black->set_relief(Gtk::RELIEF_NORMAL);
    black->set_mode(true);
    black->set_active(false);
-   red->set_flags(Gtk::CAN_FOCUS);
+   red->set_can_focus(true);
    red->set_relief(Gtk::RELIEF_NORMAL);
    red->set_mode(true);
    red->set_active(true);
-   green->set_flags(Gtk::CAN_FOCUS);
+   green->set_can_focus(true);
    green->set_relief(Gtk::RELIEF_NORMAL);
    green->set_mode(true);
    green->set_active(false);
@@ -200,7 +200,7 @@ new_game_win_glade::new_game_win_glade(
    table5->attach(*black, 2, 3, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table5->attach(*red, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table5->attach(*green, 3, 4, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   spectator->set_flags(Gtk::CAN_FOCUS);
+   spectator->set_can_focus(true);
    spectator->set_relief(Gtk::RELIEF_NORMAL);
    spectator->set_mode(true);
    spectator->set_active(false);
@@ -230,7 +230,7 @@ new_game_win_glade::new_game_win_glade(
    label19->set_line_wrap(false);
    label19->set_use_markup(false);
    label19->set_selectable(false);
-   host_port_entry->set_flags(Gtk::CAN_FOCUS);
+   host_port_entry->set_can_focus(true);
    host_port_entry->set_visibility(true);
    host_port_entry->set_editable(true);
    host_port_entry->set_max_length(0);
@@ -246,22 +246,21 @@ new_game_win_glade::new_game_win_glade(
    label24->set_line_wrap(false);
    label24->set_use_markup(false);
    label24->set_selectable(false);
-   num_players->set_flags(Gtk::CAN_FOCUS);
-   num_players->set_update_policy(Gtk::UPDATE_ALWAYS);
+   num_players->set_can_focus(true);
    num_players->set_numeric(false);
    num_players->set_digits(0);
    num_players->set_wrap(true);
    hbox14->pack_start(*label24, Gtk::PACK_SHRINK, 0);
    hbox14->pack_start(*num_players, Gtk::PACK_SHRINK, 0);
-   long_jumps->set_flags(Gtk::CAN_FOCUS);
+   long_jumps->set_can_focus(true);
    long_jumps->set_relief(Gtk::RELIEF_NORMAL);
    long_jumps->set_mode(true);
    long_jumps->set_active(true);
-   hop_others->set_flags(Gtk::CAN_FOCUS);
+   hop_others->set_can_focus(true);
    hop_others->set_relief(Gtk::RELIEF_NORMAL);
    hop_others->set_mode(true);
    hop_others->set_active(true);
-   stop_others->set_flags(Gtk::CAN_FOCUS);
+   stop_others->set_can_focus(true);
    stop_others->set_relief(Gtk::RELIEF_NORMAL);
    stop_others->set_mode(true);
    stop_others->set_active(true);
@@ -284,7 +283,7 @@ new_game_win_glade::new_game_win_glade(
    frame7->set_label_widget(*label23);
    vbox20->pack_start(*hbox15);
    vbox20->pack_start(*frame7);
-   cheechweb->set_flags(Gtk::CAN_FOCUS);
+   cheechweb->set_can_focus(true);
    cheechweb->set_relief(Gtk::RELIEF_NORMAL);
    cheechweb->set_mode(true);
    cheechweb->set_active(false);
@@ -294,7 +293,7 @@ new_game_win_glade::new_game_win_glade(
    label72->set_line_wrap(false);
    label72->set_use_markup(false);
    label72->set_selectable(false);
-   cheechweb_port_entry->set_flags(Gtk::CAN_FOCUS);
+   cheechweb_port_entry->set_can_focus(true);
    cheechweb_port_entry->set_visibility(true);
    cheechweb_port_entry->set_editable(true);
    cheechweb_port_entry->set_max_length(0);
@@ -318,8 +317,8 @@ new_game_win_glade::new_game_win_glade(
    frame15->set_label_align(0,0.5);
    frame15->add(*alignment28);
    frame15->set_label_widget(*label71);
-   host_cancel_button->set_flags(Gtk::CAN_FOCUS);
-   host_cancel_button->set_flags(Gtk::CAN_DEFAULT);
+   host_cancel_button->set_can_focus(true);
+   host_cancel_button->set_can_default(true);
    host_cancel_button->set_relief(Gtk::RELIEF_NORMAL);
    image13->set_alignment(0.5,0.5);
    image13->set_padding(0,0);
@@ -332,8 +331,8 @@ new_game_win_glade::new_game_win_glade(
    hbox4->pack_start(*image13, Gtk::PACK_SHRINK, 0);
    hbox4->pack_start(*label22, Gtk::PACK_SHRINK, 0);
    alignment9->add(*hbox4);
-   host_button->set_flags(Gtk::CAN_FOCUS);
-   host_button->set_flags(Gtk::CAN_DEFAULT);
+   host_button->set_can_focus(true);
+   host_button->set_can_default(true);
    host_button->set_relief(Gtk::RELIEF_NORMAL);
    host_button->add(*alignment9);
    hbuttonbox4->set_border_width(6);
@@ -360,7 +359,7 @@ new_game_win_glade::new_game_win_glade(
    label17->set_line_wrap(false);
    label17->set_use_markup(false);
    label17->set_selectable(false);
-   join_port_entry->set_flags(Gtk::CAN_FOCUS);
+   join_port_entry->set_can_focus(true);
    join_port_entry->set_visibility(true);
    join_port_entry->set_editable(true);
    join_port_entry->set_max_length(0);
@@ -374,8 +373,8 @@ new_game_win_glade::new_game_win_glade(
    table2->attach(*label17, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table2->attach(*join_port_entry, 1, 2, 1, 2, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table2->attach(*join_host_entry, 1, 2, 0, 1, Gtk::FILL, Gtk::FILL, 0, 0);
-   join_cancel_button->set_flags(Gtk::CAN_FOCUS);
-   join_cancel_button->set_flags(Gtk::CAN_DEFAULT);
+   join_cancel_button->set_can_focus(true);
+   join_cancel_button->set_can_default(true);
    join_cancel_button->set_relief(Gtk::RELIEF_NORMAL);
    image12->set_alignment(0.5,0.5);
    image12->set_padding(0,0);
@@ -388,8 +387,8 @@ new_game_win_glade::new_game_win_glade(
    hbox3->pack_start(*image12, Gtk::PACK_SHRINK, 0);
    hbox3->pack_start(*label21, Gtk::PACK_SHRINK, 0);
    alignment8->add(*hbox3);
-   join_button->set_flags(Gtk::CAN_FOCUS);
-   join_button->set_flags(Gtk::CAN_DEFAULT);
+   join_button->set_can_focus(true);
+   join_button->set_can_default(true);
    join_button->set_relief(Gtk::RELIEF_NORMAL);
    join_button->add(*alignment8);
    hbuttonbox3->set_border_width(6);
@@ -403,15 +402,13 @@ new_game_win_glade::new_game_win_glade(
    label14->set_line_wrap(false);
    label14->set_use_markup(false);
    label14->set_selectable(false);
-   role_notebook->set_flags(Gtk::CAN_FOCUS);
+   role_notebook->set_can_focus(true);
    role_notebook->set_show_tabs(true);
    role_notebook->set_show_border(true);
    role_notebook->set_tab_pos(Gtk::POS_TOP);
    role_notebook->set_scrollable(false);
    role_notebook->append_page(*vbox7, *label13);
-   role_notebook->pages().back().set_tab_label_packing(false, true, Gtk::PACK_START);
    role_notebook->append_page(*vbox6, *label14);
-   role_notebook->pages().back().set_tab_label_packing(false, true, Gtk::PACK_START);
    vbox5->set_border_width(3);
    vbox5->pack_start(*frame8, Gtk::PACK_SHRINK, 0);
    vbox5->pack_start(*role_notebook);

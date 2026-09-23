@@ -43,7 +43,7 @@ new_game_win::new_game_win() : new_game_win_glade()
 
 	for (std::vector<Glib::ustring>::iterator i = prefs.join_hostnames.begin();
 		 i != prefs.join_hostnames.end(); i++)
-			join_host_entry->append_text(*i);
+			join_host_entry->append(*i);
 	if (prefs.join_hostnames.size() > 0)
 		join_host_entry->set_active_text(prefs.join_hostnames.front());
 

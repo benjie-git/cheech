@@ -21,9 +21,8 @@
 #define _GAME_VIEW_HOLE_HH
 
 #include <gtkmm/drawingarea.h>
-#include <gdkmm/colormap.h>
-#include <gdkmm/window.h>
 #include <gdkmm/pixbuf.h>
+#include <cairomm/context.h>
 
 #include "game_hole.hh"
 #include "game_client.hh"
@@ -41,7 +40,7 @@ class GameViewHole : public sigc::trackable
 		void set_offset(Gdk::Point p);
 		void set_hilighted(bool h);
 		void recenter(Gdk::Point view_center);
-		void draw(Glib::RefPtr<Gdk::Window> window, Glib::RefPtr<Gdk::GC> gc);
+		void draw(const Cairo::RefPtr<Cairo::Context>& cr);
 		bool in_bounds(int x, int y);
 		void rotate(double theta);
 

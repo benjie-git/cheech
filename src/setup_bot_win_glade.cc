@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -71,17 +71,17 @@ setup_bot_win_glade::setup_bot_win_glade(
    Gtk::Label *label62 = Gtk::manage(new class Gtk::Label(_("Move Step:")));
    Gtk::Label *label63 = Gtk::manage(new class Gtk::Label(_("Thinking:")));
    Gtk::Label *label64 = Gtk::manage(new class Gtk::Label(_("Smarts:")));
-   Gtk::Adjustment *done_scale_adj = Gtk::manage(new class Gtk::Adjustment(0.600000023842, 0, 2, 0.10000000149, 0.5, 0));
-   done_scale = Gtk::manage(new class Gtk::HScale(*done_scale_adj));
+   Glib::RefPtr<Gtk::Adjustment> done_scale_adj = Gtk::Adjustment::create(0.600000023842, 0, 2, 0.10000000149, 0.5, 0);
+   done_scale = Gtk::manage(new class Gtk::HScale(done_scale_adj));
 
-   Gtk::Adjustment *move_scale_adj = Gtk::manage(new class Gtk::Adjustment(0.40000000596, 0, 2, 0.10000000149, 0.5, 0));
-   move_scale = Gtk::manage(new class Gtk::HScale(*move_scale_adj));
+   Glib::RefPtr<Gtk::Adjustment> move_scale_adj = Gtk::Adjustment::create(0.40000000596, 0, 2, 0.10000000149, 0.5, 0);
+   move_scale = Gtk::manage(new class Gtk::HScale(move_scale_adj));
 
-   Gtk::Adjustment *think_scale_adj = Gtk::manage(new class Gtk::Adjustment(0, 0, 2, 0.10000000149, 0.5, 0));
-   think_scale = Gtk::manage(new class Gtk::HScale(*think_scale_adj));
+   Glib::RefPtr<Gtk::Adjustment> think_scale_adj = Gtk::Adjustment::create(0, 0, 2, 0.10000000149, 0.5, 0);
+   think_scale = Gtk::manage(new class Gtk::HScale(think_scale_adj));
 
-   Gtk::Adjustment *smarts_scale_adj = Gtk::manage(new class Gtk::Adjustment(1.0, 0.5, 1.0, 0.1, 0.5, 0));
-   smarts_scale = Gtk::manage(new class Gtk::HScale(*smarts_scale_adj));
+   Glib::RefPtr<Gtk::Adjustment> smarts_scale_adj = Gtk::Adjustment::create(1.0, 0.5, 1.0, 0.1, 0.5, 0);
+   smarts_scale = Gtk::manage(new class Gtk::HScale(smarts_scale_adj));
 
    Gtk::Table *table9 = Gtk::manage(new class Gtk::Table(2, 2, false));
    Gtk::Button *defaults = Gtk::manage(new class Gtk::Button(_("Use Default Delays")));
@@ -125,7 +125,7 @@ setup_bot_win_glade::setup_bot_win_glade(
    label54->set_line_wrap(false);
    label54->set_use_markup(false);
    label54->set_selectable(false);
-   name_entry->set_flags(Gtk::CAN_FOCUS);
+   name_entry->set_can_focus(true);
    name_entry->set_visibility(true);
    name_entry->set_editable(true);
    name_entry->set_max_length(0);
@@ -163,26 +163,22 @@ setup_bot_win_glade::setup_bot_win_glade(
    label64->set_line_wrap(false);
    label64->set_use_markup(false);
    label64->set_selectable(false);
-   done_scale->set_flags(Gtk::CAN_FOCUS);
-   done_scale->set_update_policy(Gtk::UPDATE_CONTINUOUS);
+   done_scale->set_can_focus(true);
    done_scale->set_inverted(false);
    done_scale->set_digits(3);
    done_scale->set_draw_value(true);
    done_scale->set_value_pos(Gtk::POS_TOP);
-   move_scale->set_flags(Gtk::CAN_FOCUS);
-   move_scale->set_update_policy(Gtk::UPDATE_CONTINUOUS);
+   move_scale->set_can_focus(true);
    move_scale->set_inverted(false);
    move_scale->set_digits(3);
    move_scale->set_draw_value(true);
    move_scale->set_value_pos(Gtk::POS_TOP);
-   think_scale->set_flags(Gtk::CAN_FOCUS);
-   think_scale->set_update_policy(Gtk::UPDATE_CONTINUOUS);
+   think_scale->set_can_focus(true);
    think_scale->set_inverted(false);
    think_scale->set_digits(3);
    think_scale->set_draw_value(true);
    think_scale->set_value_pos(Gtk::POS_TOP);
-   smarts_scale->set_flags(Gtk::CAN_FOCUS);
-   smarts_scale->set_update_policy(Gtk::UPDATE_CONTINUOUS);
+   smarts_scale->set_can_focus(true);
    smarts_scale->set_inverted(false);
    smarts_scale->set_digits(2);
    smarts_scale->set_draw_value(true);
@@ -197,8 +193,8 @@ setup_bot_win_glade::setup_bot_win_glade(
    table9->attach(*move_scale, 1, 2, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
    table9->attach(*think_scale, 1, 2, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
    table9->attach(*smarts_scale, 1, 2, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
-   defaults->set_flags(Gtk::CAN_FOCUS);
-   defaults->set_flags(Gtk::CAN_DEFAULT);
+   defaults->set_can_focus(true);
+   defaults->set_can_default(true);
    defaults->set_relief(Gtk::RELIEF_NORMAL);
    hbuttonbox11->pack_start(*defaults);
    vbox16->pack_start(*table9);
@@ -242,8 +238,8 @@ setup_bot_win_glade::setup_bot_win_glade(
    hbox13->pack_start(*label70, Gtk::PACK_SHRINK, 0);
    alignment27->add(*hbox13);
    add_button->set_sensitive(false);
-   add_button->set_flags(Gtk::CAN_FOCUS);
-   add_button->set_flags(Gtk::CAN_DEFAULT);
+   add_button->set_can_focus(true);
+   add_button->set_can_default(true);
    add_button->set_relief(Gtk::RELIEF_NORMAL);
    add_button->add(*alignment27);
    image49->set_alignment(0.5,0.5);
@@ -257,8 +253,8 @@ setup_bot_win_glade::setup_bot_win_glade(
    hbox12->pack_start(*image49, Gtk::PACK_SHRINK, 0);
    hbox12->pack_start(*label69, Gtk::PACK_SHRINK, 0);
    alignment26->add(*hbox12);
-   remove_button->set_flags(Gtk::CAN_FOCUS);
-   remove_button->set_flags(Gtk::CAN_DEFAULT);
+   remove_button->set_can_focus(true);
+   remove_button->set_can_default(true);
    remove_button->set_relief(Gtk::RELIEF_NORMAL);
    remove_button->add(*alignment26);
    image48->set_alignment(0.5,0.5);
@@ -272,8 +268,8 @@ setup_bot_win_glade::setup_bot_win_glade(
    hbox11->pack_start(*image48, Gtk::PACK_SHRINK, 0);
    hbox11->pack_start(*label68, Gtk::PACK_SHRINK, 0);
    alignment25->add(*hbox11);
-   ok_button->set_flags(Gtk::CAN_FOCUS);
-   ok_button->set_flags(Gtk::CAN_DEFAULT);
+   ok_button->set_can_focus(true);
+   ok_button->set_can_default(true);
    ok_button->set_relief(Gtk::RELIEF_NORMAL);
    ok_button->add(*alignment25);
    hbuttonbox10->set_border_width(6);

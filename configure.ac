@@ -166,7 +166,7 @@ AC_CHECK_LIB([nsl], [main])
 AC_CHECK_LIB([resolv], [main])
 
 dnl gtkmm (GUIs)
-PKG_CHECK_MODULES([GTKMM], [gtkmm-2.4])
+PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
 
 dnl GLib / GThread
 GLIB_REQ=2.6.0

@@ -25,7 +25,7 @@
 #include <algorithm>
 
 #include "bot_base.hh"
-#ifndef CHEECH_IOS
+#if !defined(CHEECH_IOS) && !defined(CHEECH_PORTABLE)
 #include "game_images.hh"
 #else
 #include "cheech_move_gate.hh"
@@ -260,7 +260,7 @@ void BotBase::on_cmd_choose_new_name(Glib::ustring name)
 void BotBase::on_cmd_choose_new_color(Glib::ustring name, int color)
 {
 	for (unsigned int c = 1; c <
-#ifdef CHEECH_IOS
+#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
 		8
 #else
 		GameImages::get_num_colors()
@@ -810,7 +810,7 @@ void BotBase::make_move(MoveList *list)
 	if (list->empty())
 		return;
 
-#ifdef CHEECH_IOS
+#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
 	// Non-blocking pacing: the move is committed on a timer once the previous
 	// move's UI animation has finished.  This lets the next player's search
 	// start as soon as the turn arrives, while its commit waits for the gate.
@@ -858,7 +858,7 @@ void BotBase::make_move(MoveList *list)
 }
 
 
-#ifdef CHEECH_IOS
+#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
 bool BotBase::try_commit_move(MoveList move)
 {
 	if (!is_still_my_turn())

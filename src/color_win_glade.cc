@@ -35,7 +35,7 @@
 #  define N_(String) (String)
 #endif
 #include <gtkmmconfig.h>
-#if GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2
+#if GTKMM_MAJOR_VERSION > 2 || (GTKMM_MAJOR_VERSION==2 && GTKMM_MINOR_VERSION>2)
 //#include <sigc++/compatibility.h>
 #define GMM_GTKMM_22_24(a,b) b
 #else //gtkmm 2.2
@@ -91,35 +91,35 @@ color_win_glade::color_win_glade(
    change_label->set_line_wrap(false);
    change_label->set_use_markup(true);
    change_label->set_selectable(false);
-   orange->set_flags(Gtk::CAN_FOCUS);
+   orange->set_can_focus(true);
    orange->set_relief(Gtk::RELIEF_NORMAL);
    orange->set_mode(true);
    orange->set_active(false);
-   yellow->set_flags(Gtk::CAN_FOCUS);
+   yellow->set_can_focus(true);
    yellow->set_relief(Gtk::RELIEF_NORMAL);
    yellow->set_mode(true);
    yellow->set_active(false);
-   white->set_flags(Gtk::CAN_FOCUS);
+   white->set_can_focus(true);
    white->set_relief(Gtk::RELIEF_NORMAL);
    white->set_mode(true);
    white->set_active(false);
-   blue->set_flags(Gtk::CAN_FOCUS);
+   blue->set_can_focus(true);
    blue->set_relief(Gtk::RELIEF_NORMAL);
    blue->set_mode(true);
    blue->set_active(false);
-   purple->set_flags(Gtk::CAN_FOCUS);
+   purple->set_can_focus(true);
    purple->set_relief(Gtk::RELIEF_NORMAL);
    purple->set_mode(true);
    purple->set_active(false);
-   black->set_flags(Gtk::CAN_FOCUS);
+   black->set_can_focus(true);
    black->set_relief(Gtk::RELIEF_NORMAL);
    black->set_mode(true);
    black->set_active(false);
-   red->set_flags(Gtk::CAN_FOCUS);
+   red->set_can_focus(true);
    red->set_relief(Gtk::RELIEF_NORMAL);
    red->set_mode(true);
    red->set_active(true);
-   green->set_flags(Gtk::CAN_FOCUS);
+   green->set_can_focus(true);
    green->set_relief(Gtk::RELIEF_NORMAL);
    green->set_mode(true);
    green->set_active(false);
@@ -145,8 +145,8 @@ color_win_glade::color_win_glade(
    frame9->set_label_align(0,0.5);
    frame9->add(*alignment12);
    frame9->set_label_widget(*label29);
-   color_cancel_button->set_flags(Gtk::CAN_FOCUS);
-   color_cancel_button->set_flags(Gtk::CAN_DEFAULT);
+   color_cancel_button->set_can_focus(true);
+   color_cancel_button->set_can_default(true);
    color_cancel_button->set_relief(Gtk::RELIEF_NORMAL);
    image14->set_alignment(0.5,0.5);
    image14->set_padding(0,0);
@@ -159,8 +159,8 @@ color_win_glade::color_win_glade(
    hbox5->pack_start(*image14, Gtk::PACK_SHRINK, 0);
    hbox5->pack_start(*label39, Gtk::PACK_SHRINK, 0);
    alignment14->add(*hbox5);
-   change_button->set_flags(Gtk::CAN_FOCUS);
-   change_button->set_flags(Gtk::CAN_DEFAULT);
+   change_button->set_can_focus(true);
+   change_button->set_can_default(true);
    change_button->set_relief(Gtk::RELIEF_NORMAL);
    change_button->add(*alignment14);
    hbuttonbox7->set_border_width(6);
