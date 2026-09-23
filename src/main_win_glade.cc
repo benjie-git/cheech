@@ -43,6 +43,8 @@
 #endif //
 #include "main_win_glade.hh"
 #include <gdk/gdkkeysyms.h>
+#include <cmath>
+#include <gtkmm/accelkey.h>
 #include <gtkmm/accelgroup.h>
 #include <gtkmm/menuitem.h>
 #include <gtkmm/menu.h>
@@ -62,7 +64,16 @@
 #include <gdkmm/screen.h>
 #include "game_images.hh"
 
+
+// Control for Linux/Windows, and Command for MacOS
+static Gdk::ModifierType primary_accel_mod()
+{
+   return Gtk::AccelKey("<Primary>a").get_mod();
+}
+#define CHEECH_ACCEL_MOD_MASK primary_accel_mod()
+
 static const double PEG_SWATCH_PI = 3.14159265358979;
+
 
 PegColorSwatch::PegColorSwatch() : _color(0)
 {
@@ -196,41 +207,41 @@ main_win_glade::main_win_glade(
    Gtk::VBox *vbox1 = Gtk::manage(new class Gtk::VBox(false, 0));
 
    rotate = Gtk::manage(new class Gtk::MenuItem(_("Rot_ate Players"), true));
-   rotate->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_A, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   rotate->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_A, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    restart_submenu_menu->append(*rotate);
 
    shuffle = Gtk::manage(new class Gtk::MenuItem(_("Shu_ffle Players"), true));
-   shuffle->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_F, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   shuffle->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_F, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    restart_submenu_menu->append(*shuffle);
 
    restart_game = Gtk::manage(new class Gtk::MenuItem(_("_Keep Same Order"), true));
-   restart_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_K, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   restart_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_K, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    restart_submenu_menu->append(*restart_game);
 
    new_game = Gtk::manage(new class Gtk::MenuItem(_("Host _New Board..."), true));
-   new_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_N, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   new_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_N, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    menuitem1_menu->append(*new_game);
 
    end_game = Gtk::manage(new class Gtk::MenuItem(_("S_top Hosting"), true));
-   end_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_T, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   end_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_T, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    menuitem1_menu->append(*end_game);
 
    separator4 = Gtk::manage(new class Gtk::SeparatorMenuItem());
    menuitem1_menu->append(*separator4);
 
    join_game = Gtk::manage(new class Gtk::MenuItem(_("_Join a Board..."), true));
-   join_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_J, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   join_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_J, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    menuitem1_menu->append(*join_game);
 
    leave_game = Gtk::manage(new class Gtk::MenuItem(_("_Leave Board"), true));
-   leave_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_L, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   leave_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_L, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    menuitem1_menu->append(*leave_game);
 
    separatormenuitem1 = Gtk::manage(new class Gtk::SeparatorMenuItem());
    menuitem1_menu->append(*separatormenuitem1);
 
    game_settings = Gtk::manage(new class Gtk::MenuItem(_("Change _Game Settings..."), true));
-   game_settings->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_G, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   game_settings->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_G, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    menuitem1_menu->append(*game_settings);
 
    restart_submenu = Gtk::manage(new class Gtk::MenuItem(_("_Restart Game"), true));
@@ -247,15 +258,15 @@ main_win_glade::main_win_glade(
    menuitem1_menu->append(*quit);
 
    undo = Gtk::manage(new class Gtk::ImageMenuItem(*image46, _("_Undo"), true));
-   undo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Z, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   undo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Z, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    edit_menu->append(*undo);
 
    redo = Gtk::manage(new class Gtk::ImageMenuItem(*image47, _("_Redo"), true));
-   redo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Y, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   redo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Y, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    edit_menu->append(*redo);
 
    show_last_move = Gtk::manage(new class Gtk::MenuItem(_("S_how Last Move"), true));
-   show_last_move->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_H, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   show_last_move->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_H, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    edit_menu->append(*show_last_move);
 
    separator5 = Gtk::manage(new class Gtk::SeparatorMenuItem());
@@ -283,15 +294,15 @@ main_win_glade::main_win_glade(
    player_menu->append(*separator6);
 
    add_computer_player = Gtk::manage(new class Gtk::MenuItem(_("_Add Computer Player"), true));
-   add_computer_player->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_D, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   add_computer_player->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_D, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    player_menu->append(*add_computer_player);
 
    remove_computer_players = Gtk::manage(new class Gtk::MenuItem(_("R_emove Computer Players"), true));
-   remove_computer_players->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_E, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   remove_computer_players->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_E, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    player_menu->append(*remove_computer_players);
 
    setup_computer_player = Gtk::manage(new class Gtk::MenuItem(_("Setu_p Computer Player..."), true));
-   setup_computer_player->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_P, Gdk::CONTROL_MASK, Gtk::ACCEL_VISIBLE);
+   setup_computer_player->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_P, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    player_menu->append(*setup_computer_player);
 
    how_to_play = Gtk::manage(new class Gtk::MenuItem(_("How to _Play"), true));
@@ -473,7 +484,6 @@ main_win_glade::main_win_glade(
    int board_width = 0;
    int board_height = 0;
    game_view->get_size_request(board_width, board_height);
-   main_win->set_default_size(board_width + 120, board_height + 200);
    main_win->set_size_request(board_width + 20, board_height + 120);
    main_win->set_modal(false);
    main_win->property_window_position().set_value(Gtk::WIN_POS_NONE);
@@ -543,6 +553,11 @@ main_win_glade::main_win_glade(
    vpaned1->show();
    statusbar->hide();
    vbox1->show();
+   int menubar_min_height = 0;
+   int menubar_height = 0;
+   menubar1->get_preferred_height(menubar_min_height, menubar_height);
+   main_win->set_default_size((int)lround(board_width * 1.5),
+                              (int)lround(board_height * 1.5) + menubar_height);
    main_win->show();
    new_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_new_game_activate), false);
    end_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_end_game_activate), false);
