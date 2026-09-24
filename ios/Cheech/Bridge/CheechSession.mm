@@ -1014,6 +1014,11 @@ LocalSave parseLocalSave(const std::string &text)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
 		SessionImpl *impl = s->_impl;
+		// A rotate/shuffle renumbers the seats, so drop this client's previous
+		// mapping before recording the new one; otherwise stale keys accumulate
+		// and the "exactly one local human" test below never holds again.
+		for (auto it = impl->clientByNumber.begin(); it != impl->clientByNumber.end(); )
+			it = (it->second == client) ? impl->clientByNumber.erase(it) : std::next(it);
 		if (index >= 0 && index < (int)impl->seats.size())
 			impl->seats[index].playerNumber = (int)n;
 		impl->clientByNumber[(int)n] = client;
