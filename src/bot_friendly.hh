@@ -35,7 +35,14 @@ class BotFriendly : public BotLookAhead
 
 		virtual BotBase* clone_for_search() const;
 
+		virtual void set_friends(unsigned int mask);
+		virtual void set_enemies(unsigned int mask);
+
 	protected:
+		// Drops the search depth from 4 to 3 when the given mask covers a
+		// single player.
+		void maybe_shorten_depth(unsigned int mask);
+
 		virtual long score_move_recurse(GameBoard *board, unsigned int player,
 										MoveList *move);
 

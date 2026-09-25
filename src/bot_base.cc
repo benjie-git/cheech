@@ -241,8 +241,12 @@ void BotBase::refresh_focus_from_ids()
 			enemies |= (1u << (posn - 1));
 	}
 
-	_friends = friends;
-	_enemies = enemies;
+	// Route through the setters (again) so subclasses can react to the
+	// resolved focus without losing the id-based tracking flag.
+	bool by_ids = _focus_by_ids;
+	set_friends(friends);
+	set_enemies(enemies);
+	_focus_by_ids = by_ids;
 }
 
 

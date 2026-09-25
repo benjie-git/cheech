@@ -74,6 +74,35 @@ BotBase* BotFriendly::clone_for_search() const
 }
 
 
+void BotFriendly::set_friends(unsigned int mask)
+{
+	BotBase::set_friends(mask);
+
+	if (!_paranoid)
+		maybe_shorten_depth(mask);
+}
+
+
+void BotFriendly::set_enemies(unsigned int mask)
+{
+	BotBase::set_enemies(mask);
+
+	if (_paranoid)
+		maybe_shorten_depth(mask);
+}
+
+
+void BotFriendly::maybe_shorten_depth(unsigned int mask)
+{
+	// If a Friendly(4) bot has only 1 friend, it will search its own move,
+    // its friend's move, its own, and then its friend's again.  This means that
+    // it optimizes for finding its friend 2-move plans, but I want it to set up
+    // good immediate next moves for its friend.  So drop its depth to 3.
+	if (_depth == 4 && std::bitset<32>(mask).count() == 1)
+		set_depth(3);
+}
+
+
 long BotFriendly::score_move_recurse(GameBoard *board, unsigned int player,
 									 MoveList *move)
 {

@@ -59,9 +59,9 @@ class BotBase : public sigc::trackable
 		// ignores.
 		static const unsigned int ALL_PLAYERS = 0xFFFFFFFFu;
 
-		void set_friends(unsigned int mask);
+		virtual void set_friends(unsigned int mask);
 		unsigned int get_friends() const;
-		void set_enemies(unsigned int mask);
+		virtual void set_enemies(unsigned int mask);
 		unsigned int get_enemies() const;
 
 		// Stable-id player focus.  Unlike the bitmasks above, these survive

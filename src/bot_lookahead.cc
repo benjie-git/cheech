@@ -155,6 +155,29 @@ void BotLookAhead::prepare_search(GameBoard *board)
 }
 
 
+void BotLookAhead::set_depth(unsigned int depth)
+{
+	if (depth == _depth)
+		return;
+
+	_depth = depth;
+	_scratch_moves.resize(depth);
+	_search_moves.resize(depth);
+
+	// The depth dropped out from under any pending root search, so restart it
+	// at the new depth rather than leaving _current_depth indexing past the
+	// resized buffers.
+	_current_depth = depth;
+
+	if (depth > 1 && _tt.empty())
+	{
+		_tt_mask = TT_MASK;
+		_tt.resize(TT_SIZE);
+		_tt_gen = 0;
+	}
+}
+
+
 void BotLookAhead::find_best_move(GameBoard *board, unsigned int player,
 								  std::vector<MoveList> *best_moves,
 								  long *best_score)

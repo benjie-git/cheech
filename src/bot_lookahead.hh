@@ -45,6 +45,12 @@ class BotLookAhead : public BotBase
 		virtual bool supports_parallel_search() const;
 		virtual void prepare_search(GameBoard *board);
 
+		// Changes the search depth at runtime, resizing the per-plie move
+		// buffers to match and keeping _current_depth consistent.  Used when a
+		// bot realises a full-depth search is unnecessary for the number of
+		// players it is focused on.
+		void set_depth(unsigned int depth);
+
 		// Weight applied to the root player's own progress.  Only meaningful
 		// in the paranoid (Mean) search, where a value of 3 makes the bot
 		// value its own advancement three times as much as slowing the
@@ -128,7 +134,7 @@ class BotLookAhead : public BotBase
 			unsigned char	flag;
 		};
 
-		static const unsigned int TT_SIZE_BITS = 20;
+		static const unsigned int TT_SIZE_BITS = 18;
 		static const unsigned int TT_SIZE = 1u << TT_SIZE_BITS;
 		static const unsigned int TT_MASK = TT_SIZE - 1;
 
