@@ -61,6 +61,12 @@ struct SeatConfig: Identifiable, Equatable, Codable {
 	// Computer-seat skill level (1...4, 1 = Best).  nil means Best.  Optional so
 	// previously saved seat setups still decode.
 	var skill: Int?
+	// For Computer seats: the ids of the other seats this bot treats as friends
+	// (Friendly bots) or enemies (Mean bots).  nil means "everyone" (the
+	// default); an empty array means "nobody".  Stored as seat ids so the
+	// selection survives reordering, and mapped to seat indices at game start.
+	var friendSeats: [UUID]?
+	var enemySeats: [UUID]?
 }
 
 // A computer seat's skill is a level 1...4 (Best/Great/Mid/Nerfed).  How a
@@ -374,6 +380,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 					color: seat.color
 				)
 				spec.smarts = resolved.smarts
+				spec.friendSeats = seat.friendSeats.map { indices(forSeatIDs: $0) }
+				spec.enemySeats = seat.enemySeats.map { indices(forSeatIDs: $0) }
 				return spec
 			case .remote:
 				return CheechSeat.remote()
@@ -389,6 +397,13 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			seats: seatSpecs
 		)
 		screen = .game
+	}
+
+	// Maps a set of seat ids to their current positions in the seats array (the
+	// indices the bridge and core speak in).
+	private func indices(forSeatIDs ids: [UUID]) -> [NSNumber] {
+		let indexOf = Dictionary(uniqueKeysWithValues: seats.enumerated().map { ($0.element.id, $0.offset) })
+		return ids.compactMap { indexOf[$0] }.map { NSNumber(value: $0) }
 	}
 
 	// MARK: - Local game persistence
@@ -447,8 +462,15 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		)
 	}
 
-	func addComputerPlayer(type: String, name: String, color: Int) {
-		session.addComputerPlayer(ofType: type, name: name, color: color)
+	func addComputerPlayer(type: String, name: String, color: Int,
+						   friendPlayers: [Int]? = nil, enemyPlayers: [Int]? = nil) {
+		session.addComputerPlayer(
+			ofType: type,
+			name: name,
+			color: color,
+			friendPlayers: friendPlayers?.map { NSNumber(value: $0) },
+			enemyPlayers: enemyPlayers?.map { NSNumber(value: $0) }
+		)
 	}
 
 	func removeComputerPlayers() {

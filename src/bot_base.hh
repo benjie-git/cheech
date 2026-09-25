@@ -21,6 +21,7 @@
 #define _BOT_BASE_HH
 
 #include <vector>
+#include <set>
 #include <bitset>
 #include <atomic>
 #include <sigc++/sigc++.h>
@@ -48,6 +49,29 @@ class BotBase : public sigc::trackable
 		// lower values widen the choice to the top-N distinct score tiers.
 		void set_smarts(int percent);
 		int get_smarts() const;
+
+		// Player-focus bitmasks (bit i = player i+1).  ALL_PLAYERS is the
+		// default and means "everyone", so an unconfigured bot behaves as
+		// before.  Friendly bots only simulate (and value) players in their
+		// friend set; Mean bots only simulate (and minimise) players in their
+		// enemy set.  Players excluded from the relevant mask are frozen
+		// obstacles during search, like the opponents LookAhead already
+		// ignores.
+		static const unsigned int ALL_PLAYERS = 0xFFFFFFFFu;
+
+		void set_friends(unsigned int mask);
+		unsigned int get_friends() const;
+		void set_enemies(unsigned int mask);
+		unsigned int get_enemies() const;
+
+		// Stable-id player focus.  Unlike the bitmasks above, these survive
+		// Rotate/Shuffle: the bot asks the server for the player-number/id
+		// mapping and resolves the ids to the current numbers just before it
+		// searches.
+		void set_friend_ids(const std::set<unsigned int>& ids);
+		const std::set<unsigned int>& get_friend_ids() const;
+		void set_enemy_ids(const std::set<unsigned int>& ids);
+		const std::set<unsigned int>& get_enemy_ids() const;
 
 		GameClient *get_game_client();
 
@@ -98,12 +122,41 @@ class BotBase : public sigc::trackable
 		void on_message(Glib::ustring msg);
 		void on_cmd_choose_new_name(Glib::ustring name);
 		void on_cmd_choose_new_color(Glib::ustring name, int color);
+		void on_cmd_set_player_number(unsigned int posn);
+		void on_cmd_player_ids_end();
 		virtual void on_cmd_game_turn(unsigned int posn,
 									  GameServer::GameStatus status,
 									  unsigned int move_count);
 
+		// Asks the server for the number/id mapping (no-op for search clones
+		// and disconnected clients).
+		void request_player_mapping();
+
+		// Rebuilds _friends/_enemies by resolving the configured id sets
+		// against the client's current number/id mapping.
+		void refresh_focus_from_ids();
+
+		// Defers make_best_move() by one main-loop iteration (the gnet
+		// workaround) after cancelling any pending mapping timeout.
+		void schedule_search();
+
+		// Fallback for servers that never answer REQUEST_PLAYER_IDS: stop
+		// waiting and search with whatever mapping we have.  Always returns
+		// false so the timeout fires once.
+		bool on_mapping_timeout();
+
 		bool is_still_my_turn();
 		bool is_blocking_pegs(GameBoard *board, unsigned int player);
+
+		// Whether `player` falls inside the given focus mask (ALL_PLAYERS
+		// focuses on everyone).
+		bool focuses_on(unsigned int player, unsigned int mask) const;
+
+		// Like GameBoard::get_next_player(), but additionally skips players
+		// that are not in the focus mask.  Returns `from` when there is no
+		// other focused, unfinished player.
+		unsigned int next_focused_player(GameBoard *board, unsigned int from,
+										 unsigned int mask) const;
 
 		// Strong, unscaled penalty for ending a move in another player's goal.
 		// Bots may still pass through or (when forced) stop there, but they
@@ -177,6 +230,15 @@ class BotBase : public sigc::trackable
 		int				_move_done_delay;
 		int				_smarts;
 		bool			_abort;
+		bool			_searching;
+		bool			_search_pending;
+		unsigned int	_friends;
+		unsigned int	_enemies;
+		bool			_focus_by_ids;
+		std::set<unsigned int>	_friend_ids;
+		std::set<unsigned int>	_enemy_ids;
+		bool			_awaiting_mapping;
+		sigc::connection	_mapping_timeout;
 		bool			_search_clone;
 		std::atomic<bool>	*_search_abort;
 		std::vector<BotBase*>	_search_clones;

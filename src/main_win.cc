@@ -19,13 +19,38 @@
 
 #include "config.h"
 #include <glibmm/i18n.h>
+#include <glibmm/main.h>
 
 #include <gtkmm/textview.h>
 #include <gtkmm/messagedialog.h> 
+#include <gdkmm/window.h>
 
 #include "main_win.hh"
 
 #include "utility.hh"
+
+
+// Gives the window keyboard focus on the next main-loop iteration.  Doing it
+// immediately fails when the request comes from a menu popup that still holds
+// the keyboard grab, so the window manager would hand focus back to the parent.
+static void grab_window_focus(Gtk::Window *window)
+{
+	Glib::RefPtr<Gdk::Window> gdk_window = window->get_window();
+
+	if (gdk_window)
+		gdk_window->focus(GDK_CURRENT_TIME);
+
+	if (!window->get_focus())
+		window->child_focus(Gtk::DIR_TAB_FORWARD);
+}
+
+
+static void present_and_focus(Gtk::Window *window)
+{
+	window->present();
+	Glib::signal_timeout().connect_once(
+		sigc::bind(sigc::ptr_fun(&grab_window_focus), window), 1);
+}
 
 
 main_win::main_win() : main_win_glade()
@@ -222,7 +247,7 @@ void main_win::start_client(Glib::ustring host, unsigned int port,
 		&main_win::on_game_setup));
 	_setup_game_win.setup(1, false, false, false, _game_status);
 
-	_setup_bot_win.setup(_game_status);
+	_setup_bot_win.setup(_game_status, _client);
 	_client->cmd_game_turn.connect(sigc::mem_fun(_setup_bot_win,
 		&setup_bot_win::on_cmd_game_turn));
 }
@@ -241,7 +266,7 @@ void main_win::add_join_hostname(Glib::ustring host)
 void main_win::on_new_game_activate()
 {
 	_new_game_win.show_join_page(false);
-	_new_game_win.present();
+	present_and_focus(&_new_game_win);
 }
 
 
@@ -358,7 +383,7 @@ void main_win::stop_server()
 
 void main_win::on_join_game_activate()
 {
-	_new_game_win.present();
+	present_and_focus(&_new_game_win);
 	_new_game_win.show_join_page(true);
 	game_view->set_locked(true);
 }
@@ -377,7 +402,7 @@ void main_win::on_leave_game_activate()
 		_client->leave_game();
 		_current_player = 0;
 		_game_status = GameServer::End;
-		_setup_bot_win.setup(_game_status);
+		_setup_bot_win.setup(_game_status, _client);
 		_move_count = 1;
 		move_counter->set_text("");
 		_last_move.clear();
@@ -448,7 +473,7 @@ void main_win::on_change_color_activate()
 	if (_client)
 	{
 		_color_win.set_force_info(NULL, 0);
-		_color_win.present();
+		present_and_focus(&_color_win);
 	}
 }
 
@@ -459,7 +484,7 @@ void main_win::on_change_name_activate()
 	{
 		Glib::ustring name = _client->get_my_name();
 		_name_win.set_name(&name);
-		_name_win.present();
+		present_and_focus(&_name_win);
 
 	}
 }
@@ -518,14 +543,15 @@ void main_win::on_game_settings_activate()
 			_client->get_board()->get_hop_others_allowed(),
 			_client->get_board()->get_stop_others_allowed(),
 			_game_status);
-		_setup_game_win.present();
+		present_and_focus(&_setup_game_win);
 	}
 }
 
 
 void main_win::on_setup_computer_player_activate()
 {
-	_setup_bot_win.present();
+	_setup_bot_win.refresh_focus();
+	_setup_bot_win.present_focused();
 }
 
 
@@ -668,13 +694,13 @@ bool main_win::confirm_end_game()
 
 void main_win::on_about_activate()
 {
-	_about_win.present();
+	present_and_focus(&_about_win);
 }
 
 
 void main_win::on_how_to_play_activate()
 {
-	_help_win.present();
+	present_and_focus(&_help_win);
 }
 
 
@@ -746,6 +772,8 @@ void main_win::on_cmd_player_add(unsigned int posn,
 	game_view->queue_draw();
 
 	update_menus();
+
+	_setup_bot_win.refresh_focus();
 }
 
 
@@ -757,6 +785,8 @@ void main_win::on_cmd_player_remove(unsigned int posn)
 	game_view->queue_draw();
 
 	update_menus();
+
+	_setup_bot_win.refresh_focus();
 }
 
 
@@ -787,14 +817,14 @@ void main_win::on_cmd_game_resync()
 void main_win::on_cmd_choose_new_name(Glib::ustring name)
 {
 	_name_win.set_name(&name, true);
-	_name_win.present();
+	present_and_focus(&_name_win);
 }
 
 
 void main_win::on_cmd_choose_new_color(Glib::ustring name, int color)
 {
 	_color_win.set_force_info(&name, color);
-	_color_win.present();
+	present_and_focus(&_color_win);
 }
 
 

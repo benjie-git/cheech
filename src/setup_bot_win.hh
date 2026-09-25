@@ -22,6 +22,10 @@
 #  define _BOT_SETUP_WIN_HH
 
 #include "bot_base.hh"
+#include "game_client.hh"
+
+#include <gtkmm/checkbutton.h>
+#include <vector>
 
 
 class setup_bot_win : public setup_bot_win_glade
@@ -30,7 +34,14 @@ class setup_bot_win : public setup_bot_win_glade
 		setup_bot_win();
 		~setup_bot_win();
 
-		void setup(GameServer::GameStatus status);
+		void setup(GameServer::GameStatus status, GameClient *client = NULL);
+
+		// Rebuilds the player checkboxes from the current client state.  Call
+		// this when the player list changes (a player joins or leaves).
+		void refresh_focus();
+
+		// Shows the window and gives it keyboard focus.
+		void present_focused();
 
 		sigc::signal<void, BotBase*> signal_add_bot;
 		sigc::signal<void> signal_remove_bots;
@@ -44,10 +55,21 @@ class setup_bot_win : public setup_bot_win_glade
         void on_add_button_activate();
         void on_remove_button_activate();
         void on_ok_button_activate();
-        void on_defaults_activate();
+		void on_defaults_activate();
 		void on_bot_type_changed();
+		void rebuild_focus();
+		void grab_dialog_focus();
 
 		GameServer::GameStatus _status;
 		BotBase *_bot;
+		GameClient *_client;
+		// _focus_checks is parallel to player numbers 1..N; _focus_widgets
+		// holds the grid cells (label and checkbox row) for cleanup.
+		std::vector<Gtk::CheckButton*> _focus_checks;
+		std::vector<Gtk::Widget*> _focus_widgets;
+		// Persists the user's checkbox selection across rebuilds (adding a
+		// player, re-selecting the bot type, ...).  ALL_PLAYERS means "every
+		// player, including ones that join later".
+		unsigned int _focus_mask;
 };
 #endif

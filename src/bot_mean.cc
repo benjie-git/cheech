@@ -56,6 +56,8 @@ BotBase* BotMean::clone_for_search() const
 	BotMean *clone = new BotMean(_depth);
 	clone->set_self_penalty(_self_penalty);
 	clone->set_self_bonus(_self_bonus);
+	clone->set_friends(get_friends());
+	clone->set_enemies(get_enemies());
 	clone->set_tt_bits(18);
 	return clone;
 }

@@ -67,9 +67,9 @@ setup_bot_win_glade::setup_bot_win_glade(
    type_box = new class GtkComboBoxText();
 
    Gtk::Table *table8 = Gtk::manage(new class Gtk::Table(2, 2, false));
-   Gtk::Label *label61 = Gtk::manage(new class Gtk::Label(_("Move Done:")));
-   Gtk::Label *label62 = Gtk::manage(new class Gtk::Label(_("Move Step:")));
-   Gtk::Label *label63 = Gtk::manage(new class Gtk::Label(_("Thinking:")));
+   Gtk::Label *label61 = Gtk::manage(new class Gtk::Label(_("Move Done Delay:")));
+   Gtk::Label *label62 = Gtk::manage(new class Gtk::Label(_("Move Step Delay:")));
+   Gtk::Label *label63 = Gtk::manage(new class Gtk::Label(_("Thinking Delay:")));
    Gtk::Label *label64 = Gtk::manage(new class Gtk::Label(_("Smarts:")));
    Glib::RefPtr<Gtk::Adjustment> done_scale_adj = Gtk::Adjustment::create(0.600000023842, 0, 2, 0.10000000149, 0.5, 0);
    done_scale = Gtk::manage(new class Gtk::HScale(done_scale_adj));
@@ -84,13 +84,14 @@ setup_bot_win_glade::setup_bot_win_glade(
    smarts_scale = Gtk::manage(new class Gtk::HScale(smarts_scale_adj));
 
    Gtk::Table *table9 = Gtk::manage(new class Gtk::Table(2, 2, false));
-   Gtk::Button *defaults = Gtk::manage(new class Gtk::Button(_("Use Default Delays")));
+   Gtk::Button *defaults = Gtk::manage(new class Gtk::Button(_("Reset to Defaults")));
    Gtk::HButtonBox *hbuttonbox11 = Gtk::manage(new class Gtk::HButtonBox(Gtk::BUTTONBOX_END, 0));
    Gtk::VBox *vbox16 = Gtk::manage(new class Gtk::VBox(false, 0));
    Gtk::Alignment *alignment22 = Gtk::manage(new class Gtk::Alignment(0.5, 0.5, 1, 1));
-   Gtk::Label *label60 = Gtk::manage(new class Gtk::Label(_("<b>Delays</b>")));
+   Gtk::Label *label60 = Gtk::manage(new class Gtk::Label(_("<b>Configuration</b>")));
    Gtk::Frame *frame13 = Gtk::manage(new class Gtk::Frame());
    Gtk::VBox *vbox15 = Gtk::manage(new class Gtk::VBox(false, 0));
+   config_table = table9;
    Gtk::Alignment *alignment19 = Gtk::manage(new class Gtk::Alignment(0.5, 0.5, 1, 1));
    Gtk::Label *label56 = Gtk::manage(new class Gtk::Label(_("<b>Computer Player</b>")));
    Gtk::Frame *frame12 = Gtk::manage(new class Gtk::Frame());

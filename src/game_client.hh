@@ -36,9 +36,11 @@ private:
 	public:
 		Glib::ustring		name;
 		int					color;
+		unsigned int		id;
 
 	public:
-		Player(Glib::ustring name_ = "", int color_ = 0);
+		Player(Glib::ustring name_ = "", int color_ = 0,
+			   unsigned int id_ = 0);
 	};
 
 private:
@@ -55,6 +57,7 @@ private:
 	Glib::ustring		_name;
 	unsigned int		_color;
 	unsigned int		_player_number;
+	unsigned int		_my_player_id;
 	bool				_spectator;
 
 	unsigned int		_client_heartbeat;
@@ -80,6 +83,8 @@ public:
 	sigc::signal<void, MoveList*> cmd_game_show_move;
 	sigc::signal<void> cmd_game_hide_move;
 	sigc::signal<void, MoveList*> cmd_game_make_move;
+	sigc::signal<void, unsigned int, unsigned int> cmd_player_id;
+	sigc::signal<void> cmd_player_ids_end;
 
 	sigc::signal<void, Glib::ustring> evt_message;
 	sigc::signal<void> evt_connected;
@@ -96,6 +101,9 @@ public:
 	unsigned int get_current_player();
 	unsigned int get_player_color(unsigned int posn);
 	Glib::ustring get_player_name(unsigned int posn);
+	unsigned int get_my_player_id();
+	unsigned int get_player_id(unsigned int posn);
+	unsigned int get_posn_for_id(unsigned int id);
 
 	void chat(Glib::ustring text);
 	void change_name(Glib::ustring name);
@@ -112,6 +120,7 @@ public:
 						  bool hop_others, bool stop_others);
 
 	void join_game(Glib::ustring host, unsigned int port, bool spectator);
+	void request_player_ids();
 	void resync_game();
 	void leave_game();
 
@@ -136,6 +145,10 @@ private:
 	void command_SPECTATOR_ADD(const Glib::ustring& arguments);
 	// Remove a player from the game
 	void command_PLAYER_REMOVE(const Glib::ustring& arguments);
+	// Map a player number to its stable id
+	void command_PLAYER_ID(const Glib::ustring& arguments);
+	// End of a player id mapping
+	void command_PLAYER_ID_END(const Glib::ustring& arguments);
 	// Player chatted me
 	void command_PLAYER_CHAT(const Glib::ustring& arguments);
 	// Player finished

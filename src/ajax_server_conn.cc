@@ -593,12 +593,44 @@ void AjaxServerConn::ajax_shuffle()
 }
 
 
+// Parses a comma-separated list of player numbers into a focus mask
+// (bit i set = player i+1).  An empty list yields 0 ("nobody").
+static unsigned int parse_player_list(const Glib::ustring &list)
+{
+	unsigned int mask = 0;
+	Glib::ustring::size_type start = 0;
+
+	while (start <= list.size())
+	{
+		Glib::ustring::size_type comma = list.find(',', start);
+		Glib::ustring token = (comma == Glib::ustring::npos)
+			? list.substr(start) : list.substr(start, comma - start);
+
+		util::trim(token);
+		if (!token.empty())
+		{
+			int player = atoi(token.c_str());
+			if (player >= 1 && player <= 32)
+				mask |= (1u << (player - 1));
+		}
+
+		if (comma == Glib::ustring::npos)
+			break;
+		start = comma + 1;
+	}
+
+	return mask;
+}
+
+
 void AjaxServerConn::ajax_addbot(Glib::ustring arguments)
 {
-	// The command may be just a bot type ("l3") or a type followed by a
-	// smarts percentage ("l3 80").
+	// The command may be a bot type ("l3"), optionally followed by a smarts
+	// percentage ("l3 80") and/or focus lists ("friends=2,3 enemies=4").
 	Glib::ustring type = arguments;
 	int smarts = 100;
+	unsigned int friends = BotBase::ALL_PLAYERS;
+	unsigned int enemies = BotBase::ALL_PLAYERS;
 
 	std::istringstream iss(arguments);
 	std::string token;
@@ -609,10 +641,20 @@ void AjaxServerConn::ajax_addbot(Glib::ustring arguments)
 		iss >> smarts;
 	}
 
+	while (iss >> token)
+	{
+		if (token.compare(0, 8, "friends=") == 0)
+			friends = parse_player_list(token.substr(8));
+		else if (token.compare(0, 8, "enemies=") == 0)
+			enemies = parse_player_list(token.substr(8));
+	}
+
 	BotBase *bot = BotBase::new_bot_of_type(type);
 	if (!bot)
 		bot = BotBase::new_bot_of_type("l3");
 	bot->set_smarts(smarts);
+	bot->set_friends(friends);
+	bot->set_enemies(enemies);
 	_bots.push_back(bot);
 	bot->join_game(_ajax_server->get_cheechd_hostname(),
 				   _ajax_server->get_cheechd_port());

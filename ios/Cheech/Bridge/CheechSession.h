@@ -38,6 +38,13 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 @property (nonatomic) NSInteger color;
 // Computer-seat skill (50...100); 100 = always play the single best move.
 @property (nonatomic) NSInteger smarts;
+// For Computer seats: the other seats this bot should treat as friends
+// (Friendly bots) or enemies (Mean bots), as indices into the seats array.
+// nil means "everyone" (the default, so an unconfigured bot behaves as
+// before); an empty array means "nobody".  Seat indices survive a rotate or
+// shuffle, where player numbers change.
+@property (nonatomic, copy, nullable) NSArray<NSNumber *> *friendSeats;
+@property (nonatomic, copy, nullable) NSArray<NSNumber *> *enemySeats;
 + (instancetype)humanWithName:(NSString *)name color:(NSInteger)color;
 + (instancetype)computerWithType:(NSString *)type
 							name:(NSString *)name
@@ -127,6 +134,18 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 						   name:(NSString *)name
 						  color:(NSInteger)color
 	NS_SWIFT_NAME(addComputerPlayer(ofType:name:color:));
+// Adds a computer player with an explicit focus list, given as current player
+// numbers.  nil means "everyone" (the default); an empty array means "nobody".
+// A Friendly bot only cooperates with its friends; a Mean bot only opposes its
+// enemies.  Both lists are meaningless to other bot types.  Since these bots
+// are not seats, their focus is re-resolved from stable player ids after a
+// rotate.
+- (void)addComputerPlayerOfType:(NSString *)type
+						   name:(NSString *)name
+						  color:(NSInteger)color
+				   friendPlayers:(nullable NSArray<NSNumber *> *)friends
+					enemyPlayers:(nullable NSArray<NSNumber *> *)enemies
+	NS_SWIFT_NAME(addComputerPlayer(ofType:name:color:friendPlayers:enemyPlayers:));
 - (void)removeComputerPlayers;
 
 // Host actions (ignored by the server for non-hosts)

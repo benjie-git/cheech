@@ -19,10 +19,14 @@ struct ColorPickerRow: View {
 		HStack(spacing: 10) {
 			ForEach(1..<9, id: \.self) { color in
 				Circle()
-					.fill(PegColor.swiftUIColor(color))
+					.fill(PegColor.swiftUIColor(color)
+						.opacity(selection == color ? 1.0 : 0.7))
 					.frame(width: 34, height: 34)
 					.overlay(
-						Circle().stroke(Color.primary, lineWidth: selection == color ? 3 : 1)
+						Circle().stroke(
+							selection == color ? Color.primary
+								: Color.secondary.opacity(0.7),
+							lineWidth: selection == color ? 3 : 1)
 					)
 					.onTapGesture { selection = color }
 			}
@@ -429,6 +433,76 @@ struct SkillDropdown: View {
 	}
 }
 
+// A checkbox list of the other seats, used to choose which players a Friendly
+// bot helps or a Mean bot opposes.  A nil selection means "everyone" and shows
+// as all boxes checked; toggling materialises an explicit list (an empty list
+// means "nobody").
+struct FocusPickerRow: View {
+	@EnvironmentObject var model: SessionModel
+	let title: String
+	let seatID: UUID
+	@Binding var selection: [UUID]?
+
+	private var others: [SeatConfig] {
+		model.seats.filter { $0.id != seatID }
+	}
+
+	private var chosen: Set<UUID> {
+		Set(selection ?? others.map { $0.id })
+	}
+
+	private func label(_ seat: SeatConfig) -> String {
+		if seat.kind == .remote { return "Open seat" }
+		return seat.name.isEmpty ? "Seat" : seat.name
+	}
+
+	private func toggle(_ id: UUID) {
+		var set = chosen
+		if set.contains(id) { set.remove(id) } else { set.insert(id) }
+		selection = others.map { $0.id }.filter { set.contains($0) }
+	}
+
+	// Two players per row to keep the setup table compact.
+	private var rows: [[SeatConfig]] {
+		stride(from: 0, to: others.count, by: 2).map {
+			Array(others[$0..<min($0 + 2, others.count)])
+		}
+	}
+
+	// Name right-aligned against the switch so the two read as one control.
+	private func focusToggle(_ name: String, isOn: Binding<Bool>) -> some View {
+		HStack(spacing: 6) {
+			Text(name)
+				.lineLimit(1)
+				.frame(maxWidth: .infinity, alignment: .trailing)
+			Toggle("", isOn: isOn)
+				.labelsHidden()
+		}
+		.frame(maxWidth: .infinity)
+	}
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 6) {
+			Text(title)
+				.font(.subheadline)
+				.foregroundStyle(.secondary)
+			ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+				HStack(spacing: 12) {
+					ForEach(row) { other in
+						focusToggle(label(other), isOn: Binding(
+							get: { chosen.contains(other.id) },
+							set: { _ in toggle(other.id) }
+						))
+					}
+					if row.count == 1 {
+						Color.clear.frame(maxWidth: .infinity)
+					}
+				}
+			}
+		}
+	}
+}
+
 struct SeatEditorView: View {
 	@EnvironmentObject var model: SessionModel
 	@Binding var seat: SeatConfig
@@ -458,6 +532,7 @@ struct SeatEditorView: View {
 
 			switch seat.kind {
 			case .human:
+				ColorPickerRow(selection: $seat.color)
 				HStack {
 					Text("Name")
 					TextField("Name", text: Binding(
@@ -469,8 +544,8 @@ struct SeatEditorView: View {
 					))
 					.multilineTextAlignment(.trailing)
 				}
-				ColorPickerRow(selection: $seat.color)
 			case .computer:
+				ColorPickerRow(selection: $seat.color)
 				BotTypePickerRow(title: "Bot Type", selection: Binding(
 					get: { seat.botType },
 					set: { newType in
@@ -483,7 +558,13 @@ struct SeatEditorView: View {
 					get: { BotSkill.level(seat.skill) },
 					set: { seat.skill = $0 }
 				))
-				ColorPickerRow(selection: $seat.color)
+				if model.seats.count > 2,
+				   CheechSession.typeName(forComputerType: seat.botType) == "Friendly" {
+					FocusPickerRow(title: "Friendly to", seatID: seat.id, selection: $seat.friendSeats)
+				} else if model.seats.count > 2,
+				   CheechSession.typeName(forComputerType: seat.botType) == "Mean" {
+					FocusPickerRow(title: "Mean to", seatID: seat.id, selection: $seat.enemySeats)
+				}
 			case .remote:
 				Text("Open seat — another device can join")
 					.font(.caption)
@@ -998,12 +1079,77 @@ struct ProfileEditorView: View {
 // Editable copy of the in-game setup, so the form can be changed without
 // touching the running game until "Apply" is tapped.  (Held as an
 // ObservableObject because this toolchain cannot expand @State.)
+// In-game equivalent of FocusPickerRow: the other players are already seated,
+// so the choices are current player numbers (with their names) rather than seat
+// ids.  A nil selection means "everyone".
+struct InGameFocusPicker: View {
+	@EnvironmentObject var model: SessionModel
+	let title: String
+	@Binding var selection: Set<Int>?
+	let players: [Int]
+
+	private var chosen: Set<Int> { selection ?? Set(players) }
+
+	private func label(for player: Int) -> String {
+		let name = model.session.name(forPlayer: player)
+		return name.isEmpty ? "Player \(player)" : name
+	}
+
+	private func toggle(_ player: Int) {
+		var set = chosen
+		if set.contains(player) { set.remove(player) } else { set.insert(player) }
+		selection = set
+	}
+
+	// Two players per row to keep the setup table compact.
+	private var rows: [[Int]] {
+		stride(from: 0, to: players.count, by: 2).map {
+			Array(players[$0..<min($0 + 2, players.count)])
+		}
+	}
+
+	// Name right-aligned against the switch so the two read as one control.
+	private func focusToggle(_ name: String, isOn: Binding<Bool>) -> some View {
+		HStack(spacing: 6) {
+			Text(name)
+				.lineLimit(1)
+				.frame(maxWidth: .infinity, alignment: .trailing)
+			Toggle("", isOn: isOn)
+				.labelsHidden()
+		}
+		.frame(maxWidth: .infinity)
+	}
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 6) {
+			Text(title)
+				.font(.subheadline)
+				.foregroundStyle(.secondary)
+			ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+				HStack(spacing: 12) {
+					ForEach(row, id: \.self) { player in
+						focusToggle(label(for: player), isOn: Binding(
+							get: { chosen.contains(player) },
+							set: { _ in toggle(player) }
+						))
+					}
+					if row.count == 1 {
+						Color.clear.frame(maxWidth: .infinity)
+					}
+				}
+			}
+		}
+	}
+}
+
 final class GameSetupDraft: ObservableObject {
 	@Published var numPlayers = 3
 	@Published var longJumps = false
 	@Published var hopOthers = true
 	@Published var stopOthers = true
 	@Published var botType = "LookAhead(3)"
+	@Published var friendPlayers: Set<Int>?
+	@Published var enemyPlayers: Set<Int>?
 	@Published var confirmApply = false
 }
 
@@ -1015,6 +1161,33 @@ struct GameSetupSheet: View {
 
 	private var canAddComputer: Bool {
 		Int(session.playerCount) < draft.numPlayers
+	}
+
+	// Player numbers currently seated, 1...playerCount, for the focus pickers.
+	private var playerNumbers: [Int] {
+		let count = Int(session.playerCount)
+		return count > 0 ? Array(1...count) : []
+	}
+
+	private var focusFamily: String {
+		CheechSession.typeName(forComputerType: draft.botType)
+	}
+
+	private func addComputerPlayer() {
+		model.lastBotType = draft.botType
+		var friends: [Int]?
+		var enemies: [Int]?
+		if !playerNumbers.isEmpty {
+			if focusFamily == "Friendly" {
+				friends = Array(draft.friendPlayers ?? Set(playerNumbers)).sorted()
+			} else if focusFamily == "Mean" {
+				enemies = Array(draft.enemyPlayers ?? Set(playerNumbers)).sorted()
+			}
+		}
+		model.addComputerPlayer(
+			type: draft.botType, name: "", color: 0,
+			friendPlayers: friends, enemyPlayers: enemies
+		)
 	}
 
 	private var allPlayersFinished: Bool {
@@ -1065,9 +1238,17 @@ struct GameSetupSheet: View {
 
 				Section("Computer Players") {
 					BotTypePickerRow(title: "Type", selection: $draft.botType)
+					if focusFamily == "Friendly" && draft.numPlayers > 2 && !playerNumbers.isEmpty {
+						InGameFocusPicker(title: "Friendly to",
+										  selection: $draft.friendPlayers,
+										  players: playerNumbers)
+					} else if focusFamily == "Mean" && draft.numPlayers > 2 && !playerNumbers.isEmpty {
+						InGameFocusPicker(title: "Mean to",
+										  selection: $draft.enemyPlayers,
+										  players: playerNumbers)
+					}
 					Button("Add Computer Player") {
-						model.lastBotType = draft.botType
-						model.addComputerPlayer(type: draft.botType, name: "", color: 0)
+						addComputerPlayer()
 					}
 					.disabled(!canAddComputer)
 					Button("Remove All Computer Players", role: .destructive) {

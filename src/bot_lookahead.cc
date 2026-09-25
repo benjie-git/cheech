@@ -118,7 +118,11 @@ void BotLookAhead::on_cmd_game_turn(unsigned int posn,
 									GameServer::GameStatus status,
 									unsigned int move_count)
 {
-	_current_depth = _depth;
+	// Do not disturb a search that is currently running: _current_depth
+	// belongs to it, and resetting it mid-search indexes _scratch_moves out
+	// of bounds.  The next turn will reset it once that search has finished.
+	if (!_searching)
+		_current_depth = _depth;
 	BotBase::on_cmd_game_turn(posn, status, move_count);
 }
 
@@ -127,6 +131,8 @@ BotBase* BotLookAhead::clone_for_search() const
 {
 	BotLookAhead *clone = new BotLookAhead(_depth);
 	clone->set_self_bonus(_self_bonus);
+	clone->set_friends(get_friends());
+	clone->set_enemies(get_enemies());
 	clone->set_tt_bits(18);
 	return clone;
 }
@@ -155,6 +161,11 @@ void BotLookAhead::find_best_move(GameBoard *board, unsigned int player,
 {
 	// Abort if it's not my turn anymore (undo/etc)
 	if (!is_still_my_turn()) return;
+
+	// A root search always starts at the full depth, even if a previous
+	// search was aborted partway through and left _current_depth stale.
+	if (best_moves && _current_depth != _depth)
+		_current_depth = _depth;
 
 	bool at_root = (_current_depth == _depth);
 
@@ -255,9 +266,6 @@ long BotLookAhead::score_move_recurse(GameBoard *board, unsigned int player,
 
 		find_best_move(board, player, NULL, &best_score);
 
-		if (_depth - _current_depth <= 2 && !_search_clone)
-			util::delay_ms(0); // Let the client process events between move
-
 		// Abort if it's not my turn anymore (undo/etc)
 		if (!is_still_my_turn())
 		{
@@ -317,6 +325,22 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 {
 	if (remaining == 0 || !is_still_my_turn())
 		return 0;
+
+	// The root player always participates; other players only if they are in
+	// the enemy set.  A player outside the set is frozen: it gets no move and
+	// does not consume a ply, so the horizon is spent only on players this
+	// bot actually pays attention to.
+	unsigned int focus = get_enemies() | (1u << (root - 1));
+
+	if (!focuses_on(player, focus))
+	{
+		unsigned int next = next_focused_player(board, player, focus);
+
+		if (next == player || !focuses_on(next, focus))
+			return 0;
+
+		return paranoid_search(board, next, root, remaining, alpha, beta);
+	}
 
 	bool maximizing = (player == root);
 

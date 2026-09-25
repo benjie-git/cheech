@@ -41,6 +41,38 @@ int thinking_delay;
 int move_step_delay;
 int move_done_delay;
 int smarts;
+Glib::ustring friends_str;
+Glib::ustring enemies_str;
+
+
+// Parses a comma-separated list of player numbers into a focus mask
+// (bit i set = player i+1).  Returns 0 for an empty/invalid list.
+unsigned int parse_player_list(const Glib::ustring &list)
+{
+	unsigned int mask = 0;
+	Glib::ustring::size_type start = 0;
+
+	while (start <= list.size())
+	{
+		Glib::ustring::size_type comma = list.find(',', start);
+		Glib::ustring token = (comma == Glib::ustring::npos)
+			? list.substr(start) : list.substr(start, comma - start);
+
+		token = util::trim(token);
+		if (!token.empty())
+		{
+			int player = atoi(token.c_str());
+			if (player >= 1 && player <= 32)
+				mask |= (1u << (player - 1));
+		}
+
+		if (comma == Glib::ustring::npos)
+			break;
+		start = comma + 1;
+	}
+
+	return mask;
+}
 
 
 void printMessage(Glib::ustring msg)
@@ -124,6 +156,22 @@ void process_options(int &argc, char **&argv)
 			"how smart to play, 50-100 percent: 100 plays its best move,\n"
 			"\tlower values choose from the top-N moves (100)");
 		opt_group.add_entry(opt_smarts, smarts);
+
+		Glib::OptionEntry opt_friends;
+		opt_friends.set_long_name("friends");
+		opt_friends.set_short_name('f');
+		opt_friends.set_arg_description("list");
+		opt_friends.set_description(
+			"comma-separated player numbers this Friendly bot helps (all)");
+		opt_group.add_entry(opt_friends, friends_str);
+
+		Glib::OptionEntry opt_enemies;
+		opt_enemies.set_long_name("enemies");
+		opt_enemies.set_short_name('e');
+		opt_enemies.set_arg_description("list");
+		opt_enemies.set_description(
+			"comma-separated player numbers this Mean bot opposes (all)");
+		opt_group.add_entry(opt_enemies, enemies_str);
 
 		Glib::OptionEntry opt_think_delay;
 		opt_think_delay.set_long_name("think-delay");
@@ -217,6 +265,10 @@ int main(int argc, char **argv)
 	bot->set_think_delay(thinking_delay);
 	bot->set_move_delay(move_step_delay, move_done_delay);
 	bot->set_smarts(smarts);
+	if (!friends_str.empty())
+		bot->set_friends(parse_player_list(friends_str));
+	if (!enemies_str.empty())
+		bot->set_enemies(parse_player_list(enemies_str));
 	bot->set_name(name);
 	bot->set_color(color);
 	bot->join_game(host_name, port);

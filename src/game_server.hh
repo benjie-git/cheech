@@ -41,10 +41,13 @@ private:
 			Glib::ustring	location;
 			unsigned int	heartbeat;
 			bool			spectator;
+			unsigned int	id;
+			bool			wants_player_ids;
 
 			Player(Gnet::Conn *socket_ = NULL, Glib::ustring name_ = "",
 				   unsigned int color_ = 0, Glib::ustring location_ = "",
-				   unsigned int heartbeat_ = 0, bool spectator = false);
+				   unsigned int heartbeat_ = 0, bool spectator = false,
+				   unsigned int id_ = 0, bool wants_player_ids_ = false);
 	};
 
 	struct UndoEntry
@@ -82,6 +85,7 @@ private:
 	bool					_stop_others;
 	unsigned int			_current_player;
 	unsigned int			_move_count;
+	unsigned int			_next_player_id;
 	std::vector<UndoEntry>	_undo_stack;
 	std::vector<UndoEntry>	_redo_stack;
 
@@ -146,6 +150,10 @@ private:
 	// Client is adding itself as a spectator
 	void command_SPECTATOR_ADD(Gnet::Conn* socket,
 							   const Glib::ustring& arguments);
+	// Client wants the player number/id mapping
+	void command_REQUEST_PLAYER_IDS(Gnet::Conn* socket,
+									const Glib::ustring& arguments);
+	void send_player_ids(Gnet::Conn* socket);
 	// Client wants a resync
 	void command_SERVER_SYNC(Gnet::Conn* socket,
 							 const Glib::ustring& arguments);

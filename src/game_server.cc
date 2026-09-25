@@ -54,13 +54,16 @@ using namespace Gnet;
 
 GameServer::Player::Player(Conn *socket_, Glib::ustring name_,
 	unsigned int color_, Glib::ustring location_,
-	unsigned int heartbeat_, bool spectator_)
+	unsigned int heartbeat_, bool spectator_, unsigned int id_,
+	bool wants_player_ids_)
 	:socket(socket_),
 	 name(name_),
 	 color(color_),
 	 location(location_),
 	 heartbeat(heartbeat_),
-	 spectator(spectator_)
+	 spectator(spectator_),
+	 id(id_),
+	 wants_player_ids(wants_player_ids_)
 {
 }
 
@@ -77,7 +80,8 @@ GameServer::GameServer(unsigned int port, unsigned int num_players,
 	 _hop_others(hop_others),
 	 _stop_others(stop_others),
 	 _current_player(0),
-	 _move_count(1)
+	 _move_count(1),
+	 _next_player_id(0)
 {
 	_board = NULL;
 	_socket.evt_connection_available.connect(sigc::mem_fun(*this,
@@ -557,6 +561,14 @@ void GameServer::game_turn(unsigned int posn)
 		if (_players[i].socket && _players[i].color == 0)
 			posn = 0;
 
+	for (unsigned int i = 1; i < _players.size(); ++i)
+		if (_players[i].socket && _players[i].wants_player_ids)
+			send_player_ids(_players[i].socket);
+
+	for (unsigned int i = 0; i < _spectators.size(); ++i)
+		if (_spectators[i].socket && _spectators[i].wants_player_ids)
+			send_player_ids(_spectators[i].socket);
+
 	*this << "GAME_TURN " + util::to_str(posn) + " " +
 		util::to_str(get_game_status()) + " " +
 		util::to_str(_move_count) + "\n";
@@ -720,6 +732,8 @@ void GameServer::read_client(Glib::ustring message, Conn* socket)
 		command_PLAYER_ADD(socket, arguments);
 	else if (command == "SPECTATOR_ADD")
 		command_SPECTATOR_ADD(socket, arguments);
+	else if (command == "REQUEST_PLAYER_IDS")
+		command_REQUEST_PLAYER_IDS(socket, arguments);
 	else if (command == "PLAYER_CHAT")
 		command_PLAYER_CHAT(socket, arguments);
 	else if (command == "SERVER_SYNC")
@@ -797,7 +811,8 @@ void GameServer::command_PLAYER_ADD(Conn *socket,
 
 	_players[posn] = Player(socket,
 							Glib::ustring("Player ") + util::to_str(posn),
-							 0, socket->get_host_name(), _heartbeat);
+							 0, socket->get_host_name(), _heartbeat, false,
+							 ++_next_player_id);
 	_num_connected_players++;
 
 	attempt_set_player_name(&_players[posn], name);
@@ -842,6 +857,28 @@ void GameServer::command_SPECTATOR_ADD(Conn *socket,
 	*this << "SPECTATOR_ADD " + name + "\n";
 
 	game_turn(_current_player);
+}
+
+
+void GameServer::command_REQUEST_PLAYER_IDS(Conn *socket,
+											const Glib::ustring& arguments)
+{
+	Player* player = get_client_player(socket);
+	if (player)
+		player->wants_player_ids = true;
+	send_player_ids(socket);
+}
+
+
+void GameServer::send_player_ids(Conn *socket)
+{
+	for (unsigned int posn = 1; posn < _players.size(); ++posn)
+	{
+		if (_players[posn].socket)
+			*socket << "PLAYER_ID " + util::to_str(posn) + " "
+				+ util::to_str(_players[posn].id) + "\n";
+	}
+	*socket << "PLAYER_ID_END\n";
 }
 
 

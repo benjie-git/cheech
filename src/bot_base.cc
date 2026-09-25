@@ -62,6 +62,12 @@ BotBase::BotBase()
 	_move_done_delay = 600;
 	_smarts = 100;
 	_abort = FALSE;
+	_searching = false;
+	_search_pending = false;
+	_friends = ALL_PLAYERS;
+	_enemies = ALL_PLAYERS;
+	_focus_by_ids = false;
+	_awaiting_mapping = false;
 	_search_clone = false;
 	_search_abort = NULL;
 	_search_clones.clear();
@@ -152,6 +158,167 @@ int BotBase::get_smarts() const
 }
 
 
+void BotBase::set_friends(unsigned int mask)
+{
+	_friends = mask;
+	_focus_by_ids = false;
+}
+
+
+unsigned int BotBase::get_friends() const
+{
+	return _friends;
+}
+
+
+void BotBase::set_enemies(unsigned int mask)
+{
+	_enemies = mask;
+	_focus_by_ids = false;
+}
+
+
+unsigned int BotBase::get_enemies() const
+{
+	return _enemies;
+}
+
+
+void BotBase::set_friend_ids(const std::set<unsigned int>& ids)
+{
+	_friend_ids = ids;
+	_focus_by_ids = true;
+	request_player_mapping();
+}
+
+
+const std::set<unsigned int>& BotBase::get_friend_ids() const
+{
+	return _friend_ids;
+}
+
+
+void BotBase::set_enemy_ids(const std::set<unsigned int>& ids)
+{
+	_enemy_ids = ids;
+	_focus_by_ids = true;
+	request_player_mapping();
+}
+
+
+const std::set<unsigned int>& BotBase::get_enemy_ids() const
+{
+	return _enemy_ids;
+}
+
+
+void BotBase::request_player_mapping()
+{
+	if (_search_clone || !_client.ready())
+		return;
+
+	_client.request_player_ids();
+}
+
+
+void BotBase::refresh_focus_from_ids()
+{
+	if (!_focus_by_ids)
+		return;
+
+	unsigned int friends = 0;
+	unsigned int enemies = 0;
+
+	for (unsigned int posn = 1; posn <= 6; ++posn)
+	{
+		unsigned int id = _client.get_player_id(posn);
+		if (!id)
+			continue;
+
+		if (_friend_ids.count(id))
+			friends |= (1u << (posn - 1));
+		if (_enemy_ids.count(id))
+			enemies |= (1u << (posn - 1));
+	}
+
+	_friends = friends;
+	_enemies = enemies;
+}
+
+
+void BotBase::schedule_search()
+{
+	_mapping_timeout.disconnect();
+
+	if (_search_clone)
+		return;
+
+	// Work around a gnet bug by using a timeout
+	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(this,
+		&BotBase::make_best_move), false), 1);
+}
+
+
+void BotBase::on_cmd_set_player_number(unsigned int posn)
+{
+	if (_focus_by_ids)
+		request_player_mapping();
+}
+
+
+void BotBase::on_cmd_player_ids_end()
+{
+	refresh_focus_from_ids();
+
+	if (_awaiting_mapping)
+	{
+		_awaiting_mapping = false;
+		schedule_search();
+	}
+}
+
+
+bool BotBase::on_mapping_timeout()
+{
+	if (_awaiting_mapping)
+	{
+		_awaiting_mapping = false;
+		schedule_search();
+	}
+
+	return false;
+}
+
+
+bool BotBase::focuses_on(unsigned int player, unsigned int mask) const
+{
+	if (player == 0 || player > 32)
+		return false;
+
+	return mask == ALL_PLAYERS || (mask & (1u << (player - 1)));
+}
+
+
+unsigned int BotBase::next_focused_player(GameBoard *board,
+										  unsigned int from,
+										  unsigned int mask) const
+{
+	unsigned int num_players = board->get_num_players();
+	unsigned int next_player = from;
+
+	do
+	{
+		if (++next_player > num_players)
+			next_player = 1;
+		if (next_player == from)
+			return from;
+	} while (board->player_finished(next_player)
+			 || !focuses_on(next_player, mask));
+
+	return next_player;
+}
+
+
 int BotBase::top_move_tiers() const
 {
 	// 100% -> 1 tier (play the best move), 90% -> 2, 80% -> 4, ... 70% -> 8.
@@ -203,6 +370,10 @@ void BotBase::join_game(Glib::ustring host, unsigned int port)
 		&BotBase::on_cmd_choose_new_color));
 	_client.cmd_game_turn.connect(sigc::mem_fun(*this,
 		&BotBase::on_cmd_game_turn));
+	_client.cmd_set_player_number.connect(sigc::mem_fun(*this,
+		&BotBase::on_cmd_set_player_number));
+	_client.cmd_player_ids_end.connect(sigc::mem_fun(*this,
+		&BotBase::on_cmd_player_ids_end));
 
 	_client.join_game(host, port, false);
 }
@@ -218,6 +389,10 @@ void BotBase::leave_game()
 void BotBase::on_connect()
 {
 	_abort = FALSE;
+
+	if (_focus_by_ids)
+		request_player_mapping();
+
 	evt_connected();
 }
 
@@ -290,8 +465,19 @@ void BotBase::on_cmd_game_turn(unsigned int posn,
 	if (posn == _client.get_my_player_number())
 	{
 		_abort = FALSE;
-		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(this,
-			&BotBase::make_best_move), false), 1);
+
+		if (_focus_by_ids)
+		{
+			_awaiting_mapping = true;
+			_mapping_timeout.disconnect();
+			_mapping_timeout = Glib::signal_timeout().connect(sigc::bind_return(
+				sigc::mem_fun(this, &BotBase::on_mapping_timeout), false), 250);
+			request_player_mapping();
+		}
+		else
+		{
+			schedule_search();
+		}
 	}
 	else {
 		_abort = TRUE;
@@ -346,6 +532,17 @@ void BotBase::set_search_abort(std::atomic<bool> *flag)
 
 void BotBase::make_best_move()
 {
+	// A search can be re-entered while we pump the main loop mid-search
+	// (see the delay_ms calls in the search).  Never run two searches at
+	// once; defer the request until the current one finishes.
+	if (_searching)
+	{
+		_search_pending = true;
+		return;
+	}
+
+	_searching = true;
+
 	std::vector<MoveList> best_moves;
 	GameBoard board(*_client.get_board());
 	long best_score = LONG_MIN;
@@ -369,6 +566,16 @@ void BotBase::make_best_move()
 	{
 		find_best_move(&board, _client.get_my_player_number(),
 					   &best_moves, &best_score);
+	}
+
+	_searching = false;
+
+	if (_search_pending)
+	{
+		_search_pending = false;
+
+		if (is_still_my_turn())
+			schedule_search();
 	}
 
 	// Aborted (undo/etc) or no legal move found.
@@ -618,6 +825,18 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 				std::atomic<unsigned int> next(0);
 				std::atomic<unsigned int> done(0);
 				std::atomic<bool> abort_flag(false);
+
+				// Reused clones carry whatever focus they were born with;
+				// refresh it from this bot before every search so a rotate
+				// (which renumbers players) cannot leave them stale.
+				unsigned int friends = get_friends();
+				unsigned int enemies = get_enemies();
+
+				for (unsigned int t = 0; t < num_threads; t++)
+				{
+					_search_clones[t]->set_friends(friends);
+					_search_clones[t]->set_enemies(enemies);
+				}
 
 				auto worker = [&](unsigned int t)
 				{

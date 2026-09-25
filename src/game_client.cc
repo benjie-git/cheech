@@ -34,9 +34,10 @@ using namespace std;
 using namespace Gnet;
 
 
-GameClient::Player::Player(Glib::ustring name_, int color_)
+GameClient::Player::Player(Glib::ustring name_, int color_, unsigned int id_)
 	: name(name_),
-	  color(color_)
+	  color(color_),
+	  id(id_)
 {
 }
 
@@ -46,6 +47,7 @@ GameClient::GameClient()
 	  _name(""),
 	  _color(0),
 	  _player_number(0),
+	  _my_player_id(0),
 	  _client_heartbeat(0),
 	  _server_heartbeat(0)
 {
@@ -128,6 +130,29 @@ unsigned int GameClient::get_player_color(unsigned int posn)
 Glib::ustring GameClient::get_player_name(unsigned int posn)
 {
 	return _players[posn].name;
+}
+
+
+unsigned int GameClient::get_my_player_id()
+{
+	return _my_player_id;
+}
+
+
+unsigned int GameClient::get_player_id(unsigned int posn)
+{
+	return _players[posn].id;
+}
+
+
+unsigned int GameClient::get_posn_for_id(unsigned int id)
+{
+	if (!id)
+		return 0;
+	for (unsigned int posn = 1; posn <= 6; ++posn)
+		if (_players[posn].id == id)
+			return posn;
+	return 0;
 }
 
 
@@ -262,6 +287,13 @@ void GameClient::resync_game()
 }
 
 
+void GameClient::request_player_ids()
+{
+	if (ready())
+		_socket << "REQUEST_PLAYER_IDS\n";
+}
+
+
 void GameClient::leave_game()
 {
 	_current_player = 0;
@@ -322,8 +354,10 @@ GameClient::disconnected()
 	{
 		_players[i].name = "";
 		_players[i].color = 0;
+		_players[i].id = 0;
 		cmd_player_remove(i);
 	}
+	_my_player_id = 0;
 	if (_board)
 	{
 		delete _board;
@@ -392,6 +426,10 @@ GameClient::read(Glib::ustring message)
 		command_GAME_UNDOMOVE(arguments);
 	else if (command == "GAME_BOARD")
 		command_GAME_BOARD(arguments);
+	else if (command == "PLAYER_ID")
+		command_PLAYER_ID(arguments);
+	else if (command == "PLAYER_ID_END")
+		command_PLAYER_ID_END(arguments);
 
 #ifdef DEBUG_CLIENT
 	else
@@ -439,8 +477,37 @@ void GameClient::command_PLAYER_ADD(const Glib::ustring& arguments)
 
 	_players[posn].color = util::from_str<int>(arguments.substr(2));
 	_players[posn].name = arguments.substr(4);
+	_players[posn].id = 0;
 
 	cmd_player_add(posn, _players[posn].name, _players[posn].color);
+}
+
+
+void GameClient::command_PLAYER_ID(const Glib::ustring& arguments)
+{
+	Glib::ustring::size_type separator = arguments.find_first_of(" ");
+	if (separator == Glib::ustring::npos)
+		return;
+
+	unsigned int posn = util::from_str<unsigned int>(
+		arguments.substr(0, separator));
+	unsigned int id = util::from_str<unsigned int>(
+		arguments.substr(separator+1));
+
+	if (posn < 1 || posn > 6)
+		return;
+
+	_players[posn].id = id;
+	if (posn == _player_number)
+		_my_player_id = id;
+
+	cmd_player_id(posn, id);
+}
+
+
+void GameClient::command_PLAYER_ID_END(const Glib::ustring& arguments)
+{
+	cmd_player_ids_end();
 }
 
 
@@ -458,6 +525,9 @@ void GameClient::command_PLAYER_REMOVE(const Glib::ustring& arguments)
 
 	_players[posn].name = "";
 	_players[posn].color = 0;
+	_players[posn].id = 0;
+	if (posn == _player_number)
+		_my_player_id = 0;
 
 	cmd_player_remove(posn);
 }

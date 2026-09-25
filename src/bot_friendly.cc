@@ -67,6 +67,8 @@ BotBase* BotFriendly::clone_for_search() const
 	BotFriendly *clone = new BotFriendly(_depth);
 	clone->set_self_penalty(_self_penalty);
 	clone->set_self_bonus(_self_bonus);
+	clone->set_friends(get_friends());
+	clone->set_enemies(get_enemies());
 	clone->set_tt_bits(18);
 	return clone;
 }
@@ -104,7 +106,7 @@ void BotFriendly::find_best_move(GameBoard *board, unsigned int player,
 							 long *best_score)
 {
 	if (_current_depth < _depth)
-		player = board->get_next_player(player);
+		player = next_focused_player(board, player, get_friends());
 
 	BotLookAhead::find_best_move(board, player,
 							best_moves, best_score);

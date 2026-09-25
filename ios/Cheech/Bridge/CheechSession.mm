@@ -9,8 +9,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <memory>
 #include <mutex>
+#include <set>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -100,6 +102,18 @@ struct Seat
 	GameClient *client = nullptr; // when kind == CheechSeatHuman
 	BotBase *bot = nullptr;       // when kind == CheechSeatComputer
 	int playerNumber = 0;         // assigned after connect
+
+	// Stable server-assigned id for the player currently holding this seat,
+	// learned once and cached; survives rotate/shuffle.
+	unsigned int playerId = 0;
+	bool hasPlayerId = false;
+
+	// Focus lists for Computer seats, kept as seat indices; the ids they
+	// resolve to are stable, so a rotate/shuffle does not invalidate them.
+	// When focusConfigured is false the bot focuses on everyone (old default).
+	bool focusConfigured = false;
+	std::vector<int> friendSeats;
+	std::vector<int> enemySeats;
 };
 
 struct SessionImpl
@@ -127,6 +141,15 @@ struct SessionImpl
 		std::string name;
 		int color = 0;
 		int smarts = 100;
+		// Focus lists (see BotBase::set_friend_ids/set_enemy_ids).  Unlike
+		// hosted seats these bots have no stable seat index, so the lists are
+		// also stored as player names (for persistence) and as stable ids (for
+		// live resolution across rotate/shuffle).
+		bool focusConfigured = false;
+		std::vector<std::string> friendNames;
+		std::vector<std::string> enemyNames;
+		std::vector<unsigned int> friendIds;
+		std::vector<unsigned int> enemyIds;
 	};
 	std::vector<ExtraBotInfo> extraBotInfos;
 
@@ -157,6 +180,241 @@ struct SessionImpl
 	int joinWaitTicks = 0;
 };
 
+// Resolves a seat to the player number currently holding it, or 0 when it is
+// not yet known.  Computer seats resolve through their bot's client; a remote
+// seat is filled by another device and is not tracked here, so it reports 0.
+int playerNumberForSeat(SessionImpl *impl, int seatIndex)
+{
+	if (!impl || seatIndex < 0 || seatIndex >= (int)impl->seats.size())
+		return 0;
+
+	Seat &seat = impl->seats[seatIndex];
+	if (seat.playerNumber > 0)
+		return seat.playerNumber;
+	if (seat.kind == CheechSeatComputer && seat.bot)
+	{
+		GameClient *client = seat.bot->get_game_client();
+		if (client)
+			return (int)client->get_my_player_number();
+	}
+
+	return 0;
+}
+
+// Resolves a seat to the stable id of the player currently holding it, or 0
+// when it is not yet known.  A seat's own client (human or bot) learns its id
+// directly from the server; a remote seat is resolved through the display
+// spectator's mapping after it has been associated with a player number.
+unsigned int idForSeat(SessionImpl *impl, int seatIndex)
+{
+	if (!impl || seatIndex < 0 || seatIndex >= (int)impl->seats.size())
+		return 0;
+
+	Seat &seat = impl->seats[seatIndex];
+	if (seat.hasPlayerId && seat.playerId)
+		return seat.playerId;
+
+	GameClient *client = seat.client;
+	if (seat.kind == CheechSeatComputer && seat.bot)
+		client = seat.bot->get_game_client();
+
+	if (client)
+	{
+		unsigned int id = client->get_my_player_id();
+		if (id)
+		{
+			seat.playerId = id;
+			seat.hasPlayerId = true;
+			return id;
+		}
+	}
+
+	if (!seat.hasPlayerId && impl->client)
+	{
+		int posn = playerNumberForSeat(impl, seatIndex);
+		if (posn > 0)
+		{
+			unsigned int id = impl->client->get_player_id((unsigned int)posn);
+			if (id)
+			{
+				seat.playerId = id;
+				seat.hasPlayerId = true;
+				return id;
+			}
+		}
+	}
+
+	return seat.hasPlayerId ? seat.playerId : 0;
+}
+
+std::set<unsigned int> idSetForSeatIndices(SessionImpl *impl,
+										   const std::vector<int> &indices)
+{
+	std::set<unsigned int> ids;
+	for (int index : indices)
+	{
+		unsigned int id = idForSeat(impl, index);
+		if (id)
+			ids.insert(id);
+	}
+	return ids;
+}
+
+// Associates unfilled Remote seats with the player numbers the display
+// spectator sees but no local seat or in-game bot claims.  Remote seats are
+// paired in order, which matches the order the host's seats were advertised.
+void associateRemoteSeats(SessionImpl *impl)
+{
+	if (!impl || !impl->client || !impl->client->get_board())
+		return;
+
+	unsigned int numPlayers =
+		impl->client->get_board()->get_num_players();
+
+	for (unsigned int posn = 1; posn <= numPlayers; posn++)
+	{
+		if (impl->client->get_player_name(posn).empty())
+			continue;
+
+		bool claimed = false;
+		for (int i = 0; i < (int)impl->seats.size() && !claimed; i++)
+		{
+			Seat &seat = impl->seats[i];
+			if (seat.kind == CheechSeatRemote)
+				claimed = (seat.playerNumber == (int)posn);
+			else
+				claimed = (playerNumberForSeat(impl, i) == (int)posn);
+		}
+		if (claimed)
+			continue;
+
+		for (BotBase *bot : impl->extraBots)
+		{
+			if (bot && bot->get_game_client()->get_my_player_number() == posn)
+			{
+				claimed = true;
+				break;
+			}
+		}
+		if (claimed)
+			continue;
+
+		for (Seat &seat : impl->seats)
+		{
+			if (seat.kind == CheechSeatRemote && seat.playerNumber == 0)
+			{
+				seat.playerNumber = (int)posn;
+				break;
+			}
+		}
+	}
+}
+
+// Applies every computer seat's focus lists to its bot as stable id sets, so
+// the bot itself can re-resolve them after a rotate or shuffle.  A partially
+// resolved set (some ids not known yet) is skipped to avoid a transient
+// empty mask; it is re-applied once the mapping arrives.
+void applySeatFocus(SessionImpl *impl)
+{
+	for (Seat &seat : impl->seats)
+	{
+		if (seat.kind != CheechSeatComputer || !seat.bot || !seat.focusConfigured)
+			continue;
+
+		std::set<unsigned int> friends =
+			idSetForSeatIndices(impl, seat.friendSeats);
+		std::set<unsigned int> enemies =
+			idSetForSeatIndices(impl, seat.enemySeats);
+
+		if (friends.size() == seat.friendSeats.size())
+			seat.bot->set_friend_ids(friends);
+		if (enemies.size() == seat.enemySeats.size())
+			seat.bot->set_enemy_ids(enemies);
+	}
+}
+
+// Fallback focus mask for in-game bots whose stable ids are unknown (old
+// server): maps the stored player names to current player numbers.
+unsigned int maskForNames(SessionImpl *impl, const std::vector<std::string> &names)
+{
+	unsigned int mask = 0;
+	if (!impl->client || !impl->client->get_board())
+		return mask;
+
+	unsigned int numPlayers = impl->client->get_board()->get_num_players();
+	for (unsigned int player = 1; player <= numPlayers && player <= 31; player++)
+	{
+		std::string name = impl->client->get_player_name(player);
+		if (std::find(names.begin(), names.end(), name) != names.end())
+			mask |= (1u << (player - 1));
+	}
+	return mask;
+}
+
+// Resolves a player name to the stable id the display spectator last saw, or
+// 0 when unknown.  Used to backfill in-game bots' focus ids after the mapping
+// arrives.
+unsigned int idForPlayerName(SessionImpl *impl, const std::string &name)
+{
+	if (!impl->client || !impl->client->get_board() || name.empty())
+		return 0;
+
+	unsigned int numPlayers = impl->client->get_board()->get_num_players();
+	for (unsigned int posn = 1; posn <= numPlayers; posn++)
+	{
+		if (std::string(impl->client->get_player_name(posn)) == name)
+			return impl->client->get_player_id(posn);
+	}
+	return 0;
+}
+
+void applyExtraBotFocus(SessionImpl *impl)
+{
+	for (size_t i = 0; i < impl->extraBots.size() && i < impl->extraBotInfos.size(); i++)
+	{
+		SessionImpl::ExtraBotInfo &info = impl->extraBotInfos[i];
+		if (!info.focusConfigured || !impl->extraBots[i])
+			continue;
+
+		if (info.friendIds.empty())
+			for (const std::string &name : info.friendNames)
+			{
+				unsigned int id = idForPlayerName(impl, name);
+				if (id)
+					info.friendIds.push_back(id);
+			}
+		if (info.enemyIds.empty())
+			for (const std::string &name : info.enemyNames)
+			{
+				unsigned int id = idForPlayerName(impl, name);
+				if (id)
+					info.enemyIds.push_back(id);
+			}
+
+		if (!info.friendIds.empty())
+		{
+			std::set<unsigned int> ids(info.friendIds.begin(),
+									   info.friendIds.end());
+			impl->extraBots[i]->set_friend_ids(ids);
+		}
+		else
+		{
+			impl->extraBots[i]->set_friends(maskForNames(impl, info.friendNames));
+		}
+
+		if (!info.enemyIds.empty())
+		{
+			std::set<unsigned int> ids(info.enemyIds.begin(),
+									   info.enemyIds.end());
+			impl->extraBots[i]->set_enemy_ids(ids);
+		}
+		else
+		{
+			impl->extraBots[i]->set_enemies(maskForNames(impl, info.enemyNames));
+		}
+	}
+}
+
 // A fully local game is serialised as text lines.  GameServer parses the keys
 // it owns (players/rules/turn/moves/pegs); the bridge owns port/seats/seat.  It
 // is only ever produced for hosted games with no remote seats, so a networked
@@ -167,12 +425,48 @@ std::string buildLocalSave(SessionImpl *impl)
 	out << "CHEECHSAVE 1\n";
 	out << "port " << impl->hostPort << "\n";
 	out << "seats " << (impl->seats.size() + impl->extraBotInfos.size()) << "\n";
+
+	// Focus is serialised as seat indices.  Hosted seats already carry their
+	// indices; in-game computer players carry player names, so translate those
+	// against the full list of seat names.  A name that no longer matches is
+	// dropped (best effort after a rename).
+	std::vector<std::string> names;
+	for (const Seat &seat : impl->seats)
+		names.push_back(seat.name);
+	for (const SessionImpl::ExtraBotInfo &bot : impl->extraBotInfos)
+		names.push_back(bot.name);
+
+	auto nameIndex = [&names](const std::string &name) -> int
+	{
+		if (name.empty())
+			return -1;
+		for (size_t i = 0; i < names.size(); i++)
+			if (names[i] == name)
+				return (int)i;
+		return -1;
+	};
+	auto csv = [](const std::vector<int> &indices) -> std::string
+	{
+		std::ostringstream s;
+		for (size_t i = 0; i < indices.size(); i++)
+		{
+			if (i) s << ",";
+			s << indices[i];
+		}
+		return s.str();
+	};
+
+	int index = 0;
 	for (const Seat &seat : impl->seats)
 	{
 		out << "seat " << (int)seat.kind << " " << seat.color << " "
 			<< seat.smarts << " "
 			<< (seat.botType.empty() ? std::string("-") : seat.botType) << " "
 			<< seat.name << "\n";
+		if (seat.focusConfigured)
+			out << "seatfocus " << index << " "
+				<< csv(seat.friendSeats) << " " << csv(seat.enemySeats) << "\n";
+		index++;
 	}
 	for (const SessionImpl::ExtraBotInfo &bot : impl->extraBotInfos)
 	{
@@ -180,6 +474,23 @@ std::string buildLocalSave(SessionImpl *impl)
 			<< bot.smarts << " "
 			<< (bot.type.empty() ? std::string("-") : bot.type) << " "
 			<< bot.name << "\n";
+		if (bot.focusConfigured)
+		{
+			std::vector<int> friends, enemies;
+			for (const std::string &name : bot.friendNames)
+			{
+				int idx = nameIndex(name);
+				if (idx >= 0) friends.push_back(idx);
+			}
+			for (const std::string &name : bot.enemyNames)
+			{
+				int idx = nameIndex(name);
+				if (idx >= 0) enemies.push_back(idx);
+			}
+			out << "seatfocus " << index << " "
+				<< csv(friends) << " " << csv(enemies) << "\n";
+		}
+		index++;
 	}
 	out << std::string(impl->server->save_state().c_str());
 	return out.str();
@@ -201,6 +512,19 @@ LocalSave parseLocalSave(const std::string &text)
 {
 	LocalSave save;
 	save.raw = text;
+	std::map<int, std::pair<std::vector<int>, std::vector<int> > > focus;
+	auto parseCsv = [](const std::string &csv) -> std::vector<int>
+	{
+		std::vector<int> out;
+		std::istringstream in(csv);
+		std::string item;
+		while (std::getline(in, item, ','))
+		{
+			if (!item.empty())
+				out.push_back(std::atoi(item.c_str()));
+		}
+		return out;
+	};
 	std::istringstream lines(text);
 	std::string line;
 	while (std::getline(lines, line))
@@ -236,6 +560,24 @@ LocalSave parseLocalSave(const std::string &text)
 			seat.botType = (botType == "-") ? "" : botType;
 			seat.name = name;
 			save.seats.push_back(seat);
+		}
+		else if (key == "seatfocus")
+		{
+			int index = -1;
+			std::string friends, enemies;
+			in >> index >> friends >> enemies;
+			if (index >= 0)
+				focus[index] = std::make_pair(parseCsv(friends), parseCsv(enemies));
+		}
+	}
+	for (std::map<int, std::pair<std::vector<int>, std::vector<int> > >::iterator it =
+			 focus.begin(); it != focus.end(); ++it)
+	{
+		if (it->first >= 0 && it->first < (int)save.seats.size())
+		{
+			save.seats[it->first].focusConfigured = true;
+			save.seats[it->first].friendSeats = it->second.first;
+			save.seats[it->first].enemySeats = it->second.second;
 		}
 	}
 	save.valid = save.port > 0 && save.port <= 65535
@@ -433,6 +775,14 @@ LocalSave parseLocalSave(const std::string &text)
 		spec.name = seat.name ? [seat.name UTF8String] : "";
 		spec.color = (int)seat.color;
 		spec.smarts = (int)seat.smarts;
+		if (seat.friendSeats || seat.enemySeats)
+		{
+			spec.focusConfigured = true;
+			for (NSNumber *index in seat.friendSeats)
+				spec.friendSeats.push_back(index.intValue);
+			for (NSNumber *index in seat.enemySeats)
+				spec.enemySeats.push_back(index.intValue);
+		}
 		specs.push_back(spec);
 	}
 
@@ -553,6 +903,7 @@ LocalSave parseLocalSave(const std::string &text)
 
 	if (index >= (int)impl->seats.size())
 	{
+		applySeatFocus(impl);
 		[self rebuildAndNotify];
 		return;
 	}
@@ -602,6 +953,7 @@ LocalSave parseLocalSave(const std::string &text)
 
 		if ([s seatIsJoinedAtIndex:index] || impl2->joinWaitTicks++ > 100)
 		{
+			applySeatFocus(impl2);
 			[s joinHostedSeatsFromIndex:index + 1];
 			return false;
 		}
@@ -804,14 +1156,32 @@ LocalSave parseLocalSave(const std::string &text)
 						   name:(NSString *)name
 						  color:(NSInteger)color
 {
+	[self addComputerPlayerOfType:type name:name color:color
+					friendPlayers:nil enemyPlayers:nil];
+}
+
+- (void)addComputerPlayerOfType:(NSString *)type
+						   name:(NSString *)name
+						  color:(NSInteger)color
+				   friendPlayers:(NSArray<NSNumber *> *)friends
+					enemyPlayers:(NSArray<NSNumber *> *)enemies
+{
 	std::string typeStr = type ? [type UTF8String] : "";
 	NSString *defaultName = [CheechSession defaultNameForComputerType:type];
 	std::string nameStr = (name && name.length > 0)
 						  ? std::string([name UTF8String])
 						  : std::string([defaultName UTF8String]);
 
+	std::vector<int> friendNums, enemyNums;
+	for (NSNumber *number in friends)
+		friendNums.push_back(number.intValue);
+	for (NSNumber *number in enemies)
+		enemyNums.push_back(number.intValue);
+	bool focusConfigured = (friends != nil || enemies != nil);
+
 	__weak CheechSession *weakSelf = self;
-	cheech::Loop::instance().post([weakSelf, typeStr, nameStr, color]()
+	cheech::Loop::instance().post([weakSelf, typeStr, nameStr, color,
+								   friendNums, enemyNums, focusConfigured]()
 	{
 		CheechSession *s = weakSelf;
 		if (!s) return;
@@ -836,9 +1206,35 @@ LocalSave parseLocalSave(const std::string &text)
 		if (color > 0) bot->set_color((int)color);
 		bot->join_game(host, port);
 		impl->extraBots.push_back(bot);
-		impl->extraBotInfos.push_back({typeStr, nameStr, (int)color,
-									   impl->computerSmarts});
 
+		SessionImpl::ExtraBotInfo info;
+		info.type = typeStr;
+		info.name = nameStr;
+		info.color = (int)color;
+		info.smarts = impl->computerSmarts;
+		if (focusConfigured)
+		{
+			info.focusConfigured = true;
+			for (int player : friendNums)
+				if (player > 0)
+				{
+					info.friendNames.push_back(std::string(impl->client->get_player_name((unsigned int)player)));
+					unsigned int id = impl->client->get_player_id((unsigned int)player);
+					if (id)
+						info.friendIds.push_back(id);
+				}
+			for (int player : enemyNums)
+				if (player > 0)
+				{
+					info.enemyNames.push_back(std::string(impl->client->get_player_name((unsigned int)player)));
+					unsigned int id = impl->client->get_player_id((unsigned int)player);
+					if (id)
+						info.enemyIds.push_back(id);
+				}
+		}
+		impl->extraBotInfos.push_back(info);
+
+		applyExtraBotFocus(impl);
 		[s rebuildAndNotify];
 	});
 }
@@ -1010,6 +1406,35 @@ LocalSave parseLocalSave(const std::string &text)
 {
 	__weak CheechSession *weakSelf = self;
 
+	client->evt_connected.connect([weakSelf, client]()
+	{
+		CheechSession *s = weakSelf; if (!s) return;
+		// GameClient has already sent PLAYER_ADD/SPECTATOR_ADD, so the request
+		// keeps its ordering in the same stream.
+		client->request_player_ids();
+	});
+
+	client->cmd_player_id.connect([weakSelf, client, index](unsigned int posn, unsigned int id)
+	{
+		CheechSession *s = weakSelf; if (!s) return;
+		SessionImpl *impl = s->_impl;
+		if (index >= 0 && index < (int)impl->seats.size()
+			&& posn == client->get_my_player_number())
+		{
+			impl->seats[index].playerId = id;
+			impl->seats[index].hasPlayerId = true;
+		}
+		applySeatFocus(impl);
+		[s rebuildAndNotify];
+	});
+
+	client->cmd_player_ids_end.connect([weakSelf]()
+	{
+		CheechSession *s = weakSelf; if (!s) return;
+		applySeatFocus(s->_impl);
+		[s rebuildAndNotify];
+	});
+
 	client->cmd_set_player_number.connect([weakSelf, client, index](unsigned int n)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
@@ -1022,6 +1447,7 @@ LocalSave parseLocalSave(const std::string &text)
 		if (index >= 0 && index < (int)impl->seats.size())
 			impl->seats[index].playerNumber = (int)n;
 		impl->clientByNumber[(int)n] = client;
+		applySeatFocus(impl);
 		[s rebuildAndNotify];
 	});
 
@@ -1060,10 +1486,11 @@ LocalSave parseLocalSave(const std::string &text)
 	GameClient *client = _impl->client;
 	if (!client) return;
 
-	client->evt_connected.connect([weakSelf]()
+	client->evt_connected.connect([weakSelf, client]()
 	{
 		CheechSession *s = weakSelf; if (!s) return;
 		s->_impl->status = CheechStatusWaiting;
+		client->request_player_ids();
 		[s rebuildAndNotify];
 	});
 
@@ -1082,18 +1509,49 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_set_player_number.connect([weakSelf](unsigned int)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
+		applySeatFocus(s->_impl);
+		applyExtraBotFocus(s->_impl);
 		[s rebuildAndNotify];
 	});
 
-	client->cmd_player_add.connect([weakSelf](unsigned int, Glib::ustring, int)
+	client->cmd_player_add.connect([weakSelf, client](unsigned int, Glib::ustring, int)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
+		associateRemoteSeats(s->_impl);
+		client->request_player_ids();
 		[s rebuildAndNotify];
 	});
 
 	client->cmd_player_remove.connect([weakSelf](unsigned int)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
+		[s rebuildAndNotify];
+	});
+
+	client->cmd_player_id.connect([weakSelf](unsigned int, unsigned int)
+	{
+		CheechSession *s = weakSelf; if (!s) return;
+		[s rebuildAndNotify];
+	});
+
+	client->cmd_player_ids_end.connect([weakSelf, client]()
+	{
+		CheechSession *s = weakSelf; if (!s) return;
+		SessionImpl *impl = s->_impl;
+
+		// The mapping is now fresh.  Remote seats already know their stable
+		// id, so their current player number can be looked up directly; only
+		// seats without an id still need order-based association.
+		for (Seat &seat : impl->seats)
+			if (seat.kind == CheechSeatRemote && seat.hasPlayerId && seat.playerId)
+			{
+				unsigned int posn = client->get_posn_for_id(seat.playerId);
+				if (posn >= 1 && posn <= 6)
+					seat.playerNumber = (int)posn;
+			}
+		associateRemoteSeats(impl);
+		applySeatFocus(impl);
+		applyExtraBotFocus(impl);
 		[s rebuildAndNotify];
 	});
 
@@ -1104,9 +1562,13 @@ LocalSave parseLocalSave(const std::string &text)
 		[s rebuildAndNotify];
 	});
 
-	client->cmd_game_resync.connect([weakSelf]()
+	client->cmd_game_resync.connect([weakSelf, client]()
 	{
 		CheechSession *s = weakSelf; if (!s) return;
+		// A GAME_BOARD follows every renumbering (join, rotate, shuffle,
+		// restart).  Request a fresh id mapping; the reply refreshes the
+		// remote associations and re-applies focus.
+		client->request_player_ids();
 		[s rebuildAndNotify];
 	});
 

@@ -109,9 +109,12 @@ void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
 	cr->arc(cx, cy, r * 0.88, 0, 2.0 * PI);
 	cr->fill();
 
-	cr->set_source_rgba(1.0, 1.0, 1.0, 0.35);
-	cr->arc(cx - r * 0.28, cy - r * 0.34, r * 0.30, 0, 2.0 * PI);
-	cr->fill();
+	if (_hole && _hole->get_current_player())
+	{
+		cr->set_source_rgba(1.0, 1.0, 1.0, 0.35);
+		cr->arc(cx - r * 0.28, cy - r * 0.34, r * 0.30, 0, 2.0 * PI);
+		cr->fill();
+	}
 
 	if (_hilighted)
 	{

@@ -33,6 +33,8 @@ public:
 
 #include <gtkmm/window.h>
 #include <gtkmm/entry.h>
+#include <gtkmm/box.h>
+#include <gtkmm/table.h>
 #include "GtkComboBoxText.hh"
 #include <gtkmm/scale.h>
 #include <gtkmm/button.h>
@@ -50,6 +52,9 @@ protected:
         class Gtk::HScale * smarts_scale;
         class Gtk::Button * add_button;
         class Gtk::Button * remove_button;
+        // The Configuration grid; the friend/enemy focus row is added to it
+        // dynamically so it lines up with the other config labels.
+        class Gtk::Table * config_table;
         
         setup_bot_win_glade();
         
