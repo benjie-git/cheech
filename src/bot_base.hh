@@ -136,6 +136,13 @@ class BotBase : public sigc::trackable
 		// against the client's current number/id mapping.
 		void refresh_focus_from_ids();
 
+		// Converts a positional friend/enemy mask (the only kind older callers
+		// such as the GTK setup window, the web server and cheechbot produce)
+		// into stable player ids the first time the server hands us the
+		// number/id mapping.  Without this the mask stays keyed to whatever
+		// player currently holds a number and goes stale after Rotate/Shuffle.
+		void resolve_positional_focus();
+
 		// Defers make_best_move() by one main-loop iteration (the gnet
 		// workaround) after cancelling any pending mapping timeout.
 		void schedule_search();
@@ -235,6 +242,14 @@ class BotBase : public sigc::trackable
 		unsigned int	_friends;
 		unsigned int	_enemies;
 		bool			_focus_by_ids;
+		// A positional friend/enemy mask that has not yet been converted to
+		// stable ids (see resolve_positional_focus()).
+		bool			_friends_from_mask;
+		bool			_enemies_from_mask;
+		// Set while refresh_focus_from_ids() feeds the resolved masks back
+		// through the virtual setters, so they are not mistaken for fresh
+		// positional configuration.
+		bool			_resolving_ids;
 		std::set<unsigned int>	_friend_ids;
 		std::set<unsigned int>	_enemy_ids;
 		bool			_awaiting_mapping;

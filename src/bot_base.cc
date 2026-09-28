@@ -67,6 +67,9 @@ BotBase::BotBase()
 	_friends = ALL_PLAYERS;
 	_enemies = ALL_PLAYERS;
 	_focus_by_ids = false;
+	_friends_from_mask = false;
+	_enemies_from_mask = false;
+	_resolving_ids = false;
 	_awaiting_mapping = false;
 	_search_clone = false;
 	_search_abort = NULL;
@@ -162,6 +165,20 @@ void BotBase::set_friends(unsigned int mask)
 {
 	_friends = mask;
 	_focus_by_ids = false;
+
+	if (_resolving_ids || _search_clone)
+		return;
+
+	if (mask == ALL_PLAYERS)
+	{
+		_friends_from_mask = false;
+		return;
+	}
+
+	// Remember the positional mask so it can be converted to stable ids
+	// once the server's number/id mapping is known.
+	_friends_from_mask = true;
+	request_player_mapping();
 }
 
 
@@ -175,6 +192,18 @@ void BotBase::set_enemies(unsigned int mask)
 {
 	_enemies = mask;
 	_focus_by_ids = false;
+
+	if (_resolving_ids || _search_clone)
+		return;
+
+	if (mask == ALL_PLAYERS)
+	{
+		_enemies_from_mask = false;
+		return;
+	}
+
+	_enemies_from_mask = true;
+	request_player_mapping();
 }
 
 
@@ -187,6 +216,7 @@ unsigned int BotBase::get_enemies() const
 void BotBase::set_friend_ids(const std::set<unsigned int>& ids)
 {
 	_friend_ids = ids;
+	_friends_from_mask = false;
 	_focus_by_ids = true;
 	request_player_mapping();
 }
@@ -201,6 +231,7 @@ const std::set<unsigned int>& BotBase::get_friend_ids() const
 void BotBase::set_enemy_ids(const std::set<unsigned int>& ids)
 {
 	_enemy_ids = ids;
+	_enemies_from_mask = false;
 	_focus_by_ids = true;
 	request_player_mapping();
 }
@@ -218,6 +249,69 @@ void BotBase::request_player_mapping()
 		return;
 
 	_client.request_player_ids();
+}
+
+
+void BotBase::resolve_positional_focus()
+{
+	if (_search_clone)
+		return;
+
+	if (_friends_from_mask)
+	{
+		std::set<unsigned int> ids;
+		bool complete = true;
+
+		for (unsigned int posn = 1; posn <= 6; ++posn)
+		{
+			if (!(_friends & (1u << (posn - 1))))
+				continue;
+
+			unsigned int id = _client.get_player_id(posn);
+			if (!id)
+			{
+				complete = false;
+				break;
+			}
+
+			ids.insert(id);
+		}
+
+		if (complete)
+		{
+			_friend_ids = ids;
+			_friends_from_mask = false;
+			_focus_by_ids = true;
+		}
+	}
+
+	if (_enemies_from_mask)
+	{
+		std::set<unsigned int> ids;
+		bool complete = true;
+
+		for (unsigned int posn = 1; posn <= 6; ++posn)
+		{
+			if (!(_enemies & (1u << (posn - 1))))
+				continue;
+
+			unsigned int id = _client.get_player_id(posn);
+			if (!id)
+			{
+				complete = false;
+				break;
+			}
+
+			ids.insert(id);
+		}
+
+		if (complete)
+		{
+			_enemy_ids = ids;
+			_enemies_from_mask = false;
+			_focus_by_ids = true;
+		}
+	}
 }
 
 
@@ -242,10 +336,15 @@ void BotBase::refresh_focus_from_ids()
 	}
 
 	// Route through the setters (again) so subclasses can react to the
-	// resolved focus without losing the id-based tracking flag.
+	// resolved focus without losing the id-based tracking flag.  Never
+	// clobber a positional mask that has not been converted to ids yet.
 	bool by_ids = _focus_by_ids;
-	set_friends(friends);
-	set_enemies(enemies);
+	_resolving_ids = true;
+	if (!_friends_from_mask)
+		set_friends(friends);
+	if (!_enemies_from_mask)
+		set_enemies(enemies);
+	_resolving_ids = false;
 	_focus_by_ids = by_ids;
 }
 
@@ -265,13 +364,14 @@ void BotBase::schedule_search()
 
 void BotBase::on_cmd_set_player_number(unsigned int posn)
 {
-	if (_focus_by_ids)
+	if (_focus_by_ids || _friends_from_mask || _enemies_from_mask)
 		request_player_mapping();
 }
 
 
 void BotBase::on_cmd_player_ids_end()
 {
+	resolve_positional_focus();
 	refresh_focus_from_ids();
 
 	if (_awaiting_mapping)
@@ -394,7 +494,7 @@ void BotBase::on_connect()
 {
 	_abort = FALSE;
 
-	if (_focus_by_ids)
+	if (_focus_by_ids || _friends_from_mask || _enemies_from_mask)
 		request_player_mapping();
 
 	evt_connected();

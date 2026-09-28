@@ -53,7 +53,7 @@ Glib::ustring BotMean::get_type_name() const
 
 BotBase* BotMean::clone_for_search() const
 {
-	BotMean *clone = new BotMean(_depth);
+	BotMean *clone = new BotMean(_full_depth);
 	clone->set_self_penalty(_self_penalty);
 	clone->set_self_bonus(_self_bonus);
 	clone->set_friends(get_friends());

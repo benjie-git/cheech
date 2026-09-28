@@ -22,6 +22,7 @@
 
 BotFriendly::BotFriendly(unsigned int depth) : BotLookAhead(depth)
 {
+	_full_depth = depth;
 	_my_player_num = 0;
 	_self_penalty = 2;
 	// Friendly/Mean express their own weighting through _self_penalty, so do
@@ -64,7 +65,7 @@ Glib::ustring BotFriendly::get_type_name() const
 
 BotBase* BotFriendly::clone_for_search() const
 {
-	BotFriendly *clone = new BotFriendly(_depth);
+	BotFriendly *clone = new BotFriendly(_full_depth);
 	clone->set_self_penalty(_self_penalty);
 	clone->set_self_bonus(_self_bonus);
 	clone->set_friends(get_friends());
@@ -98,8 +99,15 @@ void BotFriendly::maybe_shorten_depth(unsigned int mask)
     // its friend's move, its own, and then its friend's again.  This means that
     // it optimizes for finding its friend 2-move plans, but I want it to set up
     // good immediate next moves for its friend.  So drop its depth to 3.
-	if (_depth == 4 && std::bitset<32>(mask).count() == 1)
-		set_depth(3);
+	if (_searching)
+		return;
+
+	unsigned int depth = _full_depth;
+	if (depth == 4 && mask != ALL_PLAYERS && std::bitset<32>(mask).count() == 1)
+		depth = 3;
+
+	if (depth != _depth)
+		set_depth(depth);
 }
 
 
@@ -134,8 +142,16 @@ void BotFriendly::find_best_move(GameBoard *board, unsigned int player,
 							 std::vector<MoveList> *best_moves,
 							 long *best_score)
 {
+	if (best_moves && _current_depth != _depth)
+		_current_depth = _depth;
+
 	if (_current_depth < _depth)
-		player = next_focused_player(board, player, get_friends());
+	{
+		unsigned int focus = get_friends();
+		if (focus != ALL_PLAYERS && _my_player_num > 0)
+			focus |= 1u << (_my_player_num - 1);
+		player = next_focused_player(board, player, focus);
+	}
 
 	BotLookAhead::find_best_move(board, player,
 							best_moves, best_score);

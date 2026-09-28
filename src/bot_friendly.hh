@@ -40,7 +40,7 @@ class BotFriendly : public BotLookAhead
 
 	protected:
 		// Drops the search depth from 4 to 3 when the given mask covers a
-		// single player.
+		// single player, and restores the full depth otherwise.
 		void maybe_shorten_depth(unsigned int mask);
 
 		virtual long score_move_recurse(GameBoard *board, unsigned int player,
@@ -54,6 +54,7 @@ class BotFriendly : public BotLookAhead
 									std::vector<MoveList> *best_moves,
 									long *best_score);
 
+		unsigned int _full_depth;
 		unsigned int _my_player_num;
 		int _self_penalty;
 };
