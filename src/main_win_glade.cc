@@ -142,8 +142,10 @@ main_win_glade::main_win_glade(
    restart_game = NULL;
    Gtk::Menu *restart_submenu_menu = Gtk::manage(new class Gtk::Menu());
    restart_submenu = NULL;
+#ifndef MACOS_APP
    Gtk::MenuItem *   separator7 = NULL;
    Gtk::ImageMenuItem *quit = NULL;
+#endif
    Gtk::Menu *menuitem1_menu = Gtk::manage(new class Gtk::Menu());
    Gtk::MenuItem *menuitem1 = NULL;
    Gtk::Image *image46 = Gtk::manage(new class Gtk::Image(Gtk::StockID("gtk-undo"), Gtk::IconSize(1)));
@@ -168,10 +170,10 @@ main_win_glade::main_win_glade(
    Gtk::Menu *player_menu = Gtk::manage(new class Gtk::Menu());
    Gtk::MenuItem *player = NULL;
    Gtk::MenuItem *how_to_play = NULL;
-   Gtk::MenuItem *about = NULL;
+   about = NULL;
    Gtk::Menu *menuitem4_menu = Gtk::manage(new class Gtk::Menu());
-   Gtk::MenuItem *menuitem4 = NULL;
-   Gtk::MenuBar *menubar1 = Gtk::manage(new class Gtk::MenuBar());
+   help_menu = NULL;
+   menubar1 = Gtk::manage(new class Gtk::MenuBar());
    game_view = new class game_view();
 
    Gtk::Overlay *overlay1 = Gtk::manage(new class Gtk::Overlay());
@@ -251,11 +253,13 @@ main_win_glade::main_win_glade(
    show_chat = Gtk::manage(new class Gtk::MenuItem(_("Show _Chat"), true));
    menuitem1_menu->append(*show_chat);
 
+#ifndef MACOS_APP
    separator7 = Gtk::manage(new class Gtk::SeparatorMenuItem());
    menuitem1_menu->append(*separator7);
 
    quit = Gtk::manage(new class Gtk::ImageMenuItem(Gtk::StockID("gtk-quit")));
    menuitem1_menu->append(*quit);
+#endif
 
    undo = Gtk::manage(new class Gtk::ImageMenuItem(*image46, _("_Undo"), true));
    undo->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_Z, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
@@ -323,9 +327,9 @@ main_win_glade::main_win_glade(
    player->set_submenu(*player_menu);
    menubar1->append(*player);
 
-   menuitem4 = Gtk::manage(new class Gtk::MenuItem(_("_Help"), true));
-   menuitem4->set_submenu(*menuitem4_menu);
-   menubar1->append(*menuitem4);
+   help_menu = Gtk::manage(new class Gtk::MenuItem(_("_Help"), true));
+   help_menu->set_submenu(*menuitem4_menu);
+   menubar1->append(*help_menu);
    image46->set_alignment(0.5,0.5);
    image46->set_padding(0,0);
    image47->set_alignment(0.5,0.5);
@@ -502,8 +506,10 @@ main_win_glade::main_win_glade(
    restart_game->show();
    restart_submenu->show();
    show_chat->show();
+#ifndef MACOS_APP
    separator7->show();
    quit->show();
+#endif
    menuitem1->show();
    image46->show();
    undo->show();
@@ -525,7 +531,7 @@ main_win_glade::main_win_glade(
    player->show();
    how_to_play->show();
    about->show();
-   menuitem4->show();
+   help_menu->show();
    menubar1->show();
    game_view->show();
    overlay1->show();
@@ -553,11 +559,16 @@ main_win_glade::main_win_glade(
    vpaned1->show();
    statusbar->hide();
    vbox1->show();
+#ifdef MACOS_APP
+   main_win->set_default_size((int)lround(board_width * 1.5),
+                              (int)lround(board_height * 1.5));
+#else
    int menubar_min_height = 0;
    int menubar_height = 0;
    menubar1->get_preferred_height(menubar_min_height, menubar_height);
    main_win->set_default_size((int)lround(board_width * 1.5),
                               (int)lround(board_height * 1.5) + menubar_height);
+#endif
    main_win->show();
    new_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_new_game_activate), false);
    end_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_end_game_activate), false);
@@ -568,7 +579,9 @@ main_win_glade::main_win_glade(
    shuffle->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_shuffle_activate), false);
    restart_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_restart_game_activate), false);
    show_chat->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_show_chat_activate), false);
+#ifndef MACOS_APP
    quit->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_quit_activate), false);
+#endif
    undo->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_undo_activate), false);
    redo->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_redo_activate), false);
    show_last_move->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_show_last_move_activate), false);

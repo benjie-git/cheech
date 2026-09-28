@@ -25,6 +25,10 @@
 #include <gtkmm/messagedialog.h> 
 #include <gdkmm/window.h>
 
+#ifdef MACOS_APP
+#include <gtkosxapplication.h>
+#endif
+
 #include "main_win.hh"
 
 #include "utility.hh"
@@ -118,7 +122,46 @@ main_win::main_win() : main_win_glade()
 		&main_win::on_dialog_hidden));
 	_setup_game_win.signal_hide().connect(sigc::mem_fun(*this,
 		&main_win::on_dialog_hidden));
+
+#ifdef MACOS_APP
+	setup_macos_menubar();
+#endif
 }
+
+
+#ifdef MACOS_APP
+void main_win::setup_macos_menubar()
+{
+	GtkosxApplication *osx = gtkosx_application_get();
+
+	// The menu bar is rendered by the system, so hide the in-window copy.
+	menubar1->set_no_show_all(true);
+	menubar1->hide();
+
+	gtkosx_application_set_menu_bar(osx, GTK_MENU_SHELL(menubar1->gobj()));
+	gtkosx_application_set_about_item(osx, GTK_WIDGET(about->gobj()));
+	gtkosx_application_set_help_menu(osx, GTK_MENU_ITEM(help_menu->gobj()));
+	gtkosx_application_set_use_quartz_accelerators(osx, TRUE);
+
+	g_signal_connect(osx, "NSApplicationBlockTermination",
+		G_CALLBACK(main_win::on_macos_block_termination), this);
+
+	gtkosx_application_ready(osx);
+}
+
+
+gboolean main_win::on_macos_block_termination(gpointer, gpointer data)
+{
+	main_win *win = static_cast<main_win *>(data);
+
+	if (win->confirm_end_game())
+		gtk_main_quit();
+
+	// Always block Cocoa's own termination and quit through the main loop
+	// so that the game is torn down cleanly.
+	return TRUE;
+}
+#endif
 
 
 void main_win::on_dialog_hidden()

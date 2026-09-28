@@ -33,6 +33,7 @@ public:
 
 #include <gtkmm/window.h>
 #include <gtkmm/menuitem.h>
+#include <gtkmm/menubar.h>
 #include <gtkmm/imagemenuitem.h>
 #include "game_view.hh"
 #include <gtkmm/drawingarea.h>
@@ -77,6 +78,9 @@ protected:
         class Gtk::MenuItem * remove_computer_players;
         class Gtk::MenuItem * setup_computer_player;
         class Gtk::MenuItem * show_chat;
+        class Gtk::MenuBar * menubar1;
+        class Gtk::MenuItem * help_menu;
+        class Gtk::MenuItem * about;
         class game_view * game_view;
         class Gtk::Label * player_name1;
         class Gtk::Label * player_name2;

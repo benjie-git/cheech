@@ -56,7 +56,7 @@ Building cheech
 
 Build on *nix/MacOS:
 --------------
-- install gtkmm (on a mac, run: brew install gtkmm)
+- install gtkmm3 (on a mac, run: brew install gtkmm3)
 - run the below commands in the root directory of the cheech project.
   - autoreconf -i
   - ./configure
@@ -68,6 +68,7 @@ Building a MacOS app bundle
 ---------------------------
 To build a self-contained Cheech.app instead of installing system-wide:
 - install dylibbundler (on a mac, run: brew install dylibbundler)
+- install gtk-mac-integration (on a mac, run: brew install gtk-mac-integration)
 - run the below commands in the root directory of the cheech project.
   - autoreconf -i
   - ./configure --enable-macos-app
@@ -80,9 +81,7 @@ To build a self-contained Cheech.app instead of installing system-wide:
 
 Build on Windows using Dev-C++
 ------------------------------
-- Get gtkmm 2.8 or higher from here:
-    http://www.pcpm.ucl.ac.be/~gustin/win32_ports/gtkmm.html
-  and install into C:\GTK.
+- Install gtkmm3
 - Use the included Dev-C++ files to build the cheech binaries.
 - Put the cheech*.exe files and the pixmap directory into a folder together
 - Rename the ajax/www/com.benjie.cheech directory cheechweb, and put it into

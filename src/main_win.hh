@@ -86,6 +86,12 @@ class main_win : public main_win_glade
 		void bot_disconnected(BotBase *bot);
 		void update_menus();
 
+#ifdef MACOS_APP
+		void setup_macos_menubar();
+		static gboolean on_macos_block_termination(gpointer osx,
+			gpointer data);
+#endif
+
 		void on_about_activate();
 		void on_how_to_play_activate();
 
