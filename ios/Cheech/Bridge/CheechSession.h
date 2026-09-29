@@ -224,6 +224,13 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 @property (nonatomic, readonly) NSInteger animationStepMs;
 @property (nonatomic, readonly) NSInteger animationDoneMs;
 
+// Holds every local computer player off committing its next move until the
+// given number of animation hops (plus the destination rest time) has passed.
+// The UI calls this when it actually starts replaying a move, so the gate is
+// anchored to the on-screen animation instead of to the moment the core
+// applied the move.
+- (void)holdComputerMovesForAnimationHops:(NSInteger)hops;
+
 // The current computer-smarts percentage (50...100); see
 // -setComputerSmarts:.
 @property (nonatomic, readonly) NSInteger computerSmarts;

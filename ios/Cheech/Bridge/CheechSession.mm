@@ -1640,9 +1640,12 @@ LocalSave parseLocalSave(const std::string &text)
 				if (mover >= 1 && mover <= 6)
 					impl->snap.movesTaken[mover]++;
 
-				// This move will be replayed by the UI over the following
-				// duration; hold the bots off until it finishes so two
-				// computer moves never animate on top of each other.
+				// Hold the bots off until this move has replayed so two
+				// computer moves never animate on top of each other.  This
+				// only covers the window until the UI picks the move up; once
+				// the animation actually starts the UI calls
+				// -holdComputerMovesForAnimationHops: to re-anchor the gate to
+				// the on-screen animation.
 				if (mover != (int)impl->client->get_my_player_number())
 					cheech::extend_move_gate(impl->animStepMs * ((int)move->size() - 1)
 											 + impl->animDoneMs);
@@ -2144,6 +2147,13 @@ LocalSave parseLocalSave(const std::string &text)
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
 	return (NSInteger)_impl->animDoneMs;
+}
+
+- (void)holdComputerMovesForAnimationHops:(NSInteger)hops
+{
+	if (hops < 0) return;
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	cheech::extend_move_gate(_impl->animStepMs * (int)hops + _impl->animDoneMs);
 }
 
 - (NSInteger)computerSmarts

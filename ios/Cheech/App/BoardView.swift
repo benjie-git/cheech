@@ -12,7 +12,7 @@ struct BoardView: View {
 		TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !animator.isAnimating)) { timeline in
 			GeometryReader { geo in
 				let points = BoardGeometry.layout(in: geo.size, rotation: rotation)
-				let players = (0..<BoardGeometry.count).map { Int(model.session.player(atHole: $0)) }
+				let players = model.holes
 				let showPegs = model.session.connected && model.session.status != .waiting
 				let playerColor = (0...6).map { $0 == 0 ? 0 : Int(model.session.color(forPlayer: $0)) }
 				let selected = Set(model.session.selectedHoles().map { $0.intValue })

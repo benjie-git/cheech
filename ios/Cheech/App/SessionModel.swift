@@ -155,6 +155,14 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	// advances the turn (and lets bots start thinking) as soon as a move lands.
 	@Published var animatingPlayer = 0
 
+	// Peg positions, copied on the main thread in cheechSessionDidUpdate so the
+	// board and the move animator always advance together.  Reading the live
+	// core snapshot directly from BoardView let the board show a move's
+	// destination a frame before the animator began replaying it (the core
+	// applies a move in one step, so the peg is already on its final hole),
+	// which flashed the peg to the end of its move and back.
+	@Published private(set) var holes: [Int] = Array(repeating: 0, count: BoardGeometry.count)
+
 	@Published var screen: Screen = .setup
 	@Published var setupMode: SetupMode = .start
 	@Published var showInvite = false
@@ -272,28 +280,49 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			clearSavedGame()
 		}
 
+		// Snapshot the pegs before handing the newest move to the animator so
+		// the board never renders a move's destination before its replay.
+		holes = (0..<BoardGeometry.count).map { Int(session.player(atHole: $0)) }
+
+		replayLatestMoveIfNeeded()
+	}
+
+	// Starts the animation for the newest move the core has produced, if it has
+	// not been handed to the animator yet.  Called both when the core notifies
+	// and again when an animation finishes: a move that lands while the
+	// previous animation is completing is picked up in the same main-thread
+	// turn as that completion, so the board never renders the peg resting on
+	// its destination between two animations (which looked like a flash to the
+	// end and back).
+	private func replayLatestMoveIfNeeded() {
 		let serial = session.moveSerial
-		if serial != lastMoveSerial {
-			lastMoveSerial = serial
-			let path = session.lastMove().map { $0.intValue }
-			if path.count > 1 {
-				// Only replay moves made by other players.  The local
-				// player's own move snaps into place so the computer's
-				// immediate reply cannot interrupt it mid-flight.
-				let mover = session.player(atHole: path[path.count - 1])
-				if mover != session.myPlayerNumber {
-					animatingPlayer = Int(mover)
-					// Once control passes to a local human, drop the resting
-					// delay so they can start tapping as soon as the peg lands.
-					animator.start(
-						path: path,
-						step: Double(session.animationStepMs) / 1000.0,
-						done: isLocalHumanTurn ? 0 : Double(session.animationDoneMs) / 1000.0
-					) { [weak self] in
-						self?.animatingPlayer = 0
-					}
-				}
-			}
+		guard serial != lastMoveSerial else { return }
+		lastMoveSerial = serial
+
+		let path = session.lastMove().map { $0.intValue }
+		guard path.count > 1 else { return }
+
+		// Only replay moves made by other players.  The local player's own move
+		// snaps into place so the computer's immediate reply cannot interrupt
+		// it mid-flight.
+		let mover = session.player(atHole: path[path.count - 1])
+		guard mover != session.myPlayerNumber else { return }
+
+		animatingPlayer = Int(mover)
+		// Re-anchor the gate to the on-screen animation: hold local computers
+		// off until this replay has actually played out, so a back-to-back bot
+		// move cannot land in the snapshot before the animation has started.
+		session.holdComputerMoves(forAnimationHops: path.count - 1)
+		// Once control passes to a local human, drop the resting delay so they
+		// can start tapping as soon as the peg lands.
+		animator.start(
+			path: path,
+			step: Double(session.animationStepMs) / 1000.0,
+			done: isLocalHumanTurn ? 0 : Double(session.animationDoneMs) / 1000.0
+		) { [weak self] in
+			guard let self else { return }
+			self.animatingPlayer = 0
+			self.replayLatestMoveIfNeeded()
 		}
 	}
 
