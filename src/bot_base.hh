@@ -192,13 +192,9 @@ class BotBase : public sigc::trackable
 			MoveList *move,	std::vector<MoveList> *best_moves, long *best_score,
 			std::bitset<GameBoard::SIZE> *tos);
 
-		// Root-move-level parallelism.  collect_root_moves() enumerates every
-		// legal root move in the same order find_better_move() would score
-		// them; parallel_root_search() then scores those moves on several
-		// threads and merges the results.  Returns true if it handled the
-		// search (even if it was aborted).
-		bool parallel_root_search(GameBoard *board, unsigned int player,
-			std::vector<MoveList> *best_moves, long *best_score);
+		// Enumerates every legal root move in the same order
+		// find_better_move() would score them, so make_best_move() can hand
+		// the list to score_moves()/select_top_moves().
 		void collect_root_moves(GameBoard *board, unsigned int player,
 			std::vector<MoveList> *moves);
 		void collect_peg_moves(GameBoard *board, unsigned int player,
@@ -228,7 +224,8 @@ class BotBase : public sigc::trackable
 			std::vector<MoveList> *best_moves, long *best_score);
 
 		// Number of distinct top score tiers to choose from for the current
-		// smarts setting: 1 at 100%, doubling every 10% down to 8 at 70%.
+		// smarts setting: 1 at 100%, doubling every 10% (32 at 60% and
+		// below).
 		int top_move_tiers() const;
 
 		GameClient 		_client;

@@ -103,6 +103,42 @@ enum BotSkill {
 		}
 		return (type, [100, 90, 80, 70][l - 1])
 	}
+
+	// Detail shown in the skill dropdown: how many top-scoring moves the level
+	// lets the bot choose among.
+	static func detail(for level: Int, type: String) -> String {
+		let tiers = Self.tiers(type: type, level: level)
+		return tiers <= 1 ? "Best Move" : "Top \(tiers) Moves"
+	}
+
+	// All skill levels, for the skill dropdown.
+	static let levels = [1, 2, 3, 4]
+}
+
+// The bot types offered in the UI plus their display names.  The core speaks
+// in type strings like "LookAhead(3)".
+enum BotCatalog {
+	// One type per family, at the depth that reads as a good default.
+	static let types = ["Friendly(4)", "LookAhead(3)", "Mean(4)"]
+
+	// The fun name for a type, e.g. "Cosmo", or "" if unknown.
+	static func cuteName(_ type: String) -> String {
+		CheechSession.defaultName(forComputerType: type)
+	}
+
+	// The family name for a type, e.g. "Neutral" or "Mean", independent of
+	// depth; an unknown type stands in for itself.
+	static func familyName(_ type: String) -> String {
+		let name = CheechSession.typeName(forComputerType: type)
+		return name.isEmpty ? type : name
+	}
+
+	// Combined label, e.g. "Cosmo (Neutral)".
+	static func label(_ type: String) -> String {
+		let name = cuteName(type)
+		let family = familyName(type)
+		return name.isEmpty ? family : "\(name) (\(family))"
+	}
 }
 
 // A destructive action that should be confirmed once a game is underway.
@@ -330,11 +366,21 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		messages.append(message)
 	}
 
-	func joinGame(spectator: Bool) {
+	// Shared prologue for starting, joining, or resuming a game (and for
+	// leaving one): drop any in-flight animation and tap state, and start the
+	// log and move serials fresh.
+	private func resetTransients() {
 		lastMoveSerial = session.moveSerial
 		animator.stop()
 		animatingPlayer = 0
+		lastTapHole = -1
+		lastTapWasTerminal = false
+		messages.removeAll()
 		showServerLog = false
+	}
+
+	func joinGame(spectator: Bool) {
+		resetTransients()
 		session.setAnimationStepMs(opponentStepMs)
 		session.joinHost(
 			joinHost,
@@ -349,15 +395,10 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	func leave() {
 		clearSavedGame()
 		session.leave()
-		animator.stop()
-		animatingPlayer = 0
-		lastTapHole = -1
-		lastTapWasTerminal = false
-		messages.removeAll()
+		resetTransients()
 		fullScreen = false
 		confirmAction = nil
 		showConfirm = false
-		showServerLog = false
 		screen = .setup
 	}
 
@@ -390,13 +431,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 
 	func startGame() {
 		clearSavedGame()
-		lastMoveSerial = session.moveSerial
-		animator.stop()
-		animatingPlayer = 0
-		lastTapHole = -1
-		lastTapWasTerminal = false
-		messages.removeAll()
-		showServerLog = false
+		resetTransients()
 		let seatSpecs: [CheechSeat] = seats.map { seat in
 			switch seat.kind {
 			case .human:
@@ -405,7 +440,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 				let resolved = BotSkill.resolved(type: seat.botType, level: seat.skill ?? 1)
 				let spec = CheechSeat.computer(
 					withType: resolved.type,
-					name: CheechSession.defaultName(forComputerType: resolved.type),
+					name: BotCatalog.cuteName(resolved.type),
 					color: seat.color
 				)
 				spec.smarts = resolved.smarts
@@ -457,13 +492,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	private func resumeSavedGameIfNeeded() {
 		guard let save = UserDefaults.standard.string(forKey: PrefKey.savedGame),
 		      !save.isEmpty else { return }
-		lastMoveSerial = session.moveSerial
-		animator.stop()
-		animatingPlayer = 0
-		lastTapHole = -1
-		lastTapWasTerminal = false
-		messages.removeAll()
-		showServerLog = false
+		resetTransients()
 		session.setAnimationStepMs(opponentStepMs)
 		guard session.resumeLocalGame(save) else {
 			clearSavedGame()
@@ -477,6 +506,16 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		playerColor = color
 		session.changeName(name)
 		session.changeColor(color)
+	}
+
+	// Assigns a hosted-game seat a peg color; picking a color another seat
+	// already uses swaps the two, so no two seats share a color.
+	func setColor(forSeat seatID: UUID, to color: Int) {
+		guard let index = seats.firstIndex(where: { $0.id == seatID }) else { return }
+		if let other = seats.firstIndex(where: { $0.color == color && $0.id != seatID }) {
+			seats[other].color = seats[index].color
+		}
+		seats[index].color = color
 	}
 
 	// In-game setup (see CheechSession's "In-game setup" methods).  Changing
@@ -523,6 +562,18 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	// with no remote seats) has no server log.
 	var canShowServerLog: Bool {
 		!session.isHost || session.hasRemoteSeat
+	}
+
+	// True once every player has got all their pegs home.  The server reports
+	// "won" as soon as the first player finishes, but we wait for the game to
+	// fully play out before announcing a winner.
+	var allPlayersFinished: Bool {
+		let count = Int(session.numPlayers)
+		guard count > 0 else { return false }
+		for p in 1...count where !session.finished(forPlayer: p) {
+			return false
+		}
+		return true
 	}
 
 	// Removes just the last hop from the in-progress move path (backspace/delete).

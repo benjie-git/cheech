@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  */
 
 #ifndef _BOT_FRIENDLY_HH
@@ -26,37 +26,13 @@
 class BotFriendly : public BotLookAhead
 {
 	public:
-		BotFriendly(unsigned int depth);
-
-		void set_self_penalty(int self_penalty);
+		BotFriendly(unsigned int depth,
+					unsigned int tt_bits = TT_SIZE_BITS);
 
 		virtual Glib::ustring get_default_name() const;
 		virtual Glib::ustring get_type_name() const;
 
 		virtual BotBase* clone_for_search() const;
-
-		virtual void set_friends(unsigned int mask);
-		virtual void set_enemies(unsigned int mask);
-
-	protected:
-		// Drops the search depth from 4 to 3 when the given mask covers a
-		// single player, and restores the full depth otherwise.
-		void maybe_shorten_depth(unsigned int mask);
-
-		virtual long score_move_recurse(GameBoard *board, unsigned int player,
-										MoveList *move);
-
-		virtual long score_this_move(GameBoard *board, 
-											 unsigned int player,
-											 MoveList *move);
-
-		virtual void find_best_move(GameBoard *board, unsigned int player,
-									std::vector<MoveList> *best_moves,
-									long *best_score);
-
-		unsigned int _full_depth;
-		unsigned int _my_player_num;
-		int _self_penalty;
 };
 
 #endif // _BOT_FRIENDLY_HH

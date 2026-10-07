@@ -32,9 +32,11 @@ static inline uint64_t tt_key(uint64_t zobrist, unsigned int player,
 	return key ? key : 1;
 }
 
-BotLookAhead::BotLookAhead(unsigned int depth) : BotBase()
+BotLookAhead::BotLookAhead(unsigned int depth, unsigned int tt_bits) :
+	BotBase()
 {
 	_depth = depth;
+	_full_depth = depth;
 	_current_depth = 0;
 	// LookAhead plans its own sequence of moves only: opponents are treated
 	// as static obstacles and never get a turn in the search, so the bot
@@ -42,13 +44,13 @@ BotLookAhead::BotLookAhead(unsigned int depth) : BotBase()
 	// adversarial search (it sets _paranoid back to true).
 	_paranoid = false;
 	_root_player = 0;
-	_self_bonus = 1;
-	_scratch_moves.resize(depth);
+	_self_penalty = 1;
+	_dist_players = 0;
 	_search_moves.resize(depth);
 	_tt_gen = 0;
-	_tt_mask = TT_MASK;
-	if (depth > 1)
-		_tt.resize(TT_SIZE);
+	_tt_mask = (1u << tt_bits) - 1;
+	if (depth > 1 && tt_bits > 0)
+		_tt.resize(1u << tt_bits);
 
 	for (int p = 0; p < 7; p++)
 		for (unsigned int h = 0; h < GameBoard::SIZE; h++)
@@ -56,37 +58,43 @@ BotLookAhead::BotLookAhead(unsigned int depth) : BotBase()
 }
 
 
-void BotLookAhead::set_self_bonus(int self_bonus)
+void BotLookAhead::set_self_penalty(int self_penalty)
 {
-	if (self_bonus < 1)
-		self_bonus = 1;
+	if (self_penalty < 1)
+		self_penalty = 1;
 
-	_self_bonus = self_bonus;
+	_self_penalty = self_penalty;
 }
 
 
-int BotLookAhead::get_self_bonus() const
+void BotLookAhead::set_friends(unsigned int mask)
 {
-	return _self_bonus;
+	BotBase::set_friends(mask);
+	if (!_paranoid)
+		maybe_shorten_depth(mask);
 }
 
 
-void BotLookAhead::set_tt_bits(unsigned int bits)
+void BotLookAhead::set_enemies(unsigned int mask)
 {
-	if (bits > TT_SIZE_BITS)
-		bits = TT_SIZE_BITS;
+	BotBase::set_enemies(mask);
+	if (_paranoid)
+		maybe_shorten_depth(mask);
+}
 
-	_tt.clear();
 
-	if (bits == 0)
-	{
-		_tt_mask = 0;
+void BotLookAhead::maybe_shorten_depth(unsigned int mask)
+{
+	if (_searching)
 		return;
-	}
 
-	_tt_mask = (1u << bits) - 1;
-	_tt.resize(1u << bits);
-	_tt_gen = 0;
+	unsigned int depth = _full_depth;
+	if (depth == 4 && mask != ALL_PLAYERS &&
+		std::bitset<32>(mask).count() == 1)
+		depth = 3;
+
+	if (depth != _depth)
+		set_depth(depth);
 }
 
 
@@ -119,7 +127,7 @@ void BotLookAhead::on_cmd_game_turn(unsigned int posn,
 									unsigned int move_count)
 {
 	// Do not disturb a search that is currently running: _current_depth
-	// belongs to it, and resetting it mid-search indexes _scratch_moves out
+	// belongs to it, and resetting it mid-search indexes _search_moves out
 	// of bounds.  The next turn will reset it once that search has finished.
 	if (!_searching)
 		_current_depth = _depth;
@@ -129,11 +137,12 @@ void BotLookAhead::on_cmd_game_turn(unsigned int posn,
 
 BotBase* BotLookAhead::clone_for_search() const
 {
-	BotLookAhead *clone = new BotLookAhead(_depth);
-	clone->set_self_bonus(_self_bonus);
+	// Clones plan from the full depth; a narrow focus shortens them again
+	// through set_friends()/set_enemies() below.
+	BotLookAhead *clone = new BotLookAhead(_full_depth, TT_CLONE_BITS);
+	clone->set_self_penalty(_self_penalty);
 	clone->set_friends(get_friends());
 	clone->set_enemies(get_enemies());
-	clone->set_tt_bits(18);
 	return clone;
 }
 
@@ -161,7 +170,6 @@ void BotLookAhead::set_depth(unsigned int depth)
 		return;
 
 	_depth = depth;
-	_scratch_moves.resize(depth);
 	_search_moves.resize(depth);
 
 	// The depth dropped out from under any pending root search, so restart it
@@ -190,6 +198,18 @@ void BotLookAhead::find_best_move(GameBoard *board, unsigned int player,
 	if (best_moves && _current_depth != _depth)
 		_current_depth = _depth;
 
+	// In the cooperative recursion a sub-node belongs to whichever focused
+	// player moves next: hand the turn to the next focused, unfinished
+	// player rather than the nominal one.  (Plain LookAhead focuses on
+	// everyone, so this only ever skips finished players.)
+	if (_current_depth < _depth)
+	{
+		unsigned int focus = get_friends();
+		if (focus != ALL_PLAYERS && _root_player > 0)
+			focus |= (1u << (_root_player - 1));
+		player = next_focused_player(board, player, focus);
+	}
+
 	bool at_root = (_current_depth == _depth);
 
 	if (at_root)
@@ -209,13 +229,17 @@ void BotLookAhead::find_best_move(GameBoard *board, unsigned int player,
 		}
 	}
 
-	_scratch_moves[_current_depth-1].clear();
-	_scratch_moves[_current_depth-1].reserve(10);
+	// The move path buffer is local: find_better_move() keeps it balanced
+	// (push/pop) and nested sub-node searches must not share it.
+	MoveList path;
+	path.reserve(10);
 
-	find_better_move(board, player, &(_scratch_moves[_current_depth-1]),
-					 best_moves, best_score);
+	find_better_move(board, player, &path, best_moves, best_score);
 
-	if (!at_root && !_tt.empty() && is_still_my_turn())
+	// Only store real scores: a node with no legal move (or an aborted one)
+	// leaves *best_score at LONG_MIN, which must never leak into the table.
+	if (!at_root && !_tt.empty() && is_still_my_turn() &&
+		*best_score != LONG_MIN)
 	{
 		uint64_t key = tt_key(board->get_zobrist(), player, _current_depth);
 		TTEntry &entry = _tt[key & _tt_mask];
@@ -231,6 +255,14 @@ void BotLookAhead::find_best_move(GameBoard *board, unsigned int player,
 
 void BotLookAhead::update_distance_cache(GameBoard *board)
 {
+	// Distances are static board geometry and get_goal() depends only on
+	// the player count, so the cache needs rebuilding only when the player
+	// count changes (it starts zeroed).
+	unsigned int num_players = board->get_num_players();
+	if (num_players == _dist_players)
+		return;
+	_dist_players = num_players;
+
 	for (unsigned int p = 1; p <= 6; p++)
 	{
 		unsigned int goal = board->get_goal(p);
@@ -273,7 +305,7 @@ long BotLookAhead::score_move_recurse(GameBoard *board, unsigned int player,
 
 	long total_score = score_this_move(board, player, move);
 
-	if (board->player_finished(player) || total_score > 9000 /* || total_score < -100*/)
+	if (board->player_finished(player) || total_score > 9000)
 	{
 		board->move_peg(back, front);
 		return total_score * _current_depth;
@@ -293,12 +325,15 @@ long BotLookAhead::score_move_recurse(GameBoard *board, unsigned int player,
 		if (!is_still_my_turn())
 		{
 			board->move_peg(back, front);
-			return total_score + best_score;
+			return total_score;
 		}
-		
-		total_score += best_score;
 
 		_current_depth++;
+
+		// A sub-node with no legal move reports LONG_MIN; treat that as no
+		// gain instead of overflowing the addition.
+		if (best_score != LONG_MIN)
+			total_score += best_score;
 	}
 
 	board->move_peg(back, front);
@@ -406,21 +441,9 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 	if (moves.empty())
 		return 0;
 
-	// Move ordering: biggest gain for the player to move first.  This
-	// happens to be the most promising move for both a maximising root
-	// player and a minimising opponent, which is what alpha-beta needs.
-	std::stable_sort(moves.begin(), moves.end(),
-		[this, player](const MoveList &a, const MoveList &b)
-		{
-			long ga = _dist_to_goal[player][a.front()]
-					 - _dist_to_goal[player][a.back()];
-			long gb = _dist_to_goal[player][b.front()]
-					 - _dist_to_goal[player][b.back()];
-			return ga > gb;
-		});
-
-	// Try the transposition table's previous best move first.
-	if (hit && entry->best && entry->best != 0)
+	// Try the transposition table's previous best move first; a re-visit
+	// keeps the stored move ahead and skips the ordering sort below.
+	if (hit && entry->best != 0)
 	{
 		for (unsigned int i = 0; i < moves.size(); i++)
 		{
@@ -431,6 +454,21 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 				break;
 			}
 		}
+	}
+	else if (!hit)
+	{
+		// Move ordering: biggest gain for the player to move first.  This
+		// happens to be the most promising move for both a maximising root
+		// player and a minimising opponent, which is what alpha-beta needs.
+		std::stable_sort(moves.begin(), moves.end(),
+			[this, player](const MoveList &a, const MoveList &b)
+			{
+				long ga = _dist_to_goal[player][a.front()]
+						 - _dist_to_goal[player][a.back()];
+				long gb = _dist_to_goal[player][b.front()]
+						 - _dist_to_goal[player][b.back()];
+				return ga > gb;
+			});
 	}
 
 	long best = maximizing ? LONG_MIN : LONG_MAX;
@@ -448,20 +486,13 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 		_current_depth = remaining;
 
 		long d = score_this_move(board, player, &m);
-		long v;
 
-		if (d > 9000)
-		{
-			v = (maximizing ? d : -d) * remaining;
-		}
-		else
-		{
-			v = (maximizing ? d : -d) * remaining;
-
-			if (remaining > 1)
-				v += paranoid_search(board, board->get_next_player(player),
-									 root, remaining - 1, alpha, beta);
-		}
+		// A finishing move (or any big enough one) ends the branch: no
+		// further plies are searched below it.
+		long v = (maximizing ? d : -d) * remaining;
+		if (d <= 9000 && remaining > 1)
+			v += paranoid_search(board, board->get_next_player(player),
+								 root, remaining - 1, alpha, beta);
 
 		board->move_peg(back, front);
 
@@ -518,10 +549,10 @@ long BotLookAhead::score_this_move(GameBoard *board,
 {
 	long progress = score_progress(board, player, move);
 
-	// The root player values its own advancement more than the progress it
-	// denies the others; the sportsmanship penalty is not scaled.
+	// The root player's own progress may be discounted (Friendly divides by
+	// _self_penalty = 2); the sportsmanship penalties are not scaled.
 	if (player == _root_player)
-		progress *= _self_bonus;
+		progress /= _self_penalty;
 
 	return progress + goal_block_penalty(board, player, move)
 				  + goal_exit_penalty(board, player, move);

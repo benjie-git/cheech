@@ -34,6 +34,24 @@ struct ColorPickerRow: View {
 	}
 }
 
+// Player count and rule toggles, shared by the pre-game setup page and the
+// in-game setup sheet (which binds to a draft rather than the live prefs).
+struct RulesRows: View {
+	@Binding var numPlayers: Int
+	@Binding var longJumps: Bool
+	@Binding var hopOthers: Bool
+	@Binding var stopOthers: Bool
+
+	var body: some View {
+		Stepper("Players: \(numPlayers)", value: $numPlayers, in: 2...6)
+		Toggle("Allow long jumps", isOn: $longJumps)
+		Toggle("Can Enter Opponents' Goal", isOn: $hopOthers)
+		if hopOthers {
+			Toggle("Can Stop in Opponents' Goal", isOn: $stopOthers)
+		}
+	}
+}
+
 struct GameSetupView: View {
 	@EnvironmentObject var model: SessionModel
 
@@ -55,25 +73,19 @@ struct GameSetupView: View {
 						.foregroundStyle(.secondary)
 				}
 				Spacer(minLength: 12)
-				if model.setupMode == .start {
-					Button {
+				Button {
+					if model.setupMode == .start {
 						model.startGame()
-					} label: {
-						Text("Start Game").font(.headline)
-					}
-					.buttonStyle(.borderedProminent)
-					.tint(.green)
-					.controlSize(.large)
-				} else {
-					Button {
+					} else {
 						model.joinGame(spectator: model.spectator)
-					} label: {
-						Text("Join Game").font(.headline)
 					}
-					.buttonStyle(.borderedProminent)
-					.tint(.green)
-					.controlSize(.large)
+				} label: {
+					Text(model.setupMode == .start ? "Start Game" : "Join Game")
+						.font(.headline)
 				}
+				.buttonStyle(.borderedProminent)
+				.tint(.green)
+				.controlSize(.large)
 			}
 			.padding(.horizontal, 20)
 			.padding(.top, 20)
@@ -91,12 +103,12 @@ struct GameSetupView: View {
 
 				if model.setupMode == .start {
 					Section("Game Settings") {
-						Stepper("Players: \(model.numPlayers)", value: $model.numPlayers, in: 2...6)
-						Toggle("Allow long jumps", isOn: $model.longJumps)
-						Toggle("Can Enter Opponents' Goal", isOn: $model.hopOthers)
-						if model.hopOthers {
-							Toggle("Can Stop in Opponents' Goal", isOn: $model.stopOthers)
-						}
+						RulesRows(
+							numPlayers: $model.numPlayers,
+							longJumps: $model.longJumps,
+							hopOthers: $model.hopOthers,
+							stopOthers: $model.stopOthers
+						)
 						VStack(alignment: .leading, spacing: 6) {
 							HStack {
 								Text("Animation Speed")
@@ -255,20 +267,20 @@ struct BotTypePickerRow: View {
 	let title: String
 	@Binding var selection: String
 	var showsInfo = false
-	@StateObject private var info = InfoPopoverState()
+	@StateObject private var info = PopoverState()
 
 	var body: some View {
 		HStack {
 			Text(title)
 			if showsInfo {
 				Button {
-					info.isShown.toggle()
+					info.isVisible.toggle()
 				} label: {
 					Image(systemName: "info.circle")
 						.foregroundStyle(.secondary)
 				}
 				.buttonStyle(.plain)
-				.popover(isPresented: $info.isShown) {
+				.popover(isPresented: $info.isVisible) {
 					VStack(alignment: .leading, spacing: 0) {
 						Text("Friendly helps set up good moves for you, Mean actively blocks your moves, and Neutral just does its own thing.")
 							.font(.callout)
@@ -281,27 +293,35 @@ struct BotTypePickerRow: View {
 				}
 			}
 			Spacer(minLength: 8)
-			BotTypeDropdown(selection: $selection)
+			DropdownPicker(
+				options: BotCatalog.types,
+				selection: $selection,
+				trigger: { BotCatalog.label($0) },
+				rowLabel: { BotCatalog.cuteName($0) },
+				rowDetail: { BotCatalog.familyName($0) }
+			)
 		}
 	}
 }
 
 // A custom dropdown, since a Menu cannot style its option rows (and a Picker
-// wheel needs a whole new presentation).  The trigger shows the combined
-// label; the expanded list shows the cute name (leading, blue) and the type
-// and depth (trailing, dark grey).
-struct BotTypeDropdown: View {
-	@Binding var selection: String
-	@StateObject private var state = BotDropdownState()
-
-	private let types = GameScreenView.botTypes
+// wheel needs a whole new presentation).  The trigger shows the selected
+// option's trigger text; the expanded list shows each option's label (leading,
+// blue) and detail (trailing, dark grey).
+struct DropdownPicker<Option: Hashable>: View {
+	let options: [Option]
+	@Binding var selection: Option
+	let trigger: (Option) -> String
+	let rowLabel: (Option) -> String
+	let rowDetail: (Option) -> String
+	@StateObject private var state = PopoverState()
 
 	var body: some View {
 		Button {
-			state.isExpanded.toggle()
+			state.isVisible.toggle()
 		} label: {
 			HStack(spacing: 4) {
-				Text(GameScreenView.botLabel(selection))
+				Text(trigger(selection))
 					.lineLimit(1)
 					.minimumScaleFactor(0.7)
 				Image(systemName: "chevron.up.chevron.down")
@@ -310,19 +330,19 @@ struct BotTypeDropdown: View {
 			}
 		}
 		.buttonStyle(.plain)
-		.popover(isPresented: $state.isExpanded) {
+		.popover(isPresented: $state.isVisible) {
 			VStack(spacing: 0) {
-				ForEach(types, id: \.self) { type in
+				ForEach(options, id: \.self) { option in
 					Button {
-						selection = type
-						state.isExpanded = false
+						selection = option
+						state.isVisible = false
 					} label: {
 						HStack(spacing: 16) {
-							Text(GameScreenView.botCuteName(type))
+							Text(rowLabel(option))
 								.foregroundStyle(.blue)
 								.lineLimit(1)
 							Spacer(minLength: 24)
-							Text(GameScreenView.botTypeName(type))
+							Text(rowDetail(option))
 								.foregroundStyle(Color(.darkGray))
 								.lineLimit(1)
 						}
@@ -331,7 +351,7 @@ struct BotTypeDropdown: View {
 						.contentShape(Rectangle())
 					}
 					.buttonStyle(.plain)
-					if type != types.last { Divider() }
+					if option != options.last { Divider() }
 				}
 			}
 			.padding(.vertical, 5)
@@ -341,18 +361,10 @@ struct BotTypeDropdown: View {
 	}
 }
 
-final class BotDropdownState: ObservableObject {
-	@Published var isExpanded = false
-}
-
-final class InfoPopoverState: ObservableObject {
-	@Published var isShown = false
-}
-
-struct SkillOption: Identifiable {
-	let label: String
-	let value: Int
-	var id: Int { value }
+// Backing for a transient popover shown inline in a form row.  (Held as an
+// ObservableObject because this toolchain cannot expand @State.)
+final class PopoverState: ObservableObject {
+	@Published var isVisible = false
 }
 
 struct SkillPickerRow: View {
@@ -364,108 +376,44 @@ struct SkillPickerRow: View {
 		HStack {
 			Text(title)
 			Spacer(minLength: 8)
-			SkillDropdown(botType: botType, selection: $selection)
+			DropdownPicker(
+				options: BotSkill.levels,
+				selection: $selection,
+				trigger: { BotSkill.label(for: $0) },
+				rowLabel: { BotSkill.label(for: $0) },
+				rowDetail: { BotSkill.detail(for: $0, type: botType) }
+			)
 		}
 	}
 }
 
-struct SkillDropdown: View {
-	let botType: String
-	@Binding var selection: Int
-	@StateObject private var state = BotDropdownState()
-
-	private let options: [SkillOption] = [
-		SkillOption(label: "Best", value: 1),
-		SkillOption(label: "Great", value: 2),
-		SkillOption(label: "Mid", value: 3),
-		SkillOption(label: "Nerfed", value: 4),
-	]
-	private func label(for level: Int) -> String {
-		BotSkill.label(for: level)
-	}
-	private func detail(for level: Int) -> String {
-		let tiers = BotSkill.tiers(type: botType, level: level)
-		return tiers <= 1 ? "Best Move" : "Top \(tiers) Moves"
-	}
-
-	var body: some View {
-		Button {
-			state.isExpanded.toggle()
-		} label: {
-			HStack(spacing: 4) {
-				Text(label(for: selection))
-					.lineLimit(1)
-					.minimumScaleFactor(0.7)
-				Image(systemName: "chevron.up.chevron.down")
-					.font(.caption2.weight(.semibold))
-					.foregroundStyle(.tertiary)
-			}
-		}
-		.buttonStyle(.plain)
-		.popover(isPresented: $state.isExpanded) {
-			VStack(spacing: 0) {
-				ForEach(options) { option in
-					Button {
-						selection = option.value
-						state.isExpanded = false
-					} label: {
-						HStack(spacing: 16) {
-							Text(option.label)
-								.foregroundStyle(.blue)
-								.lineLimit(1)
-							Spacer(minLength: 24)
-							Text(detail(for: option.value))
-								.foregroundStyle(Color(.darkGray))
-								.lineLimit(1)
-						}
-						.padding(.vertical, 10)
-						.padding(.horizontal, 16)
-						.contentShape(Rectangle())
-					}
-					.buttonStyle(.plain)
-					if option.id != options.last?.id { Divider() }
-				}
-			}
-			.padding(.vertical, 5)
-			.fixedSize(horizontal: true, vertical: false)
-			.presentationCompactAdaptation(.popover)
-		}
-	}
-}
-
-// A checkbox list of the other seats, used to choose which players a Friendly
-// bot helps or a Mean bot opposes.  A nil selection means "everyone" and shows
-// as all boxes checked; toggling materialises an explicit list (an empty list
-// means "nobody").
-struct FocusPickerRow: View {
-	@EnvironmentObject var model: SessionModel
+// A checkbox list (two items per row to keep the setup table compact) used to
+// choose which players a Friendly bot helps or a Mean bot opposes.  A nil
+// selection means "everyone" and shows as all boxes checked; toggling
+// materialises an explicit selection (an empty one means "nobody").  Used on
+// the setup page over seat ids and in-game over player numbers.
+struct FocusPicker<Item, ID: Hashable>: View {
 	let title: String
-	let seatID: UUID
-	@Binding var selection: [UUID]?
+	let items: [Item]
+	// An item's stable id: seat ids on the setup page, player numbers in-game.
+	let id: KeyPath<Item, ID>
+	let label: (Item) -> String
+	@Binding var selection: [ID]?
 
-	private var others: [SeatConfig] {
-		model.seats.filter { $0.id != seatID }
+	private var chosen: Set<ID> {
+		Set(selection ?? items.map { $0[keyPath: id] })
 	}
 
-	private var chosen: Set<UUID> {
-		Set(selection ?? others.map { $0.id })
-	}
-
-	private func label(_ seat: SeatConfig) -> String {
-		if seat.kind == .remote { return "Open seat" }
-		return seat.name.isEmpty ? "Seat" : seat.name
-	}
-
-	private func toggle(_ id: UUID) {
+	private func toggle(_ target: ID) {
 		var set = chosen
-		if set.contains(id) { set.remove(id) } else { set.insert(id) }
-		selection = others.map { $0.id }.filter { set.contains($0) }
+		if set.contains(target) { set.remove(target) } else { set.insert(target) }
+		selection = items.map { $0[keyPath: id] }.filter { set.contains($0) }
 	}
 
-	// Two players per row to keep the setup table compact.
-	private var rows: [[SeatConfig]] {
-		stride(from: 0, to: others.count, by: 2).map {
-			Array(others[$0..<min($0 + 2, others.count)])
+	// Two items per row to keep the setup table compact.
+	private var rows: [[Item]] {
+		stride(from: 0, to: items.count, by: 2).map {
+			Array(items[$0..<min($0 + 2, items.count)])
 		}
 	}
 
@@ -488,10 +436,10 @@ struct FocusPickerRow: View {
 				.foregroundStyle(.secondary)
 			ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
 				HStack(spacing: 12) {
-					ForEach(row) { other in
-						focusToggle(label(other), isOn: Binding(
-							get: { chosen.contains(other.id) },
-							set: { _ in toggle(other.id) }
+					ForEach(row, id: id) { item in
+						focusToggle(label(item), isOn: Binding(
+							get: { chosen.contains(item[keyPath: id]) },
+							set: { _ in toggle(item[keyPath: id]) }
 						))
 					}
 					if row.count == 1 {
@@ -507,6 +455,20 @@ struct SeatEditorView: View {
 	@EnvironmentObject var model: SessionModel
 	@Binding var seat: SeatConfig
 
+	// Picking a color another seat already uses swaps the two, so no two
+	// seats share a color.
+	private var colorBinding: Binding<Int> {
+		Binding(
+			get: { seat.color },
+			set: { model.setColor(forSeat: seat.id, to: $0) }
+		)
+	}
+
+	// How another seat reads in a focus picker.
+	private func otherLabel(_ other: SeatConfig) -> String {
+		other.kind == .remote ? "Open seat" : (other.name.isEmpty ? "Seat" : other.name)
+	}
+
 	var body: some View {
 		VStack(alignment: .leading, spacing: 10) {
 			Picker("Type", selection: Binding(
@@ -516,7 +478,7 @@ struct SeatEditorView: View {
 					switch newKind {
 					case .computer:
 						if seat.humanName == nil { seat.humanName = seat.name }
-						seat.name = CheechSession.defaultName(forComputerType: seat.botType)
+						seat.name = BotCatalog.cuteName(seat.botType)
 					case .human:
 						seat.name = seat.humanName ?? seat.name
 					default:
@@ -530,9 +492,12 @@ struct SeatEditorView: View {
 			}
 			.pickerStyle(.segmented)
 
+			if seat.kind != .remote {
+				ColorPickerRow(selection: colorBinding)
+			}
+
 			switch seat.kind {
 			case .human:
-				ColorPickerRow(selection: $seat.color)
 				HStack {
 					Text("Name")
 					TextField("Name", text: Binding(
@@ -545,25 +510,29 @@ struct SeatEditorView: View {
 					.multilineTextAlignment(.trailing)
 				}
 			case .computer:
-				ColorPickerRow(selection: $seat.color)
 				BotTypePickerRow(title: "Bot Type", selection: Binding(
 					get: { seat.botType },
 					set: { newType in
 						seat.botType = newType
 						model.lastBotType = newType
-						seat.name = CheechSession.defaultName(forComputerType: newType)
+						seat.name = BotCatalog.cuteName(newType)
 					}
 				), showsInfo: true)
 				SkillPickerRow(title: "Skill", botType: seat.botType, selection: Binding(
 					get: { BotSkill.level(seat.skill) },
 					set: { seat.skill = $0 }
 				))
-				if model.seats.count > 2,
-				   CheechSession.typeName(forComputerType: seat.botType) == "Friendly" {
-					FocusPickerRow(title: "Friendly to", seatID: seat.id, selection: $seat.friendSeats)
-				} else if model.seats.count > 2,
-				   CheechSession.typeName(forComputerType: seat.botType) == "Mean" {
-					FocusPickerRow(title: "Mean to", seatID: seat.id, selection: $seat.enemySeats)
+				if model.seats.count > 2 {
+					let family = BotCatalog.familyName(seat.botType)
+					if family == "Friendly" || family == "Mean" {
+						FocusPicker(
+							title: family == "Friendly" ? "Friendly to" : "Mean to",
+							items: model.seats.filter { $0.id != seat.id },
+							id: \.id,
+							label: { otherLabel($0) },
+							selection: family == "Friendly" ? $seat.friendSeats : $seat.enemySeats
+						)
+					}
 				}
 			case .remote:
 				Text("Open seat — another device can join")
@@ -578,27 +547,6 @@ struct SeatEditorView: View {
 struct GameScreenView: View {
 	@EnvironmentObject var model: SessionModel
 	@Environment(\.verticalSizeClass) private var verticalSizeClass
-
-	static let botTypes = ["Friendly(4)", "LookAhead(3)", "Mean(4)"]
-
-	// Human-friendly name for a computer-player type, e.g. "Cosmo".
-	static func botCuteName(_ type: String) -> String {
-		CheechSession.defaultName(forComputerType: type)
-	}
-
-	// The bot family for a computer-player type, e.g. "Neutral" or "Mean",
-	// independent of depth.
-	static func botTypeName(_ type: String) -> String {
-		let name = CheechSession.typeName(forComputerType: type)
-		return name.isEmpty ? type : name
-	}
-
-	// Combined label, e.g. "Cosmo (Neutral)".
-	static func botLabel(_ type: String) -> String {
-		let name = botCuteName(type)
-		let description = botTypeName(type)
-		return name.isEmpty ? description : "\(name) (\(description))"
-	}
 
 	private var session: CheechSession { model.session }
 
@@ -670,7 +618,7 @@ struct GameScreenView: View {
 	// has been played; before the first move, or once the game has finished,
 	// they run straight away.
 	private func perform(_ action: GameAction) {
-		if session.moveNumber > 0 && !allPlayersFinished {
+		if session.moveNumber > 0 && !model.allPlayersFinished {
 			model.confirmAction = action
 			model.showConfirm = true
 		} else {
@@ -874,22 +822,10 @@ struct GameScreenView: View {
 		model.animatingPlayer != 0 ? model.animatingPlayer : Int(session.currentPlayer)
 	}
 
-	// True once every player has got all their pegs home.  The server reports
-	// "won" as soon as the first player finishes, but we wait for the game to
-	// fully play out before announcing a winner.
-	private var allPlayersFinished: Bool {
-		let count = Int(session.numPlayers)
-		guard count > 0 else { return false }
-		for p in 1...count where !session.finished(forPlayer: p) {
-			return false
-		}
-		return true
-	}
-
 	// The winner, once everyone has finished.  The first player to get all pegs
 	// home is the one with the fewest recorded moves.
 	private var winnerPlayer: Int? {
-		guard allPlayersFinished else { return nil }
+		guard model.allPlayersFinished else { return nil }
 		let finished = (1...Int(session.numPlayers)).filter { session.finished(forPlayer: $0) }
 		return finished.min(by: { a, b in
 			let ma = Int(session.finishedInMoves(forPlayer: a))
@@ -901,7 +837,7 @@ struct GameScreenView: View {
 	}
 
 	private var winnerText: String? {
-		guard allPlayersFinished else { return nil }
+		guard model.allPlayersFinished else { return nil }
 		guard let winner = winnerPlayer else { return "Game over" }
 		let name = session.name(forPlayer: winner)
 		return name.isEmpty ? "Player \(winner) won!" : "\(name) won!"
@@ -1040,8 +976,17 @@ struct GameScreenView: View {
 	}
 }
 
+// Editable copy of the profile, so edits can be abandoned with "Cancel"
+// without touching the live player name/color.  (Held as an ObservableObject
+// because this toolchain cannot expand @State.)
+final class ProfileDraft: ObservableObject {
+	@Published var name = ""
+	@Published var color = 1
+}
+
 struct ProfileEditorView: View {
 	@EnvironmentObject var model: SessionModel
+	@StateObject private var draft = ProfileDraft()
 
 	var body: some View {
 		NavigationStack {
@@ -1049,12 +994,12 @@ struct ProfileEditorView: View {
 				Section("Name") {
 					HStack {
 						Text("Name")
-						TextField("Name", text: $model.playerName)
+						TextField("Name", text: $draft.name)
 							.multilineTextAlignment(.trailing)
 					}
 				}
 				Section("Color") {
-					ColorPickerRow(selection: $model.playerColor)
+					ColorPickerRow(selection: $draft.color)
 				}
 			}
 			.navigationTitle("You")
@@ -1064,95 +1009,39 @@ struct ProfileEditorView: View {
 				}
 				ToolbarItem(placement: .confirmationAction) {
 					Button("Done") {
-						model.updateProfile(name: model.playerName, color: model.playerColor)
+						model.updateProfile(name: draft.name, color: draft.color)
 						model.showProfile = false
 					}
 				}
 			}
-		}
-	}
-}
-
-// In-game setup for a hosted or joined game: change the player count and rules
-// (which restarts the board) and add/remove computer players that connect to
-// the same host as this client.
-// Editable copy of the in-game setup, so the form can be changed without
-// touching the running game until "Apply" is tapped.  (Held as an
-// ObservableObject because this toolchain cannot expand @State.)
-// In-game equivalent of FocusPickerRow: the other players are already seated,
-// so the choices are current player numbers (with their names) rather than seat
-// ids.  A nil selection means "everyone".
-struct InGameFocusPicker: View {
-	@EnvironmentObject var model: SessionModel
-	let title: String
-	@Binding var selection: Set<Int>?
-	let players: [Int]
-
-	private var chosen: Set<Int> { selection ?? Set(players) }
-
-	private func label(for player: Int) -> String {
-		let name = model.session.name(forPlayer: player)
-		return name.isEmpty ? "Player \(player)" : name
-	}
-
-	private func toggle(_ player: Int) {
-		var set = chosen
-		if set.contains(player) { set.remove(player) } else { set.insert(player) }
-		selection = set
-	}
-
-	// Two players per row to keep the setup table compact.
-	private var rows: [[Int]] {
-		stride(from: 0, to: players.count, by: 2).map {
-			Array(players[$0..<min($0 + 2, players.count)])
-		}
-	}
-
-	// Name right-aligned against the switch so the two read as one control.
-	private func focusToggle(_ name: String, isOn: Binding<Bool>) -> some View {
-		HStack(spacing: 6) {
-			Text(name)
-				.lineLimit(1)
-				.frame(maxWidth: .infinity, alignment: .trailing)
-			Toggle("", isOn: isOn)
-				.labelsHidden()
-		}
-		.frame(maxWidth: .infinity)
-	}
-
-	var body: some View {
-		VStack(alignment: .leading, spacing: 6) {
-			Text(title)
-				.font(.subheadline)
-				.foregroundStyle(.secondary)
-			ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-				HStack(spacing: 12) {
-					ForEach(row, id: \.self) { player in
-						focusToggle(label(for: player), isOn: Binding(
-							get: { chosen.contains(player) },
-							set: { _ in toggle(player) }
-						))
-					}
-					if row.count == 1 {
-						Color.clear.frame(maxWidth: .infinity)
-					}
-				}
+			.onAppear {
+				draft.name = model.playerName
+				draft.color = model.playerColor
 			}
 		}
 	}
 }
 
+// Editable copy of the in-game setup, so the form can be changed without
+// touching the running game until "Apply" is tapped.  (Held as an
+// ObservableObject because this toolchain cannot expand @State.)
 final class GameSetupDraft: ObservableObject {
 	@Published var numPlayers = 3
 	@Published var longJumps = false
 	@Published var hopOthers = true
 	@Published var stopOthers = true
 	@Published var botType = "LookAhead(3)"
-	@Published var friendPlayers: Set<Int>?
-	@Published var enemyPlayers: Set<Int>?
+	// Which players a Friendly/Mean bot focuses on, as current player numbers
+	// (the other players are already seated, so there are no seat ids to pick
+	// from).  nil means "everyone"; an empty list means "nobody".
+	@Published var friendPlayers: [Int]?
+	@Published var enemyPlayers: [Int]?
 	@Published var confirmApply = false
 }
 
+// In-game setup for a hosted or joined game: change the player count and rules
+// (which restarts the board) and add/remove computer players that connect to
+// the same host as this client.
 struct GameSetupSheet: View {
 	@EnvironmentObject var model: SessionModel
 	@StateObject private var draft = GameSetupDraft()
@@ -1170,7 +1059,7 @@ struct GameSetupSheet: View {
 	}
 
 	private var focusFamily: String {
-		CheechSession.typeName(forComputerType: draft.botType)
+		BotCatalog.familyName(draft.botType)
 	}
 
 	private func addComputerPlayer() {
@@ -1179,9 +1068,9 @@ struct GameSetupSheet: View {
 		var enemies: [Int]?
 		if !playerNumbers.isEmpty {
 			if focusFamily == "Friendly" {
-				friends = Array(draft.friendPlayers ?? Set(playerNumbers)).sorted()
+				friends = draft.friendPlayers ?? playerNumbers
 			} else if focusFamily == "Mean" {
-				enemies = Array(draft.enemyPlayers ?? Set(playerNumbers)).sorted()
+				enemies = draft.enemyPlayers ?? playerNumbers
 			}
 		}
 		model.addComputerPlayer(
@@ -1190,19 +1079,25 @@ struct GameSetupSheet: View {
 		)
 	}
 
-	private var allPlayersFinished: Bool {
-		let count = Int(session.numPlayers)
-		guard count > 0 else { return false }
-		for p in 1...count where !session.finished(forPlayer: p) {
-			return false
-		}
-		return true
+	// The name a seated player reads in a focus picker.
+	private func playerLabel(_ player: Int) -> String {
+		let name = session.name(forPlayer: player)
+		return name.isEmpty ? "Player \(player)" : name
+	}
+
+	// Whether the draft differs from the running game, so "Apply" has work to
+	// do (applying restarts the game).
+	private var hasChanges: Bool {
+		draft.numPlayers != Int(session.numPlayers)
+			|| draft.longJumps != session.longJumps
+			|| draft.hopOthers != session.hopOthers
+			|| (draft.hopOthers && draft.stopOthers != session.stopOthers)
 	}
 
 	// Applying restarts the game, so only confirm once any move has been played
 	// and the game is not already over.
 	private var gameInProgress: Bool {
-		session.moveNumber > 0 && !allPlayersFinished
+		session.moveNumber > 0 && !model.allPlayersFinished
 	}
 
 	private func apply() {
@@ -1219,7 +1114,12 @@ struct GameSetupSheet: View {
 		NavigationStack {
 			Form {
 				Section("Players") {
-					Stepper("Players: \(draft.numPlayers)", value: $draft.numPlayers, in: 2...6)
+					RulesRows(
+						numPlayers: $draft.numPlayers,
+						longJumps: $draft.longJumps,
+						hopOthers: $draft.hopOthers,
+						stopOthers: $draft.stopOthers
+					)
 					HStack {
 						Text("Connected")
 						Spacer()
@@ -1228,24 +1128,24 @@ struct GameSetupSheet: View {
 					}
 				}
 
-				Section("Rules") {
-					Toggle("Allow long jumps", isOn: $draft.longJumps)
-					Toggle("Can Enter Opponents' Goal", isOn: $draft.hopOthers)
-					if draft.hopOthers {
-						Toggle("Can Stop in Opponents' Goal", isOn: $draft.stopOthers)
-					}
-				}
-
 				Section("Computer Players") {
 					BotTypePickerRow(title: "Type", selection: $draft.botType)
 					if focusFamily == "Friendly" && draft.numPlayers > 2 && !playerNumbers.isEmpty {
-						InGameFocusPicker(title: "Friendly to",
-										  selection: $draft.friendPlayers,
-										  players: playerNumbers)
+						FocusPicker(
+							title: "Friendly to",
+							items: playerNumbers,
+							id: \.self,
+							label: { playerLabel($0) },
+							selection: $draft.friendPlayers
+						)
 					} else if focusFamily == "Mean" && draft.numPlayers > 2 && !playerNumbers.isEmpty {
-						InGameFocusPicker(title: "Mean to",
-										  selection: $draft.enemyPlayers,
-										  players: playerNumbers)
+						FocusPicker(
+							title: "Mean to",
+							items: playerNumbers,
+							id: \.self,
+							label: { playerLabel($0) },
+							selection: $draft.enemyPlayers
+						)
 					}
 					Button("Add Computer Player") {
 						addComputerPlayer()
@@ -1278,6 +1178,7 @@ struct GameSetupSheet: View {
 							apply()
 						}
 					}
+					.disabled(!hasChanges)
 				}
 			}
 			.confirmationDialog(

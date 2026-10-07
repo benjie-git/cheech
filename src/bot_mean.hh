@@ -14,36 +14,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  */
 
 #ifndef _BOT_MEAN_HH
 #define _BOT_MEAN_HH
 
-#include "bot_friendly.hh"
+#include "bot_lookahead.hh"
 
 
-class BotMean : public BotFriendly
+class BotMean : public BotLookAhead
 {
 	public:
-		BotMean(unsigned int depth);
+		BotMean(unsigned int depth,
+				unsigned int tt_bits = TT_SIZE_BITS);
 
 		virtual Glib::ustring get_default_name() const;
 		virtual Glib::ustring get_type_name() const;
 
 		virtual BotBase* clone_for_search() const;
-
-		virtual long score_move(GameBoard *board, unsigned int player,
-								MoveList *move);
-
-	protected:
-                //virtual long score_this_move(GameBoard *board, 
-			    //   unsigned int player,
-			    //   MoveList *move);
-
-  		void find_best_move(GameBoard *board, unsigned int player,
-  							std::vector<MoveList> *best_moves,
-  							long *best_score);
 };
 
 #endif // _BOT_MEAN_HH

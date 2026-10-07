@@ -14,14 +14,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  */
- 
+
 #include "bot_mean.hh"
 
 
-BotMean::BotMean(unsigned int depth) : BotFriendly(depth)
+BotMean::BotMean(unsigned int depth, unsigned int tt_bits) :
+	BotLookAhead(depth, tt_bits)
 {
+	// Mean values its own progress as-is, but runs the paranoid adversarial
+	// search: every other player minimises the root player's score.
 	_self_penalty = 1;
 	_paranoid = true;
 }
@@ -35,10 +38,10 @@ Glib::ustring BotMean::get_default_name() const
 			return "Jimbo";
 		case 3:
 			return "Nelson";
-        case 4:
-            return "Burns";
-        case 5:
-            return "Scorpio";
+		case 4:
+			return "Burns";
+		case 5:
+			return "Scorpio";
 		default:
 			return "Who,Now?";
 	}
@@ -53,48 +56,9 @@ Glib::ustring BotMean::get_type_name() const
 
 BotBase* BotMean::clone_for_search() const
 {
-	BotMean *clone = new BotMean(_full_depth);
+	BotMean *clone = new BotMean(_full_depth, TT_CLONE_BITS);
 	clone->set_self_penalty(_self_penalty);
-	clone->set_self_bonus(_self_bonus);
 	clone->set_friends(get_friends());
 	clone->set_enemies(get_enemies());
-	clone->set_tt_bits(18);
 	return clone;
 }
-
-
-long BotMean::score_move(GameBoard *board, unsigned int player,
-						 MoveList *move)
-{
-	// The root player's own progress is scaled by the self penalty; the
-	// paranoid kernel calls score_this_move() with `player` set, so make
-	// sure it knows who we are.
-	if (_current_depth == _depth)
-		_my_player_num = player;
-
-	return BotLookAhead::score_move(board, player, move);
-}
-
-
-void BotMean::find_best_move(GameBoard *board, unsigned int player,
-							 std::vector<MoveList> *best_moves,
-							 long *best_score)
-{
-	// The paranoid alpha-beta kernel applies the sign flips internally,
-	// so unlike the old recursive search there is nothing to negate here.
-	BotLookAhead::find_best_move(board, player, best_moves, best_score);
-}
-
-/*
-long BotMean::score_this_move(GameBoard *board, unsigned int player,
-			      MoveList *move)
-{
-  long score = BotFriendly::score_this_move(board, player, move);
-    
-  if (player != _my_player_num) {
-    score = -score;
-  }
-    
-  return score;
-}
-*/

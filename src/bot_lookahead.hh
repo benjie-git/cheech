@@ -29,7 +29,11 @@
 class BotLookAhead : public BotBase
 {
 	public:
-		BotLookAhead(unsigned int depth);
+		// tt_bits sizes the transposition table (2^bits entries); search
+		// clones pass the smaller TT_CLONE_BITS to bound the memory used
+		// by the whole worker pool.
+		BotLookAhead(unsigned int depth,
+					 unsigned int tt_bits = TT_SIZE_BITS);
 
 		virtual void find_best_move(GameBoard *board, unsigned int player,
 									std::vector<MoveList> *best_moves,
@@ -51,18 +55,26 @@ class BotLookAhead : public BotBase
 		// players it is focused on.
 		void set_depth(unsigned int depth);
 
-		// Weight applied to the root player's own progress.  Only meaningful
-		// in the paranoid (Mean) search, where a value of 3 makes the bot
-		// value its own advancement three times as much as slowing the
-		// others down (the inverse of Mean's self-penalty).  The solo
-		// LookAhead search has no opponent term, so it uses 1.
-		void set_self_bonus(int self_bonus);
-		int get_self_bonus() const;
+		// Weight dividing the root player's own progress: 1 for plain
+		// LookAhead and Mean, 2 for Friendly (which halves its own progress
+		// to stay helpful).  Search clones copy it (see clone_for_search()).
+		void set_self_penalty(int self_penalty);
+
+		// A friend/enemy focus that names a single other player buys no
+		// extra planning: shorten a depth-4 search to depth 3.  (No-op while
+		// a search is running.)
+		virtual void set_friends(unsigned int mask);
+		virtual void set_enemies(unsigned int mask);
 
 	protected:
-		virtual void on_cmd_game_turn(unsigned int posn, 
+		virtual void on_cmd_game_turn(unsigned int posn,
 									  GameServer::GameStatus status,
 									  unsigned int move_count);
+
+		// Shortens a depth-4 search to depth 3 when `mask` focuses on a
+		// single other player (see set_friends/set_enemies).  No-op while a
+		// search is running.
+		void maybe_shorten_depth(unsigned int mask);
 
 		virtual long score_move_recurse(GameBoard *board, unsigned int player,
 										MoveList *move);
@@ -104,17 +116,21 @@ class BotLookAhead : public BotBase
 		// own moves with the opponents frozen.
 		bool	_paranoid;
 
-		// Root player for the current search (set when a root move is scored)
-		// and the weight applied to that player's own progress.
+		// Root player for the current search (set when a root move is
+		// scored), the weight dividing that player's own progress, and the
+		// depth the bot was created with (set_depth() can temporarily lower
+		// _depth for narrow focuses).
 		unsigned int	_root_player;
-		int				_self_bonus;
+		int				_self_penalty;
+		unsigned int	_full_depth;
 
 		long	_dist_to_goal[7][GameBoard::SIZE];
+		// Player count the distance cache was built for (it only depends on
+		// static geometry, so it is rebuilt just when this changes).
+		unsigned int	_dist_players;
 
-		std::vector<MoveList>	_scratch_moves;
-
-		// One reusable move buffer per remaining-depth level, so the
-		// alpha-beta kernel does not allocate a fresh vector per node.
+		// One reusable candidate-move pool per remaining-depth level, so
+		// the alpha-beta kernel does not allocate a fresh vector per node.
 		std::vector<std::vector<MoveList> >	_search_moves;
 
 		// Fixed-size always-replace transposition table.  Invalid entries
@@ -134,15 +150,23 @@ class BotLookAhead : public BotBase
 			unsigned char	flag;
 		};
 
+		// TT footprint: 2^TT_SIZE_BITS entries of TTEntry.  18 gives 8 MiB
+		// per table on desktops; iOS builds trim the main table to 15 (1
+		// MiB) and the per-thread search clones to 14 so the worker pool
+		// stays bounded.
+#if defined(CHEECH_IOS)
+		static const unsigned int TT_SIZE_BITS = 15;
+		static const unsigned int TT_CLONE_BITS = 14;
+#else
 		static const unsigned int TT_SIZE_BITS = 18;
+		static const unsigned int TT_CLONE_BITS = 16;
+#endif
 		static const unsigned int TT_SIZE = 1u << TT_SIZE_BITS;
 		static const unsigned int TT_MASK = TT_SIZE - 1;
 
 		std::vector<TTEntry>	_tt;
 		unsigned int			_tt_gen;
 		unsigned int			_tt_mask;
-
-		void set_tt_bits(unsigned int bits);
 };
 
 #endif // _BOT_LOOKAHEAD_HH

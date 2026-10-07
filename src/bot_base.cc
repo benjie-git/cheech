@@ -653,24 +653,16 @@ void BotBase::make_best_move()
 
 	int tiers = top_move_tiers();
 
-	if (tiers > 1)
-	{
-		// Detuned: gather every legal root move and its score, then let the
-		// bot choose at random from its top `tiers` score tiers.
-		std::vector<MoveList> root_moves;
-		std::vector<long> scores;
+	// Gather every legal root move and its score, then either play the best
+	// move or, when detuned, choose at random from the top `tiers` score
+	// tiers (one tier means the single best move, ties included).
+	std::vector<MoveList> root_moves;
+	std::vector<long> scores;
 
-		collect_root_moves(&board, _client.get_my_player_number(), &root_moves);
-		score_moves(&board, _client.get_my_player_number(),
-					&root_moves, &scores, true);
-		select_top_moves(root_moves, scores, tiers, &best_moves, &best_score);
-	}
-	else if (!parallel_root_search(&board, _client.get_my_player_number(),
-								   &best_moves, &best_score))
-	{
-		find_best_move(&board, _client.get_my_player_number(),
-					   &best_moves, &best_score);
-	}
+	collect_root_moves(&board, _client.get_my_player_number(), &root_moves);
+	score_moves(&board, _client.get_my_player_number(),
+				&root_moves, &scores, true);
+	select_top_moves(root_moves, scores, tiers, &best_moves, &best_score);
 
 	_searching = false;
 
@@ -821,6 +813,8 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 void BotBase::collect_root_moves(GameBoard *board, unsigned int player,
 								 std::vector<MoveList> *moves)
 {
+	moves->reserve(64);
+
 	unsigned int *pegs = board->get_pegs(player);
 	MoveList move(0);
 	move.reserve(10);
@@ -902,8 +896,10 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 
 		if (hw >= 2)
 		{
-			if (hw > 16)
-				hw = 16;
+			// Four workers cap the memory spent on per-thread transposition
+			// tables; more threads buy little for this workload.
+			if (hw > 4)
+				hw = 4;
 
 			unsigned int num_threads = hw;
 			if (num_threads > moves->size())
@@ -995,59 +991,17 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 		MoveList move = (*moves)[i];
 		(*scores)[i] = score_move(board, player, &move);
 
+		// Same brief move preview find_better_move() shows, so think_delay
+		// feedback covers this path too (the worker pool never previews).
+		if (_think_delay > 0 && _client.ready())
+		{
+			_client.show_move(&move);
+			util::delay_ms(_think_delay);
+		}
+
 		// Abort if it's not my turn anymore (undo/etc)
 		if (!is_still_my_turn())
 			break;
-	}
-
-	return true;
-}
-
-
-bool BotBase::parallel_root_search(GameBoard *board, unsigned int player,
-								   std::vector<MoveList> *best_moves,
-								   long *best_score)
-{
-	if (!supports_parallel_search() || _think_delay > 0)
-		return false;
-
-	unsigned int hw = std::thread::hardware_concurrency();
-
-	if (hw < 2)
-		return false;
-	if (hw > 16)
-		hw = 16;
-
-	std::vector<MoveList> root_moves;
-	root_moves.reserve(64);
-	collect_root_moves(board, player, &root_moves);
-
-	if (root_moves.size() < 2)
-		return false;
-
-	std::vector<long> scores;
-	score_moves(board, player, &root_moves, &scores, true);
-
-	if (_abort)
-		return true;
-
-	// Merge in enumeration order so the chosen move and tie set match the
-	// single-threaded search exactly.
-	for (unsigned int i = 0; i < root_moves.size(); i++)
-	{
-		if (scores[i] == LONG_MIN)
-			continue;
-
-		if (scores[i] > *best_score)
-		{
-			*best_score = scores[i];
-			best_moves->clear();
-			best_moves->push_back(root_moves[i]);
-		}
-		else if (scores[i] == *best_score)
-		{
-			best_moves->push_back(root_moves[i]);
-		}
 	}
 
 	return true;
@@ -1201,55 +1155,58 @@ bool BotBase::try_commit_move(MoveList move)
 #endif
 
 
+// True when `hole` holds an opponent's peg and all four holes around it —
+// one and two steps along each of the two exit directions — hold the
+// player's own pegs, i.e. the opponent is walled in.  Never true for a NULL
+// hole or neighbor.
+static bool hole_walled_in(GameHole *hole, unsigned int player,
+						   const unsigned int dirs[2])
+{
+	if (!hole || hole->get_current_player() == 0 ||
+		hole->get_current_player() == player)
+		return false;
+
+	GameHole *a = hole->get_neighbor(dirs[0], 1);
+	GameHole *b = hole->get_neighbor(dirs[0], 2);
+	GameHole *c = hole->get_neighbor(dirs[1], 1);
+	GameHole *d = hole->get_neighbor(dirs[1], 2);
+
+	return a && b && c && d &&
+		   a->get_current_player() == player &&
+		   b->get_current_player() == player &&
+		   c->get_current_player() == player &&
+		   d->get_current_player() == player;
+}
+
+
 bool BotBase::is_blocking_pegs(GameBoard *board, unsigned int player)
 {
 	if (board->get_num_pegs_in_goal(player) < 4)
 		return false;
 
 	GameHole *goal = (*board)[board->get_goal(player)];
-	GameHole *test;
-	unsigned int dirs[2] = {10, 10};
 
-	for (unsigned int dir=0; dir<6; dir++) {
-		if (goal->get_neighbor(dir)) {
-			if (dirs[0] == 10)
-				dirs[0] = dir;
-			else
-				dirs[1] = dir;
-		}
+	// The directions leading out of the goal corner (each corner hole has
+	// at most two non-null neighbors).  With fewer than two exits there is
+	// nothing to wall in.
+	unsigned int dirs[2] = {6, 6};
+	for (unsigned int dir = 0; dir < 6; dir++)
+	{
+		if (!goal->get_neighbor(dir))
+			continue;
+		if (dirs[0] == 6)
+			dirs[0] = dir;
+		else if (dirs[1] == 6)
+			dirs[1] = dir;
 	}
+	if (dirs[1] == 6)
+		return false;
 
-	// Make sure I'm not blocking someone else into my goal corner hole...
-	test = goal;
-	if (test->get_current_player() != 0 &&
-		test->get_current_player() != player &&
-		test->get_neighbor(dirs[0], 1)->get_current_player() == player &&
-		test->get_neighbor(dirs[0], 2)->get_current_player() == player &&
-		test->get_neighbor(dirs[1], 1)->get_current_player() == player &&
-		test->get_neighbor(dirs[1], 2)->get_current_player() == player)
-			return true;
-
-	// ...nor into one of my goal corner hole's neighbor holes
-	test = goal->get_neighbor(dirs[0]);
-	if (test->get_current_player() != 0 &&
-		test->get_current_player() != player &&
-		test->get_neighbor(dirs[0], 1)->get_current_player() == player &&
-		test->get_neighbor(dirs[0], 2)->get_current_player() == player &&
-		test->get_neighbor(dirs[1], 1)->get_current_player() == player &&
-		test->get_neighbor(dirs[1], 2)->get_current_player() == player)
-			return true;
-
-	// ...nor into the other of my goal corner hole's neighbor holes
-	test = goal->get_neighbor(dirs[1]);
-	if (test->get_current_player() != 0 &&
-		test->get_current_player() != player &&
-		test->get_neighbor(dirs[0], 1)->get_current_player() == player &&
-		test->get_neighbor(dirs[0], 2)->get_current_player() == player &&
-		test->get_neighbor(dirs[1], 1)->get_current_player() == player &&
-		test->get_neighbor(dirs[1], 2)->get_current_player() == player)
-			return true;
-
-	return false;
+	// Make sure I'm not blocking an opponent into my goal corner hole or
+	// either of its two neighbor holes.
+	return hole_walled_in(goal, player, dirs) ||
+		   hole_walled_in(goal->get_neighbor(dirs[0]), player, dirs) ||
+		   hole_walled_in(goal->get_neighbor(dirs[1]), player, dirs);
 }
 
 

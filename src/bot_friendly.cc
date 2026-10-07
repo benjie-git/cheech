@@ -14,28 +14,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  */
- 
+
 #include "bot_friendly.hh"
 
 
-BotFriendly::BotFriendly(unsigned int depth) : BotLookAhead(depth)
+BotFriendly::BotFriendly(unsigned int depth, unsigned int tt_bits) :
+	BotLookAhead(depth, tt_bits)
 {
-	_full_depth = depth;
-	_my_player_num = 0;
+	// Friendly halves its own progress: it values the advancement of the
+	// players it focuses on as much as its own (see _self_penalty).
 	_self_penalty = 2;
-	// Friendly/Mean express their own weighting through _self_penalty, so do
-	// not inherit LookAhead's self-bonus.
-	_self_bonus = 1;
-	_paranoid = false;
-}
-
-
-// Care about others X times more than about self
-void BotFriendly::set_self_penalty(int self_penalty)
-{
-	_self_penalty = self_penalty;
 }
 
 
@@ -47,10 +37,10 @@ Glib::ustring BotFriendly::get_default_name() const
 			return "Earl";
 		case 3:
 			return "Unicorn";
-        case 4:
-            return "Leela";
-        case 5:
-            return "Princess";
+		case 4:
+			return "Leela";
+		case 5:
+			return "Princess";
 		default:
 			return "Who,Now?";
 	}
@@ -65,94 +55,9 @@ Glib::ustring BotFriendly::get_type_name() const
 
 BotBase* BotFriendly::clone_for_search() const
 {
-	BotFriendly *clone = new BotFriendly(_full_depth);
+	BotFriendly *clone = new BotFriendly(_full_depth, TT_CLONE_BITS);
 	clone->set_self_penalty(_self_penalty);
-	clone->set_self_bonus(_self_bonus);
 	clone->set_friends(get_friends());
 	clone->set_enemies(get_enemies());
-	clone->set_tt_bits(18);
 	return clone;
-}
-
-
-void BotFriendly::set_friends(unsigned int mask)
-{
-	BotBase::set_friends(mask);
-
-	if (!_paranoid)
-		maybe_shorten_depth(mask);
-}
-
-
-void BotFriendly::set_enemies(unsigned int mask)
-{
-	BotBase::set_enemies(mask);
-
-	if (_paranoid)
-		maybe_shorten_depth(mask);
-}
-
-
-void BotFriendly::maybe_shorten_depth(unsigned int mask)
-{
-	// If a Friendly(4) bot has only 1 friend, it will search its own move,
-    // its friend's move, its own, and then its friend's again.  This means that
-    // it optimizes for finding its friend 2-move plans, but I want it to set up
-    // good immediate next moves for its friend.  So drop its depth to 3.
-	if (_searching)
-		return;
-
-	unsigned int depth = _full_depth;
-	if (depth == 4 && mask != ALL_PLAYERS && std::bitset<32>(mask).count() == 1)
-		depth = 3;
-
-	if (depth != _depth)
-		set_depth(depth);
-}
-
-
-long BotFriendly::score_move_recurse(GameBoard *board, unsigned int player,
-									 MoveList *move)
-{
-	if (_current_depth == _depth)
-		_my_player_num = player;
-
-	return BotLookAhead::score_move_recurse(board, player, move);
-}
-
-
-long BotFriendly::score_this_move(GameBoard *board, unsigned int player,
-								  MoveList *move)
-{
-	// Own progress is scaled down by the self-penalty, but the sportsmanship
-	// penalty must not be diluted, so it is added after the division.
-	long total_score = score_progress(board, player, move);
-
-	if (player == _my_player_num)
-		total_score = total_score / _self_penalty;
-
-	total_score += goal_block_penalty(board, player, move);
-	total_score += goal_exit_penalty(board, player, move);
-
-	return total_score;
-}
-
-
-void BotFriendly::find_best_move(GameBoard *board, unsigned int player,
-							 std::vector<MoveList> *best_moves,
-							 long *best_score)
-{
-	if (best_moves && _current_depth != _depth)
-		_current_depth = _depth;
-
-	if (_current_depth < _depth)
-	{
-		unsigned int focus = get_friends();
-		if (focus != ALL_PLAYERS && _my_player_num > 0)
-			focus |= 1u << (_my_player_num - 1);
-		player = next_focused_player(board, player, focus);
-	}
-
-	BotLookAhead::find_best_move(board, player,
-							best_moves, best_score);
 }
