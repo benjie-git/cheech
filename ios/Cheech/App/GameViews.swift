@@ -296,9 +296,9 @@ struct BotTypePickerRow: View {
 			DropdownPicker(
 				options: BotCatalog.types,
 				selection: $selection,
-				trigger: { BotCatalog.label($0) },
-				rowLabel: { BotCatalog.cuteName($0) },
-				rowDetail: { BotCatalog.familyName($0) }
+				trigger: { BotCatalog.familyName($0) },
+				rowLabel: { BotCatalog.familyName($0) },
+				rowDetail: { _ in "" }
 			)
 		}
 	}
@@ -464,9 +464,17 @@ struct SeatEditorView: View {
 		)
 	}
 
-	// How another seat reads in a focus picker.
+	// How another seat reads in a focus picker: humans by name, bots by
+	// family ("Neutral", not a cute name), remote as an open seat.
 	private func otherLabel(_ other: SeatConfig) -> String {
-		other.kind == .remote ? "Open seat" : (other.name.isEmpty ? "Seat" : other.name)
+		switch other.kind {
+		case .human:
+			return other.name.isEmpty ? "Seat" : other.name
+		case .computer:
+			return BotCatalog.familyName(other.botType)
+		case .remote:
+			return "Open seat"
+		}
 	}
 
 	var body: some View {
@@ -1073,8 +1081,14 @@ struct GameSetupSheet: View {
 				enemies = draft.enemyPlayers ?? playerNumbers
 			}
 		}
+		// nil friends means "everyone"; the new bot takes the open slot, so
+		// it is never in the list and "everyone" means numPlayers - 1 others.
+		let friendCount = friends?.count ?? draft.numPlayers - 1
+		let botType = BotCatalog.cappedForSingleFriend(
+			type: draft.botType, friendCount: friendCount)
 		model.addComputerPlayer(
-			type: draft.botType, name: "", color: 0,
+			type: botType, name: BotCatalog.cuteName(botType),
+			color: 0,
 			friendPlayers: friends, enemyPlayers: enemies
 		)
 	}

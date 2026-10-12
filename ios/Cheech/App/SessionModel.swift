@@ -121,23 +121,34 @@ enum BotCatalog {
 	// One type per family, at the depth that reads as a good default.
 	static let types = ["Friendly(4)", "LookAhead(3)", "Mean(4)"]
 
-	// The fun name for a type, e.g. "Cosmo", or "" if unknown.
+	// The fun name for a type, e.g. "Cosmo", or "" if unknown.  Used as the
+	// in-game player name; the server renames collisions ("X" -> "X 2").
 	static func cuteName(_ type: String) -> String {
 		CheechSession.defaultName(forComputerType: type)
 	}
 
 	// The family name for a type, e.g. "Neutral" or "Mean", independent of
-	// depth; an unknown type stands in for itself.
+	// depth; an unknown type stands in for itself.  Setup UI shows bots by
+	// family only, so tweaking depth/smarts never changes what a seat reads.
 	static func familyName(_ type: String) -> String {
 		let name = CheechSession.typeName(forComputerType: type)
 		return name.isEmpty ? type : name
 	}
 
-	// Combined label, e.g. "Cosmo (Neutral)".
-	static func label(_ type: String) -> String {
-		let name = cuteName(type)
-		let family = familyName(type)
-		return name.isEmpty ? family : "\(name) (\(family))"
+	// A Friendly bot that helps exactly one other player must not plan that
+	// player's next move as well: a depth-4 plan runs bot, friend, bot,
+	// friend, optimising the friend's 2-move combos instead of finding the
+	// friend good first moves.  Cap such a bot at depth 3 (bot, friend, bot).
+	// The simplified setup only offers depth-4 Friendly bots, so 4 -> 3 is
+	// the only step-down, but this is written generically for advanced setup.
+	static func cappedForSingleFriend(type: String, friendCount: Int) -> String {
+		guard friendCount == 1, familyName(type) == "Friendly",
+			  let open = type.lastIndex(of: "("), type.hasSuffix(")")
+		else { return type }
+		guard let depth = Int(type[type.index(after: open)..<type.index(before: type.endIndex)]),
+			  depth > 3
+		else { return type }
+		return String(type[type.startIndex..<open]) + "(3)"
 	}
 }
 
@@ -438,9 +449,13 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 				return CheechSeat.human(withName: seat.name, color: seat.color)
 			case .computer:
 				let resolved = BotSkill.resolved(type: seat.botType, level: seat.skill ?? 1)
+				// nil friendSeats means "everyone": every other player.
+				let friendCount = seat.friendSeats?.count ?? numPlayers - 1
+				let effectiveType = BotCatalog.cappedForSingleFriend(
+					type: resolved.type, friendCount: friendCount)
 				let spec = CheechSeat.computer(
-					withType: resolved.type,
-					name: BotCatalog.cuteName(resolved.type),
+					withType: effectiveType,
+					name: BotCatalog.cuteName(effectiveType),
 					color: seat.color
 				)
 				spec.smarts = resolved.smarts

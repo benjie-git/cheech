@@ -49,32 +49,15 @@ class BotLookAhead : public BotBase
 		virtual bool supports_parallel_search() const;
 		virtual void prepare_search(GameBoard *board);
 
-		// Changes the search depth at runtime, resizing the per-plie move
-		// buffers to match and keeping _current_depth consistent.  Used when a
-		// bot realises a full-depth search is unnecessary for the number of
-		// players it is focused on.
-		void set_depth(unsigned int depth);
-
 		// Weight dividing the root player's own progress: 1 for plain
 		// LookAhead and Mean, 2 for Friendly (which halves its own progress
 		// to stay helpful).  Search clones copy it (see clone_for_search()).
 		void set_self_penalty(int self_penalty);
 
-		// A friend/enemy focus that names a single other player buys no
-		// extra planning: shorten a depth-4 search to depth 3.  (No-op while
-		// a search is running.)
-		virtual void set_friends(unsigned int mask);
-		virtual void set_enemies(unsigned int mask);
-
 	protected:
 		virtual void on_cmd_game_turn(unsigned int posn,
 									  GameServer::GameStatus status,
 									  unsigned int move_count);
-
-		// Shortens a depth-4 search to depth 3 when `mask` focuses on a
-		// single other player (see set_friends/set_enemies).  No-op while a
-		// search is running.
-		void maybe_shorten_depth(unsigned int mask);
 
 		virtual long score_move_recurse(GameBoard *board, unsigned int player,
 										MoveList *move);
@@ -118,8 +101,8 @@ class BotLookAhead : public BotBase
 
 		// Root player for the current search (set when a root move is
 		// scored), the weight dividing that player's own progress, and the
-		// depth the bot was created with (set_depth() can temporarily lower
-		// _depth for narrow focuses).
+		// depth the bot was created with (search clones are built at this
+		// depth regardless of the current one).
 		unsigned int	_root_player;
 		int				_self_penalty;
 		unsigned int	_full_depth;

@@ -67,37 +67,6 @@ void BotLookAhead::set_self_penalty(int self_penalty)
 }
 
 
-void BotLookAhead::set_friends(unsigned int mask)
-{
-	BotBase::set_friends(mask);
-	if (!_paranoid)
-		maybe_shorten_depth(mask);
-}
-
-
-void BotLookAhead::set_enemies(unsigned int mask)
-{
-	BotBase::set_enemies(mask);
-	if (_paranoid)
-		maybe_shorten_depth(mask);
-}
-
-
-void BotLookAhead::maybe_shorten_depth(unsigned int mask)
-{
-	if (_searching)
-		return;
-
-	unsigned int depth = _full_depth;
-	if (depth == 4 && mask != ALL_PLAYERS &&
-		std::bitset<32>(mask).count() == 1)
-		depth = 3;
-
-	if (depth != _depth)
-		set_depth(depth);
-}
-
-
 Glib::ustring BotLookAhead::get_default_name() const
 {
 	switch (_depth)
@@ -137,8 +106,6 @@ void BotLookAhead::on_cmd_game_turn(unsigned int posn,
 
 BotBase* BotLookAhead::clone_for_search() const
 {
-	// Clones plan from the full depth; a narrow focus shortens them again
-	// through set_friends()/set_enemies() below.
 	BotLookAhead *clone = new BotLookAhead(_full_depth, TT_CLONE_BITS);
 	clone->set_self_penalty(_self_penalty);
 	clone->set_friends(get_friends());
@@ -161,28 +128,6 @@ void BotLookAhead::prepare_search(GameBoard *board)
 	_current_depth = _depth;
 	update_distance_cache(board);
 	_tt_gen++;
-}
-
-
-void BotLookAhead::set_depth(unsigned int depth)
-{
-	if (depth == _depth)
-		return;
-
-	_depth = depth;
-	_search_moves.resize(depth);
-
-	// The depth dropped out from under any pending root search, so restart it
-	// at the new depth rather than leaving _current_depth indexing past the
-	// resized buffers.
-	_current_depth = depth;
-
-	if (depth > 1 && _tt.empty())
-	{
-		_tt_mask = TT_MASK;
-		_tt.resize(TT_SIZE);
-		_tt_gen = 0;
-	}
 }
 
 
