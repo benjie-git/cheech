@@ -61,6 +61,10 @@ struct SeatConfig: Identifiable, Equatable, Codable {
 	// Computer-seat skill level (1...4, 1 = Best).  nil means Best.  Optional so
 	// previously saved seat setups still decode.
 	var skill: Int?
+	// Computer-seat search depth.  nil means Default (the family's usual
+	// depth, including the single-friend Friendly step-down); 2...5 pins the
+	// depth regardless of skill.  Optional so previously saved seats decode.
+	var depth: Int?
 	// For Computer seats: the ids of the other seats this bot treats as friends
 	// (Friendly bots) or enemies (Mean bots).  nil means "everyone" (the
 	// default); an empty array means "nobody".  Stored as seat ids so the
@@ -113,6 +117,19 @@ enum BotSkill {
 
 	// All skill levels, for the skill dropdown.
 	static let levels = [1, 2, 3, 4]
+
+	// Depth options for the advanced bot popover.  nil = Default: the
+	// family's usual depth, including the single-friend Friendly step-down.
+	// A fixed depth overrides the depth entirely (skill still detunes).
+	static let depthOptions: [Int?] = [nil, 2, 3, 4, 5]
+
+	static func depthLabel(for depth: Int?) -> String {
+		switch depth {
+		case nil: return "Default"
+		case 5?: return "5 (Slow)"
+		case let d?: return "\(d)"
+		}
+	}
 }
 
 // The bot types offered in the UI plus their display names.  The core speaks
@@ -135,6 +152,15 @@ enum BotCatalog {
 		return name.isEmpty ? type : name
 	}
 
+	// Replaces the trailing "(N)" depth of a type string, e.g. "Mean(4)".
+	// A type without a depth stands in for itself.
+	static func withDepth(_ type: String, _ depth: Int) -> String {
+		guard let open = type.lastIndex(of: "("), type.hasSuffix(")") else {
+			return type
+		}
+		return String(type[type.startIndex..<open]) + "(\(depth))"
+	}
+
 	// A Friendly bot that helps exactly one other player must not plan that
 	// player's next move as well: a depth-4 plan runs bot, friend, bot,
 	// friend, optimising the friend's 2-move combos instead of finding the
@@ -142,13 +168,14 @@ enum BotCatalog {
 	// The simplified setup only offers depth-4 Friendly bots, so 4 -> 3 is
 	// the only step-down, but this is written generically for advanced setup.
 	static func cappedForSingleFriend(type: String, friendCount: Int) -> String {
-		guard friendCount == 1, familyName(type) == "Friendly",
-			  let open = type.lastIndex(of: "("), type.hasSuffix(")")
-		else { return type }
-		guard let depth = Int(type[type.index(after: open)..<type.index(before: type.endIndex)]),
+		guard friendCount == 1, familyName(type) == "Friendly" else {
+			return type
+		}
+		guard let open = type.lastIndex(of: "("), type.hasSuffix(")"),
+			  let depth = Int(type[type.index(after: open)..<type.index(before: type.endIndex)]),
 			  depth > 3
 		else { return type }
-		return String(type[type.startIndex..<open]) + "(3)"
+		return withDepth(type, 3)
 	}
 }
 
@@ -449,10 +476,17 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 				return CheechSeat.human(withName: seat.name, color: seat.color)
 			case .computer:
 				let resolved = BotSkill.resolved(type: seat.botType, level: seat.skill ?? 1)
-				// nil friendSeats means "everyone": every other player.
-				let friendCount = seat.friendSeats?.count ?? numPlayers - 1
-				let effectiveType = BotCatalog.cappedForSingleFriend(
-					type: resolved.type, friendCount: friendCount)
+				// A fixed depth replaces the skill-resolved depth entirely;
+				// Default keeps the resolved depth, with the single-friend
+				// Friendly step-down.  (nil friendSeats means "everyone".)
+				let effectiveType: String
+				if let depth = seat.depth {
+					effectiveType = BotCatalog.withDepth(resolved.type, depth)
+				} else {
+					let friendCount = seat.friendSeats?.count ?? numPlayers - 1
+					effectiveType = BotCatalog.cappedForSingleFriend(
+						type: resolved.type, friendCount: friendCount)
+				}
 				let spec = CheechSeat.computer(
 					withType: effectiveType,
 					name: BotCatalog.cuteName(effectiveType),

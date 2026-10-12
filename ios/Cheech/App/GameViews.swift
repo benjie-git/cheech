@@ -266,32 +266,10 @@ struct InviteView: View {
 struct BotTypePickerRow: View {
 	let title: String
 	@Binding var selection: String
-	var showsInfo = false
-	@StateObject private var info = PopoverState()
 
 	var body: some View {
 		HStack {
 			Text(title)
-			if showsInfo {
-				Button {
-					info.isVisible.toggle()
-				} label: {
-					Image(systemName: "info.circle")
-						.foregroundStyle(.secondary)
-				}
-				.buttonStyle(.plain)
-				.popover(isPresented: $info.isVisible) {
-					VStack(alignment: .leading, spacing: 0) {
-						Text("Friendly helps set up good moves for you, Mean actively blocks your moves, and Neutral just does its own thing.")
-							.font(.callout)
-							.multilineTextAlignment(.leading)
-							.fixedSize(horizontal: false, vertical: true)
-					}
-					.frame(width: 280, alignment: .leading)
-					.padding()
-					.presentationCompactAdaptation(.popover)
-				}
-			}
 			Spacer(minLength: 8)
 			DropdownPicker(
 				options: BotCatalog.types,
@@ -301,6 +279,60 @@ struct BotTypePickerRow: View {
 				rowDetail: { _ in "" }
 			)
 		}
+	}
+}
+
+// Advanced bot settings behind the gear button on a computer seat row: the
+// family blurb, search depth, skill detune, and (for Friendly/Mean bots in
+// games with more than two players) the focus list.
+struct BotDetailsPopover: View {
+	@Binding var seat: SeatConfig
+	// The other seats, for the focus picker (empty hides it).
+	let otherSeats: [SeatConfig]
+	let focusLabel: (SeatConfig) -> String
+
+	private var family: String { BotCatalog.familyName(seat.botType) }
+
+	// SwiftUI snapshots popover content while it is presented, so the whole
+	// content is keyed on the family: changing bot type rebuilds it instead
+	// of leaving a stale blurb and focus list behind.
+	private var blurb: String {
+		switch family {
+		case "Friendly":
+			return "Friendly bots help set up good moves for the players marked below."
+		case "Mean":
+			return "Mean bots try to block the moves of the players marked below."
+		default:
+			return "Neutral bots just play their own game and leave everyone else alone."
+		}
+	}
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 14) {
+			Text(blurb)
+				.font(.callout)
+				.multilineTextAlignment(.leading)
+				.fixedSize(horizontal: false, vertical: true)
+			DepthPickerRow(title: "Depth", selection: $seat.depth)
+			SkillPickerRow(title: "Skill", botType: seat.botType, selection: Binding(
+				get: { BotSkill.level(seat.skill) },
+				set: { seat.skill = $0 }
+			))
+			if !otherSeats.isEmpty && (family == "Friendly" || family == "Mean") {
+				FocusPicker(
+					title: family == "Friendly" ? "Friendly to" : "Mean to",
+					items: otherSeats,
+					id: \.id,
+					label: focusLabel,
+					selection: family == "Friendly"
+						? $seat.friendSeats : $seat.enemySeats
+				)
+			}
+		}
+		.padding()
+		.frame(width: 320, alignment: .leading)
+		.presentationCompactAdaptation(.popover)
+		.id(family)
 	}
 }
 
@@ -365,6 +397,25 @@ struct DropdownPicker<Option: Hashable>: View {
 // ObservableObject because this toolchain cannot expand @State.)
 final class PopoverState: ObservableObject {
 	@Published var isVisible = false
+}
+
+struct DepthPickerRow: View {
+	let title: String
+	@Binding var selection: Int?
+
+	var body: some View {
+		HStack {
+			Text(title)
+			Spacer(minLength: 8)
+			DropdownPicker(
+				options: BotSkill.depthOptions,
+				selection: $selection,
+				trigger: { BotSkill.depthLabel(for: $0) },
+				rowLabel: { BotSkill.depthLabel(for: $0) },
+				rowDetail: { $0 == nil ? "Family default" : "" }
+			)
+		}
+	}
 }
 
 struct SkillPickerRow: View {
@@ -454,6 +505,9 @@ struct FocusPicker<Item, ID: Hashable>: View {
 struct SeatEditorView: View {
 	@EnvironmentObject var model: SessionModel
 	@Binding var seat: SeatConfig
+	// Backing for the advanced-settings popover.  (Held as an
+	// ObservableObject because this toolchain cannot expand @State.)
+	@StateObject private var details = PopoverState()
 
 	// Picking a color another seat already uses swaps the two, so no two
 	// seats share a color.
@@ -478,7 +532,7 @@ struct SeatEditorView: View {
 	}
 
 	var body: some View {
-		VStack(alignment: .leading, spacing: 10) {
+		VStack(alignment: .leading, spacing: 16) {
 			Picker("Type", selection: Binding(
 				get: { seat.kind },
 				set: { newKind in
@@ -518,27 +572,30 @@ struct SeatEditorView: View {
 					.multilineTextAlignment(.trailing)
 				}
 			case .computer:
-				BotTypePickerRow(title: "Bot Type", selection: Binding(
-					get: { seat.botType },
-					set: { newType in
-						seat.botType = newType
-						model.lastBotType = newType
-						seat.name = BotCatalog.cuteName(newType)
+				HStack(spacing: 16) {
+					BotTypePickerRow(title: "Bot Type", selection: Binding(
+						get: { seat.botType },
+						set: { newType in
+							seat.botType = newType
+							model.lastBotType = newType
+							seat.name = BotCatalog.cuteName(newType)
+						}
+					))
+					// Advanced settings (depth, skill, focus) live in this
+					// popover so the seat row stays a single line.
+					Button {
+						details.isVisible.toggle()
+					} label: {
+						Image(systemName: "slider.horizontal.3")
+							.foregroundStyle(.secondary)
 					}
-				), showsInfo: true)
-				SkillPickerRow(title: "Skill", botType: seat.botType, selection: Binding(
-					get: { BotSkill.level(seat.skill) },
-					set: { seat.skill = $0 }
-				))
-				if model.seats.count > 2 {
-					let family = BotCatalog.familyName(seat.botType)
-					if family == "Friendly" || family == "Mean" {
-						FocusPicker(
-							title: family == "Friendly" ? "Friendly to" : "Mean to",
-							items: model.seats.filter { $0.id != seat.id },
-							id: \.id,
-							label: { otherLabel($0) },
-							selection: family == "Friendly" ? $seat.friendSeats : $seat.enemySeats
+					.buttonStyle(.plain)
+					.popover(isPresented: $details.isVisible) {
+						BotDetailsPopover(
+							seat: $seat,
+							otherSeats: model.seats.count > 2
+								? model.seats.filter { $0.id != seat.id } : [],
+							focusLabel: { otherLabel($0) }
 						)
 					}
 				}
