@@ -29,9 +29,9 @@ BotFriendly::BotFriendly(unsigned int depth, unsigned int tt_bits) :
 }
 
 
-Glib::ustring BotFriendly::get_default_name() const
+Glib::ustring BotFriendly::default_name(unsigned int depth)
 {
-	switch (_depth)
+	switch (depth)
 	{
 		case 2:
 			return "Earl";
@@ -44,6 +44,12 @@ Glib::ustring BotFriendly::get_default_name() const
 		default:
 			return "Who,Now?";
 	}
+}
+
+
+Glib::ustring BotFriendly::get_default_name() const
+{
+	return default_name(_depth);
 }
 
 

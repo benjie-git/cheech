@@ -30,9 +30,9 @@ BotMean::BotMean(unsigned int depth, unsigned int tt_bits) :
 }
 
 
-Glib::ustring BotMean::get_default_name() const
+Glib::ustring BotMean::default_name(unsigned int depth)
 {
-	switch (_depth)
+	switch (depth)
 	{
 		case 2:
 			return "Jimbo";
@@ -45,6 +45,12 @@ Glib::ustring BotMean::get_default_name() const
 		default:
 			return "Who,Now?";
 	}
+}
+
+
+Glib::ustring BotMean::get_default_name() const
+{
+	return default_name(_depth);
 }
 
 

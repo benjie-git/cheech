@@ -45,6 +45,9 @@ class BotLookAhead : public BotBase
 		virtual Glib::ustring get_default_name() const;
 		virtual Glib::ustring get_type_name() const;
 
+		// The default name for a search depth, without instantiating a bot.
+		static Glib::ustring default_name(unsigned int depth);
+
 		virtual BotBase* clone_for_search() const;
 		virtual bool supports_parallel_search() const;
 		virtual void prepare_search(GameBoard *board);

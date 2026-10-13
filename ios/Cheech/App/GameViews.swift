@@ -996,7 +996,7 @@ struct GameScreenView: View {
 									if moves > 0 {
 										Text("(\(moves))").font(.caption)
 									}
-									Image(systemName: "checkmark.seal.fill").font(.caption2)
+//									Image(systemName: "checkmark.seal.fill").font(.caption2)
 								}
 							}
 							.opacity(Int(session.currentPlayer) == p ? 1 : 0.6)
@@ -1225,7 +1225,7 @@ struct GameSetupSheet: View {
 					Button("Remove All Computer Players", role: .destructive) {
 						model.removeComputerPlayers()
 					}
-					.disabled(Int(session.extraComputerPlayerCount) == 0)
+					.disabled(Int(session.computerPlayerCount) == 0)
 					if Int(session.extraComputerPlayerCount) > 0 {
 						HStack {
 							Text("Added by you")

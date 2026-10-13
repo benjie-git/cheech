@@ -133,7 +133,6 @@ main_win_glade::main_win_glade(
    end_game = NULL;
 
    Gtk::MenuItem *separator4 = NULL;
-   join_game = NULL;
    leave_game = NULL;
    Gtk::MenuItem *separatormenuitem1 = NULL;
    game_settings = NULL;
@@ -220,20 +219,16 @@ main_win_glade::main_win_glade(
    restart_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_K, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    restart_submenu_menu->append(*restart_game);
 
-   new_game = Gtk::manage(new class Gtk::MenuItem(_("Host _New Board..."), true));
+   new_game = Gtk::manage(new class Gtk::MenuItem(_("_New Game..."), true));
    new_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_N, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
    menuitem1_menu->append(*new_game);
-
-   end_game = Gtk::manage(new class Gtk::MenuItem(_("S_top Hosting"), true));
-   end_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_T, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
-   menuitem1_menu->append(*end_game);
 
    separator4 = Gtk::manage(new class Gtk::SeparatorMenuItem());
    menuitem1_menu->append(*separator4);
 
-   join_game = Gtk::manage(new class Gtk::MenuItem(_("_Join a Board..."), true));
-   join_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_J, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
-   menuitem1_menu->append(*join_game);
+   end_game = Gtk::manage(new class Gtk::MenuItem(_("S_top Hosting"), true));
+   end_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_T, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
+   menuitem1_menu->append(*end_game);
 
    leave_game = Gtk::manage(new class Gtk::MenuItem(_("_Leave Board"), true));
    leave_game->add_accelerator("activate", gmm_data->getAccelGroup(), GDK_KEY_L, CHEECH_ACCEL_MOD_MASK, Gtk::ACCEL_VISIBLE);
@@ -497,7 +492,6 @@ main_win_glade::main_win_glade(
    new_game->show();
    end_game->show();
    separator4->show();
-   join_game->show();
    leave_game->show();
    separatormenuitem1->show();
    game_settings->show();
@@ -572,7 +566,6 @@ main_win_glade::main_win_glade(
    main_win->show();
    new_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_new_game_activate), false);
    end_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_end_game_activate), false);
-   join_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_join_game_activate), false);
    leave_game->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_leave_game_activate), false);
    game_settings->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_game_settings_activate), false);
    rotate->signal_activate().connect(sigc::mem_fun(this, &main_win_glade::on_rotate_activate), false);

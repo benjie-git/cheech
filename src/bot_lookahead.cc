@@ -67,9 +67,9 @@ void BotLookAhead::set_self_penalty(int self_penalty)
 }
 
 
-Glib::ustring BotLookAhead::get_default_name() const
+Glib::ustring BotLookAhead::default_name(unsigned int depth)
 {
-	switch (_depth)
+	switch (depth)
 	{
 		case 2:
 			return "Rosie";
@@ -82,6 +82,12 @@ Glib::ustring BotLookAhead::get_default_name() const
 		default:
 			return "Who,Now?";
 	}
+}
+
+
+Glib::ustring BotLookAhead::get_default_name() const
+{
+	return default_name(_depth);
 }
 
 

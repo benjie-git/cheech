@@ -32,7 +32,6 @@ public:
 #endif //GLADEMM_DATA
 
 #include <gtkmm/window.h>
-#include <gtkmm/entry.h>
 #include <gtkmm/box.h>
 #include <gtkmm/table.h>
 #include "GtkComboBoxText.hh"
@@ -44,12 +43,10 @@ class setup_bot_win_glade : public Gtk::Window
         
         GlademmData *gmm_data;
 protected:
-        class Gtk::Entry * name_entry;
         class GtkComboBoxText * type_box;
-        class Gtk::HScale * done_scale;
         class Gtk::HScale * move_scale;
-        class Gtk::HScale * think_scale;
-        class Gtk::HScale * smarts_scale;
+        class GtkComboBoxText * depth_box;
+        class GtkComboBoxText * smarts_box;
         class Gtk::Button * add_button;
         class Gtk::Button * remove_button;
         // The Configuration grid; the friend/enemy focus row is added to it

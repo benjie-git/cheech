@@ -18,6 +18,7 @@
  */
 
 #include "prefs.hh"
+#include "bot_catalog.hh"
 #include "setup_bot_win.hh"
 
 #include <glibmm/i18n.h>
@@ -28,6 +29,13 @@
 
 static unsigned int focus_mask_from_checks(
 	const std::vector<Gtk::CheckButton*> &checks);
+
+static unsigned int count_bits(unsigned int mask);
+
+// Maps combo text back onto its value; unknown text falls back to the
+// default (Default depth, Best smarts).
+static unsigned int depth_from_label(const Glib::ustring &text);
+static unsigned int level_from_label(const Glib::ustring &text);
 
 
 setup_bot_win::setup_bot_win()
@@ -40,28 +48,32 @@ setup_bot_win::setup_bot_win()
 
 	type_box->signal_changed().connect(sigc::mem_fun(*this,
 		&setup_bot_win::on_bot_type_changed));
+	depth_box->signal_changed().connect(sigc::mem_fun(*this,
+		&setup_bot_win::on_bot_type_changed));
 
-	type_box->append("LookAhead(2)");
-	type_box->append("LookAhead(3)");
-	type_box->append("LookAhead(4)");
-	type_box->append("LookAhead(5)");
-	type_box->append("Mean(2)");
-	type_box->append("Mean(3)");
-	type_box->append("Mean(4)");
-	type_box->append("Mean(5)");
-	type_box->append("Friendly(2)");
-	type_box->append("Friendly(3)");
-	type_box->append("Friendly(4)");
+	std::vector<Glib::ustring> families;
+	families.push_back(BotUI::FRIENDLY);
+	families.push_back(BotUI::NEUTRAL);
+	families.push_back(BotUI::MEAN);
+	for (size_t i = 0; i < families.size(); i++)
+		type_box->append(families[i]);
+
+	std::vector<unsigned int> depths = BotUI::depth_values();
+	for (size_t i = 0; i < depths.size(); i++)
+		depth_box->append(BotUI::depth_label(depths[i]));
+
+	std::vector<unsigned int> levels = BotUI::skill_levels();
+	for (size_t i = 0; i < levels.size(); i++)
+		smarts_box->append(BotUI::skill_label(levels[i]));
 
 	Prefs prefs;
 
 	prefs.read();
 
 	type_box->set_active_text(prefs.bot_type);
-	done_scale->set_value(prefs.done_delay * 0.0010001);
+	depth_box->set_active_text(BotUI::depth_label(prefs.bot_depth));
+	smarts_box->set_active_text(BotUI::skill_label(prefs.bot_level));
 	move_scale->set_value(prefs.move_delay * 0.0010001);
-	think_scale->set_value(prefs.think_delay * 0.0010001);	
-	smarts_scale->set_value(prefs.smarts * 0.01);
 }
 
 
@@ -84,38 +96,63 @@ void setup_bot_win::setup(GameServer::GameStatus status, GameClient *client)
 
 void setup_bot_win::on_add_button_activate()
 {
-	if (_bot)
-	{
-		Prefs prefs;
+	if (!_bot)
+		return;
 
-		prefs.read();
+	Prefs prefs;
 
-		prefs.bot_type = type_box->get_active_text();
-		prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
-		prefs.done_delay = (int)(done_scale->get_value()*1000 + 0.5);
-		prefs.think_delay = (int)(think_scale->get_value()*1000 + 0.5);
-		prefs.smarts = (unsigned int)(smarts_scale->get_value()*100 + 0.5);
+	prefs.read();
 
-		_bot->set_name(name_entry->get_text());
-		_bot->set_move_delay(prefs.move_delay, prefs.done_delay);
-		_bot->set_think_delay(prefs.think_delay);
-		_bot->set_smarts(prefs.smarts);
+	Glib::ustring family = type_box->get_active_text();
+	unsigned int depth = depth_from_label(depth_box->get_active_text());
+	unsigned int level = level_from_label(smarts_box->get_active_text());
 
-		// The checkboxes are parallel to player numbers 1..N; only the family's
-		// own list is meaningful, but setting both is harmless.
-		_focus_mask = focus_mask_from_checks(_focus_checks);
-		if (_bot->get_type_name() == "Friendly")
-			_bot->set_friends(_focus_mask);
-		else if (_bot->get_type_name() == "Mean")
-			_bot->set_enemies(_focus_mask);
+	// The checkboxes are parallel to player numbers 1..N; only the family's
+	// own list is meaningful, but setting both is harmless.
+	_focus_mask = focus_mask_from_checks(_focus_checks);
 
-		prefs.write();
+	// The single-friend Friendly depth cap counts the players the bot will
+	// help.  All boxes ticked means "everyone", i.e. every player currently
+	// on the board (the new bot itself joins after them).
+	unsigned int friend_count;
+	if (_focus_mask == BotBase::ALL_PLAYERS && _client
+		&& _client->get_board())
+		friend_count = _client->get_board()->get_num_players();
+	else
+		friend_count = count_bits(_focus_mask);
 
-		signal_add_bot(_bot);
-		_bot = NULL;
+	Glib::ustring type = BotUI::bot_type(family, depth, friend_count);
 
-		on_bot_type_changed();
-	}
+	delete _bot;
+	_bot = BotBase::new_bot_of_type(type);
+	if (!_bot)
+		return;
+
+	prefs.bot_type = family;
+	prefs.bot_level = level;
+	prefs.bot_depth = depth;
+	prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
+	prefs.smarts = BotUI::skill_smarts(level);
+
+	// Use the engine's cute default (Rosie, Earl, Jimbo, ...), matching the
+	// iOS setup.  An empty name would be rejected by the server and the bot
+	// would never be added.
+	_bot->set_name(_bot->get_default_name());
+	_bot->set_move_delay(prefs.move_delay, 2 * prefs.move_delay);
+	_bot->set_think_delay(prefs.think_delay);
+	_bot->set_smarts(prefs.smarts);
+
+	if (_bot->get_type_name() == "Friendly")
+		_bot->set_friends(_focus_mask);
+	else if (_bot->get_type_name() == "Mean")
+		_bot->set_enemies(_focus_mask);
+
+	prefs.write();
+
+	signal_add_bot(_bot);
+	_bot = NULL;
+
+	on_bot_type_changed();
 }
 
 
@@ -139,11 +176,14 @@ void setup_bot_win::on_ok_button_activate()
 
 	prefs.read();
 
-	prefs.bot_type = type_box->get_active_text();
+	Glib::ustring family = type_box->get_active_text();
+
+	if (!family.empty())
+		prefs.bot_type = family;
+	prefs.bot_level = level_from_label(smarts_box->get_active_text());
+	prefs.bot_depth = depth_from_label(depth_box->get_active_text());
 	prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
-	prefs.done_delay = (int)(done_scale->get_value()*1000 + 0.5);
-	prefs.think_delay = (int)(think_scale->get_value()*1000 + 0.5);
-	prefs.smarts = (unsigned int)(smarts_scale->get_value()*100 + 0.5);
+	prefs.smarts = BotUI::skill_smarts(prefs.bot_level);
 
 	prefs.write();
 
@@ -153,10 +193,9 @@ void setup_bot_win::on_ok_button_activate()
 
 void setup_bot_win::on_defaults_activate()
 {
-	done_scale->set_value(0.6);
 	move_scale->set_value(0.4);
-	think_scale->set_value(0.0);
-	smarts_scale->set_value(1.0);
+	depth_box->set_active_text(BotUI::depth_label(0));
+	smarts_box->set_active_text(BotUI::skill_label(1));
 
 	_focus_mask = BotBase::ALL_PLAYERS;
 	for (size_t i = 0; i < _focus_checks.size(); i++)
@@ -169,10 +208,56 @@ void setup_bot_win::on_bot_type_changed()
 	if (_bot)
 		delete _bot;
 
-	_bot = BotBase::new_bot_of_type(type_box->get_active_text());
+	Glib::ustring family = type_box->get_active_text();
 
-	name_entry->set_text(_bot->get_default_name());
+	if (family.empty())
+	{
+		_bot = NULL;
+		rebuild_focus();
+		return;
+	}
+
+	unsigned int depth = depth_from_label(depth_box->get_active_text());
+	Glib::ustring type = BotUI::bot_type(family, depth, 0);
+
+	_bot = BotBase::new_bot_of_type(type);
+
 	rebuild_focus();
+}
+
+
+static unsigned int count_bits(unsigned int mask)
+{
+	unsigned int count = 0;
+
+	while (mask)
+	{
+		count += mask & 1;
+		mask >>= 1;
+	}
+	return count;
+}
+
+
+static unsigned int depth_from_label(const Glib::ustring &text)
+{
+	std::vector<unsigned int> values = BotUI::depth_values();
+
+	for (size_t i = 0; i < values.size(); i++)
+		if (BotUI::depth_label(values[i]) == text)
+			return values[i];
+	return 0;
+}
+
+
+static unsigned int level_from_label(const Glib::ustring &text)
+{
+	std::vector<unsigned int> levels = BotUI::skill_levels();
+
+	for (size_t i = 0; i < levels.size(); i++)
+		if (BotUI::skill_label(levels[i]) == text)
+			return levels[i];
+	return 1;
 }
 
 
@@ -219,7 +304,7 @@ void setup_bot_win::rebuild_focus()
 	_focus_widgets.clear();
 	_focus_checks.clear();
 
-	config_table->resize(4, 2);
+	config_table->resize(3, 2);
 
 	if (!_bot || !_client || !_client->get_board())
 		return;
@@ -244,14 +329,14 @@ void setup_bot_win::rebuild_focus()
 	label->set_line_wrap(false);
 	label->set_use_markup(false);
 	label->set_selectable(false);
-	config_table->attach(*label, 0, 1, 4, 5, Gtk::FILL,
+	config_table->attach(*label, 0, 1, 3, 4, Gtk::FILL,
 		Gtk::AttachOptions(), 0, 0);
 	label->show();
 	_focus_widgets.push_back(label);
 
 	// Lay the checkboxes out horizontally on one line beside the label.
 	Gtk::HBox *hbox = new Gtk::HBox(false, 6);
-	config_table->attach(*hbox, 1, 2, 4, 5, Gtk::EXPAND|Gtk::FILL,
+	config_table->attach(*hbox, 1, 2, 3, 4, Gtk::EXPAND|Gtk::FILL,
 		Gtk::FILL, 0, 0);
 	hbox->show();
 

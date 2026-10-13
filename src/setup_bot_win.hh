@@ -51,7 +51,6 @@ class setup_bot_win : public setup_bot_win_glade
 							  unsigned int move_count);
 
 	private:
-        void on_name_entry_activate();
         void on_add_button_activate();
         void on_remove_button_activate();
         void on_ok_button_activate();

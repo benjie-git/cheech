@@ -90,6 +90,10 @@ class BotBase : public sigc::trackable
 								MoveList *move) = 0;
 
 		virtual Glib::ustring get_default_name() const = 0;
+		// The default name for a search depth.  Subclasses hide this static
+		// with their own cute names; the base has none.
+		static Glib::ustring default_name(unsigned int depth)
+			{ return "Unknown"; }
 
 		// Short display name of this bot family, independent of depth or
 		// skill (e.g. "Neutral" for LookAhead, "Mean", "Friendly").

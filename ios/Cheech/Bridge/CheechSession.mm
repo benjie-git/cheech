@@ -77,6 +77,7 @@ struct Snapshot
 	bool hopOthers = true;
 	bool stopOthers = true;
 	int extraBotCount = 0;
+	int computerPlayerCount = 0;
 	// 1-based (index 0 unused).  Always sized so that callers querying players
 	// 1..6 never index an empty vector before the first rebuildSnapshot() (the
 	// UI can render the game screen before the loop thread populates it).
@@ -1247,6 +1248,18 @@ LocalSave parseLocalSave(const std::string &text)
 		CheechSession *s = weakSelf;
 		if (!s) return;
 		SessionImpl *impl = s->_impl;
+		// Computer seats configured at game start are removed too, so the host
+		// can clear the roster and swap in different bot types; the freed
+		// player numbers become open slots again.
+		for (Seat &seat : impl->seats)
+		{
+			if (seat.kind != CheechSeatComputer || !seat.bot)
+				continue;
+			seat.bot->leave_game();
+			delete seat.bot;
+			seat.bot = nullptr;
+		}
+		impl->bots.clear();
 		for (BotBase *bot : impl->extraBots)
 		{
 			bot->leave_game();
@@ -1822,6 +1835,7 @@ LocalSave parseLocalSave(const std::string &text)
 	snap.hopOthers = true;
 	snap.stopOthers = true;
 	snap.extraBotCount = (int)impl->extraBots.size();
+	snap.computerPlayerCount = (int)impl->bots.size() + (int)impl->extraBots.size();
 	snap.players.assign(7, PlayerInfo());
 	snap.playerCount = 0;
 	std::fill(std::begin(snap.holes), std::end(snap.holes), 0);
@@ -2052,6 +2066,12 @@ LocalSave parseLocalSave(const std::string &text)
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
 	return _impl->snap.extraBotCount;
+}
+
+- (NSInteger)computerPlayerCount
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	return _impl->snap.computerPlayerCount;
 }
 
 - (NSInteger)colorForPlayer:(NSInteger)playerNumber

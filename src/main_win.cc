@@ -25,12 +25,15 @@
 #include <gtkmm/messagedialog.h> 
 #include <gdkmm/window.h>
 
+#include <map>
+
 #ifdef MACOS_APP
 #include <gtkosxapplication.h>
 #endif
 
 #include "main_win.hh"
 
+#include "bot_catalog.hh"
 #include "utility.hh"
 
 
@@ -65,6 +68,11 @@ main_win::main_win() : main_win_glade()
 	_current_player = 0;
 	_move_count = 1;
 	_game_status = GameServer::End;
+	_leaving_game = false;
+	_next_seat = 0;
+	_seat_join_ticks = 0;
+	_hosted_port = 0;
+	_active_input_client = NULL;
 
 	_player_name[0]=player_name1;
 	_player_name[1]=player_name2;
@@ -187,8 +195,8 @@ void main_win::on_realize()
 
 
 bool main_win::start_server(unsigned int port, unsigned int cheechweb_port,
-	unsigned int num_players, bool long_jumps,
-	bool hop_others, bool stop_others)
+	bool long_jumps, bool hop_others, bool stop_others,
+	std::vector<NewGameSeat> seats)
 {
 	if (_server)
 		on_end_game_activate();
@@ -196,7 +204,7 @@ bool main_win::start_server(unsigned int port, unsigned int cheechweb_port,
 	if (_server)
 		return false;
 
-	_server = new GameServer(port, num_players, long_jumps,
+	_server = new GameServer(port, seats.size(), long_jumps,
 							 hop_others, stop_others);
 	_server->evt_message.connect(sigc::mem_fun(*this, &main_win::show_message));
 	_server->new_game();
@@ -219,9 +227,79 @@ bool main_win::start_server(unsigned int port, unsigned int cheechweb_port,
 		}
 	}
 
+	start_hosted_seats(seats, port);
+
 	update_menus();
 
 	return true;
+}
+
+
+// Wires a client to the window's game-state handlers.  The primary client
+// (the one driving menus, chat and the change name/color dialogs) also gets
+// the conflict dialogs; secondary seat clients resolve conflicts themselves.
+void main_win::connect_client(GameClient *client, bool primary)
+{
+	client->evt_disconnected.connect(sigc::mem_fun(*this,
+		&main_win::on_leave_game_activate));
+	client->evt_cancelled.connect(sigc::mem_fun(*this,
+		&main_win::on_leave_game_activate));
+	client->evt_message.connect(sigc::mem_fun(*this,
+		&main_win::show_message));
+	client->cmd_player_add.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_player_add));
+	client->cmd_player_remove.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_player_remove));
+	client->cmd_player_finish.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_player_finish));
+	client->cmd_game_resync.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_resync));
+	if (primary)
+	{
+		client->cmd_choose_new_name.connect(sigc::mem_fun(*this,
+			&main_win::on_cmd_choose_new_name));
+		client->cmd_choose_new_color.connect(sigc::mem_fun(*this,
+			&main_win::on_cmd_choose_new_color));
+	}
+	client->cmd_game_turn.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_turn));
+	client->cmd_game_undo_move.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_undo_move));
+	client->cmd_game_show_move.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_show_move));
+	client->cmd_game_hide_move.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_hide_move));
+	client->cmd_game_make_move.connect(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_make_move));
+}
+
+
+// Hooks the name/color/game-settings dialogs to a client.  Only used for the
+// primary client; repeated connections match the existing start_client
+// behavior.
+void main_win::connect_client_dialogs(GameClient *client)
+{
+	client->evt_disconnected.connect(sigc::mem_fun(_color_win,
+		&color_win::on_disconnected));
+	_color_win.signal_change_color.connect(sigc::mem_fun(*client,
+		&GameClient::change_color));
+
+	client->evt_disconnected.connect(sigc::mem_fun(_name_win,
+		&name_win::on_disconnected));
+	_name_win.signal_change_name.connect(sigc::mem_fun(*client,
+		&GameClient::change_name));
+
+	client->cmd_game_turn.connect(sigc::mem_fun(_setup_game_win,
+		&setup_game_win::on_cmd_game_turn));
+	client->evt_disconnected.connect(sigc::mem_fun(_setup_game_win,
+		&setup_game_win::on_disconnected));
+	_setup_game_win.signal_restart_game.connect(sigc::mem_fun(this,
+		&main_win::on_game_setup));
+	_setup_game_win.setup(1, false, false, false, _game_status);
+
+	_setup_bot_win.setup(_game_status, client);
+	client->cmd_game_turn.connect(sigc::mem_fun(_setup_bot_win,
+		&setup_bot_win::on_cmd_game_turn));
 }
 
 
@@ -235,64 +313,325 @@ void main_win::start_client(Glib::ustring host, unsigned int port,
 	_client->change_name(name);
 	_client->change_color((spectator) ? 0 : color);
 
+	connect_client(_client, true);
 	_client->evt_connected.connect(sigc::bind(sigc::mem_fun(*this,
 		&main_win::add_join_hostname), host));
-	_client->evt_disconnected.connect(sigc::mem_fun(*this,
-		&main_win::on_leave_game_activate));
-	_client->evt_cancelled.connect(sigc::mem_fun(*this,
-		&main_win::on_leave_game_activate));
-	_client->evt_message.connect(sigc::mem_fun(*this,
-		&main_win::show_message));
-	_client->cmd_player_add.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_player_add));
-	_client->cmd_player_remove.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_player_remove));
-	_client->cmd_player_finish.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_player_finish));
-	_client->cmd_game_resync.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_resync));
-	_client->cmd_choose_new_name.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_choose_new_name));
-	_client->cmd_choose_new_color.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_choose_new_color));
-	_client->cmd_game_turn.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_turn));
-	_client->cmd_game_undo_move.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_undo_move));
-	_client->cmd_game_show_move.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_show_move));
-	_client->cmd_game_hide_move.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_hide_move));
-	_client->cmd_game_make_move.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_make_move));
 
 	game_view->set_client(_client);
+	_active_input_client = _client;
 
 	_client->join_game(host, port, spectator);
 
 	update_menus();
 
-	_client->evt_disconnected.connect(sigc::mem_fun(_color_win,
-		&color_win::on_disconnected));
-	_color_win.signal_change_color.connect(sigc::mem_fun(*_client,
-		&GameClient::change_color));
+	connect_client_dialogs(_client);
+}
 
-	_client->evt_disconnected.connect(sigc::mem_fun(_name_win,
-		&name_win::on_disconnected));
-	_name_win.signal_change_name.connect(sigc::mem_fun(*_client,
-		&GameClient::change_name));
 
-	_client->cmd_game_turn.connect(sigc::mem_fun(_setup_game_win,
-		&setup_game_win::on_cmd_game_turn));
-	_client->evt_disconnected.connect(sigc::mem_fun(_setup_game_win,
-		&setup_game_win::on_disconnected));
-	_setup_game_win.signal_restart_game.connect(sigc::mem_fun(this,
-		&main_win::on_game_setup));
-	_setup_game_win.setup(1, false, false, false, _game_status);
+// Joins the seats of a freshly hosted game, one at a time so the player
+// numbers match the seat order the user arranged in the New Game dialog.
+void main_win::start_hosted_seats(std::vector<NewGameSeat> seats,
+	unsigned int port)
+{
+	clear_seats();
+	_hosted_port = port;
 
-	_setup_bot_win.setup(_game_status, _client);
-	_client->cmd_game_turn.connect(sigc::mem_fun(_setup_bot_win,
-		&setup_bot_win::on_cmd_game_turn));
+	// Map the dialog's seat ids to seat indices for focus lists.
+	std::map<unsigned int, unsigned int> index_of_id;
+	for (size_t i = 0; i < seats.size(); i++)
+		index_of_id[seats[i].id] = i;
+
+	for (size_t i = 0; i < seats.size(); i++)
+	{
+		HostSeat seat;
+		seat.kind = seats[i].kind;
+		seat.name = seats[i].name;
+		seat.color = seats[i].color;
+		seat.family = seats[i].family;
+		seat.level = seats[i].level;
+		seat.depth = seats[i].depth;
+		seat.focus_all = seats[i].focus_all;
+		seat.client = NULL;
+		seat.bot = NULL;
+		seat.player_number = 0;
+		for (size_t j = 0; j < seats[i].focus_ids.size(); j++)
+		{
+			std::map<unsigned int, unsigned int>::iterator f =
+				index_of_id.find(seats[i].focus_ids[j]);
+			if (f != index_of_id.end())
+				seat.focus_ids.push_back(f->second);
+		}
+		_seats.push_back(seat);
+	}
+
+	// The first human seat's client drives menus, chat and dialogs; with no
+	// human seats at all, a spectator client mirrors the board instead.
+	for (size_t i = 0; i < _seats.size(); i++)
+	{
+		if (_seats[i].kind == HostSeat::SEAT_HUMAN)
+		{
+			_client = new GameClient();
+			_client->change_name(_seats[i].name);
+			_client->change_color(_seats[i].color);
+			_seats[i].client = _client;
+			connect_client(_client, true);
+			game_view->set_client(_client);
+			_active_input_client = _client;
+			connect_client_dialogs(_client);
+			break;
+		}
+	}
+	if (!_client)
+	{
+		_client = new GameClient();
+		_client->change_name("Display");
+		_client->change_color(0);
+		connect_client(_client, true);
+		game_view->set_client(_client);
+		_active_input_client = _client;
+		connect_client_dialogs(_client);
+		_client->join_game("localhost", port, true);
+	}
+
+	// Join the remaining seats in order, polling until each has a player
+	// number before starting the next.
+	_next_seat = 0;
+	_seat_join_ticks = 0;
+	join_next_seat();
+	Glib::signal_timeout().connect(sigc::mem_fun(*this,
+		&main_win::poll_seat_join), 250);
+}
+
+
+void main_win::join_next_seat()
+{
+	// Remote seats never join; skip them.
+	while (_next_seat < _seats.size() &&
+		_seats[_next_seat].kind == HostSeat::SEAT_REMOTE)
+		_next_seat++;
+
+	if (_next_seat >= _seats.size())
+	{
+		apply_seat_focus();
+		return;
+	}
+
+	HostSeat &seat = _seats[_next_seat];
+
+	if (seat.kind == HostSeat::SEAT_HUMAN)
+	{
+		if (!seat.client)
+		{
+			seat.client = new GameClient();
+			seat.client->change_name(seat.name);
+			seat.client->change_color(seat.color);
+			connect_client(seat.client, false);
+			hook_seat_client(seat.client, _next_seat);
+		}
+		seat.client->join_game("localhost", _hosted_port, false);
+	}
+	else if (seat.kind == HostSeat::SEAT_COMPUTER)
+	{
+		// "Everyone" from the new bot's point of view: every other seat.
+		unsigned int friend_count = seat.focus_all
+			? _seats.size() - 1 : seat.focus_ids.size();
+		Glib::ustring type = BotUI::bot_type(seat.family, seat.depth,
+			friend_count);
+
+		seat.bot = BotBase::new_bot_of_type(type);
+		if (!seat.bot)
+		{
+			type = BotUI::bot_type(BotUI::NEUTRAL, 0, friend_count);
+			seat.bot = BotBase::new_bot_of_type(type);
+		}
+		if (!seat.bot)
+		{
+			show_message("Cannot create a computer player of type "
+				+ type);
+			return;
+		}
+		seat.bot->set_name(seat.name);
+		seat.bot->set_color(seat.color);
+		seat.bot->set_smarts(BotUI::skill_smarts(seat.level));
+		seat.bot->set_move_delay(0, 0);
+		seat.bot->set_think_delay(0);
+		_bots.push_back(seat.bot);
+		seat.bot->evt_disconnected.connect(sigc::bind(sigc::mem_fun(*this,
+			&main_win::bot_disconnected), seat.bot));
+		seat.bot->join_game("localhost", _hosted_port);
+	}
+
+	// SEAT_REMOTE: leave the seat open for a joiner.
+}
+
+
+// Waits for the seat that is currently joining to receive its player number
+// (the server assigns numbers by connection-arrival order), then starts the
+// next seat.  Gives up on a seat after 5 seconds so a stalled join cannot
+// block the rest.
+bool main_win::poll_seat_join()
+{
+	if (_seats.empty())
+		return false;
+
+	if (_next_seat >= _seats.size())
+	{
+		apply_seat_focus();
+		return false;
+	}
+
+	HostSeat &seat = _seats[_next_seat];
+	GameClient *client = seat.client ? seat.client
+		: (seat.bot ? seat.bot->get_game_client() : NULL);
+	unsigned int num = client ? client->get_my_player_number() : 0;
+
+	if (num)
+	{
+		seat.player_number = num;
+		_next_seat++;
+		_seat_join_ticks = 0;
+		join_next_seat();
+		return _next_seat < _seats.size();
+	}
+
+	if (++_seat_join_ticks >= 20)
+	{
+		_seat_join_ticks = 0;
+		_next_seat++;
+		join_next_seat();
+		return _next_seat < _seats.size();
+	}
+
+	return true;
+}
+
+
+// Applies each computer seat's focus list now that every seat has its player
+// number.  Focus entries are seat indices; the mask is over player numbers.
+void main_win::apply_seat_focus()
+{
+	for (size_t i = 0; i < _seats.size(); i++)
+	{
+		HostSeat &seat = _seats[i];
+		if (seat.kind != HostSeat::SEAT_COMPUTER || !seat.bot || seat.focus_all)
+			continue;
+
+		unsigned int mask = 0;
+		bool complete = true;
+		for (size_t j = 0; j < seat.focus_ids.size(); j++)
+		{
+			if (seat.focus_ids[j] >= _seats.size() ||
+				!_seats[seat.focus_ids[j]].player_number)
+			{
+				complete = false;
+				break;
+			}
+			mask |= 1 << (_seats[seat.focus_ids[j]].player_number - 1);
+		}
+		if (!complete)
+			continue;
+
+		Glib::ustring family = seat.bot->get_type_name();
+		if (family == BotUI::FRIENDLY)
+			seat.bot->set_friends(mask);
+		else if (family == BotUI::MEAN)
+			seat.bot->set_enemies(mask);
+	}
+}
+
+
+// Non-primary human seats resolve name/color clashes themselves (mirroring
+// the iOS host) instead of popping the change dialogs.
+void main_win::hook_seat_client(GameClient *client, size_t index)
+{
+	client->cmd_choose_new_name.connect(sigc::bind(sigc::mem_fun(*this,
+		&main_win::on_seat_choose_new_name), client, (size_t) index));
+	client->cmd_choose_new_color.connect(sigc::bind(sigc::mem_fun(*this,
+		&main_win::on_seat_choose_new_color), client));
+}
+
+
+void main_win::on_seat_choose_new_name(Glib::ustring name,
+	GameClient *client, size_t index)
+{
+	if (index < _seats.size() && _seats[index].client == client)
+		client->change_name(_seats[index].name + " " +
+			util::to_str(index + 1));
+}
+
+
+void main_win::on_seat_choose_new_color(Glib::ustring name, int color,
+	GameClient *client)
+{
+	bool used[9] = {false};
+	unsigned int my = client->get_my_player_number();
+	if (client->get_board())
+		for (unsigned int p = 1;
+			p <= client->get_board()->get_num_players(); p++)
+		{
+			if (p == my)
+				continue;
+			unsigned int c = client->get_player_color(p);
+			if (c >= 1 && c <= 8)
+				used[c] = true;
+		}
+	for (unsigned int c = 1; c <= 8; c++)
+		if (!used[c])
+		{
+			client->change_color(c);
+			return;
+		}
+}
+
+
+// In a hosted hot-seat game, the human seat whose turn it is drives the
+// board; otherwise the primary client just watches.
+main_win::HostSeat *main_win::active_seat()
+{
+	if (_seats.empty() || !_current_player)
+		return NULL;
+
+	for (size_t i = 0; i < _seats.size(); i++)
+		if (_seats[i].kind == HostSeat::SEAT_HUMAN &&
+			_seats[i].player_number == _current_player)
+			return &_seats[i];
+
+	return NULL;
+}
+
+
+// Points game_view at the client that may move this turn.  The board itself
+// stays put: the first human seat keeps the bottom (set on resync).
+void main_win::route_input()
+{
+	if (_seats.empty())
+		return;
+
+	HostSeat *seat = active_seat();
+	GameClient *input = seat ? seat->client : _client;
+
+	if (input != _active_input_client)
+	{
+		_active_input_client = input;
+		game_view->set_client(input);
+		game_view->rebuild_board();
+	}
+
+	game_view->set_locked(seat == NULL);
+}
+
+
+void main_win::clear_seats()
+{
+	// Seat bots were already removed from _bots by
+	// on_remove_computer_players_activate(); the clients stay allocated like
+	// the primary client does.
+	for (size_t i = 0; i < _seats.size(); i++)
+		if (_seats[i].client && _seats[i].client != _client)
+			_seats[i].client->leave_game();
+	_seats.clear();
+	_next_seat = 0;
+	_seat_join_ticks = 0;
 }
 
 
@@ -308,7 +647,7 @@ void main_win::add_join_hostname(Glib::ustring host)
 
 void main_win::on_new_game_activate()
 {
-	_new_game_win.show_join_page(false);
+	// The dialog's notebook remembers the last-used page (New Game or Join).
 	present_and_focus(&_new_game_win);
 }
 
@@ -424,16 +763,17 @@ void main_win::stop_server()
 }
 
 
-void main_win::on_join_game_activate()
-{
-	present_and_focus(&_new_game_win);
-	_new_game_win.show_join_page(true);
-	game_view->set_locked(true);
-}
-
-
 void main_win::on_leave_game_activate()
 {
+	// Disconnecting seat clients re-emits evt_disconnected (and
+	// evt_cancelled) into this handler while it is still running; a second
+	// entry would complete the teardown and leave this run dereferencing a
+	// NULL _client and a cleared _seats vector.
+	if (!_client || _leaving_game)
+		return;
+
+	_leaving_game = true;
+
 	if (_client)
 	{
 		game_view->hide_move();
@@ -442,6 +782,8 @@ void main_win::on_leave_game_activate()
 		game_view->rebuild_board();
 		game_view->set_locked(true);
 		on_remove_computer_players_activate();
+		clear_seats();
+		_active_input_client = NULL;
 		_client->leave_game();
 		_current_player = 0;
 		_game_status = GameServer::End;
@@ -455,6 +797,8 @@ void main_win::on_leave_game_activate()
 
 		update_menus();
 	}
+
+	_leaving_game = false;
 }
 
 
@@ -471,7 +815,6 @@ void main_win::update_menus()
 
 	if (_client)
 	{
-		join_game->set_sensitive(false);
 		leave_game->set_sensitive(true);
 
 		bool active_member = (!_client->is_spectator()) || (_bots.size() > 0);
@@ -491,7 +834,6 @@ void main_win::update_menus()
 	}
 	else
 	{
-		join_game->set_sensitive(true);
 		leave_game->set_sensitive(false);
 
 		game_settings->set_sensitive(false);
@@ -560,16 +902,34 @@ void main_win::on_add_computer_player_activate()
 		Prefs prefs;
 		prefs.read();
 
-		BotBase *bot = BotBase::new_bot_of_type(prefs.bot_type);
+		// "Everyone" from the new bot's point of view: every player already
+		// on the board (it joins after them).
+		unsigned int friend_count = _client->get_board()
+			? _client->get_board()->get_num_players() : 0;
+		Glib::ustring type = BotUI::bot_type(prefs.bot_type,
+			prefs.bot_depth, friend_count);
+
+		BotBase *bot = BotBase::new_bot_of_type(type);
 		if (!bot)
 		{
-			prefs.bot_type = "LookAhead(3)";
+			prefs.bot_type = BotUI::NEUTRAL;
+			prefs.bot_level = 1;
+			prefs.bot_depth = 0;
 			prefs.write();
-			bot = BotBase::new_bot_of_type(prefs.bot_type);
+			bot = BotBase::new_bot_of_type(BotUI::bot_type(prefs.bot_type,
+				prefs.bot_depth, friend_count));
 		}
-		bot->set_move_delay(prefs.move_delay, prefs.done_delay);
+		if (!bot)
+		{
+			show_message("Cannot create a computer player of type " + type);
+			return;
+		}
+		bot->set_move_delay(prefs.move_delay, 2 * prefs.move_delay);
 		bot->set_think_delay(prefs.think_delay);
-		bot->set_smarts(prefs.smarts);
+		bot->set_smarts(BotUI::skill_smarts(prefs.bot_level));
+		// A bot without a name is never added: the server rejects the empty
+		// name and nothing answers its request for a new one.
+		bot->set_name(bot->get_default_name());
 
 		add_bot(bot);
 	}
@@ -844,15 +1204,46 @@ void main_win::on_cmd_game_resync()
 {
 	game_view->rebuild_board();
 
-	if (_client->get_my_player_number() != 0)
-		game_view->rotate_to_local_player(_client->get_my_player_number());
+	if (!_seats.empty())
+	{
+		// Resync arrives on every seat client.  The board keeps the first
+		// human seat at the bottom for the whole game; only the input client
+		// changes with the turn.
+		HostSeat *input_seat = active_seat();
+		GameClient *input = input_seat ? input_seat->client : _client;
+		if (_active_input_client != input)
+		{
+			_active_input_client = input;
+			game_view->set_client(input);
+			game_view->rebuild_board();
+		}
+
+		HostSeat *view_seat = NULL;
+		for (size_t i = 0; i < _seats.size(); i++)
+			if (_seats[i].kind == HostSeat::SEAT_HUMAN &&
+				_seats[i].player_number)
+			{
+				view_seat = &_seats[i];
+				break;
+			}
+		if (view_seat)
+			game_view->rotate_to_local_player(view_seat->player_number);
+
+		game_view->set_locked(input_seat == NULL);
+	}
+	else
+	{
+		if (_client->get_my_player_number() != 0)
+			game_view->rotate_to_local_player(_client->get_my_player_number());
+
+		game_view->set_locked(_current_player != _client->get_my_player_number());
+	}
 
 	game_view->queue_draw();
 
 	if (_current_player)
 	{
 		set_player_label(_current_player, true);
-		game_view->set_locked(_current_player != _client->get_my_player_number());
 	}
 }
 
@@ -891,7 +1282,13 @@ void main_win::on_cmd_game_turn(unsigned int posn,
 	move_counter->set_markup("<b>" + util::to_str(_move_count) + "</b>");
 
 	game_view->hide_move();
-	if (posn > 0 && posn == _client->get_my_player_number())
+	if (!_seats.empty())
+	{
+		// Hot-seat: the seat whose turn it is drives the board.
+		route_input();
+		set_urgency_hint(active_seat() != NULL);
+	}
+	else if (posn > 0 && posn == _client->get_my_player_number())
 	{
 		game_view->set_locked(false);
 		set_urgency_hint(true);

@@ -41,13 +41,48 @@ class main_win : public main_win_glade
 		main_win();
 		~main_win();
 
-		bool start_server(unsigned int port, unsigned int cheechweb_port, 
-			unsigned int num_players, bool long_jumps,
-			bool hop_others, bool stop_others);
+		bool start_server(unsigned int port, unsigned int cheechweb_port,
+			bool long_jumps, bool hop_others, bool stop_others,
+			std::vector<NewGameSeat> seats);
 		void start_client(Glib::ustring host, unsigned int port,
 			Glib::ustring name, unsigned int color, bool spectator);
 
 	private:
+		// One seat of a hosted hot-seat game: a local human (its own client),
+		// a computer (a bot), or a remote seat left open for a joiner.
+		struct HostSeat
+		{
+			enum { SEAT_HUMAN, SEAT_COMPUTER, SEAT_REMOTE };
+
+			int kind;
+			Glib::ustring name;
+			unsigned int color;
+			Glib::ustring family;
+			unsigned int level;
+			unsigned int depth;
+			bool focus_all;
+			std::vector<unsigned int> focus_ids;	// seat indices
+			GameClient	*client;
+			BotBase		*bot;
+			unsigned int player_number;
+		};
+
+		void connect_client(GameClient *client, bool primary);
+		void connect_client_dialogs(GameClient *client);
+		void start_hosted_seats(std::vector<NewGameSeat> seats,
+			unsigned int port);
+		void join_next_seat();
+		bool poll_seat_join();
+		void apply_seat_focus();
+		void hook_seat_client(GameClient *client, size_t index);
+		void on_seat_choose_new_name(Glib::ustring name,
+			GameClient *client, size_t index);
+		void on_seat_choose_new_color(Glib::ustring name, int color,
+			GameClient *client);
+		HostSeat *active_seat();
+		void route_input();
+		void clear_seats();
+
 		void on_realize();
 		void on_new_game_activate();
 		void on_restart_game_activate();
@@ -56,7 +91,6 @@ class main_win : public main_win_glade
 		void on_game_setup(unsigned int num_players, bool long_jumps,
 						   bool hop_others, bool stop_others);
 		void on_end_game_activate();
-		void on_join_game_activate();
 		void on_leave_game_activate();
         void on_change_name_activate();
 		void on_change_color_activate();
@@ -136,6 +170,17 @@ class main_win : public main_win_glade
 		color_win		_color_win;
 
 		std::vector<BotBase*>	_bots;
+
+		std::vector<HostSeat>	_seats;
+		size_t					_next_seat;
+		unsigned int			_seat_join_ticks;
+		unsigned int			_hosted_port;
+		GameClient				*_active_input_client;
+		// Set while on_leave_game_activate tears a game down: disconnecting
+		// seat clients re-emits evt_disconnected into the same handler, and a
+		// second entry would finish the teardown and leave the outer run
+		// using freed state (the quit-midgame crash).
+		bool					_leaving_game;
 };
 
 #endif

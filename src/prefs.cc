@@ -24,6 +24,7 @@
 #endif
 
 #include "prefs.hh"
+#include "bot_catalog.hh"
 #include "utility.hh"
 
 
@@ -50,9 +51,10 @@ void Prefs::set_defaults()
 	join_port = 3838;
 	spectator = false;
 
-	bot_type = "LookAhead(3)";
+	bot_type = "Neutral";
+	bot_level = 1;
+	bot_depth = 0;
 	move_delay = 400;
-	done_delay = 600;
 	think_delay = 0;
 	smarts = 100;
 }
@@ -101,6 +103,9 @@ void Prefs::read(void)
 	}
 
 	join_hostnames.clear();
+	seats.clear();
+
+	bool have_level = false;
 
 	Glib::ustring line, key, value;
 
@@ -145,17 +150,39 @@ void Prefs::read(void)
 
 		else if (key == "join_hostname")
 			join_hostnames.push_back(value);
+		else if (key == "seat")
+			seats.push_back(value);
 		else if (key == "join_port")
 			join_port = util::from_str<unsigned int>(value);
 		else if (key == "spectator")
 			spectator = (value == "yes") ? true : false;
 
 		else if (key == "bot_type")
-			bot_type = value;
+		{
+			// Older files stored a full type like "LookAhead(3)".  Split it
+			// into the family label and an explicit depth; a newer bot_depth
+			// line (read later) overrides the depth.
+			if (value.find("(") != Glib::ustring::npos)
+			{
+				bot_type = BotUI::family_label(value);
+				Glib::ustring::size_type open = value.find("(");
+				Glib::ustring::size_type close = value.find(")", open);
+				if (close != Glib::ustring::npos)
+					bot_depth = util::from_str<unsigned int>(
+						value.substr(open + 1, close - open - 1));
+			}
+			else
+				bot_type = value;
+		}
+		else if (key == "bot_level")
+		{
+			bot_level = util::from_str<unsigned int>(value);
+			have_level = true;
+		}
+		else if (key == "bot_depth")
+			bot_depth = util::from_str<unsigned int>(value);
 		else if (key == "move_delay")
 			move_delay = util::from_str<unsigned int>(value);
-		else if (key == "done_delay")
-			done_delay = util::from_str<unsigned int>(value);
 		else if (key == "think_delay")
 			think_delay = util::from_str<unsigned int>(value);
 		else if (key == "smarts")
@@ -163,6 +190,20 @@ void Prefs::read(void)
 	}
 
 	pfile->close();
+
+	// Files written before skill levels existed stored a raw smarts
+	// percentage; map it back onto the nearest level.
+	if (!have_level)
+	{
+		if (smarts >= 98)
+			bot_level = 1;
+		else if (smarts >= 85)
+			bot_level = 2;
+		else if (smarts >= 75)
+			bot_level = 3;
+		else
+			bot_level = 4;
+	}
 }
 
 
@@ -211,9 +252,14 @@ void Prefs::write(void)
 	pfile->write("spectator ");
 	pfile->write((spectator ? "yes" : "no") + new_line);
 
+	for (std::vector<Glib::ustring>::iterator i = seats.begin();
+		 i != seats.end(); i++)
+			pfile->write("seat " + *i + new_line);
+
 	pfile->write("bot_type " + bot_type + new_line);
+	pfile->write("bot_level " + util::to_str(bot_level) + new_line);
+	pfile->write("bot_depth " + util::to_str(bot_depth) + new_line);
 	pfile->write("move_delay " + util::to_str(move_delay) + new_line);
-	pfile->write("done_delay " + util::to_str(done_delay) + new_line);
 	pfile->write("think_delay " + util::to_str(think_delay) + new_line);
 	pfile->write("smarts " + util::to_str(smarts) + new_line);
 

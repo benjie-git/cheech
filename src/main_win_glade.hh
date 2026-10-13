@@ -62,7 +62,6 @@ class main_win_glade : public Gtk::Window
 protected:
         class Gtk::MenuItem * new_game;
         class Gtk::MenuItem * end_game;
-        class Gtk::MenuItem * join_game;
         class Gtk::MenuItem * leave_game;
         class Gtk::MenuItem * game_settings;
         class Gtk::MenuItem * rotate;
@@ -105,7 +104,6 @@ protected:
 private:
         virtual void on_new_game_activate() = 0;
         virtual void on_end_game_activate() = 0;
-        virtual void on_join_game_activate() = 0;
         virtual void on_leave_game_activate() = 0;
         virtual void on_game_settings_activate() = 0;
         virtual void on_rotate_activate() = 0;

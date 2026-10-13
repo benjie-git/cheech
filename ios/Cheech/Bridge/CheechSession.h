@@ -202,6 +202,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // How many computer players have been added in-game via
 // -addComputerPlayerOfType:name:color: on this device.
 @property (nonatomic, readonly) NSInteger extraComputerPlayerCount;
+// How many computer players the game has in total: the seats configured at
+// game start plus the ones added in-game.
+@property (nonatomic, readonly) NSInteger computerPlayerCount;
 - (NSInteger)colorForPlayer:(NSInteger)playerNumber;
 - (NSString *)nameForPlayer:(NSInteger)playerNumber;
 - (BOOL)finishedForPlayer:(NSInteger)playerNumber;

@@ -184,10 +184,33 @@ int main(int argc, char **argv)
 
 	if (host)
 	{
-		main_win->start_server(port, cheechweb_port, num_players, long_jumps,
-							   hop_others, stop_others);
-		main_win->start_client("localhost", (unsigned int)port, name,
-							   (unsigned int)color, spectator);
+		// Command-line host mode: the local player plus open seats, matching
+		// the old num_players server argument.  As a spectator the seats are
+		// all open and the local client joins separately, like before.
+		std::vector<NewGameSeat> seats;
+		NewGameSeat seat;
+		seat.kind = (!spectator) ? 0 : 2;	// human / remote
+		seat.name = name;
+		seat.color = color;
+		seat.family = BotUI::NEUTRAL;
+		seat.level = 1;
+		seat.depth = 0;
+		seat.focus_all = true;
+		seat.id = 0;
+		if (!spectator)
+			seats.push_back(seat);
+		for (int i = seats.size(); i < num_players; i++)
+		{
+			seat.kind = 2;	// remote
+			seat.name = "";
+			seat.id = i;
+			seats.push_back(seat);
+		}
+		main_win->start_server(port, cheechweb_port, long_jumps,
+							   hop_others, stop_others, seats);
+		if (spectator)
+			main_win->start_client("localhost", (unsigned int)port, name,
+								   (unsigned int)color, spectator);
 	}
 	else if (host_name != "")
 	{

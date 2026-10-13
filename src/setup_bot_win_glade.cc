@@ -62,26 +62,18 @@ setup_bot_win_glade::setup_bot_win_glade(
    gmm_data = new GlademmData(get_accel_group());
 
    Gtk::Label *label59 = Gtk::manage(new class Gtk::Label(_("Type:")));
-   Gtk::Label *label54 = Gtk::manage(new class Gtk::Label(_("Name:")));
-   name_entry = Gtk::manage(new class Gtk::Entry());
    type_box = new class GtkComboBoxText();
 
-   Gtk::Table *table8 = Gtk::manage(new class Gtk::Table(2, 2, false));
-   Gtk::Label *label61 = Gtk::manage(new class Gtk::Label(_("Move Done Delay:")));
-   Gtk::Label *label62 = Gtk::manage(new class Gtk::Label(_("Move Step Delay:")));
-   Gtk::Label *label63 = Gtk::manage(new class Gtk::Label(_("Thinking Delay:")));
+   Gtk::Table *table8 = Gtk::manage(new class Gtk::Table(1, 2, false));
+   Gtk::Label *label62 = Gtk::manage(new class Gtk::Label(_("Move Delay:")));
+   Gtk::Label *label63 = Gtk::manage(new class Gtk::Label(_("Depth:")));
    Gtk::Label *label64 = Gtk::manage(new class Gtk::Label(_("Smarts:")));
-   Glib::RefPtr<Gtk::Adjustment> done_scale_adj = Gtk::Adjustment::create(0.600000023842, 0, 2, 0.10000000149, 0.5, 0);
-   done_scale = Gtk::manage(new class Gtk::HScale(done_scale_adj));
 
    Glib::RefPtr<Gtk::Adjustment> move_scale_adj = Gtk::Adjustment::create(0.40000000596, 0, 2, 0.10000000149, 0.5, 0);
    move_scale = Gtk::manage(new class Gtk::HScale(move_scale_adj));
 
-   Glib::RefPtr<Gtk::Adjustment> think_scale_adj = Gtk::Adjustment::create(0, 0, 2, 0.10000000149, 0.5, 0);
-   think_scale = Gtk::manage(new class Gtk::HScale(think_scale_adj));
-
-   Glib::RefPtr<Gtk::Adjustment> smarts_scale_adj = Gtk::Adjustment::create(1.0, 0.5, 1.0, 0.1, 0.5, 0);
-   smarts_scale = Gtk::manage(new class Gtk::HScale(smarts_scale_adj));
+   depth_box = new class GtkComboBoxText();
+   smarts_box = new class GtkComboBoxText();
 
    Gtk::Table *table9 = Gtk::manage(new class Gtk::Table(2, 2, false));
    Gtk::Button *defaults = Gtk::manage(new class Gtk::Button(_("Reset to Defaults")));
@@ -120,32 +112,11 @@ setup_bot_win_glade::setup_bot_win_glade(
    label59->set_line_wrap(false);
    label59->set_use_markup(false);
    label59->set_selectable(false);
-   label54->set_alignment(0.5,0.5);
-   label54->set_padding(0,0);
-   label54->set_justify(Gtk::JUSTIFY_RIGHT);
-   label54->set_line_wrap(false);
-   label54->set_use_markup(false);
-   label54->set_selectable(false);
-   name_entry->set_can_focus(true);
-   name_entry->set_visibility(true);
-   name_entry->set_editable(true);
-   name_entry->set_max_length(0);
-   name_entry->set_text(_(""));
-   name_entry->set_has_frame(true);
-   name_entry->set_activates_default(false);
    table8->set_border_width(6);
    table8->set_row_spacings(3);
    table8->set_col_spacings(3);
    table8->attach(*label59, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table8->attach(*label54, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table8->attach(*name_entry, 1, 2, 1, 2, Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
    table8->attach(*type_box, 1, 2, 0, 1, Gtk::FILL, Gtk::FILL, 0, 0);
-   label61->set_alignment(0.5,0.5);
-   label61->set_padding(0,0);
-   label61->set_justify(Gtk::JUSTIFY_RIGHT);
-   label61->set_line_wrap(false);
-   label61->set_use_markup(false);
-   label61->set_selectable(false);
    label62->set_alignment(0.5,0.5);
    label62->set_padding(0,0);
    label62->set_justify(Gtk::JUSTIFY_RIGHT);
@@ -164,36 +135,19 @@ setup_bot_win_glade::setup_bot_win_glade(
    label64->set_line_wrap(false);
    label64->set_use_markup(false);
    label64->set_selectable(false);
-   done_scale->set_can_focus(true);
-   done_scale->set_inverted(false);
-   done_scale->set_digits(3);
-   done_scale->set_draw_value(true);
-   done_scale->set_value_pos(Gtk::POS_TOP);
    move_scale->set_can_focus(true);
    move_scale->set_inverted(false);
    move_scale->set_digits(3);
    move_scale->set_draw_value(true);
    move_scale->set_value_pos(Gtk::POS_TOP);
-   think_scale->set_can_focus(true);
-   think_scale->set_inverted(false);
-   think_scale->set_digits(3);
-   think_scale->set_draw_value(true);
-   think_scale->set_value_pos(Gtk::POS_TOP);
-   smarts_scale->set_can_focus(true);
-   smarts_scale->set_inverted(false);
-   smarts_scale->set_digits(2);
-   smarts_scale->set_draw_value(true);
-   smarts_scale->set_value_pos(Gtk::POS_TOP);
    table9->set_row_spacings(0);
    table9->set_col_spacings(0);
-   table9->attach(*label61, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table9->attach(*label62, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table9->attach(*label63, 0, 1, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table9->attach(*label64, 0, 1, 3, 4, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-   table9->attach(*done_scale, 1, 2, 0, 1, Gtk::EXPAND|Gtk::FILL, Gtk::FILL, 0, 0);
-   table9->attach(*move_scale, 1, 2, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
-   table9->attach(*think_scale, 1, 2, 2, 3, Gtk::FILL, Gtk::FILL, 0, 0);
-   table9->attach(*smarts_scale, 1, 2, 3, 4, Gtk::FILL, Gtk::FILL, 0, 0);
+   table9->attach(*label63, 0, 1, 0, 1, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+   table9->attach(*label64, 0, 1, 1, 2, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+   table9->attach(*label62, 0, 1, 2, 3, Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+   table9->attach(*depth_box, 1, 2, 0, 1, Gtk::FILL, Gtk::FILL, 0, 0);
+   table9->attach(*smarts_box, 1, 2, 1, 2, Gtk::FILL, Gtk::FILL, 0, 0);
+   table9->attach(*move_scale, 1, 2, 2, 3, Gtk::EXPAND | Gtk::FILL, Gtk::FILL, 0, 0);
    defaults->set_can_focus(true);
    defaults->set_can_default(true);
    defaults->set_relief(Gtk::RELIEF_NORMAL);
@@ -287,18 +241,14 @@ setup_bot_win_glade::setup_bot_win_glade(
    setup_bot_win->property_destroy_with_parent().set_value(false);
    setup_bot_win->add(*vbox14);
    label59->show();
-   label54->show();
-   name_entry->show();
    type_box->show();
    table8->show();
-   label61->show();
    label62->show();
    label63->show();
    label64->show();
-   done_scale->show();
    move_scale->show();
-   think_scale->show();
-   smarts_scale->show();
+   depth_box->show();
+   smarts_box->show();
    table9->show();
    defaults->show();
    hbuttonbox11->show();
@@ -336,5 +286,7 @@ setup_bot_win_glade::setup_bot_win_glade(
 
 setup_bot_win_glade::~setup_bot_win_glade()
 {  delete type_box;
+   delete depth_box;
+   delete smarts_box;
    delete gmm_data;
 }
