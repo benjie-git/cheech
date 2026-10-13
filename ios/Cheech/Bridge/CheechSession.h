@@ -111,6 +111,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 - (void)changeName:(NSString *)name;
 - (void)changeColor:(NSInteger)color;
 
+// Send a chat line to the other players.
+- (void)sendChat:(NSString *)text;
+
 // Opponent move animation timing, in milliseconds per hop (0...500).  The
 // resting time at the destination is always twice this value.
 - (void)setAnimationStepMs:(NSInteger)stepMs;

@@ -242,12 +242,14 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	@Published var showInvite = false
 	@Published var updateToken = 0
 	@Published var messages: [String] = []
+	// True while chat lines from other players arrived but the chat panel
+	// has not been opened yet (drives the red dot on the chat button).
+	@Published var hasUnreadChat = false
+	// The chat panel on the game screen (slides down from the top).
+	@Published var showChat = false
 	@Published var showProfile = false
 	@Published var spectator = false
 	@Published var fullScreen = false
-	// Whether the server log strip is revealed on the game screen.  Hidden for
-	// fully local games and behind an (i) button otherwise.
-	@Published var showServerLog = false
 	// In-game "Setup Game" sheet (change rules/player count, add bots).
 	@Published var showGameSetup = false
 	// A destructive action awaiting confirmation (only when a game is
@@ -402,6 +404,12 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 
 	func cheechSession(_ session: CheechSession, didReceiveMessage message: String) {
 		messages.append(message)
+		// The server formats player chat as "<<Name>> message"; server
+		// notices share the same channel without the brackets and do not
+		// light the badge.
+		if message.hasPrefix("<<") && !showChat {
+			hasUnreadChat = true
+		}
 	}
 
 	// Shared prologue for starting, joining, or resuming a game (and for
@@ -414,7 +422,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		lastTapHole = -1
 		lastTapWasTerminal = false
 		messages.removeAll()
-		showServerLog = false
+		showChat = false
+		hasUnreadChat = false
 	}
 
 	func joinGame(spectator: Bool) {
@@ -605,12 +614,6 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		return !session.isSpectator
 			&& session.myPlayerNumber != 0
 			&& session.currentPlayer == session.myPlayerNumber
-	}
-
-	// Whether the server log can be shown at all.  A fully local game (hosted
-	// with no remote seats) has no server log.
-	var canShowServerLog: Bool {
-		!session.isHost || session.hasRemoteSeat
 	}
 
 	// True once every player has got all their pegs home.  The server reports

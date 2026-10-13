@@ -645,6 +645,12 @@ struct GameScreenView: View {
 			}
 		}
 		.background(keyboardShortcuts)
+		.overlay(alignment: .top) {
+			if model.showChat {
+				ChatPanel()
+			}
+		}
+		.animation(.easeInOut(duration: 0.25), value: model.showChat)
 		.confirmationDialog(
 			model.confirmAction.map(confirmTitle) ?? "Are you sure?",
 			isPresented: $model.showConfirm,
@@ -718,14 +724,6 @@ struct GameScreenView: View {
 		}
 	}
 
-	// Label for how this device is taking part, shown bottom-left, with the
-	// server-log toggle beside it.
-	private var roleLabel: String {
-		if session.isHost { return "Hosting" }
-		if session.isSpectator { return "Spectator" }
-		return "Joined"
-	}
-
 	private var normalBody: some View {
 		VStack(spacing: 8) {
 			HStack {
@@ -744,7 +742,24 @@ struct GameScreenView: View {
 					.foregroundStyle(.secondary)
 					.padding(.trailing, 8)
 				}
-				if session.connected {
+				// Chat only matters when someone remote can read it.
+				if session.connected && !(session.isHost && !session.hasRemoteSeat) {
+					Button {
+						model.hasUnreadChat = false
+						model.showChat = true
+					} label: {
+						Image(systemName: "bubble.left")
+							.overlay(alignment: .topTrailing) {
+								if model.hasUnreadChat {
+									Circle()
+										.fill(.red)
+										.frame(width: 9, height: 9)
+										.offset(x: 4, y: -3)
+								}
+							}
+					}
+					.accessibilityLabel("Chat")
+					.padding(.trailing, 8)
 					Menu {
 						if session.isHost && session.hasLocalHumanSeat {
 							Button("Undo Move") { session.undoMove() }
@@ -788,28 +803,8 @@ struct GameScreenView: View {
 				bottomTrailingOverlay: AnyView(moveControls)
 			)
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
-
-			if model.showServerLog {
-				messageStrip
-			}
 		}
 		.padding(.vertical, 8)
-		.overlay(alignment: .bottomLeading) {
-			if model.canShowServerLog {
-				HStack(spacing: 6) {
-					Text(roleLabel)
-						.font(.subheadline)
-						.foregroundStyle(.secondary)
-					Button {
-						model.showServerLog.toggle()
-					} label: {
-						Image(systemName: model.showServerLog ? "xmark.circle" : "info.circle")
-					}
-					.accessibilityLabel(model.showServerLog ? "Hide Server Log" : "Show Server Log")
-				}
-				.padding(.leading)
-			}
-		}
 	}
 
 	private var fullScreenBody: some View {
@@ -1008,20 +1003,6 @@ struct GameScreenView: View {
 			}
 		}
 		.frame(height: 24)
-	}
-
-	private var messageStrip: some View {
-		let recent = Array(model.messages.suffix(3))
-		return VStack(alignment: .leading, spacing: 2) {
-			ForEach(Array(recent.enumerated()), id: \.offset) { _, message in
-				Text(message)
-					.font(.caption)
-					.foregroundStyle(.secondary)
-					.frame(maxWidth: .infinity, alignment: .leading)
-			}
-		}
-		.padding(.horizontal)
-		.frame(height: 52, alignment: .topLeading)
 	}
 
 	private var keyboardShortcuts: some View {
@@ -1270,6 +1251,145 @@ struct GameSetupSheet: View {
 				draft.stopOthers = session.hopOthers ? session.stopOthers : model.stopOthers
 				draft.botType = model.lastBotType
 			}
+		}
+	}
+}
+
+// The chat panel on the game screen: a sheet that slides down from the top
+// (a plain .sheet would come up from the bottom), showing the chat lines
+// received so far and an entry line at the bottom.
+struct ChatPanel: View {
+	@EnvironmentObject var model: SessionModel
+	// Held as an ObservableObject because this toolchain cannot expand @State.
+	@StateObject private var draft = ChatPanelState()
+	@Environment(\.verticalSizeClass) private var verticalSizeClass
+
+	// The panel hangs from the top of the screen and is not pushed up by the
+	// keyboard, so in compact height (iPhone landscape) the message list must
+	// shrink enough to leave the entry line above the keyboard.
+	private var messageHeight: CGFloat {
+		verticalSizeClass == .compact ? 100 : 300
+	}
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 0) {
+			HStack {
+				Text("Chat")
+					.font(.headline)
+				Spacer()
+				Button {
+					model.showChat = false
+				} label: {
+					Image(systemName: "xmark.circle.fill")
+						.foregroundStyle(.secondary)
+				}
+				.accessibilityLabel("Close Chat")
+			}
+			.padding(.horizontal)
+			.padding(.vertical, 10)
+
+			Divider()
+
+			ScrollViewReader { proxy in
+				ScrollView {
+					VStack(alignment: .leading, spacing: 6) {
+						ForEach(Array(model.messages.enumerated()),
+								id: \.offset) { index, message in
+							Text(message)
+								.font(.subheadline)
+								.textSelection(.enabled)
+								.id(index)
+						}
+					}
+					.padding(.horizontal)
+					.padding(.vertical, 8)
+					.frame(maxWidth: .infinity, alignment: .leading)
+				}
+				.frame(height: messageHeight)
+				.onTapGesture {
+					// Let go of the entry field so the keyboard hides.
+					UIApplication.shared.sendAction(
+						#selector(UIResponder.resignFirstResponder),
+						to: nil, from: nil, for: nil)
+				}
+				.onChange(of: model.messages) { _, _ in
+					if let last = model.messages.indices.last {
+						proxy.scrollTo(last, anchor: .bottom)
+					}
+				}
+			}
+
+			Divider()
+
+			HStack(spacing: 8) {
+				ChatEntryField(send: send)
+					.frame(height: 28)
+				Button {
+					send(draft.text)
+				} label: {
+					Image(systemName: "arrow.up.circle.fill")
+						.font(.title3)
+				}
+				.disabled(draft.text.isEmpty)
+				.accessibilityLabel("Send Chat")
+			}
+			.padding(.horizontal)
+			.padding(.vertical, 6)
+		}
+		.background(.ultraThinMaterial)
+		.onAppear { model.hasUnreadChat = false }
+	}
+
+	private func send(_ text: String) {
+		let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+		guard !trimmed.isEmpty else { return }
+		model.session.sendChat(trimmed)
+		draft.text = ""
+	}
+}
+
+// The draft text of the chat entry line.
+final class ChatPanelState: ObservableObject {
+	@Published var text = ""
+}
+
+// A text field implemented with UITextField so it becomes first responder as
+// soon as the panel opens: this toolchain cannot expand @FocusState, and a
+// plain SwiftUI TextField has no other way to pop up the keyboard.
+struct ChatEntryField: UIViewRepresentable {
+	var send: (String) -> Void
+
+	func makeCoordinator() -> Coordinator {
+		Coordinator(send: send)
+	}
+
+	func makeUIView(context: Context) -> UITextField {
+		let field = UITextField()
+		field.placeholder = "Message"
+		field.returnKeyType = .send
+		field.autocorrectionType = .no
+		field.borderStyle = .roundedRect
+		field.delegate = context.coordinator
+		field.becomeFirstResponder()
+		return field
+	}
+
+	func updateUIView(_ field: UITextField, context: Context) {}
+
+	final class Coordinator: NSObject, UITextFieldDelegate {
+		let send: (String) -> Void
+
+		init(send: @escaping (String) -> Void) {
+			self.send = send
+		}
+
+		func textFieldShouldReturn(_ field: UITextField) -> Bool {
+			let text = (field.text ?? "").trimmingCharacters(
+				in: .whitespacesAndNewlines)
+			if text.isEmpty { return false }
+			send(text)
+			field.text = ""
+			return true
 		}
 	}
 }

@@ -1073,6 +1073,12 @@ LocalSave parseLocalSave(const std::string &text)
 	[self performAction:^(GameClient *c) { c->change_color((int)color); }];
 }
 
+- (void)sendChat:(NSString *)text
+{
+	NSString *value = [text copy];
+	[self performAction:^(GameClient *c) { c->chat([value UTF8String]); }];
+}
+
 - (void)setAnimationStepMs:(NSInteger)stepMs
 {
 	if (stepMs < 0) stepMs = 0;
