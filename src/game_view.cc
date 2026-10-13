@@ -444,13 +444,22 @@ void game_view::draw_move_arc(const Cairo::RefPtr<Cairo::Context>& cr,
 
 void game_view::rotate_to_local_player(unsigned int posn)
 {
+	// The caller normally guarantees a board, but a stray early call would
+	// previously have crashed here.
+	if (_board)
+		rotate_to_seat(_board->get_num_players(), posn);
+}
+
+
+void game_view::rotate_to_seat(unsigned int num_players, unsigned int posn)
+{
 	g_assert(posn >= 1 && posn <= 6);
 
 	double theta = 0;
 
 	for (int i = 1; i <= 6; i++)
 	{
-		if (GameBoard::START_MAP[_board->get_num_players()][i] == posn)
+		if (GameBoard::START_MAP[num_players][i] == posn)
 		{
 			theta = (1 - i) * PI / 3;
 			break;

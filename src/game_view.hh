@@ -45,6 +45,10 @@ class game_view : public Gtk::DrawingArea
 		void rebuild_board();
 		void set_locked(bool l);
 		void rotate_to_local_player(unsigned int posn);
+		// Rotates without needing a joined client's board: the caller
+		// supplies the player count (used when hosting, before any seat
+		// joins).
+		void rotate_to_seat(unsigned int num_players, unsigned int posn);
 		void show_move(MoveList *list);
 		void hide_move();
 

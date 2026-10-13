@@ -336,6 +336,22 @@ void main_win::start_hosted_seats(std::vector<NewGameSeat> seats,
 	clear_seats();
 	_hosted_port = port;
 
+	// Rotate to the first human seat's start position before anyone joins,
+	// so the board doesn't visibly reorient as seats appear.  Player numbers
+	// are assigned by join order and seats join in order, so the first
+	// human's number is one more than the computer seats ahead of it.
+	unsigned int computers = 0;
+	for (size_t i = 0; i < seats.size(); i++)
+	{
+		if (seats[i].kind == HostSeat::SEAT_HUMAN)
+		{
+			game_view->rotate_to_seat(seats.size(), 1 + computers);
+			break;
+		}
+		else if (seats[i].kind == HostSeat::SEAT_COMPUTER)
+			computers++;
+	}
+
 	// Map the dialog's seat ids to seat indices for focus lists.
 	std::map<unsigned int, unsigned int> index_of_id;
 	for (size_t i = 0; i < seats.size(); i++)
@@ -453,8 +469,15 @@ void main_win::join_next_seat()
 		seat.bot->set_name(seat.name);
 		seat.bot->set_color(seat.color);
 		seat.bot->set_smarts(BotUI::skill_smarts(seat.level));
-		seat.bot->set_move_delay(0, 0);
-		seat.bot->set_think_delay(0);
+		// Match the Add Computer Player dialog's saved default (or its
+		// built-in default when nothing has been saved yet).  Think delay
+		// stays at 0.
+		{
+			Prefs prefs;
+			prefs.read();
+			seat.bot->set_move_delay(prefs.move_delay,
+				2 * prefs.move_delay);
+		}
 		_bots.push_back(seat.bot);
 		seat.bot->evt_disconnected.connect(sigc::bind(sigc::mem_fun(*this,
 			&main_win::bot_disconnected), seat.bot));
