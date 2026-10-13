@@ -44,11 +44,52 @@ struct RulesRows: View {
 
 	var body: some View {
 		Stepper("Players: \(numPlayers)", value: $numPlayers, in: 2...6)
-		Toggle("Allow long jumps", isOn: $longJumps)
-		Toggle("Can Enter Opponents' Goal", isOn: $hopOthers)
-		if hopOthers {
-			Toggle("Can Stop in Opponents' Goal", isOn: $stopOthers)
+		HStack {
+			Text("Allow long jumps")
+			RuleInfoButton(text: "Allow longer, symmetrical jumps from the peg's start, over N empty holes, over exactly one peg, over N more empty holes, and into the next hole.  e.g. from hole A, over peg B, to hole C in the following examples: ABC (normal jump), A•B•C, A••B••C, A•••B•••C, etc.")
+			Spacer()
+			Toggle("", isOn: $longJumps).labelsHidden()
 		}
+		HStack {
+			Text("Can Enter Opponents' Goal")
+			RuleInfoButton(text: "Pegs may pass through other players' goal triangles as part of a multi-hop jump.")
+			Spacer()
+			Toggle("", isOn: $hopOthers).labelsHidden()
+		}
+		if hopOthers {
+			HStack {
+				Text("Can Stop in Opponents' Goal")
+				RuleInfoButton(text: "Pegs may end a move inside another player's goal triangle instead of just passing through.")
+				Spacer()
+				Toggle("", isOn: $stopOthers).labelsHidden()
+			}
+		}
+	}
+}
+
+// A small info button that pops a brief rule description.
+struct RuleInfoButton: View {
+	let text: String
+	// (Held as an ObservableObject because this toolchain cannot expand @State.)
+	@StateObject private var popover = PopoverState()
+
+	var body: some View {
+		Button {
+			popover.isVisible.toggle()
+		} label: {
+			Image(systemName: "info.circle")
+				.foregroundStyle(.secondary)
+		}
+		.buttonStyle(.plain)
+		.popover(isPresented: $popover.isVisible) {
+			Text(text)
+				.font(.callout)
+				.multilineTextAlignment(.leading)
+				.padding()
+				.frame(width: 240, alignment: .leading)
+				.presentationCompactAdaptation(.popover)
+		}
+		.accessibilityLabel("About this rule")
 	}
 }
 
