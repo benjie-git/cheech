@@ -22,7 +22,9 @@
 
 #include <vector>
 #include <map>
+#include <gtkmm/separator.h>
 #include "bot_catalog.hh"
+#include "color_picker.hh"
 #include "prefs.hh"
 
 
@@ -63,11 +65,14 @@ class new_game_win : public new_game_win_glade
 		{
 			unsigned int id;
 			unsigned int color;
+			// A thin line between this row and the one above (NULL for the
+			// first seat).  Plain-new and deleted with the row.
+			Gtk::Separator *sep;
 			Gtk::VBox *box;
 			Gtk::ComboBoxText *kind_box;
 			Gtk::ComboBoxText *family_box;
 			Gtk::Entry *name_entry;
-			Gtk::ComboBoxText *color_box;
+			ColorPicker *color_picker;
 			Gtk::Expander *details;
 			Gtk::ComboBoxText *depth_box;
 			Gtk::ComboBoxText *smarts_box;
@@ -93,7 +98,7 @@ class new_game_win : public new_game_win_glade
 		void on_seat_kind_changed(SeatRow *row);
 		void on_seat_family_changed(SeatRow *row);
 		void on_seat_name_changed(SeatRow *row);
-		void on_seat_color_changed(SeatRow *row);
+		void on_seat_color_changed(unsigned int color, SeatRow *row);
 		void on_seat_depth_changed(SeatRow *row);
 
 		void add_seat(const NewGameSeat &seat);

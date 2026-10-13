@@ -138,7 +138,7 @@ new_game_win_glade::new_game_win_glade()
 	name_entry = Gtk::manage(new class Gtk::Entry());
 	Gtk::Label *color_label =
 		Gtk::manage(new class Gtk::Label(_("Color:")));
-	color_box = Gtk::manage(new class Gtk::ComboBoxText());
+	color_box = Gtk::manage(new class ColorPicker());
 	spectator = Gtk::manage(new class Gtk::CheckButton(
 		_("Join As A Spectator (Not Playing)")));
 	Gtk::Table *profile_table =

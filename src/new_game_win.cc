@@ -27,12 +27,6 @@
 
 namespace
 {
-	// The colors offered per seat, in GameHole color order 1..8.
-	const char *color_names[] = {
-		"Red", "Orange", "Yellow", "Green",
-		"Blue", "Purple", "Black", "White"
-	};
-
 	// Split on unescaped '|' characters ('\\' escapes the next character).
 	std::vector<Glib::ustring> split_fields(const Glib::ustring &line)
 	{
@@ -111,9 +105,6 @@ new_game_win::new_game_win() : new_game_win_glade()
 	_next_seat_id = 1;
 	_loading_seat = false;
 
-	for (unsigned int i = 0; i < 8; i++)
-		color_box->append(color_names[i]);
-
 	name_entry->set_text(prefs.name);
 	set_selected_color(prefs.color);
 
@@ -175,6 +166,15 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	row->color = seat.color;
 	row->focus_pending = !seat.focus_all;
 	row->focus_pending_ids = seat.focus_ids;
+	row->sep = NULL;
+	if (!_rows.empty())
+	{
+		// A thin line between the seats.
+		row->sep = new class Gtk::Separator(Gtk::ORIENTATION_HORIZONTAL);
+		seats_box->pack_start(*row->sep, false, false, 2);
+		row->sep->show();
+	}
+
 	row->box = new Gtk::VBox(false, 3);
 	row->box->set_border_width(3);
 
@@ -193,17 +193,14 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	row->name_entry->set_text(seat.name);
 	row->name_entry->set_max_width_chars(12);
 
-	row->color_box = Gtk::manage(new class Gtk::ComboBoxText());
-	for (unsigned int i = 0; i < 8; i++)
-		row->color_box->append(color_names[i]);
-	row->color_box->set_active(row->color >= 1 && row->color <= 8 ?
-		row->color - 1 : 0);
+	row->color_picker = Gtk::manage(new class ColorPicker());
+	row->color_picker->set_selected(row->color >= 1 && row->color <= 8 ?
+		row->color : 1);
 
 	Gtk::HBox *top_box = Gtk::manage(new class Gtk::HBox(false, 6));
 	top_box->pack_start(*row->kind_box, Gtk::PACK_SHRINK);
 	top_box->pack_start(*row->family_box, Gtk::PACK_SHRINK);
 	top_box->pack_start(*row->name_entry, Gtk::PACK_SHRINK);
-	top_box->pack_start(*row->color_box, Gtk::PACK_SHRINK);
 
 	Gtk::HBox *depth_box = Gtk::manage(new class Gtk::HBox(false, 6));
 	depth_box->pack_start(*Gtk::manage(new class Gtk::Label(_("Depth:"))),
@@ -235,6 +232,7 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	row->details->add(*details_box);
 
 	row->box->pack_start(*top_box, Gtk::PACK_SHRINK);
+	row->box->pack_start(*row->color_picker, Gtk::PACK_SHRINK);
 	row->box->pack_start(*row->details, Gtk::PACK_SHRINK);
 
 	// Per-row state so changed handlers know which row fired.
@@ -247,7 +245,7 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	row->name_entry->signal_changed().connect(
 		sigc::bind(sigc::mem_fun(*this,
 			&new_game_win::on_seat_name_changed), row));
-	row->color_box->signal_changed().connect(
+	row->color_picker->signal_changed.connect(
 		sigc::bind(sigc::mem_fun(*this,
 			&new_game_win::on_seat_color_changed), row));
 	row->depth_box->signal_changed().connect(
@@ -285,6 +283,11 @@ void new_game_win::remove_seat(size_t index)
 		return;
 
 	SeatRow *row = _rows[index];
+	if (row->sep)
+	{
+		seats_box->remove(*row->sep);
+		delete row->sep;
+	}
 	seats_box->remove(*row->box);
 	delete row->box;
 	_rows.erase(_rows.begin() + index);
@@ -415,24 +418,21 @@ void new_game_win::on_seat_depth_changed(SeatRow *row)
 }
 
 
-void new_game_win::on_seat_color_changed(SeatRow *row)
+void new_game_win::on_seat_color_changed(unsigned int color, SeatRow *row)
 {
-	int index = row->color_box->get_active_row_number();
-	if (index < 0)
-		return;
-	unsigned int color = index + 1;
-	if (color == row->color)
+	if (color < 1 || color > 8 || color == row->color)
 		return;
 
 	unsigned int previous = row->color;
 
 	// Another seat holding the new color takes ours instead (matching the
-	// iOS app's swap-on-duplicate).
+	// iOS app's swap-on-duplicate).  set_selected() does not re-emit, so the
+	// swap settles here.
 	for (size_t i = 0; i < _rows.size(); i++)
 		if (_rows[i] != row && _rows[i]->color == color)
 		{
 			_rows[i]->color = previous;
-			_rows[i]->color_box->set_active(previous - 1);
+			_rows[i]->color_picker->set_selected(previous);
 		}
 
 	row->color = color;
@@ -451,6 +451,8 @@ void new_game_win::sync_seat_row(SeatRow &row)
 	// Only human seats are named here; computers get cute defaults from the
 	// engine and remotes show up as open seats on other devices.
 	row.name_entry->set_visible(kind == 0);
+	// Remote seats are unnamed placeholders, so they get no color either.
+	row.color_picker->set_visible(kind != 2);
 }
 
 
@@ -705,14 +707,14 @@ void new_game_win::on_join_button_clicked()
 
 unsigned int new_game_win::get_selected_color() const
 {
-	int index = color_box->get_active_row_number();
-	return (index >= 0 && index < 8) ? index + 1 : 1;
+	unsigned int color = color_box->get_selected();
+	return (color >= 1 && color <= 8) ? color : 1;
 }
 
 
 void new_game_win::set_selected_color(unsigned int color)
 {
-	color_box->set_active(color >= 1 && color <= 8 ? color - 1 : 0);
+	color_box->set_selected(color >= 1 && color <= 8 ? color : 1);
 }
 
 
@@ -782,7 +784,10 @@ void new_game_win::load_seats()
 				seat.focus_ids = split_indices(fields[6]);
 		}
 		else if (fields[0] == "R")
+		{
 			seat.kind = 2;
+			seat.color = 0;
+		}
 		else
 			continue;
 

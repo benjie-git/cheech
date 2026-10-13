@@ -33,6 +33,7 @@
 #include <gtkmm/expander.h>
 #include <gtkmm/scrolledwindow.h>
 #include "GtkComboBoxEntryText.hh"
+#include "color_picker.hh"
 
 
 class new_game_win_glade : public Gtk::Window
@@ -54,7 +55,7 @@ class new_game_win_glade : public Gtk::Window
 
 		// The Join page.
 		class Gtk::Entry *name_entry;
-		class Gtk::ComboBoxText *color_box;
+		class ColorPicker *color_box;
 		class Gtk::CheckButton *spectator;
 		class GtkComboBoxEntryText *join_host_entry;
 		class Gtk::Entry *join_port_entry;
