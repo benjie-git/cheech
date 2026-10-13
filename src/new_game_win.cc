@@ -376,6 +376,23 @@ void new_game_win::on_seat_kind_changed(SeatRow *row)
 
 	row->kind_box->set_data("prev-kind", GINT_TO_POINTER(kind));
 
+	// A seat that used to be remote has no color; players need a real one.
+	if (kind != 2 && row->color == 0)
+	{
+		unsigned int color = first_unused_color();
+		row->color = color;
+		row->color_picker->set_selected(color);
+	}
+
+	// A seat that used to be remote has no name either; computers get their
+	// cute default.
+	if (kind == 1 && row->name_entry->get_text().empty())
+	{
+		Glib::ustring name = default_name_for(row);
+		row->name_entry->set_text(name);
+		_default_names[row->id] = name;
+	}
+
 	sync_seat_row(*row);
 	refresh_focus_rows();
 }
@@ -552,13 +569,13 @@ unsigned int new_game_win::first_unused_color() const
 }
 
 
-std::vector<NewGameSeat> new_game_win::collect_seats() const
+std::vector<NewGameSeat> new_game_win::collect_seats()
 {
 	std::vector<NewGameSeat> seats;
 
 	for (size_t i = 0; i < _rows.size(); i++)
 	{
-		const SeatRow *row = _rows[i];
+		SeatRow *row = _rows[i];
 		NewGameSeat seat;
 
 		seat.id = row->id;
@@ -570,6 +587,41 @@ std::vector<NewGameSeat> new_game_win::collect_seats() const
 		seat.depth = BotUI::depth_values()[
 			std::max(row->depth_box->get_active_row_number(), 0)];
 		seat.focus_all = true;
+
+		// A seat that used to be remote carries no color; players need a
+		// real one or the server refuses the join.  Fix the row too so the
+		// picker shows what will be used.
+		if (seat.kind != 2 && (seat.color < 1 || seat.color > 8))
+		{
+			for (unsigned int c = 1; c <= 8; c++)
+			{
+				bool used = false;
+				for (size_t j = 0; j < _rows.size(); j++)
+					if (_rows[j] != row && _rows[j]->color == c)
+						used = true;
+				for (size_t j = 0; j < seats.size(); j++)
+					if (seats[j].kind != 2 && seats[j].color == c)
+						used = true;
+				if (!used)
+				{
+					seat.color = c;
+					row->color = c;
+					row->color_picker->set_selected(c);
+					break;
+				}
+			}
+			if (seat.color < 1 || seat.color > 8)
+				seat.color = 1;
+		}
+
+		// Hidden entries can hold empty names; players need real ones.
+		if (seat.kind == 0 && seat.name.empty())
+			seat.name = _player_name;
+		else if (seat.kind == 1 && seat.name.empty())
+		{
+			seat.name = default_name_for(row);
+			_default_names[row->id] = seat.name;
+		}
 
 		// A computer seat with a partially- or fully-unchecked focus row
 		// focuses exactly the checked seats.  focus_check_ids holds the seat

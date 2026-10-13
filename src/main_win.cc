@@ -380,6 +380,24 @@ void main_win::start_hosted_seats(std::vector<NewGameSeat> seats,
 		_seats.push_back(seat);
 	}
 
+	// A seat that used to be remote carries no color; players need a real
+	// one or the server refuses the join (a bot has no one to answer its
+	// request for a new color and would never appear).
+	for (size_t i = 0; i < _seats.size(); i++)
+		if (_seats[i].kind != HostSeat::SEAT_REMOTE && !_seats[i].color)
+			for (unsigned int c = 1; c <= 8; c++)
+			{
+				bool used = false;
+				for (size_t j = 0; j < _seats.size(); j++)
+					if (_seats[j].color == c)
+						used = true;
+				if (!used)
+				{
+					_seats[i].color = c;
+					break;
+				}
+			}
+
 	// The first human seat's client drives menus, chat and dialogs; with no
 	// human seats at all, a spectator client mirrors the board instead.
 	for (size_t i = 0; i < _seats.size(); i++)
@@ -414,8 +432,10 @@ void main_win::start_hosted_seats(std::vector<NewGameSeat> seats,
 	_next_seat = 0;
 	_seat_join_ticks = 0;
 	join_next_seat();
+	// Poll fast like the iOS host (10ms): seats join one at a time, waiting
+	// for each player number, but a 10ms tick makes that imperceptible.
 	Glib::signal_timeout().connect(sigc::mem_fun(*this,
-		&main_win::poll_seat_join), 250);
+		&main_win::poll_seat_join), 10);
 }
 
 
@@ -490,8 +510,8 @@ void main_win::join_next_seat()
 
 // Waits for the seat that is currently joining to receive its player number
 // (the server assigns numbers by connection-arrival order), then starts the
-// next seat.  Gives up on a seat after 5 seconds so a stalled join cannot
-// block the rest.
+// next seat.  Gives up on a seat after 5 seconds (500 ticks at 10ms) so a
+// stalled join cannot block the rest.
 bool main_win::poll_seat_join()
 {
 	if (_seats.empty())
@@ -517,7 +537,7 @@ bool main_win::poll_seat_join()
 		return _next_seat < _seats.size();
 	}
 
-	if (++_seat_join_ticks >= 20)
+	if (++_seat_join_ticks >= 500)
 	{
 		_seat_join_ticks = 0;
 		_next_seat++;

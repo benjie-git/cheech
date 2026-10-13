@@ -108,7 +108,7 @@ class new_game_win : public new_game_win_glade
 		void refresh_focus_rows();
 		Glib::ustring other_label(SeatRow *row);
 		Glib::ustring default_name_for(SeatRow *row);
-		std::vector<NewGameSeat> collect_seats() const;
+		std::vector<NewGameSeat> collect_seats();
 		unsigned int first_unused_color() const;
 
 		unsigned int get_selected_color() const;
