@@ -21,12 +21,6 @@ done
 : "${TEAM_ID:?--team-id is required}"
 : "${PASSWORD:?--password is required}"
 
-# gdk-pixbuf loaders are plain Mach-O modules under Resources; --deep skips
-# them, leaving Homebrew's ad-hoc signatures, which notarization rejects
-find Cheech.app/Contents/Resources/lib/gdk-pixbuf-2.0/loaders \
-  \( -name '*.so' -o -name '*.dylib' \) \
-  -exec codesign -f -s "$IDENTITY" -o runtime --timestamp {} +
-
 # Sign it
 codesign -v -f --deep -s "$IDENTITY" -o runtime --timestamp Cheech.app
 
