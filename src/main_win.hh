@@ -48,6 +48,9 @@ class main_win : public main_win_glade
 		bool start_server(unsigned int port, unsigned int cheechweb_port,
 			bool long_jumps, bool hop_others, bool stop_others,
 			std::vector<NewGameSeat> seats);
+		bool do_start_server(unsigned int port, unsigned int cheechweb_port,
+			bool long_jumps, bool hop_others, bool stop_others,
+			std::vector<NewGameSeat> seats);
 		void start_client(Glib::ustring host, unsigned int port,
 			Glib::ustring name, unsigned int color, bool spectator);
 
@@ -83,6 +86,7 @@ class main_win : public main_win_glade
 			GameClient *client, size_t index);
 		void on_seat_choose_new_color(Glib::ustring name, int color,
 			GameClient *client);
+		void on_seat_player_number(unsigned int n, GameClient *client);
 		HostSeat *active_seat();
 		void route_input();
 		void clear_seats();
@@ -101,7 +105,7 @@ class main_win : public main_win_glade
 		void on_resync_activate();
 		bool on_close_request();
 		void on_quit_activate();
-		bool confirm_end_game();
+		void confirm_then(sigc::slot<void()> action);
 		void on_confirm_quit_response(int response);
 		void quit_now();
 		void on_dialog_hidden();
@@ -186,6 +190,8 @@ class main_win : public main_win_glade
 		Glib::RefPtr<Gio::SimpleActionGroup>	_win_actions;
 
 		Gtk::MessageDialog * _confirm_quit_dialog;
+		// The action a Yes on the confirm dialog should perform.
+		sigc::slot<void()> _pending_confirm;
 		// Held so update_menus() can enable/disable menu entries.
 		Glib::RefPtr<Gio::SimpleAction> _end_game_action;
 		Glib::RefPtr<Gio::SimpleAction> _leave_game_action;

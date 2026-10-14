@@ -229,11 +229,29 @@ bool main_win::start_server(unsigned int port, unsigned int cheechweb_port,
 	std::vector<NewGameSeat> seats)
 {
 	if (_server)
-		on_end_game_activate();
-
-	if (_server)
+	{
+		// Ending the current game needs confirmation; the response handler
+		// stops it and starts the new game if the user answers yes.
+		confirm_then([=]()
+			{
+				stop_server();
+				do_start_server(port, cheechweb_port, long_jumps, hop_others,
+					stop_others, seats);
+			});
 		return false;
+	}
 
+	return do_start_server(port, cheechweb_port, long_jumps, hop_others,
+		stop_others, seats);
+}
+
+
+// Creates the server and its ajax bridge, then joins the hosted seats.
+// Assumes any previous game has already been confirmed and stopped.
+bool main_win::do_start_server(unsigned int port, unsigned int cheechweb_port,
+	bool long_jumps, bool hop_others, bool stop_others,
+	std::vector<NewGameSeat> seats)
+{
 	_server = new GameServer(port, seats.size(), long_jumps,
 							 hop_others, stop_others);
 	_server->evt_message.connect(sigc::mem_fun(*this, &main_win::show_message));
@@ -439,6 +457,9 @@ void main_win::start_hosted_seats(std::vector<NewGameSeat> seats,
 			_client->change_color(_seats[i].color);
 			_seats[i].client = _client;
 			connect_client(_client, true);
+			_client->cmd_set_player_number.connect(sigc::bind(
+				sigc::mem_fun(*this, &main_win::on_seat_player_number),
+				_client));
 			game_view->set_client(_client);
 			_active_input_client = _client;
 			connect_client_dialogs(_client);
@@ -531,6 +552,10 @@ void main_win::join_next_seat()
 		_bots.push_back(seat.bot);
 		seat.bot->evt_disconnected.connect(sigc::bind(sigc::mem_fun(*this,
 			&main_win::bot_disconnected), seat.bot));
+		GameClient *bot_client = seat.bot->get_game_client();
+		bot_client->cmd_set_player_number.connect(sigc::bind(
+			sigc::mem_fun(*this, &main_win::on_seat_player_number),
+			bot_client));
 		seat.bot->join_game("localhost", _hosted_port);
 	}
 
@@ -621,6 +646,8 @@ void main_win::hook_seat_client(GameClient *client, size_t index)
 		&main_win::on_seat_choose_new_name), client, (size_t) index));
 	client->cmd_choose_new_color.connect(sigc::bind(sigc::mem_fun(*this,
 		&main_win::on_seat_choose_new_color), client));
+	client->cmd_set_player_number.connect(sigc::bind(sigc::mem_fun(*this,
+		&main_win::on_seat_player_number), client));
 }
 
 
@@ -654,6 +681,26 @@ void main_win::on_seat_choose_new_color(Glib::ustring name, int color,
 			client->change_color(c);
 			return;
 		}
+}
+
+
+// A rotate/shuffle renumbers every player (SET_PLAYER_NUMBER per client).
+// Keep the seat mapping in step so the board stays oriented to the first
+// human seat and turns route to the right seat, and re-apply bot focus
+// lists, which are masks over player numbers.
+void main_win::on_seat_player_number(unsigned int n, GameClient *client)
+{
+	for (size_t i = 0; i < _seats.size(); i++)
+	{
+		GameClient *seat_client = _seats[i].client ? _seats[i].client
+			: (_seats[i].bot ? _seats[i].bot->get_game_client() : NULL);
+		if (seat_client == client)
+		{
+			_seats[i].player_number = n;
+			break;
+		}
+	}
+	apply_seat_focus();
 }
 
 
@@ -732,14 +779,11 @@ void main_win::on_restart_game_activate()
 		if (_client->is_spectator())
 		{
 			if (_bots.size() > 0 && _bots[0]->get_game_client())
-				if (confirm_end_game())
-					_bots[0]->get_game_client()->restart_game();
+				confirm_then(sigc::mem_fun(*_bots[0]->get_game_client(),
+					&GameClient::restart_game));
 		}
 		else
-		{
-			if (confirm_end_game())
-				_client->restart_game();
-		}
+			confirm_then(sigc::mem_fun(*_client, &GameClient::restart_game));
 	}
 }
 
@@ -751,14 +795,11 @@ void main_win::on_rotate_activate()
 		if (_client->is_spectator())
 		{
 			if (_bots.size() > 0 && _bots[0]->get_game_client())
-				if (confirm_end_game())
-					_bots[0]->get_game_client()->rotate_players();
+				confirm_then(sigc::mem_fun(*_bots[0]->get_game_client(),
+					&GameClient::rotate_players));
 		}
 		else
-		{
-			if (confirm_end_game())
-				_client->rotate_players();
-		}
+			confirm_then(sigc::mem_fun(*_client, &GameClient::rotate_players));
 	}
 }
 
@@ -770,14 +811,11 @@ void main_win::on_shuffle_activate()
 		if (_client->is_spectator())
 		{
 			if (_bots.size() > 0 && _bots[0]->get_game_client())
-				if (confirm_end_game())
-					_bots[0]->get_game_client()->shuffle_players();
+				confirm_then(sigc::mem_fun(*_bots[0]->get_game_client(),
+					&GameClient::shuffle_players));
 		}
 		else
-		{
-			if (confirm_end_game())
-				_client->shuffle_players();
-		}
+			confirm_then(sigc::mem_fun(*_client, &GameClient::shuffle_players));
 	}
 }
 
@@ -790,16 +828,26 @@ void main_win::on_game_setup(unsigned int num_players, bool long_jumps,
 		if (_client->is_spectator())
 		{
 			if (_bots.size() > 0 && _bots[0]->get_game_client())
-				if (_game_status != GameServer::Playing || confirm_end_game())
+			{
+				if (_game_status != GameServer::Playing)
 					_bots[0]->get_game_client()->reconfigure_game(
 						num_players, long_jumps, hop_others, stop_others);
+				else
+					confirm_then(sigc::bind(sigc::mem_fun(
+						*_bots[0]->get_game_client(),
+						&GameClient::reconfigure_game),
+						num_players, long_jumps, hop_others, stop_others));
+			}
 		}
 		else
 		{
-			if (_game_status != GameServer::Playing || confirm_end_game())
+			if (_game_status != GameServer::Playing)
 				_client->reconfigure_game(
 						num_players, long_jumps, hop_others, stop_others);
-
+			else
+				confirm_then(sigc::bind(sigc::mem_fun(*_client,
+					&GameClient::reconfigure_game),
+					num_players, long_jumps, hop_others, stop_others));
 		}
 	}
 	_setup_game_win.hide();
@@ -808,8 +856,8 @@ void main_win::on_game_setup(unsigned int num_players, bool long_jumps,
 
 void main_win::on_end_game_activate()
 {
-	if (_server && confirm_end_game())
-		stop_server();
+	if (_server)
+		confirm_then(sigc::mem_fun(*this, &main_win::stop_server));
 }
 
 
@@ -1159,8 +1207,10 @@ bool main_win::on_close_request()
 
 void main_win::on_quit_activate()
 {
-	if (!_server || confirm_end_game())
+	if (!_server)
 		quit_now();
+	else
+		confirm_then(sigc::mem_fun(*this, &main_win::quit_now));
 }
 
 
@@ -1174,18 +1224,26 @@ void main_win::quit_now()
 }
 
 
-// Returns true when quitting may proceed right away.  Otherwise the
+// Runs action right away when no confirmation is needed.  Otherwise the
 // confirmation alert is shown asynchronously (no nested main-context
-// iteration) and quit_now() runs from its response handler.  The dialog
-// is kept around so it can simply be re-presented if quit is requested
-// again while it is up.
-bool main_win::confirm_end_game()
+// iteration) and the action runs from its response handler if the user
+// answers Yes.  The dialog is kept around so it can simply be re-presented
+// if another confirmation is requested while it is up.
+void main_win::confirm_then(sigc::slot<void()> action)
 {
 	if (_game_status == GameServer::Start || _game_status == GameServer::End)
-		return true;
+	{
+		action();
+		return;
+	}
 
 	if (_move_count == 1 && (_current_player == 1 || _current_player == 0))
-		return true;
+	{
+		action();
+		return;
+	}
+
+	_pending_confirm = action;
 
 	if (!_confirm_quit_dialog)
 	{
@@ -1198,8 +1256,6 @@ bool main_win::confirm_end_game()
 	}
 
 	_confirm_quit_dialog->show();
-
-	return false;
 }
 
 
@@ -1207,8 +1263,11 @@ void main_win::on_confirm_quit_response(int response)
 {
 	_confirm_quit_dialog->hide();
 
-	if (response == (int)Gtk::ResponseType::YES)
-		quit_now();
+	sigc::slot<void()> action = _pending_confirm;
+	_pending_confirm = sigc::slot<void()>();
+
+	if (response == (int)Gtk::ResponseType::YES && !action.empty())
+		action();
 }
 
 
