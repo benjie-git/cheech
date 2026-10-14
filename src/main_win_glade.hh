@@ -26,6 +26,9 @@ class PegColorSwatch : public Gtk::DrawingArea
 {
 	public:
 		PegColorSwatch();
+		// Out-of-line so the class has a key function (MinGW+LTO, GCC
+		// PR 94156).
+		~PegColorSwatch() override;
 		void set_color(int color);
 		void clear();
 	private:

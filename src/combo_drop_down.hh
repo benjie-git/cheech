@@ -26,6 +26,11 @@ class ComboDropDown : public Gtk::DropDown
 			sigc::mem_fun(*this, &ComboDropDown::on_selection_changed));
 	}
 
+	// Out-of-line so the class has a key function: with MinGW+LTO the
+	// vague-linkage destructor/vtable/thunks are not deduplicated by PE
+	// ld (GCC PR 94156).  Do not make this inline.
+	~ComboDropDown() override;
+
 	void append(const Glib::ustring &text)
 		{ _model->append(text); }
 

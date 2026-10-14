@@ -44,6 +44,12 @@ class ColorSwatch : public Gtk::DrawingArea
 			add_controller(gesture);
 		}
 
+		// Out-of-line so the class has a key function: with MinGW+LTO
+		// the vague-linkage destructor/vtable/thunks are not
+		// deduplicated by PE ld (GCC PR 94156).  Do not make this
+		// inline.
+		~ColorSwatch() override;
+
 		unsigned int color() const { return _color; }
 
 		void set_selected(bool selected)
@@ -112,6 +118,8 @@ class ColorPicker : public Gtk::Box
 			}
 			set_selected(_selected);
 		}
+
+		~ColorPicker() override;
 
 		unsigned int get_selected() const { return _selected; }
 

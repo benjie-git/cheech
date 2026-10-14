@@ -54,6 +54,10 @@ PegColorSwatch::PegColorSwatch() : _color(0)
    set_draw_func(sigc::mem_fun(*this, &PegColorSwatch::on_draw));
 }
 
+PegColorSwatch::~PegColorSwatch()
+{
+}
+
 void PegColorSwatch::set_color(int color)
 {
    _color = color;
