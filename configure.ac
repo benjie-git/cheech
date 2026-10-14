@@ -164,6 +164,56 @@ AC_SUBST([MACOS_APP_CFLAGS])
 AC_SUBST([MACOS_APP_LIBS])
 AM_CONDITIONAL([ENABLE_MACOS_APP], [test "x$enable_macos_app" = "xyes"])
 
+dnl Look up pkg-config before anything that might need it (PKG_CHECK_MODULES
+dnl relies on it, and its probe must not end up inside a conditional).
+PKG_PROG_PKG_CONFIG
+
+dnl ---------------------------------------------------------------
+dnl Windows (MinGW-w64 toolchain, e.g. the MSYS2 UCRT64 shell).
+dnl The unix-style build (autoreconf/configure/make) is used as-is.
+dnl The non-system libraries (glib/glibmm/gtkmm and everything they
+dnl pull in, plus libgcc/libstdc++) are linked statically so the
+dnl binaries depend only on Windows itself; Windows system import
+dnl libraries (ws2_32, shlwapi) are used as usual.
+dnl ---------------------------------------------------------------
+AC_ARG_ENABLE([static-libs],
+  [AS_HELP_STRING([--disable-static-libs],
+                  [on Windows, link glib/glibmm/gtkmm etc. dynamically instead of statically [default=static]])],
+  [], [AS_CASE([$host],
+         [*-mingw*|*-msys*], [enable_static_libs=yes],
+         [enable_static_libs=no])])
+
+is_win32_host=no
+AS_CASE([$host], [*-mingw*|*-msys*], [is_win32_host=yes])
+AM_CONDITIONAL([WIN32_HOST], [test "x$is_win32_host" = "xyes"])
+
+WIN32_CFLAGS=
+WIN32_LIBS=
+WIN32_GUI_LDFLAGS=
+AS_IF([test "x$is_win32_host" = "xyes"], [
+  dnl GNet has a dedicated Win32 code path (winsock2, runtime IPv6
+  dnl detection); defining GNET_WIN32 switches the sources to it.
+  gnet_native_win32=yes
+  AC_DEFINE([HAVE_SOCKADDR_STORAGE], [1],
+            [Whether you have struct sockaddr_storage])
+  WIN32_CFLAGS="-DWIN32 -DGNET_WIN32"
+  WIN32_LIBS="-lws2_32 -lshlwapi"
+  dnl keep the GUI binary from opening a console window
+  WIN32_GUI_LDFLAGS="-mwindows"
+  dnl never pick up run-time dependencies on libgcc_s_seh-1.dll /
+  dnl libstdc++-6.dll
+  LDFLAGS="$LDFLAGS -static-libgcc -static-libstdc++"
+  AS_IF([test "x$enable_static_libs" = "xyes"], [
+    dnl Make pkg-config add Libs.private/Cflags.private (pcre2, ffi,
+    dnl gettext, iconv, -DGLIB_STATIC_COMPILATION, ...) so the
+    dnl dependencies link statically.
+    AS_IF([test -n "$PKG_CONFIG"], [PKG_CONFIG="$PKG_CONFIG --static"])
+  ])
+])
+AC_SUBST([WIN32_CFLAGS])
+AC_SUBST([WIN32_LIBS])
+AC_SUBST([WIN32_GUI_LDFLAGS])
+
 dnl ---------------------------------------------------------------
 dnl Checks for libraries
 dnl ---------------------------------------------------------------
@@ -282,6 +332,9 @@ dnl
 dnl On Darwin (MacOSX) socklen_t needs to be an int (see accept man
 dnl page), on all other unix systems we need a size_t.
 dnl ---------------------------------------------------------------
+dnl Skip on Windows: winsock2.h/ws2tcpip.h provide socklen_t, and
+dnl redefining it here would break the winsock headers.
+AS_IF([test "x$is_win32_host" != "xyes"], [
 AC_MSG_CHECKING([for socklen_t])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
   #include <sys/types.h>
@@ -303,6 +356,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
               [Defined if system has no socklen_t type])
   ])
 ])
+])
 
 dnl ---------------------------------------------------------------
 dnl Checks for structures
@@ -314,7 +368,11 @@ AC_CHECK_MEMBER([struct sockaddr.sa_len],
     #include <sys/socket.h>]])
 
 AC_MSG_CHECKING([for struct sockaddr_storage])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AS_IF([test "x$is_win32_host" = "xyes"], [
+  AC_MSG_RESULT([yes (winsock2)])
+  gnet_sockaddr_family_field_name=ss_family
+], [
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
   #include <sys/types.h>
   #include <sys/socket.h>
 ]], [[struct sockaddr_storage s; s;]])],
@@ -344,6 +402,7 @@ else
   AC_MSG_RESULT([no])
   gnet_sockaddr_family_field_name=ss_family
 fi
+])
 AC_DEFINE_UNQUOTED([GNET_SOCKADDR_FAMILY_FIELD_NAME],
   [$gnet_sockaddr_family_field_name],
   [Name of sockaddr_storage family field])

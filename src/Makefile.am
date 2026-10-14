@@ -7,6 +7,7 @@ AM_CPPFLAGS = \
 	$(GLIB_CFLAGS) \
 	$(GTHREAD_CFLAGS) \
 	$(MACOS_APP_CFLAGS) \
+	$(WIN32_CFLAGS) \
 	-D_REENTRANT \
 	-DGNET_EXPERIMENTAL
 
@@ -29,13 +30,15 @@ bin_PROGRAMS += cheech
 endif
 
 cheech_LDADD = \
-	$(GUI_LIBS) $(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(MACOS_APP_LIBS)
+	$(GUI_LIBS) $(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) \
+	-lpthread $(WIN32_LIBS) $(MACOS_APP_LIBS)
+cheech_LDFLAGS = $(WIN32_GUI_LDFLAGS)
 cheechd_LDADD = \
-	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread
+	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
 cheechbot_LDADD = \
-	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread
+	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
 cheechwebd_LDADD = \
-	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread
+	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
 
 gnet_sources = \
 	gnet-2.0/base64.c \

@@ -84,12 +84,29 @@ To build a self-contained Cheech.app instead of installing system-wide:
   bundle and links them from there.
 
 
-### Build on Windows using Dev-C++
+### Build on Windows (MSYS2 / UCRT64):
 
-- Install gtkmm4
-- Use the included Dev-C++ files to build the cheech binaries.
-- Rename the ajax/www/com.benjie.cheech directory cheechweb, and put it into
-  the same folder as cheech.exe, and it should all work.
+- Install MSYS2 (https://www.msys2.org/), and open the UCRT64 shell.
+- In the UCRT64 shell, install the toolchain and libraries:
+  - pacman -S base-devel mingw-w64-ucrt-x86_64-toolchain \
+    mingw-w64-ucrt-x86_64-glibmm-2.68 mingw-w64-ucrt-x86_64-gtkmm-4.0
+- run the below commands in the root directory of the cheech project.
+  - autoreconf -i
+  - ./configure
+  - make
+  - make install
+
+The non-standard libraries (glib/glibmm/gtkmm and everything they pull in,
+plus libgcc/libstdc++) are linked statically on Windows, so the resulting
+binaries depend only on Windows itself.  (Use --disable-static-libs if you
+prefer to link them dynamically instead.)
+
+For a server-only build, leave out the mingw-w64-ucrt-x86_64-gtkmm-4.0
+package and run ./configure with the --disable-gui flag.
+
+cheechwebd serves the web client from a cheechweb directory: copy or symlink
+the ajax/www/com.benjie.cheech directory as cheechweb, in the same folder as
+the binaries.
 
 
 Ben Levitt 2005-2020

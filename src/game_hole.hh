@@ -24,6 +24,12 @@
 #include <sigc++/sigc++.h>
 
 
+#if defined(_WIN32) || defined(_WIN64)
+typedef unsigned int uint;
+typedef unsigned long ulong;
+#endif
+
+
 class GameHole : public sigc::trackable
 {
 public:
