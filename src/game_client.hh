@@ -23,7 +23,7 @@
 #include <vector>
 #include <sigc++/sigc++.h>
 
-#include "gnet_conn.hh"
+#include "net_conn.hh"
 #include "game_board.hh"
 #include "game_server.hh"
 
@@ -48,7 +48,7 @@ private:
 	const static int TIMEOUT_HEARTBEAT = 6;
 
 private:
-	Gnet::ConnBuffered	_socket;
+	Net::ConnBuffered	_socket;
 
 	GameBoard*			_board;
 	unsigned int		_current_player;
@@ -133,7 +133,7 @@ private:
 	void cancelled();
 	void disconnected();
 	void read(Glib::ustring message);
-	void error(Gnet::Conn::Error error);
+	void error(Net::Conn::Error error);
 
 	// First message sent from server, includes protocol version
 	void command_HELLO(const Glib::ustring& arguments);

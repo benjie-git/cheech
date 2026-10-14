@@ -147,8 +147,8 @@ class BotBase : public sigc::trackable
 		// player currently holds a number and goes stale after Rotate/Shuffle.
 		void resolve_positional_focus();
 
-		// Defers make_best_move() by one main-loop iteration (the gnet
-		// workaround) after cancelling any pending mapping timeout.
+		// Defers make_best_move() by one main-loop iteration after
+		// cancelling any pending mapping timeout.
 		void schedule_search();
 
 		// Fallback for servers that never answer REQUEST_PLAYER_IDS: stop

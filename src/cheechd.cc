@@ -25,8 +25,8 @@
 #include <glibmm/main.h>
 #include <glibmm/iochannel.h>
 #include <glibmm/optioncontext.h>
+#include <giomm/init.h>
 #include <sigc++/bind.h>
-#include <gnet-2.0/gnet.h>
 
 #include "utility.hh"
 #include "game_server.hh"
@@ -170,13 +170,13 @@ int main(int argc, char **argv)
 {
 	util::print_banner("cheechd");
 
+	Gio::init();
+
 #if defined(ENABLE_NLS)
 	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif //ENABLE_NLS
-
-	gnet_init();
 
 	process_options(argc, argv);
 

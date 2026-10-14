@@ -1,15 +1,14 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = \
-	-I$(srcdir)/gnet-2.0 \
 	$(GLIBMM_CFLAGS) \
+	$(GIOMM_CFLAGS) \
 	$(GUI_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GTHREAD_CFLAGS) \
 	$(MACOS_APP_CFLAGS) \
 	$(WIN32_CFLAGS) \
-	-D_REENTRANT \
-	-DGNET_EXPERIMENTAL
+	-D_REENTRANT
 
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall -std=c++17
@@ -30,57 +29,15 @@ bin_PROGRAMS += cheech
 endif
 
 cheech_LDADD = \
-	$(GUI_LIBS) $(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) \
+	$(GUI_LIBS) $(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) \
 	-lpthread $(WIN32_LIBS) $(MACOS_APP_LIBS)
 cheech_LDFLAGS = $(WIN32_GUI_LDFLAGS)
 cheechd_LDADD = \
-	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
+	$(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
 cheechbot_LDADD = \
-	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
+	$(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
 cheechwebd_LDADD = \
-	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
-
-gnet_sources = \
-	gnet-2.0/base64.c \
-	gnet-2.0/base64.h \
-	gnet-2.0/conn-http.c \
-	gnet-2.0/conn-http.h \
-	gnet-2.0/conn.c \
-	gnet-2.0/conn.h \
-	gnet-2.0/gnet-private.c \
-	gnet-2.0/gnet-private.h \
-	gnet-2.0/gnet.c \
-	gnet-2.0/gnet.h \
-	gnet-2.0/inetaddr.c \
-	gnet-2.0/inetaddr.h \
-	gnet-2.0/iochannel.c \
-	gnet-2.0/iochannel.h \
-	gnet-2.0/ipv6.c \
-	gnet-2.0/ipv6.h \
-	gnet-2.0/mcast.c \
-	gnet-2.0/mcast.h \
-	gnet-2.0/md5.c \
-	gnet-2.0/md5.h \
-	gnet-2.0/pack.c \
-	gnet-2.0/pack.h \
-	gnet-2.0/server.c \
-	gnet-2.0/server.h \
-	gnet-2.0/sha.c \
-	gnet-2.0/sha.h \
-	gnet-2.0/socks-private.c \
-	gnet-2.0/socks-private.h \
-	gnet-2.0/socks.c \
-	gnet-2.0/socks.h \
-	gnet-2.0/tcp.c \
-	gnet-2.0/tcp.h \
-	gnet-2.0/udp.c \
-	gnet-2.0/udp.h \
-	gnet-2.0/unix.c \
-	gnet-2.0/unix.h \
-	gnet-2.0/uri.c \
-	gnet-2.0/uri.h \
-	gnet-2.0/usagi_ifaddrs.c \
-	gnet-2.0/usagi_ifaddrs.h
+	$(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
 
 bot_sources = \
 	bot_base.cc \
@@ -133,10 +90,10 @@ cheech_SOURCES = \
 	help_win.hh \
 	help_win_glade.cc \
 	help_win_glade.hh \
-	gnet_conn.cc \
-	gnet_conn.hh \
-	gnet_server.cc \
-	gnet_server.hh \
+	net_conn.cc \
+	net_conn.hh \
+	net_server.cc \
+	net_server.hh \
 	utility.cc \
 	utility.hh \
 	game_images.cc \
@@ -156,8 +113,7 @@ cheech_SOURCES = \
 	ajax_server.cc \
 	ajax_server.hh \
 	ajax_server_conn.cc \
-	ajax_server_conn.hh \
-	$(gnet_sources)
+	ajax_server_conn.hh
 
 # The About-window icon is embedded in the GUI binary as a GResource.
 nodist_cheech_SOURCES = cheech_resources.c
@@ -173,10 +129,10 @@ cheechd_SOURCES = \
 	$(bot_sources) \
 	game_images.cc \
 	game_images.hh \
-	gnet_conn.cc \
-	gnet_conn.hh \
-	gnet_server.cc \
-	gnet_server.hh \
+	net_conn.cc \
+	net_conn.hh \
+	net_server.cc \
+	net_server.hh \
 	utility.cc \
 	utility.hh \
 	game_server.cc \
@@ -192,8 +148,7 @@ cheechd_SOURCES = \
 	ajax_server.cc \
 	ajax_server.hh \
 	ajax_server_conn.cc \
-	ajax_server_conn.hh \
-	$(gnet_sources)
+	ajax_server_conn.hh
 
 cheechbot_SOURCES = \
 	cheechbot.cc \
@@ -202,25 +157,24 @@ cheechbot_SOURCES = \
 	game_board.hh \
 	game_images.cc \
 	game_images.hh \
-	gnet_conn.cc \
-	gnet_conn.hh \
+	net_conn.cc \
+	net_conn.hh \
 	utility.cc \
 	utility.hh \
 	game_client.cc \
 	game_client.hh \
 	game_hole.cc \
-	game_hole.hh \
-	$(gnet_sources)
+	game_hole.hh
 
 cheechwebd_SOURCES = \
 	cheechwebd.cc \
 	$(bot_sources) \
 	game_images.cc \
 	game_images.hh \
-	gnet_conn.cc \
-	gnet_conn.hh \
-	gnet_server.cc \
-	gnet_server.hh \
+	net_conn.cc \
+	net_conn.hh \
+	net_server.cc \
+	net_server.hh \
 	utility.cc \
 	utility.hh \
 	game_client.cc \
@@ -234,5 +188,4 @@ cheechwebd_SOURCES = \
 	ajax_server.cc \
 	ajax_server.hh \
 	ajax_server_conn.cc \
-	ajax_server_conn.hh \
-	$(gnet_sources)
+	ajax_server_conn.hh

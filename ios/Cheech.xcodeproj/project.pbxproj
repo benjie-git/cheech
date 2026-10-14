@@ -7,70 +7,85 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09FCF6733703BDF8AEFA1E64 /* giomm.cc in Sources */ = {isa = PBXBuildFile; fileRef = CE61C373C91E0F6E2F4A9BE7 /* giomm.cc */; };
 		24FC4E0D144270C0AC1D4654 /* bot_friendly.cc in Sources */ = {isa = PBXBuildFile; fileRef = 07F91E3FD8296B16D384801B /* bot_friendly.cc */; };
 		2BC93DCEECCAACDC740D86E8 /* CheechSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F7D20F2EEEA7290E3CA703F /* CheechSession.mm */; };
 		2EEA7F95DAFCBEB9838776CD /* utility.cc in Sources */ = {isa = PBXBuildFile; fileRef = B55A9D589E2972950E4DA9D2 /* utility.cc */; };
 		32A9485275D562A7ABE47249 /* bot_mean.cc in Sources */ = {isa = PBXBuildFile; fileRef = 447C808B584AE3DAAD4C9559 /* bot_mean.cc */; };
 		3B3F7CED5FB174F201B8AC90 /* SessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49860C0319D6646DAAABBB2 /* SessionModel.swift */; };
-		53C306B8A7D71AA3255C5465 /* gnet_server_ios.cc in Sources */ = {isa = PBXBuildFile; fileRef = BF62F4E867676139EFD5C348 /* gnet_server_ios.cc */; };
 		615B93D7EDB61DA1DF2E3394 /* bot_lookahead.cc in Sources */ = {isa = PBXBuildFile; fileRef = C89A48EB168041539B0A3F4E /* bot_lookahead.cc */; };
 		6668CF3566E023F44524BCB3 /* CheechApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576C28E40D255F8863D201D8 /* CheechApp.swift */; };
+		684385373A0B6E7F81A059F4 /* net_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9B091D1E5B9BD13612022CCC /* net_conn.cc */; };
 		7C16BE24C89133C5A6F68EBD /* game_client.cc in Sources */ = {isa = PBXBuildFile; fileRef = 36CB4E0968B41423A9C36A65 /* game_client.cc */; };
 		7F253E9CC59694BFE04ED97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 239B2D8E58AF1AEC99860400 /* Assets.xcassets */; };
 		7F30679C2B722CB54DE8D96C /* game_hole.cc in Sources */ = {isa = PBXBuildFile; fileRef = AE97CD579EC816ED8286C279 /* game_hole.cc */; };
+		8BF5D249F69A4A58567073E7 /* net_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B6F4EF8B26359A1F00DF944A /* net_server.cc */; };
 		8CFCC29A367BB90B70F752C6 /* BoardGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE62D51F3549948E0189E520 /* BoardGeometry.swift */; };
 		91F1C5DB6E4E87CFFDD40E58 /* game_board.cc in Sources */ = {isa = PBXBuildFile; fileRef = 400F69BEB88DB0C86F14EE4C /* game_board.cc */; };
 		989E636C20C3B71DE608822C /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D42CCE86746645C07DE88 /* BoardView.swift */; };
 		B75ACC5FF7EE070E4DBA687F /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9682D75E5AF207419F01BD81 /* GameViews.swift */; };
 		B831237FA49E91956CD83AA5 /* bot_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1AC7352863126B1A1BB25C09 /* bot_simple.cc */; };
 		C7A71A0BF8C0BCBFE69FC9B7 /* bot_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = D54821F57EF905F5EA9D6607 /* bot_base.cc */; };
-		CF7DC5F1C8847BED0916B410 /* gnet_conn_ios.cc in Sources */ = {isa = PBXBuildFile; fileRef = CC436C67B41D44382A119C0C /* gnet_conn_ios.cc */; };
 		D57CFE04C5B48007A1F7C2C9 /* cheech_loop.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */; };
 		D84DF6ADACFB57E7D54478C3 /* game_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 780ED87958C8C9D384FCF1DC /* game_server.cc */; };
 		D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */ = {isa = PBXBuildFile; fileRef = 84F81ACCF3A3D392E4E3A59D /* bot_random.cc */; };
-		D9BDA79566D00A4010A73640 /* cheech_ios_gnet.cc in Sources */ = {isa = PBXBuildFile; fileRef = 7727744C76D64EAF6818357E /* cheech_ios_gnet.cc */; };
 		F53CA6D2A2D1B2E016BAAE5F /* MoveAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		059E1D2DA3D5293A84087B7D /* asyncresult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asyncresult.h; sourceTree = "<group>"; };
 		07F91E3FD8296B16D384801B /* bot_friendly.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_friendly.cc; path = ../src/bot_friendly.cc; sourceTree = "<group>"; };
 		097D42CCE86746645C07DE88 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		0AFD1884EEF42E64AF2B0768 /* inetsocketaddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = inetsocketaddress.h; sourceTree = "<group>"; };
 		0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cheech_loop.cc; sourceTree = "<group>"; };
 		108B17528B6C1984070A2A6B /* bind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind.h; sourceTree = "<group>"; };
 		1AC7352863126B1A1BB25C09 /* bot_simple.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_simple.cc; path = ../src/bot_simple.cc; sourceTree = "<group>"; };
+		201DB82F8BFFDD0C65903290 /* refptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = refptr.h; sourceTree = "<group>"; };
+		213F9D189B189A2FBD06C918 /* inputstream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = inputstream.h; sourceTree = "<group>"; };
 		239B2D8E58AF1AEC99860400 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24D2EA16174B93D0CC5E91DA /* random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
+		2F27DC6A687D3C241AEF5AC2 /* signalproxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = signalproxy.h; sourceTree = "<group>"; };
 		36CB4E0968B41423A9C36A65 /* game_client.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_client.cc; path = ../src/game_client.cc; sourceTree = "<group>"; };
 		38B0C2053EE54F7951C08DB8 /* sigc++.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "sigc++.h"; sourceTree = "<group>"; };
 		400F69BEB88DB0C86F14EE4C /* game_board.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_board.cc; path = ../src/game_board.cc; sourceTree = "<group>"; };
-		441F8B72168CE348717FEBB6 /* cheech_ios_gnet_private.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_ios_gnet_private.hh; sourceTree = "<group>"; };
 		447C808B584AE3DAAD4C9559 /* bot_mean.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_mean.cc; path = ../src/bot_mean.cc; sourceTree = "<group>"; };
+		44AB65820F0C4C2ED5A577EA /* error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
 		4E22C9A0C11460F0BF3F332F /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		4FAE32C1F30EC5F38E390D08 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		540C0E0E8310728966F7B9EB /* socket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
 		576C28E40D255F8863D201D8 /* CheechApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheechApp.swift; sourceTree = "<group>"; };
 		61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAnimator.swift; sourceTree = "<group>"; };
 		68A098F4E292BDC98D1ACF56 /* bind_return.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind_return.h; sourceTree = "<group>"; };
 		6975ABB3726E4F7BD041F6BC /* glibmm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glibmm.h; sourceTree = "<group>"; };
-		7727744C76D64EAF6818357E /* cheech_ios_gnet.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cheech_ios_gnet.cc; sourceTree = "<group>"; };
 		780ED87958C8C9D384FCF1DC /* game_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = ../src/game_server.cc; sourceTree = "<group>"; };
+		7E5D6AEDED6DD18212EBDA1A /* socketaddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socketaddress.h; sourceTree = "<group>"; };
 		84F81ACCF3A3D392E4E3A59D /* bot_random.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_random.cc; path = ../src/bot_random.cc; sourceTree = "<group>"; };
 		9682D75E5AF207419F01BD81 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
 		9B015182237E4F02407BE079 /* cheech_move_gate.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_move_gate.hh; sourceTree = "<group>"; };
+		9B091D1E5B9BD13612022CCC /* net_conn.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = net_conn.cc; path = ../src/net_conn.cc; sourceTree = "<group>"; };
 		9C2DBF0FF3FC95B12BAA5CEC /* cheech_loop.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_loop.hh; sourceTree = "<group>"; };
-		9F76DCAE23C97BE1884CF2A5 /* cheech_ios_gnet.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_ios_gnet.hh; sourceTree = "<group>"; };
+		9CD913F1F407B7D6CAFC2EC8 /* outputstream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = outputstream.h; sourceTree = "<group>"; };
 		9F7D20F2EEEA7290E3CA703F /* CheechSession.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CheechSession.mm; sourceTree = "<group>"; };
+		AD10CD9DE57D32E85E00C198 /* enums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = enums.h; sourceTree = "<group>"; };
 		AE97CD579EC816ED8286C279 /* game_hole.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_hole.cc; path = ../src/game_hole.cc; sourceTree = "<group>"; };
 		B3210A8DFBCEC6E04C60A4B2 /* ustring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ustring.h; sourceTree = "<group>"; };
 		B55A9D589E2972950E4DA9D2 /* utility.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = utility.cc; path = ../src/utility.cc; sourceTree = "<group>"; };
+		B592A411D00899E7CE261A35 /* socketclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socketclient.h; sourceTree = "<group>"; };
+		B68A56CEB2AFA212BEE001C8 /* giomm-internal.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "giomm-internal.hh"; sourceTree = "<group>"; };
+		B6F4EF8B26359A1F00DF944A /* net_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = net_server.cc; path = ../src/net_server.cc; sourceTree = "<group>"; };
 		BDFF1A52879B516689F2BF5B /* Cheech-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Cheech-Bridging-Header.h"; sourceTree = "<group>"; };
-		BF62F4E867676139EFD5C348 /* gnet_server_ios.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gnet_server_ios.cc; sourceTree = "<group>"; };
+		BFF4C0DDCE580B79064B81D9 /* inetaddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = inetaddress.h; sourceTree = "<group>"; };
 		C89A48EB168041539B0A3F4E /* bot_lookahead.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_lookahead.cc; path = ../src/bot_lookahead.cc; sourceTree = "<group>"; };
-		CC436C67B41D44382A119C0C /* gnet_conn_ios.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = gnet_conn_ios.cc; sourceTree = "<group>"; };
+		CE61C373C91E0F6E2F4A9BE7 /* giomm.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = giomm.cc; sourceTree = "<group>"; };
 		CE62D51F3549948E0189E520 /* BoardGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardGeometry.swift; sourceTree = "<group>"; };
 		D29ACBE856613BDFD0EA9868 /* CheechSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CheechSession.h; sourceTree = "<group>"; };
+		D4A36A9E9D00D4490EC42A8B /* socketservice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socketservice.h; sourceTree = "<group>"; };
 		D54821F57EF905F5EA9D6607 /* bot_base.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_base.cc; path = ../src/bot_base.cc; sourceTree = "<group>"; };
 		D7C58C8E94272729AC183B2A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E49860C0319D6646DAAABBB2 /* SessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionModel.swift; sourceTree = "<group>"; };
+		E4EB23190B4131774A929D9F /* object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = object.h; sourceTree = "<group>"; };
+		F3ED28A81DEA9EFFB9C27264 /* socketconnection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socketconnection.h; sourceTree = "<group>"; };
+		F7EFB4B595EBFBD41620ABE9 /* bytes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bytes.h; sourceTree = "<group>"; };
 		F8B823D14EB778B142E42641 /* glib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glib.h; sourceTree = "<group>"; };
 		F90EF65352CC217504CB5682 /* Cheech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cheech.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -106,8 +121,13 @@
 		A05F2FDCD70B05F59F17FE34 /* glibmm */ = {
 			isa = PBXGroup;
 			children = (
+				F7EFB4B595EBFBD41620ABE9 /* bytes.h */,
+				44AB65820F0C4C2ED5A577EA /* error.h */,
 				4FAE32C1F30EC5F38E390D08 /* main.h */,
+				E4EB23190B4131774A929D9F /* object.h */,
 				24D2EA16174B93D0CC5E91DA /* random.h */,
+				201DB82F8BFFDD0C65903290 /* refptr.h */,
+				2F27DC6A687D3C241AEF5AC2 /* signalproxy.h */,
 				B3210A8DFBCEC6E04C60A4B2 /* ustring.h */,
 			);
 			path = glibmm;
@@ -164,6 +184,26 @@
 			);
 			sourceTree = "<group>";
 		};
+		EB9AD9419109AD3C05936ABF /* giomm */ = {
+			isa = PBXGroup;
+			children = (
+				059E1D2DA3D5293A84087B7D /* asyncresult.h */,
+				AD10CD9DE57D32E85E00C198 /* enums.h */,
+				B68A56CEB2AFA212BEE001C8 /* giomm-internal.hh */,
+				CE61C373C91E0F6E2F4A9BE7 /* giomm.cc */,
+				BFF4C0DDCE580B79064B81D9 /* inetaddress.h */,
+				0AFD1884EEF42E64AF2B0768 /* inetsocketaddress.h */,
+				213F9D189B189A2FBD06C918 /* inputstream.h */,
+				9CD913F1F407B7D6CAFC2EC8 /* outputstream.h */,
+				540C0E0E8310728966F7B9EB /* socket.h */,
+				7E5D6AEDED6DD18212EBDA1A /* socketaddress.h */,
+				B592A411D00899E7CE261A35 /* socketclient.h */,
+				F3ED28A81DEA9EFFB9C27264 /* socketconnection.h */,
+				D4A36A9E9D00D4490EC42A8B /* socketservice.h */,
+			);
+			path = giomm;
+			sourceTree = "<group>";
+		};
 		F755B2088F03C30DA6AE9FEA /* CheechCore */ = {
 			isa = PBXGroup;
 			children = (
@@ -177,6 +217,8 @@
 				36CB4E0968B41423A9C36A65 /* game_client.cc */,
 				AE97CD579EC816ED8286C279 /* game_hole.cc */,
 				780ED87958C8C9D384FCF1DC /* game_server.cc */,
+				9B091D1E5B9BD13612022CCC /* net_conn.cc */,
+				B6F4EF8B26359A1F00DF944A /* net_server.cc */,
 				B55A9D589E2972950E4DA9D2 /* utility.cc */,
 			);
 			name = CheechCore;
@@ -185,17 +227,13 @@
 		F75D42D1428761AF717D1FC8 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				441F8B72168CE348717FEBB6 /* cheech_ios_gnet_private.hh */,
-				7727744C76D64EAF6818357E /* cheech_ios_gnet.cc */,
-				9F76DCAE23C97BE1884CF2A5 /* cheech_ios_gnet.hh */,
 				0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */,
 				9C2DBF0FF3FC95B12BAA5CEC /* cheech_loop.hh */,
 				9B015182237E4F02407BE079 /* cheech_move_gate.hh */,
 				4E22C9A0C11460F0BF3F332F /* config.h */,
 				F8B823D14EB778B142E42641 /* glib.h */,
 				6975ABB3726E4F7BD041F6BC /* glibmm.h */,
-				CC436C67B41D44382A119C0C /* gnet_conn_ios.cc */,
-				BF62F4E867676139EFD5C348 /* gnet_server_ios.cc */,
+				EB9AD9419109AD3C05936ABF /* giomm */,
 				A05F2FDCD70B05F59F17FE34 /* glibmm */,
 				0F840D7FF9202B5C88C3A662 /* sigc++ */,
 			);
@@ -285,14 +323,14 @@
 				32A9485275D562A7ABE47249 /* bot_mean.cc in Sources */,
 				D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */,
 				B831237FA49E91956CD83AA5 /* bot_simple.cc in Sources */,
-				D9BDA79566D00A4010A73640 /* cheech_ios_gnet.cc in Sources */,
 				D57CFE04C5B48007A1F7C2C9 /* cheech_loop.cc in Sources */,
 				91F1C5DB6E4E87CFFDD40E58 /* game_board.cc in Sources */,
 				7C16BE24C89133C5A6F68EBD /* game_client.cc in Sources */,
 				7F30679C2B722CB54DE8D96C /* game_hole.cc in Sources */,
 				D84DF6ADACFB57E7D54478C3 /* game_server.cc in Sources */,
-				CF7DC5F1C8847BED0916B410 /* gnet_conn_ios.cc in Sources */,
-				53C306B8A7D71AA3255C5465 /* gnet_server_ios.cc in Sources */,
+				09FCF6733703BDF8AEFA1E64 /* giomm.cc in Sources */,
+				684385373A0B6E7F81A059F4 /* net_conn.cc in Sources */,
+				8BF5D249F69A4A58567073E7 /* net_server.cc in Sources */,
 				2EEA7F95DAFCBEB9838776CD /* utility.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

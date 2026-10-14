@@ -23,7 +23,7 @@
 #include <vector>
 #include <sigc++/sigc++.h>
 
-#include "gnet_server.hh"
+#include "net_server.hh"
 #include "game_board.hh"
 
 #define PROTO_VERSION "10"
@@ -35,7 +35,7 @@ private:
 	class Player
 	{
 		public:
-			Gnet::Conn*	socket;
+			Net::Conn*	socket;
 			Glib::ustring	name;
 			unsigned int	color;
 			Glib::ustring	location;
@@ -44,7 +44,7 @@ private:
 			unsigned int	id;
 			bool			wants_player_ids;
 
-			Player(Gnet::Conn *socket_ = NULL, Glib::ustring name_ = "",
+			Player(Net::Conn *socket_ = NULL, Glib::ustring name_ = "",
 				   unsigned int color_ = 0, Glib::ustring location_ = "",
 				   unsigned int heartbeat_ = 0, bool spectator = false,
 				   unsigned int id_ = 0, bool wants_player_ids_ = false);
@@ -72,7 +72,7 @@ private:
 	const static int TIMEOUT_HEARTBEAT = 6;
 
 private:
-	Gnet::Server			_socket;
+	Net::Server			_socket;
 	GameBoard*				_board;
 	std::vector<Player>		_players;
 	std::vector<Player>		_spectators;
@@ -90,7 +90,7 @@ private:
 	std::vector<UndoEntry>	_redo_stack;
 
 public:
-	const Gnet::Server& getSocket() const;
+	const Net::Server& getSocket() const;
 	unsigned int get_num_players() const;
 	bool ready() const;
 
@@ -126,7 +126,7 @@ private:
 	GameServer& operator<<(const Glib::ustring& text);
 
 	void heartbeat_players();
-	void prepare_player(Gnet::Conn* socket);
+	void prepare_player(Net::Conn* socket);
 	void attempt_set_player_name(Player *player, Glib::ustring name);
 	void attempt_set_player_color(Player *player, unsigned int color);
 
@@ -135,69 +135,69 @@ private:
 	void player_finish(unsigned int posn);
 	void game_over();
 
-	unsigned int get_client_posn(Gnet::Conn* socket);
+	unsigned int get_client_posn(Net::Conn* socket);
 	unsigned int get_client_posn_from_name(Glib::ustring name);
-	GameServer::Player* get_client_player(Gnet::Conn* socket);
+	GameServer::Player* get_client_player(Net::Conn* socket);
 	GameServer::GameStatus get_game_status();
-	void add_client(Gnet::Conn* socket);
-	void remove_client(Gnet::Conn* socket);
-	void read_client(Glib::ustring message, Gnet::Conn* socket);
-	void error_client(Gnet::Conn::Error error, Gnet::Conn* socket);
+	void add_client(Net::Conn* socket);
+	void remove_client(Net::Conn* socket);
+	void read_client(Glib::ustring message, Net::Conn* socket);
+	void error_client(Net::Conn::Error error, Net::Conn* socket);
 
 	// Client is adding itself as a player
-	void command_PLAYER_ADD(Gnet::Conn* socket,
+	void command_PLAYER_ADD(Net::Conn* socket,
 							const Glib::ustring& arguments);
 	// Client is adding itself as a spectator
-	void command_SPECTATOR_ADD(Gnet::Conn* socket,
+	void command_SPECTATOR_ADD(Net::Conn* socket,
 							   const Glib::ustring& arguments);
 	// Client wants the player number/id mapping
-	void command_REQUEST_PLAYER_IDS(Gnet::Conn* socket,
+	void command_REQUEST_PLAYER_IDS(Net::Conn* socket,
 									const Glib::ustring& arguments);
-	void send_player_ids(Gnet::Conn* socket);
+	void send_player_ids(Net::Conn* socket);
 	// Client wants a resync
-	void command_SERVER_SYNC(Gnet::Conn* socket,
+	void command_SERVER_SYNC(Net::Conn* socket,
 							 const Glib::ustring& arguments);
 	// Confirmation that client heard our heartbeat
-	void command_SERVER_HEARTBEAT(Gnet::Conn* socket,
+	void command_SERVER_HEARTBEAT(Net::Conn* socket,
 								  const Glib::ustring& arguments);
 	// Receive client's heartbeat
-	void command_CLIENT_HEARTBEAT(Gnet::Conn* socket,
+	void command_CLIENT_HEARTBEAT(Net::Conn* socket,
 								  const Glib::ustring& arguments);
 	// Player is changing it's name
-	void command_PLAYER_NAME(Gnet::Conn* socket,
+	void command_PLAYER_NAME(Net::Conn* socket,
 							 const Glib::ustring& arguments);
 	// Player is changing it's color
-	void command_PLAYER_COLOR(Gnet::Conn* socket,
+	void command_PLAYER_COLOR(Net::Conn* socket,
 							  const Glib::ustring& arguments);
 	// Player sent a chat
-	void command_PLAYER_CHAT(Gnet::Conn* socket,
+	void command_PLAYER_CHAT(Net::Conn* socket,
 							 const Glib::ustring& arguments);
 	// Player says to show these holes as selected
-	void command_GAME_SHOWMOVE(Gnet::Conn* socket,
+	void command_GAME_SHOWMOVE(Net::Conn* socket,
 								const Glib::ustring& arguments);
 	// Player says to deselect all holes
-	void command_GAME_HIDEMOVE(Gnet::Conn* socket, 
+	void command_GAME_HIDEMOVE(Net::Conn* socket, 
 								const Glib::ustring& arguments);
 	// Player says make/commit this move
-	void command_GAME_MAKEMOVE(Gnet::Conn* socket,
+	void command_GAME_MAKEMOVE(Net::Conn* socket,
 								const Glib::ustring& arguments);
 	// Player requests undo of last move
-	void command_GAME_UNDOMOVE(Gnet::Conn* socket,
+	void command_GAME_UNDOMOVE(Net::Conn* socket,
 								const Glib::ustring& arguments);
 	// Player requests redo of last move
-	void command_GAME_REDOMOVE(Gnet::Conn* socket,
+	void command_GAME_REDOMOVE(Net::Conn* socket,
 								const Glib::ustring& arguments);
 	// Player requests restarting the game
-	void command_GAME_RESTART(Gnet::Conn* socket,
+	void command_GAME_RESTART(Net::Conn* socket,
 							  const Glib::ustring& arguments);
 	// Player requests rotating the players
-	void command_GAME_ROTATE(Gnet::Conn* socket,
+	void command_GAME_ROTATE(Net::Conn* socket,
 							  const Glib::ustring& arguments);
 	// Player requests shuffling the players
-	void command_GAME_SHUFFLE(Gnet::Conn* socket,
+	void command_GAME_SHUFFLE(Net::Conn* socket,
 							  const Glib::ustring& arguments);
 	// Player requests a new, possibly different game
-	void command_GAME_RECONFIG(Gnet::Conn* socket,
+	void command_GAME_RECONFIG(Net::Conn* socket,
 								const Glib::ustring& arguments);
 };
 

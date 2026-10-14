@@ -18,7 +18,6 @@
  */
 
 #include <iostream>
-#include "gnet-2.0/gnet.h"
 #include <glib/gi18n.h>
 #include <glibmm/optioncontext.h>
 #include <gdkmm/display.h>
@@ -178,8 +177,7 @@ int main(int argc, char **argv)
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif //ENABLE_NLS
-
-	gnet_init();
+	// Gio::init() is called inside Gtk::Application::create(), below.
 
 	process_options(argc, argv);
 

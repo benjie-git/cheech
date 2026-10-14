@@ -48,7 +48,7 @@ void random_shuffle(It first, It last)
 }
 }
 #endif
-using namespace Gnet;
+using namespace Net;
 
 GameServer::Player::Player(Conn *socket_, Glib::ustring name_,
 	unsigned int color_, Glib::ustring location_,
@@ -101,14 +101,14 @@ GameServer::~GameServer()
 
 	for (unsigned int i = 1; i <= 6; i++)
 	{
-		Gnet::Conn *c = _players[i].socket;
+		Net::Conn *c = _players[i].socket;
 		_players[i].socket = NULL;
 		if (c) { c->close(); delete c; }
 	}
 
 	for (unsigned int i = 0; i < _spectators.size(); i++)
 	{
-		Gnet::Conn *c = _spectators[i].socket;
+		Net::Conn *c = _spectators[i].socket;
 		_spectators[i].socket = NULL;
 		if (c) { c->close(); delete c; }
 	}
@@ -119,7 +119,7 @@ GameServer::~GameServer()
 }
 
 
-const Gnet::Server& GameServer::getSocket() const
+const Net::Server& GameServer::getSocket() const
 {
 	return _socket;
 }

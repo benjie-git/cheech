@@ -27,7 +27,7 @@
 
 #include "ajax_server.hh"
 #include "game_client.hh"
-#include "gnet_conn.hh"
+#include "net_conn.hh"
 #include "bot_base.hh"
 
 class AjaxServer;
@@ -43,7 +43,7 @@ public:
 	void disconnect();
 	void send_cmd(Glib::ustring message);
 	void close_conn();
-	void on_connection_closed(Gnet::Conn *conn);
+	void on_connection_closed(Net::Conn *conn);
 	void ajax_push_one_msg_to_client();
 	bool ping_client();
 	unsigned int get_id();
@@ -69,7 +69,7 @@ public:
 	void on_cmd_game_make_move(MoveList *move);
 
 	// Handle messages from Ajax Frontend to GameClient
-	void handle_ajax_message(Glib::ustring message, Gnet::Conn *conn);
+	void handle_ajax_message(Glib::ustring message, Net::Conn *conn);
 	void ajax_init(Glib::ustring arguments);
 	void ajax_leave();
 	void ajax_chat(Glib::ustring arguments);
@@ -95,7 +95,7 @@ public:
 private:
 	AjaxServer					*_ajax_server;
 	GameClient					*_game_client;
-	Gnet::Conn					*_wait_conn;
+	Net::Conn					*_wait_conn;
 	unsigned int				_id;
 	Glib::ustring				_client_hostname;
 	sigc::connection			_timeout;

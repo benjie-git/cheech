@@ -26,7 +26,7 @@
 #include <sigc++/sigc++.h>
 
 #include "ajax_server_conn.hh"
-#include "gnet_server.hh"
+#include "net_server.hh"
 
 class AjaxServerConn;
 
@@ -46,24 +46,24 @@ public:
 	void on_client_disconnect(AjaxServerConn *client);
 
 private:
-	void connection_open(Gnet::Conn* socket);
-	void connection_closed(Gnet::Conn* socket);
+	void connection_open(Net::Conn* socket);
+	void connection_closed(Net::Conn* socket);
 	AjaxServerConn* get_client_by_id(unsigned int id);
 
 	// Handle messages from Ajax Frontend to GameClient
-	void handle_request(Glib::ustring message, Gnet::Conn *conn);
+	void handle_request(Glib::ustring message, Net::Conn *conn);
 
 	// Send files
-	void send_file(Glib::ustring f, Gnet::Conn *conn);
-	void send_content_type(Glib::ustring f, Gnet::Conn *conn);
+	void send_file(Glib::ustring f, Net::Conn *conn);
+	void send_content_type(Glib::ustring f, Net::Conn *conn);
 	Glib::ustring conv_filename(Glib::ustring f);
 
-	void handle_ajax_message(Glib::ustring message, Gnet::Conn *conn);
+	void handle_ajax_message(Glib::ustring message, Net::Conn *conn);
 	unsigned int ajax_init(Glib::ustring arguments);
 
 	Glib::ustring						_cheechd_hostname;
 	unsigned int						_cheechd_port;
-	Gnet::Server						_socket;
+	Net::Server						_socket;
 	std::list<AjaxServerConn>			_clients;
 	unsigned int						_next_id;
 };

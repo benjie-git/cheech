@@ -137,11 +137,6 @@ AC_SUBST([NO_PREFIX_PACKAGE_MENU_DIR])
 dnl ---------------------------------------------------------------
 dnl Mac OS X
 dnl ---------------------------------------------------------------
-AS_CASE([$host],
-  [*-apple-darwin*],
-    [AC_DEFINE([GNET_APPLE_DARWIN], [1],
-               [Define if building on Apple Darwin])])
-
 dnl Optional support for running from a Mac OS X application bundle.
 dnl When enabled the GUI looks up its resources (pixmaps) inside the
 dnl .app via CoreFoundation instead of PACKAGE_PIXMAPS_DIR, and the
@@ -191,13 +186,8 @@ WIN32_CFLAGS=
 WIN32_LIBS=
 WIN32_GUI_LDFLAGS=
 AS_IF([test "x$is_win32_host" = "xyes"], [
-  dnl GNet has a dedicated Win32 code path (winsock2, runtime IPv6
-  dnl detection); defining GNET_WIN32 switches the sources to it.
-  gnet_native_win32=yes
-  AC_DEFINE([HAVE_SOCKADDR_STORAGE], [1],
-            [Whether you have struct sockaddr_storage])
-  WIN32_CFLAGS="-DWIN32 -DGNET_WIN32"
-  WIN32_LIBS="-lws2_32 -lshlwapi"
+  WIN32_CFLAGS="-DWIN32"
+  WIN32_LIBS="-lws2_32"
   dnl keep the GUI binary from opening a console window
   WIN32_GUI_LDFLAGS="-mwindows"
   dnl never pick up run-time dependencies on libgcc_s_seh-1.dll /
@@ -233,6 +223,7 @@ AC_ARG_ENABLE([gui],
   [], [enable_gui=auto])
 
 PKG_CHECK_MODULES([GLIBMM], [glibmm-2.68])
+PKG_CHECK_MODULES([GIOMM], [giomm-2.68])
 
 AS_IF([test "x$enable_gui" = "xauto"], [
   PKG_CHECK_MODULES([GTKMM], [gtkmm-4.0],
@@ -283,286 +274,15 @@ SAVED_CFLAGS="$CFLAGS"
 CFLAGS="$GTHREAD_CFLAGS"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <glib.h>]], [[
   #ifndef G_THREADS_ENABLED
-  #error "GNet requires a GLib with support for threads"
+  #error "cheech requires a GLib with support for threads"
   #endif
 ]])], [
   AC_MSG_RESULT([yes])
 ], [
   AC_MSG_RESULT([no])
-  AC_MSG_ERROR([GNet requires a GLib with support for threads enabled!])
+  AC_MSG_ERROR([cheech requires a GLib with support for threads enabled!])
 ])
 CFLAGS="$SAVED_CFLAGS"
-
-dnl ---------------------------------------------------------------
-dnl IPv6 support on unix (runtime detection on win32)
-dnl ---------------------------------------------------------------
-AS_IF([test "x$gnet_native_win32" != "xyes"], [
-  AC_MSG_CHECKING([for IPv6 availability])
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-  ]], [[
-    struct sockaddr_in6 s;
-    struct in6_addr t = in6addr_any;
-    int i = AF_INET6;
-    s;
-    t.s6_addr[0] = 0;
-  ]])], [
-    AC_DEFINE([HAVE_IPV6], [1], [Define if IPv6 is potentially available])
-    AC_MSG_RESULT([yes])
-  ], [
-    AC_MSG_RESULT([no])
-  ])
-])
-
-dnl ---------------------------------------------------------------
-dnl Checks for headers
-dnl ---------------------------------------------------------------
-AC_CHECK_HEADERS([sys/sockio.h sys/param.h ifaddrs.h])
-
-AC_CHECK_HEADERS([linux/netlink.h], [
-  AC_DEFINE([HAVE_LINUX_NETLINK_H], [1],
-            [Define if linux/netlink.h header exists])
-])
-
-dnl ---------------------------------------------------------------
-dnl Checks for types
-dnl
-dnl On Darwin (MacOSX) socklen_t needs to be an int (see accept man
-dnl page), on all other unix systems we need a size_t.
-dnl ---------------------------------------------------------------
-dnl Skip on Windows: winsock2.h/ws2tcpip.h provide socklen_t, and
-dnl redefining it here would break the winsock headers.
-AS_IF([test "x$is_win32_host" != "xyes"], [
-AC_MSG_CHECKING([for socklen_t])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-  #include <sys/types.h>
-  #include <sys/socket.h>
-]], [[socklen_t x;]])], [
-  AC_MSG_RESULT([yes])
-], [
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    int accept (int, struct sockaddr *, size_t *);
-  ]], [[]])], [
-    AC_MSG_RESULT([size_t])
-    AC_DEFINE([socklen_t], [size_t],
-              [Defined if system has no socklen_t type])
-  ], [
-    AC_MSG_RESULT([int])
-    AC_DEFINE([socklen_t], [int],
-              [Defined if system has no socklen_t type])
-  ])
-])
-])
-
-dnl ---------------------------------------------------------------
-dnl Checks for structures
-dnl ---------------------------------------------------------------
-AC_CHECK_MEMBER([struct sockaddr.sa_len],
-  [AC_DEFINE([HAVE_SOCKADDR_SA_LEN], [1],
-             [Define if struct sockaddr has sa_len field])],,
-  [[#include <sys/types.h>
-    #include <sys/socket.h>]])
-
-AC_MSG_CHECKING([for struct sockaddr_storage])
-AS_IF([test "x$is_win32_host" = "xyes"], [
-  AC_MSG_RESULT([yes (winsock2)])
-  gnet_sockaddr_family_field_name=ss_family
-], [
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-  #include <sys/types.h>
-  #include <sys/socket.h>
-]], [[struct sockaddr_storage s; s;]])],
-  [have_sockaddr_storage=yes], [have_sockaddr_storage=no])
-if test "$have_sockaddr_storage" = yes; then
-  AC_DEFINE([HAVE_SOCKADDR_STORAGE], [1],
-            [Whether you have struct sockaddr_storage])
-  AC_MSG_RESULT([yes])
-  AC_MSG_CHECKING([for struct sockaddr_storage family field])
-  gnet_sockaddr_family_field_name=""
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-  ]], [[struct sockaddr_storage s; s.ss_family = AF_INET;]])],
-    [gnet_sockaddr_family_field_name=ss_family])
-  AS_IF([test -z "${gnet_sockaddr_family_field_name}"], [
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-      #include <sys/types.h>
-      #include <sys/socket.h>
-    ]], [[struct sockaddr_storage s; s.__ss_family = AF_INET;]])],
-      [gnet_sockaddr_family_field_name=__ss_family])
-  ])
-  AS_IF([test -z "${gnet_sockaddr_family_field_name}"],
-    [AC_MSG_ERROR([can't figure out 'family' field of struct sockaddr_storage])])
-  AC_MSG_RESULT([$gnet_sockaddr_family_field_name])
-else
-  AC_MSG_RESULT([no])
-  gnet_sockaddr_family_field_name=ss_family
-fi
-])
-AC_DEFINE_UNQUOTED([GNET_SOCKADDR_FAMILY_FIELD_NAME],
-  [$gnet_sockaddr_family_field_name],
-  [Name of sockaddr_storage family field])
-
-dnl ---------------------------------------------------------------
-dnl Check if abstract sockets are supported
-dnl ---------------------------------------------------------------
-AC_LANG_PUSH([C])
-AC_CACHE_CHECK([for abstract socket namespace availability],
-  [ac_cv_gnet_have_abstract_sockets], [
-    AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-      #include <sys/types.h>
-      #include <stdlib.h>
-      #include <string.h>
-      #include <stdio.h>
-      #include <sys/socket.h>
-      #include <sys/un.h>
-      #include <errno.h>
-    ]], [[
-      int listen_fd, len;
-      struct sockaddr_un addr;
-
-      listen_fd = socket (PF_UNIX, SOCK_STREAM, 0);
-      if (listen_fd < 0) {
-        perror ("socket() failed: ");
-        exit (1);
-      }
-      memset (&addr, '\0', sizeof (addr));
-      addr.sun_family = AF_UNIX;
-      strcpy (addr.sun_path, "X/tmp/gnet-fake-socket-path-used-in-configure-test");
-      len = SUN_LEN (&addr);
-      addr.sun_path[0] = '\0';
-
-      if (bind (listen_fd, (struct sockaddr*) &addr, len) < 0) {
-        perror ("Abstract socket namespace bind() failed: ");
-        exit (1);
-      }
-      exit (0);
-    ]])],
-    [ac_cv_gnet_have_abstract_sockets=yes],
-    [ac_cv_gnet_have_abstract_sockets=no],
-    [ac_cv_gnet_have_abstract_sockets=no])
-])
-AC_LANG_POP([C])
-
-AS_IF([test x$ac_cv_gnet_have_abstract_sockets = xyes],
-  [AC_DEFINE([HAVE_ABSTRACT_SOCKETS], [1], [Have abstract socket namespace])])
-
-dnl ---------------------------------------------------------------
-dnl Check for library functions
-dnl ---------------------------------------------------------------
-AC_CHECK_FUNC([getifaddrs],
-  [AC_DEFINE([HAVE_GETIFADDRS], [1], [Define if getifaddrs() is available])])
-
-dnl The user may be able to tell us if a function is thread-safe.  We
-dnl know of no good way to test this programmatically.
-AC_ARG_ENABLE([threadsafe-getaddrinfo],
-  [AS_HELP_STRING([--enable-threadsafe-getaddrinfo],
-                  [assume getaddrinfo() is threadsafe])])
-AC_ARG_ENABLE([threadsafe-gethostbyname],
-  [AS_HELP_STRING([--enable-threadsafe-gethostbyname],
-                  [assume gethostbyname() is threadsafe])])
-
-AC_CHECK_FUNC([getaddrinfo], [
-  HAVE_GETADDRINFO=yes
-  AC_DEFINE([HAVE_GETADDRINFO], [1],
-            [Define if getaddrinfo() is available])
-  AC_MSG_CHECKING([for threadsafe getaddrinfo()])
-  if test "x$enable_threadsafe_getaddrinfo" = "xyes"; then
-    HAVE_GETADDRINFO_THREADSAFE=yes
-    AC_MSG_RESULT([yes])
-    AC_DEFINE([HAVE_GETADDRINFO_THREADSAFE], [1],
-              [Define if getaddrinfo is threadsafe])
-  else
-    AC_MSG_RESULT([no])
-    if test "x$GTHREAD_CFLAGS" != "x"; then
-      AC_DEFINE([HAVE_GETADDRINFO_GLIB_MUTEX], [1],
-                [Define if getaddrinfo requires a mutex for thread-safety])
-      HAVE_GETADDRINFO_GLIB_MUTEX=yes
-    else
-      AC_MSG_WARN([
-You do not have a thread-safe getaddrinfo() or GLib threads.
-Calls to getaddrinfo() (called by the GNet address functions) may
-not be thread-safe.  If your system has a thread-safe version of
-getaddrinfo(), pass --enable-threadsafe-getaddrinfo to configure.
-])
-    fi
-  fi
-], [
-  AC_MSG_RESULT([no])
-])
-
-AC_MSG_CHECKING([for threadsafe gethostbyname()])
-if test "x$enable_threadsafe_gethostbyname" = "xyes"; then
-  AC_MSG_RESULT([yes])
-  AC_DEFINE([HAVE_GETHOSTBYNAME_THREADSAFE], [1],
-            [Define if gethostbyname is threadsafe])
-  HAVE_GETHOSTBYNAME_THREADSAFE=yes
-else
-  AC_MSG_RESULT([no])
-fi
-
-dnl Look for a gethostbyname_r() we can use.
-AC_MSG_CHECKING([for glibc gethostbyname_r])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[
-  struct hostent result_buf;
-  char buf[1024];
-  struct hostent *result;
-  int h_erropp;
-
-  gethostbyname_r("localhost", &result_buf, buf, sizeof(buf),
-                  &result, &h_erropp);
-]])], [
-  AC_MSG_RESULT([yes])
-  AC_DEFINE([HAVE_GETHOSTBYNAME_R_GLIBC], [1],
-            [Define if glibc variant of gethostbyname() is available])
-  HAVE_GETHOSTBYNAME_R=yes
-], [AC_MSG_RESULT([no])])
-
-AC_MSG_CHECKING([for Solaris/Irix gethostbyname_r])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[
-  struct hostent result;
-  char buf[1024];
-  int h_errnop;
-
-  gethostbyname_r("localhost", &result, buf, sizeof(buf), &h_errnop);
-]])], [
-  AC_MSG_RESULT([yes])
-  AC_DEFINE([HAVE_GETHOSTBYNAME_R_SOLARIS], [1],
-            [Define if Solaris variant of gethostbyname() is available])
-  HAVE_GETHOSTBYNAME_R=yes
-], [AC_MSG_RESULT([no])])
-
-AC_MSG_CHECKING([for HP-UX gethostbyname_r])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[
-  struct hostent result;
-  char buf[1024];
-
-  gethostbyname_r("localhost", &result, buf);
-]])], [
-  AC_MSG_RESULT([yes])
-  AC_DEFINE([HAVE_GETHOSTBYNAME_R_HPUX], [1],
-            [Define if HPUX variant of gethostbyname() is available])
-  HAVE_GETHOSTBYNAME_R=yes
-], [AC_MSG_RESULT([no])])
-
-if test -z "$HAVE_GETHOSTBYNAME_THREADSAFE" -a -z "$HAVE_GETHOSTBYNAME_R" -a "$GTHREAD_CFLAGS"; then
-  AC_DEFINE([HAVE_GETHOSTBYNAME_R_GLIB_MUTEX], [1],
-            [Define if gethostbyname requires a mutex for thread-safety])
-  HAVE_GETHOSTBYNAME_R=yes
-fi
-
-if test -z "$HAVE_GETADDRINFO_THREADSAFE" -a -z "$HAVE_GETHOSTBYNAME_THREADSAFE" -a -z "$HAVE_GETHOSTBYNAME_R"; then
-  AC_MSG_WARN([
-You do not have a thread-safe gethostbyname_r() or GLib threads.
-Calls to gethostbyname() (called by the GNet address functions) may
-not be thread-safe.  If your system has a thread-safe version of
-gethostbyname(), pass --enable-threadsafe-gethostbyname to configure.
-])
-fi
 
 dnl ---------------------------------------------------------------
 dnl Compiler characteristics
@@ -597,9 +317,6 @@ PKG_CHECK_MODULES([VALGRIND], [valgrind > 2.1], [
 ], [
   AC_MSG_RESULT([no])
 ])
-
-dnl just disable coverage stuff for now
-AM_CONDITIONAL([GNET_GCOV_ENABLED], [test "xyes" = "xno"])
 
 dnl ---------------------------------------------------------------
 dnl Output

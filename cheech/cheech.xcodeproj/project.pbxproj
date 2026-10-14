@@ -28,10 +28,10 @@
 		B9495A1B24341CBD00DF2CF1 /* main_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959DB24341CBB00DF2CF1 /* main_win_glade.cc */; };
 		B9495A1C24341CBD00DF2CF1 /* ajax_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959DD24341CBB00DF2CF1 /* ajax_server.cc */; };
 		B9495A1D24341CBD00DF2CF1 /* game_images.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959DF24341CBB00DF2CF1 /* game_images.cc */; };
-		B9495A1E24341CBD00DF2CF1 /* gnet_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E024341CBB00DF2CF1 /* gnet_server.cc */; };
+		B9495A1E24341CBD00DF2CF1 /* net_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E024341CBB00DF2CF1 /* net_server.cc */; };
 		B9495A2024341CBD00DF2CF1 /* game_view.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E424341CBC00DF2CF1 /* game_view.cc */; };
 		B9495A2124341CBD00DF2CF1 /* bot_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E824341CBC00DF2CF1 /* bot_base.cc */; };
-		B9495A2224341CBD00DF2CF1 /* gnet_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E924341CBC00DF2CF1 /* gnet_conn.cc */; };
+		B9495A2224341CBD00DF2CF1 /* net_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959E924341CBC00DF2CF1 /* net_conn.cc */; };
 		B9495A2324341CBD00DF2CF1 /* new_game_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959EA24341CBC00DF2CF1 /* new_game_win_glade.cc */; };
 		B9495A2424341CBD00DF2CF1 /* help_win_glade.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959EB24341CBC00DF2CF1 /* help_win_glade.cc */; };
 		B9495A2524341CBD00DF2CF1 /* game_hole.cc in Sources */ = {isa = PBXBuildFile; fileRef = B94959ED24341CBC00DF2CF1 /* game_hole.cc */; };
@@ -44,26 +44,6 @@
 		B9495A2E24341CBD00DF2CF1 /* name_win.cc in Sources */ = {isa = PBXBuildFile; fileRef = B9495A0124341CBD00DF2CF1 /* name_win.cc */; };
 		B9495A2F24341CBD00DF2CF1 /* bot_lookahead.cc in Sources */ = {isa = PBXBuildFile; fileRef = B9495A0324341CBD00DF2CF1 /* bot_lookahead.cc */; };
 		B9495A3024341CBD00DF2CF1 /* game_client.cc in Sources */ = {isa = PBXBuildFile; fileRef = B9495A0524341CBD00DF2CF1 /* game_client.cc */; };
-		B9495A5B24341CDA00DF2CF1 /* ipv6.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3224341CD900DF2CF1 /* ipv6.c */; };
-		B9495A5C24341CDA00DF2CF1 /* conn.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3324341CD900DF2CF1 /* conn.c */; };
-		B9495A5D24341CDA00DF2CF1 /* pack.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3724341CD900DF2CF1 /* pack.c */; };
-		B9495A5E24341CDA00DF2CF1 /* udp.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3824341CD900DF2CF1 /* udp.c */; };
-		B9495A5F24341CDA00DF2CF1 /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3924341CD900DF2CF1 /* unix.c */; };
-		B9495A6024341CDA00DF2CF1 /* conn-http.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3A24341CD900DF2CF1 /* conn-http.c */; };
-		B9495A6124341CDA00DF2CF1 /* gnet-private.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A3E24341CD900DF2CF1 /* gnet-private.c */; };
-		B9495A6224341CDA00DF2CF1 /* socks.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4024341CD900DF2CF1 /* socks.c */; };
-		B9495A6324341CDA00DF2CF1 /* uri.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4324341CD900DF2CF1 /* uri.c */; };
-		B9495A6424341CDA00DF2CF1 /* usagi_ifaddrs.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4524341CD900DF2CF1 /* usagi_ifaddrs.c */; };
-		B9495A6524341CDA00DF2CF1 /* gnet.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4624341CD900DF2CF1 /* gnet.c */; };
-		B9495A6624341CDA00DF2CF1 /* iochannel.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4924341CD900DF2CF1 /* iochannel.c */; };
-		B9495A6724341CDA00DF2CF1 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4A24341CD900DF2CF1 /* md5.c */; };
-		B9495A6824341CDA00DF2CF1 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4C24341CD900DF2CF1 /* base64.c */; };
-		B9495A6924341CDA00DF2CF1 /* socks-private.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A4F24341CD900DF2CF1 /* socks-private.c */; };
-		B9495A6A24341CDA00DF2CF1 /* tcp.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5124341CD900DF2CF1 /* tcp.c */; };
-		B9495A6B24341CDA00DF2CF1 /* sha.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5324341CD900DF2CF1 /* sha.c */; };
-		B9495A6C24341CDA00DF2CF1 /* inetaddr.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5524341CD900DF2CF1 /* inetaddr.c */; };
-		B9495A6D24341CDA00DF2CF1 /* server.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5624341CD900DF2CF1 /* server.c */; };
-		B9495A6E24341CDA00DF2CF1 /* mcast.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5824341CDA00DF2CF1 /* mcast.c */; };
 		B9495A782434559D00DF2CF1 /* cheech.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A742434559D00DF2CF1 /* cheech.png */; };
 		B9495A7B24345A0D00DF2CF1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */; };
 		B9B823D22438095D0021755E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D12438095D0021755E /* libbz2.tbd */; };
@@ -113,7 +93,7 @@
 		B94959D324341CBB00DF2CF1 /* about_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = about_win_glade.cc; path = ../../src/about_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959D424341CBB00DF2CF1 /* game_view_hole.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_view_hole.cc; path = ../../src/game_view_hole.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959D524341CBB00DF2CF1 /* game_board.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_board.hh; path = ../../src/game_board.hh; sourceTree = "<group>"; usesTabs = 1; };
-		B94959D624341CBB00DF2CF1 /* gnet_conn.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gnet_conn.hh; path = ../../src/gnet_conn.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959D624341CBB00DF2CF1 /* net_conn.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = net_conn.hh; path = ../../src/net_conn.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959D724341CBB00DF2CF1 /* game_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = ../../src/game_server.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959D824341CBB00DF2CF1 /* GtkImage.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = GtkImage.hh; path = ../../src/GtkImage.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959D924341CBB00DF2CF1 /* game_board.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_board.cc; path = ../../src/game_board.cc; sourceTree = "<group>"; usesTabs = 1; };
@@ -122,15 +102,15 @@
 		B94959DD24341CBB00DF2CF1 /* ajax_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server.cc; path = ../../src/ajax_server.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959DE24341CBB00DF2CF1 /* color_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = color_win.hh; path = ../../src/color_win.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959DF24341CBB00DF2CF1 /* game_images.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_images.cc; path = ../../src/game_images.cc; sourceTree = "<group>"; usesTabs = 1; };
-		B94959E024341CBB00DF2CF1 /* gnet_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gnet_server.cc; path = ../../src/gnet_server.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E024341CBB00DF2CF1 /* net_server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = net_server.cc; path = ../../src/net_server.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959E124341CBB00DF2CF1 /* main_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = main_win.hh; path = ../../src/main_win.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959E224341CBB00DF2CF1 /* game_view_hole.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = game_view_hole.hh; path = ../../src/game_view_hole.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959E424341CBC00DF2CF1 /* game_view.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_view.cc; path = ../../src/game_view.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959E524341CBC00DF2CF1 /* bot_mean.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_mean.hh; path = ../../src/bot_mean.hh; sourceTree = "<group>"; usesTabs = 1; };
-		B94959E624341CBC00DF2CF1 /* gnet_server.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = gnet_server.hh; path = ../../src/gnet_server.hh; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E624341CBC00DF2CF1 /* net_server.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = net_server.hh; path = ../../src/net_server.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959E724341CBC00DF2CF1 /* prefs.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prefs.hh; path = ../../src/prefs.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B94959E824341CBC00DF2CF1 /* bot_base.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bot_base.cc; path = ../../src/bot_base.cc; sourceTree = "<group>"; usesTabs = 1; };
-		B94959E924341CBC00DF2CF1 /* gnet_conn.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gnet_conn.cc; path = ../../src/gnet_conn.cc; sourceTree = "<group>"; usesTabs = 1; };
+		B94959E924341CBC00DF2CF1 /* net_conn.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = net_conn.cc; path = ../../src/net_conn.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959EA24341CBC00DF2CF1 /* new_game_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = new_game_win_glade.cc; path = ../../src/new_game_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959EB24341CBC00DF2CF1 /* help_win_glade.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = help_win_glade.cc; path = ../../src/help_win_glade.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B94959EC24341CBC00DF2CF1 /* setup_bot_win.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = setup_bot_win.hh; path = ../../src/setup_bot_win.hh; sourceTree = "<group>"; usesTabs = 1; };
@@ -158,47 +138,6 @@
 		B9495A0424341CBD00DF2CF1 /* new_game_win_glade.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = new_game_win_glade.hh; path = ../../src/new_game_win_glade.hh; sourceTree = "<group>"; usesTabs = 1; };
 		B9495A0524341CBD00DF2CF1 /* game_client.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = game_client.cc; path = ../../src/game_client.cc; sourceTree = "<group>"; usesTabs = 1; };
 		B9495A0624341CBD00DF2CF1 /* bot_base.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = bot_base.hh; path = ../../src/bot_base.hh; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3224341CD900DF2CF1 /* ipv6.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ipv6.c; path = "../../src/gnet-2.0/ipv6.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3324341CD900DF2CF1 /* conn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = conn.c; path = "../../src/gnet-2.0/conn.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3424341CD900DF2CF1 /* sha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha.h; path = "../../src/gnet-2.0/sha.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3524341CD900DF2CF1 /* conn-http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "conn-http.h"; path = "../../src/gnet-2.0/conn-http.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3624341CD900DF2CF1 /* gnetconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gnetconfig.h; path = "../../src/gnet-2.0/gnetconfig.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3724341CD900DF2CF1 /* pack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pack.c; path = "../../src/gnet-2.0/pack.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3824341CD900DF2CF1 /* udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = udp.c; path = "../../src/gnet-2.0/udp.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3924341CD900DF2CF1 /* unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unix.c; path = "../../src/gnet-2.0/unix.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3A24341CD900DF2CF1 /* conn-http.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "conn-http.c"; path = "../../src/gnet-2.0/conn-http.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3B24341CD900DF2CF1 /* tcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tcp.h; path = "../../src/gnet-2.0/tcp.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3C24341CD900DF2CF1 /* mcast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mcast.h; path = "../../src/gnet-2.0/mcast.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3D24341CD900DF2CF1 /* md5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = md5.h; path = "../../src/gnet-2.0/md5.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3E24341CD900DF2CF1 /* gnet-private.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "gnet-private.c"; path = "../../src/gnet-2.0/gnet-private.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A3F24341CD900DF2CF1 /* iochannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iochannel.h; path = "../../src/gnet-2.0/iochannel.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4024341CD900DF2CF1 /* socks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socks.c; path = "../../src/gnet-2.0/socks.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4124341CD900DF2CF1 /* inetaddr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inetaddr.h; path = "../../src/gnet-2.0/inetaddr.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4224341CD900DF2CF1 /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unix.h; path = "../../src/gnet-2.0/unix.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4324341CD900DF2CF1 /* uri.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uri.c; path = "../../src/gnet-2.0/uri.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4424341CD900DF2CF1 /* uri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uri.h; path = "../../src/gnet-2.0/uri.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4524341CD900DF2CF1 /* usagi_ifaddrs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = usagi_ifaddrs.c; path = "../../src/gnet-2.0/usagi_ifaddrs.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4624341CD900DF2CF1 /* gnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gnet.c; path = "../../src/gnet-2.0/gnet.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4724341CD900DF2CF1 /* pack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pack.h; path = "../../src/gnet-2.0/pack.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4824341CD900DF2CF1 /* socks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = socks.h; path = "../../src/gnet-2.0/socks.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4924341CD900DF2CF1 /* iochannel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = iochannel.c; path = "../../src/gnet-2.0/iochannel.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4A24341CD900DF2CF1 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = "../../src/gnet-2.0/md5.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4B24341CD900DF2CF1 /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = server.h; path = "../../src/gnet-2.0/server.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4C24341CD900DF2CF1 /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = base64.c; path = "../../src/gnet-2.0/base64.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4D24341CD900DF2CF1 /* gnet-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "gnet-private.h"; path = "../../src/gnet-2.0/gnet-private.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4E24341CD900DF2CF1 /* ipv6.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipv6.h; path = "../../src/gnet-2.0/ipv6.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A4F24341CD900DF2CF1 /* socks-private.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "socks-private.c"; path = "../../src/gnet-2.0/socks-private.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5024341CD900DF2CF1 /* usagi_ifaddrs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = usagi_ifaddrs.h; path = "../../src/gnet-2.0/usagi_ifaddrs.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5124341CD900DF2CF1 /* tcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tcp.c; path = "../../src/gnet-2.0/tcp.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5224341CD900DF2CF1 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base64.h; path = "../../src/gnet-2.0/base64.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5324341CD900DF2CF1 /* sha.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha.c; path = "../../src/gnet-2.0/sha.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5424341CD900DF2CF1 /* conn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = conn.h; path = "../../src/gnet-2.0/conn.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5524341CD900DF2CF1 /* inetaddr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inetaddr.c; path = "../../src/gnet-2.0/inetaddr.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5624341CD900DF2CF1 /* server.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = server.c; path = "../../src/gnet-2.0/server.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5724341CDA00DF2CF1 /* gnet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gnet.h; path = "../../src/gnet-2.0/gnet.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5824341CDA00DF2CF1 /* mcast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mcast.c; path = "../../src/gnet-2.0/mcast.c"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5924341CDA00DF2CF1 /* udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = udp.h; path = "../../src/gnet-2.0/udp.h"; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A5A24341CDA00DF2CF1 /* socks-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "socks-private.h"; path = "../../src/gnet-2.0/socks-private.h"; sourceTree = "<group>"; usesTabs = 1; };
 		B9495A6F24341D5200DF2CF1 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../config.h; sourceTree = "<group>"; usesTabs = 1; };
 		B9495A742434559D00DF2CF1 /* cheech.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cheech.png; path = ../../pixmaps/cheech.png; sourceTree = "<group>"; };
 		B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -339,10 +278,10 @@
 				B94959E224341CBB00DF2CF1 /* game_view_hole.hh */,
 				B94959E424341CBC00DF2CF1 /* game_view.cc */,
 				B94959D024341CBA00DF2CF1 /* game_view.hh */,
-				B94959E924341CBC00DF2CF1 /* gnet_conn.cc */,
-				B94959D624341CBB00DF2CF1 /* gnet_conn.hh */,
-				B94959E024341CBB00DF2CF1 /* gnet_server.cc */,
-				B94959E624341CBC00DF2CF1 /* gnet_server.hh */,
+				B94959E924341CBC00DF2CF1 /* net_conn.cc */,
+				B94959D624341CBB00DF2CF1 /* net_conn.hh */,
+				B94959E024341CBB00DF2CF1 /* net_server.cc */,
+				B94959E624341CBC00DF2CF1 /* net_server.hh */,
 				B94959C324341CBA00DF2CF1 /* GtkComboBoxEntryText.hh */,
 				B94959C124341CBA00DF2CF1 /* GtkComboBoxText.hh */,
 				B94959D824341CBB00DF2CF1 /* GtkImage.hh */,
@@ -375,61 +314,12 @@
 				B94959BE24341CBA00DF2CF1 /* utility.cc */,
 				B94959CB24341CBA00DF2CF1 /* utility.hh */,
 				B9B8237D2437D7180021755E /* static libraries */,
-				B9495A3124341CCF00DF2CF1 /* gnet */,
 				B94959A924341BAC00DF2CF1 /* Assets.xcassets */,
 				B94959AE24341BAC00DF2CF1 /* Info.plist */,
 				B9495A702434557B00DF2CF1 /* Images */,
 				B94959B124341BAC00DF2CF1 /* cheech.entitlements */,
 			);
 			path = cheech;
-			sourceTree = "<group>";
-		};
-		B9495A3124341CCF00DF2CF1 /* gnet */ = {
-			isa = PBXGroup;
-			children = (
-				B9495A4C24341CD900DF2CF1 /* base64.c */,
-				B9495A5224341CD900DF2CF1 /* base64.h */,
-				B9495A3A24341CD900DF2CF1 /* conn-http.c */,
-				B9495A3524341CD900DF2CF1 /* conn-http.h */,
-				B9495A3324341CD900DF2CF1 /* conn.c */,
-				B9495A5424341CD900DF2CF1 /* conn.h */,
-				B9495A3E24341CD900DF2CF1 /* gnet-private.c */,
-				B9495A4D24341CD900DF2CF1 /* gnet-private.h */,
-				B9495A4624341CD900DF2CF1 /* gnet.c */,
-				B9495A5724341CDA00DF2CF1 /* gnet.h */,
-				B9495A3624341CD900DF2CF1 /* gnetconfig.h */,
-				B9495A5524341CD900DF2CF1 /* inetaddr.c */,
-				B9495A4124341CD900DF2CF1 /* inetaddr.h */,
-				B9495A4924341CD900DF2CF1 /* iochannel.c */,
-				B9495A3F24341CD900DF2CF1 /* iochannel.h */,
-				B9495A3224341CD900DF2CF1 /* ipv6.c */,
-				B9495A4E24341CD900DF2CF1 /* ipv6.h */,
-				B9495A5824341CDA00DF2CF1 /* mcast.c */,
-				B9495A3C24341CD900DF2CF1 /* mcast.h */,
-				B9495A4A24341CD900DF2CF1 /* md5.c */,
-				B9495A3D24341CD900DF2CF1 /* md5.h */,
-				B9495A3724341CD900DF2CF1 /* pack.c */,
-				B9495A4724341CD900DF2CF1 /* pack.h */,
-				B9495A5624341CD900DF2CF1 /* server.c */,
-				B9495A4B24341CD900DF2CF1 /* server.h */,
-				B9495A5324341CD900DF2CF1 /* sha.c */,
-				B9495A3424341CD900DF2CF1 /* sha.h */,
-				B9495A4F24341CD900DF2CF1 /* socks-private.c */,
-				B9495A5A24341CDA00DF2CF1 /* socks-private.h */,
-				B9495A4024341CD900DF2CF1 /* socks.c */,
-				B9495A4824341CD900DF2CF1 /* socks.h */,
-				B9495A5124341CD900DF2CF1 /* tcp.c */,
-				B9495A3B24341CD900DF2CF1 /* tcp.h */,
-				B9495A3824341CD900DF2CF1 /* udp.c */,
-				B9495A5924341CDA00DF2CF1 /* udp.h */,
-				B9495A3924341CD900DF2CF1 /* unix.c */,
-				B9495A4224341CD900DF2CF1 /* unix.h */,
-				B9495A4324341CD900DF2CF1 /* uri.c */,
-				B9495A4424341CD900DF2CF1 /* uri.h */,
-				B9495A4524341CD900DF2CF1 /* usagi_ifaddrs.c */,
-				B9495A5024341CD900DF2CF1 /* usagi_ifaddrs.h */,
-			);
-			name = gnet;
 			sourceTree = "<group>";
 		};
 		B9495A702434557B00DF2CF1 /* Images */ = {
@@ -598,30 +488,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9495A2F24341CBD00DF2CF1 /* bot_lookahead.cc in Sources */,
-				B9495A6224341CDA00DF2CF1 /* socks.c in Sources */,
 				B9495A1724341CBD00DF2CF1 /* game_view_hole.cc in Sources */,
 				B9495A2324341CBD00DF2CF1 /* new_game_win_glade.cc in Sources */,
-				B9495A6C24341CDA00DF2CF1 /* inetaddr.c in Sources */,
-				B9495A5E24341CDA00DF2CF1 /* udp.c in Sources */,
 				B9495A1124341CBD00DF2CF1 /* bot_friendly.cc in Sources */,
-				B9495A6724341CDA00DF2CF1 /* md5.c in Sources */,
 				B9495A0B24341CBD00DF2CF1 /* bot_mean.cc in Sources */,
 				B9495A2E24341CBD00DF2CF1 /* name_win.cc in Sources */,
-				B9495A6424341CDA00DF2CF1 /* usagi_ifaddrs.c in Sources */,
 				B9495A1524341CBD00DF2CF1 /* ajax_server_conn.cc in Sources */,
 				B9495A2424341CBD00DF2CF1 /* help_win_glade.cc in Sources */,
-				B9495A5C24341CDA00DF2CF1 /* conn.c in Sources */,
-				B9495A6524341CDA00DF2CF1 /* gnet.c in Sources */,
 				B9495A0824341CBD00DF2CF1 /* cheech.cc in Sources */,
 				B9495A0724341CBD00DF2CF1 /* bot_random.cc in Sources */,
 				B9495A1B24341CBD00DF2CF1 /* main_win_glade.cc in Sources */,
 				B9495A2C24341CBD00DF2CF1 /* about_win.cc in Sources */,
-				B9495A5B24341CDA00DF2CF1 /* ipv6.c in Sources */,
 				B9495A1824341CBD00DF2CF1 /* game_server.cc in Sources */,
 				B9495A2624341CBD00DF2CF1 /* setup_game_win_glade.cc in Sources */,
 				B9495A3024341CBD00DF2CF1 /* game_client.cc in Sources */,
-				B9495A6B24341CDA00DF2CF1 /* sha.c in Sources */,
-				B9495A6D24341CDA00DF2CF1 /* server.c in Sources */,
 				B9495A2D24341CBD00DF2CF1 /* setup_bot_win_glade.cc in Sources */,
 				B9495A2B24341CBD00DF2CF1 /* name_win_glade.cc in Sources */,
 				B9495A1D24341CBD00DF2CF1 /* game_images.cc in Sources */,
@@ -629,28 +509,18 @@
 				B9495A2724341CBD00DF2CF1 /* bot_simple.cc in Sources */,
 				B9495A1624341CBD00DF2CF1 /* about_win_glade.cc in Sources */,
 				B9495A2524341CBD00DF2CF1 /* game_hole.cc in Sources */,
-				B9495A6A24341CDA00DF2CF1 /* tcp.c in Sources */,
-				B9495A6324341CDA00DF2CF1 /* uri.c in Sources */,
 				B9495A2024341CBD00DF2CF1 /* game_view.cc in Sources */,
-				B9495A6E24341CDA00DF2CF1 /* mcast.c in Sources */,
 				B9495A1324341CBD00DF2CF1 /* prefs.cc in Sources */,
-				B9495A5D24341CDA00DF2CF1 /* pack.c in Sources */,
 				B9495A0A24341CBD00DF2CF1 /* utility.cc in Sources */,
 				B9495A1C24341CBD00DF2CF1 /* ajax_server.cc in Sources */,
 				B9495A0C24341CBD00DF2CF1 /* main_win.cc in Sources */,
 				B9495A0F24341CBD00DF2CF1 /* setup_bot_win.cc in Sources */,
-				B9495A6124341CDA00DF2CF1 /* gnet-private.c in Sources */,
 				B9495A2124341CBD00DF2CF1 /* bot_base.cc in Sources */,
-				B9495A6024341CDA00DF2CF1 /* conn-http.c in Sources */,
-				B9495A6824341CDA00DF2CF1 /* base64.c in Sources */,
 				B9495A1924341CBD00DF2CF1 /* game_board.cc in Sources */,
-				B9495A1E24341CBD00DF2CF1 /* gnet_server.cc in Sources */,
+				B9495A1E24341CBD00DF2CF1 /* net_server.cc in Sources */,
 				B9495A1224341CBD00DF2CF1 /* color_win.cc in Sources */,
-				B9495A2224341CBD00DF2CF1 /* gnet_conn.cc in Sources */,
+				B9495A2224341CBD00DF2CF1 /* net_conn.cc in Sources */,
 				B9495A1024341CBD00DF2CF1 /* help_win.cc in Sources */,
-				B9495A6924341CDA00DF2CF1 /* socks-private.c in Sources */,
-				B9495A6624341CDA00DF2CF1 /* iochannel.c in Sources */,
-				B9495A5F24341CDA00DF2CF1 /* unix.c in Sources */,
 				B9495A0E24341CBD00DF2CF1 /* new_game_win.cc in Sources */,
 				B9495A2824341CBD00DF2CF1 /* color_win_glade.cc in Sources */,
 			);
@@ -783,7 +653,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					.,
-					"./gnet-2.0",
 				);
 				INFOPLIST_FILE = cheech/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -871,8 +740,6 @@
 					"/usr/local/Cellar/glib/2.64.2/lib/glib-2.0/include",
 					/usr/local/opt/gettext/include,
 					/usr/local/Cellar/pcre/8.44/include,
-					"/usr/include/gnet-2.0",
-					"/usr/lib/gnet-2.0/include/",
 					"/usr/include/glib-2.0",
 					"/usr/lib/glib-2.0/include",
 				);
@@ -893,7 +760,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					.,
-					"./gnet-2.0",
 				);
 				INFOPLIST_FILE = cheech/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -981,8 +847,6 @@
 					"/usr/local/Cellar/glib/2.64.2/lib/glib-2.0/include",
 					/usr/local/opt/gettext/include,
 					/usr/local/Cellar/pcre/8.44/include,
-					"/usr/include/gnet-2.0",
-					"/usr/lib/gnet-2.0/include/",
 					"/usr/include/glib-2.0",
 					"/usr/lib/glib-2.0/include",
 				);

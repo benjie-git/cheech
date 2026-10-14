@@ -66,13 +66,13 @@ void AjaxServerConn::close_conn()
 	if (_wait_conn)
 	{
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
-			*_wait_conn, &Gnet::Conn::close), false), 100);
+			*_wait_conn, &Net::Conn::close), false), 100);
 		_wait_conn = NULL;
 	}
 }
 
 
-void AjaxServerConn::on_connection_closed(Gnet::Conn *conn)
+void AjaxServerConn::on_connection_closed(Net::Conn *conn)
 {
 	if (_wait_conn == conn)
 	{
@@ -318,7 +318,7 @@ void AjaxServerConn::on_cmd_game_make_move(MoveList *move)
 }
 
 
-void AjaxServerConn::handle_ajax_message(Glib::ustring message, Gnet::Conn *conn)
+void AjaxServerConn::handle_ajax_message(Glib::ustring message, Net::Conn *conn)
 {
 	Glib::ustring command;
 	Glib::ustring arguments;

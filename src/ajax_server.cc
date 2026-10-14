@@ -57,7 +57,7 @@ bool AjaxServer::listen(unsigned int ajax_port,
 }
 
 
-void AjaxServer::connection_open(Gnet::Conn* socket)
+void AjaxServer::connection_open(Net::Conn* socket)
 {
 	socket->evt_data_available.connect(sigc::bind(sigc::mem_fun(*this,
 		&AjaxServer::handle_request), socket));
@@ -66,7 +66,7 @@ void AjaxServer::connection_open(Gnet::Conn* socket)
 }
 
 
-void AjaxServer::connection_closed(Gnet::Conn* socket)
+void AjaxServer::connection_closed(Net::Conn* socket)
 {
 	// Tell all the clients that this connection closed.
 	// (only the client that is using it will do anything...)
@@ -111,7 +111,7 @@ AjaxServerConn* AjaxServer::get_client_by_id(unsigned int id)
 }
 
 
-void AjaxServer::handle_request(Glib::ustring message, Gnet::Conn *conn)
+void AjaxServer::handle_request(Glib::ustring message, Net::Conn *conn)
 {
 	// We only care about the first line
 	if (conn->get_read_count() > 0)
@@ -124,7 +124,7 @@ void AjaxServer::handle_request(Glib::ustring message, Gnet::Conn *conn)
 		(separator > 0 && message.substr(0, separator) != "GET"))
 	{
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
-			*conn, &Gnet::Conn::close), false), 100);
+			*conn, &Net::Conn::close), false), 100);
 		return;
 	}
 
@@ -144,7 +144,7 @@ void AjaxServer::handle_request(Glib::ustring message, Gnet::Conn *conn)
 		// Send the requested file or send error
 		send_file(filename, conn);
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
-			*conn, &Gnet::Conn::close), false), 100);
+			*conn, &Net::Conn::close), false), 100);
 	}
 	else
 	{
@@ -192,7 +192,7 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 }
 
 
-void AjaxServer::send_file(Glib::ustring f, Gnet::Conn *conn)
+void AjaxServer::send_file(Glib::ustring f, Net::Conn *conn)
 {
 	Glib::RefPtr<Glib::IOChannel> pfile;
 
@@ -232,7 +232,7 @@ void AjaxServer::send_file(Glib::ustring f, Gnet::Conn *conn)
 }
 
 
-void AjaxServer::send_content_type(Glib::ustring f, Gnet::Conn *conn)
+void AjaxServer::send_content_type(Glib::ustring f, Net::Conn *conn)
 {
 	unsigned int pos = f.rfind(".");
 	Glib::ustring ext = "";
@@ -259,7 +259,7 @@ void AjaxServer::send_content_type(Glib::ustring f, Gnet::Conn *conn)
 }
 
 
-void AjaxServer::handle_ajax_message(Glib::ustring message, Gnet::Conn *conn)
+void AjaxServer::handle_ajax_message(Glib::ustring message, Net::Conn *conn)
 {
 	unsigned int id = 0;
 	Glib::ustring command;
@@ -269,7 +269,7 @@ void AjaxServer::handle_ajax_message(Glib::ustring message, Gnet::Conn *conn)
 	if (seperator < 0)
 	{
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
-			*(conn), &Gnet::Conn::close), false), 100);
+			*(conn), &Net::Conn::close), false), 100);
 		return;
 	}
 	else
@@ -291,7 +291,7 @@ void AjaxServer::handle_ajax_message(Glib::ustring message, Gnet::Conn *conn)
 		else
 		{
 			Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
-				*(conn), &Gnet::Conn::close), false), 100);
+				*(conn), &Net::Conn::close), false), 100);
 			return;
 		}
 	}
@@ -301,7 +301,7 @@ void AjaxServer::handle_ajax_message(Glib::ustring message, Gnet::Conn *conn)
 	if (client->get_client_hostname() != conn->get_host_name())
 	{
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
-			*(conn), &Gnet::Conn::close), false), 100);
+			*(conn), &Net::Conn::close), false), 100);
 		return;
 	}
 

@@ -35,6 +35,10 @@ targets:
         group: CheechCore
       - path: ../src/game_client.cc
         group: CheechCore
+      - path: ../src/net_conn.cc
+        group: CheechCore
+      - path: ../src/net_server.cc
+        group: CheechCore
       - path: ../src/utility.cc
         group: CheechCore
       - path: ../src/bot_base.cc

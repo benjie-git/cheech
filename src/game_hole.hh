@@ -26,7 +26,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 typedef unsigned int uint;
-typedef unsigned long ulong;
+typedef unsigned long u_long;
 #endif
 
 

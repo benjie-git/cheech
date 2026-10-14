@@ -356,7 +356,7 @@ void BotBase::schedule_search()
 	if (_search_clone)
 		return;
 
-	// Work around a gnet bug by using a timeout
+	// Defer the search to the next main-loop iteration
 	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(*this,
 		&BotBase::make_best_move), false), 1);
 }
@@ -565,7 +565,7 @@ void BotBase::on_cmd_game_turn(unsigned int posn,
 							   GameServer::GameStatus status,
 							   unsigned int move_count)
 {
-	// Work around a gnet bug by using a timeout
+	// Defer the search to the next main-loop iteration
 	if (posn == _client.get_my_player_number())
 	{
 		_abort = FALSE;

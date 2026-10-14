@@ -31,7 +31,7 @@
 
 
 using namespace std;
-using namespace Gnet;
+using namespace Net;
 
 
 GameClient::Player::Player(Glib::ustring name_, int color_, unsigned int id_)
@@ -75,7 +75,7 @@ GameClient::~GameClient()
 
 bool GameClient::ready() const
 {
-	return (_socket.get_status() == Gnet::Conn::statConnected);
+	return (_socket.get_status() == Net::Conn::statConnected);
 }
 
 
