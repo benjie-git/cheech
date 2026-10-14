@@ -54,7 +54,7 @@ about_win_glade::about_win_glade()
    hbuttonbox6->append(*close_button);
    vbox9->append(*label12);
    vbox9->append(*hbuttonbox6);
-   about_win->set_title(_("About cheech 0.9 -- Chinese Checkers"));
+   about_win->set_title(Glib::ustring::compose(_("About cheech %1 -- Chinese Checkers"), VERSION));
    about_win->set_modal(false);
    about_win->set_resizable(true);
    about_win->set_child(*vbox9);

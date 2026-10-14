@@ -15,10 +15,17 @@
 
 set -eu
 
-srcdir=""
-builddir=""
+srcdir="."
+builddir="."
 name="Cheech"
-version="0.0"
+version=""
+
+# Default the version to the AC_INIT version in configure.ac, the single
+# source of truth for the cheech version.
+if [ -n "$srcdir" ] && [ -f "$srcdir/configure.ac" ]; then
+	version=$(tr '\n' ' ' < "$srcdir/configure.ac" \
+		| sed -n 's/.*AC_INIT(\[[^]]*\], *\[\([0-9][0-9.]*\)\].*/\1/p')
+fi
 
 while [ $# -gt 0 ]; do
 	case "$1" in

@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
 AC_INIT([cheech],
-        [0.1],
+        [0.9],
         [https://github.com/benjie-git/cheech],
         [cheech],
         [https://github.com/benjie-git/cheech])
