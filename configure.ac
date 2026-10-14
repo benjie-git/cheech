@@ -171,9 +171,36 @@ AC_CHECK_LIB([socket], [main])
 AC_CHECK_LIB([nsl], [main])
 AC_CHECK_LIB([resolv], [main])
 
-dnl gtkmm (GUIs)
-PKG_CHECK_MODULES([GTKMM], [gtkmm-4.0])
-PKG_CHECK_VAR([GLIB_COMPILE_RESOURCES], [gio-2.0], [glib_compile_resources])
+dnl ---------------------------------------------------------------
+dnl GUI (gtkmm) is optional: the server/bot binaries only need
+dnl glibmm.  --disable-gui skips gtkmm entirely (headless server
+dnl builds); the default (auto) enables the GUI when gtkmm-4.0 is
+dnl available.
+dnl ---------------------------------------------------------------
+AC_ARG_ENABLE([gui],
+  [AS_HELP_STRING([--disable-gui],
+                  [don't build the GTK GUI; server/bot binaries only [default=auto]])],
+  [], [enable_gui=auto])
+
+PKG_CHECK_MODULES([GLIBMM], [glibmm-2.68])
+
+AS_IF([test "x$enable_gui" = "xauto"], [
+  PKG_CHECK_MODULES([GTKMM], [gtkmm-4.0],
+    [enable_gui=yes],
+    [enable_gui=no
+     AC_MSG_WARN([gtkmm-4.0 not found; building server/bot binaries only])])
+], [test "x$enable_gui" = "xyes"], [
+  PKG_CHECK_MODULES([GTKMM], [gtkmm-4.0])
+])
+
+AM_CONDITIONAL([ENABLE_GUI], [test "x$enable_gui" = "xyes"])
+
+AC_MSG_CHECKING([whether to build the GTK GUI])
+AC_MSG_RESULT([$enable_gui])
+
+AS_IF([test "x$enable_gui" = "xyes"], [
+  PKG_CHECK_VAR([GLIB_COMPILE_RESOURCES], [gio-2.0], [glib_compile_resources])
+])
 
 dnl GLib / GThread
 GLIB_REQ=2.6.0

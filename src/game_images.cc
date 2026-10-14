@@ -23,8 +23,8 @@ using namespace std;
 
 GamePoint GameImages::_peg_size;
 
-Gdk::RGBA GameImages::_peg_fill[GameImages::NUM_COLORS+1];
-Gdk::RGBA GameImages::_peg_edge[GameImages::NUM_COLORS+1];
+GameColor GameImages::_peg_fill[GameImages::NUM_COLORS+1];
+GameColor GameImages::_peg_edge[GameImages::NUM_COLORS+1];
 
 namespace {
 struct Rgb { double r, g, b; };
@@ -66,8 +66,8 @@ void GameImages::init()
 {
 	for (unsigned int i = 0; i <= NUM_COLORS; i++)
 	{
-		_peg_fill[i].set_rgba(fill_rgb[i].r, fill_rgb[i].g, fill_rgb[i].b);
-		_peg_edge[i].set_rgba(edge_rgb[i].r, edge_rgb[i].g, edge_rgb[i].b);
+		_peg_fill[i] = GameColor(fill_rgb[i].r, fill_rgb[i].g, fill_rgb[i].b);
+		_peg_edge[i] = GameColor(edge_rgb[i].r, edge_rgb[i].g, edge_rgb[i].b);
 	}
 
 	_peg_size = GamePoint(peg_size, peg_size);
@@ -80,14 +80,14 @@ GamePoint GameImages::get_peg_size()
 }
 
 
-Gdk::RGBA GameImages::get_peg_fill(unsigned int id)
+GameColor GameImages::get_peg_fill(unsigned int id)
 {
 	g_assert(id <= NUM_COLORS);
 	return _peg_fill[id];
 }
 
 
-Gdk::RGBA GameImages::get_peg_edge(unsigned int id)
+GameColor GameImages::get_peg_edge(unsigned int id)
 {
 	g_assert(id <= NUM_COLORS);
 	return _peg_edge[id];

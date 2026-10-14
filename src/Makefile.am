@@ -2,7 +2,8 @@
 
 AM_CPPFLAGS = \
 	-I$(srcdir)/gnet-2.0 \
-	$(GTKMM_CFLAGS) \
+	$(GLIBMM_CFLAGS) \
+	$(GUI_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(GTHREAD_CFLAGS) \
 	$(MACOS_APP_CFLAGS) \
@@ -12,16 +13,29 @@ AM_CPPFLAGS = \
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall -std=c++17
 
-bin_PROGRAMS = cheech cheechd cheechbot cheechwebd
+# gtkmm flags, only set when the GUI is built (--disable-gui leaves
+# them empty so the server/bot binaries need no GTK).
+if ENABLE_GUI
+GUI_CFLAGS = $(GTKMM_CFLAGS)
+GUI_LIBS = $(GTKMM_LIBS)
+else
+GUI_CFLAGS =
+GUI_LIBS =
+endif
+
+bin_PROGRAMS = cheechd cheechbot cheechwebd
+if ENABLE_GUI
+bin_PROGRAMS += cheech
+endif
 
 cheech_LDADD = \
-	$(GTKMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(MACOS_APP_LIBS)
+	$(GUI_LIBS) $(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(MACOS_APP_LIBS)
 cheechd_LDADD = \
-	$(GTKMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(MACOS_APP_LIBS)
+	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread
 cheechbot_LDADD = \
-	$(GTKMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(MACOS_APP_LIBS)
+	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread
 cheechwebd_LDADD = \
-	$(GTKMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(MACOS_APP_LIBS)
+	$(GLIBMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread
 
 gnet_sources = \
 	gnet-2.0/base64.c \

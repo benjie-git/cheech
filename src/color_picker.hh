@@ -81,10 +81,10 @@ inline void ColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
 	double cx = w / 2.0;
 	double cy = h / 2.0;
 
-	Gdk::RGBA fill = GameImages::get_peg_fill(_color);
+	const GameColor fill = GameImages::get_peg_fill(_color);
 	Gdk::RGBA fg = get_style_context()->get_color();
 
-	cr->set_source_rgba(fill.get_red(), fill.get_green(), fill.get_blue(),
+	cr->set_source_rgba(fill.r, fill.g, fill.b,
 		_selected ? 1.0 : 0.7);
 	cr->arc(cx, cy, r, 0, 2 * CP_PI);
 	cr->fill();

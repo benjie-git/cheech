@@ -96,16 +96,14 @@ void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
 	unsigned int id = (!_hole) ? 0 :
 		_client->get_player_color(_hole->get_current_player());
 
-	Gdk::RGBA fill = GameImages::get_peg_fill(id);
-	Gdk::RGBA edge = GameImages::get_peg_edge(id);
+	const GameColor fill = GameImages::get_peg_fill(id);
+	const GameColor edge = GameImages::get_peg_edge(id);
 
-	cr->set_source_rgba(edge.get_red(), edge.get_green(), edge.get_blue(),
-						edge.get_alpha());
+	cr->set_source_rgba(edge.r, edge.g, edge.b, edge.a);
 	cr->arc(cx, cy, r, 0, 2.0 * PI);
 	cr->fill();
 
-	cr->set_source_rgba(fill.get_red(), fill.get_green(), fill.get_blue(),
-						fill.get_alpha());
+	cr->set_source_rgba(fill.r, fill.g, fill.b, fill.a);
 	cr->arc(cx, cy, r * 0.88, 0, 2.0 * PI);
 	cr->fill();
 

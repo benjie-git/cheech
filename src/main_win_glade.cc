@@ -80,14 +80,14 @@ void PegColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int,
    double cx = w / 2.0;
    double cy = h / 2.0;
 
-   Gdk::RGBA fill = GameImages::get_peg_fill(_color);
-   Gdk::RGBA edge = GameImages::get_peg_edge(_color);
+   const GameColor fill = GameImages::get_peg_fill(_color);
+   const GameColor edge = GameImages::get_peg_edge(_color);
 
-   cr->set_source_rgb(edge.get_red(), edge.get_green(), edge.get_blue());
+   cr->set_source_rgb(edge.r, edge.g, edge.b);
    cr->arc(cx, cy, r, 0, 2 * PEG_SWATCH_PI);
    cr->fill();
 
-   cr->set_source_rgb(fill.get_red(), fill.get_green(), fill.get_blue());
+   cr->set_source_rgb(fill.r, fill.g, fill.b);
    cr->arc(cx, cy, r * 0.88, 0, 2 * PEG_SWATCH_PI);
    cr->fill();
 

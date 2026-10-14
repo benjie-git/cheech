@@ -64,6 +64,10 @@ pages.
   - make
   - make install
 
+Note: it's possible to build without the gui for a server-only setup.  In this case, just install:
+ - brew install glibmm / apt install libglibmm-2.68-dev
+ - Run ./configure with the --disable-gui flag, then make and make install.
+
 
 ### Building a MacOS app bundle
 
