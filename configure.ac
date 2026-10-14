@@ -187,6 +187,16 @@ WIN32_LIBS=
 WIN32_GUI_LDFLAGS=
 AS_IF([test "x$is_win32_host" = "xyes"], [
   WIN32_CFLAGS="-DWIN32"
+  dnl With LTO on MinGW/PE, the vague-linkage destructors, vtables and
+  dnl thunks emitted into .gnu.linkonce sections by the LTO partitions
+  dnl are not deduplicated by ld, causing "multiple definition" errors
+  dnl (GCC PR 94156).  A single partition emits each symbol only once,
+  dnl which keeps LTO's whole-program inlining.
+  AS_IF([test "x$enable_lto" = "xyes"], [
+    WIN32_CFLAGS="$WIN32_CFLAGS -flto-partition=none"
+    dnl the option must also reach the final LTO link
+    LDFLAGS="$LDFLAGS -flto-partition=none"
+  ])
   WIN32_LIBS="-lws2_32"
   dnl keep the GUI binary from opening a console window
   WIN32_GUI_LDFLAGS="-mwindows"
