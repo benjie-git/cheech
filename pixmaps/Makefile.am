@@ -5,3 +5,5 @@ dist_pixmaps1_DATA = cheech.png
 
 pixmaps2dir = $(datadir)/pixmaps/$(PACKAGE)
 dist_pixmaps2_DATA = cheech.png
+
+EXTRA_DIST = cheech.gresource.xml

@@ -78,11 +78,8 @@ mkdir -p "$macos" "$res" "$frameworks"
 cp "$bin" "$macos/cheech-bin"
 chmod 755 "$macos/cheech-bin"
 
-# Pixmaps (game_images.cc reads these straight from Contents/Resources).
-for png in "$srcdir"/pixmaps/*.png; do
-	[ -e "$png" ] || continue
-	cp "$png" "$res/"
-done
+# (The About dialog's cheech.png is compiled into the binary as a GResource;
+# pixmaps on disk are only used by the Linux make-install desktop icon.)
 
 # Application icon, generated from the artwork that ships with the old
 # Xcode project, if it is available.
@@ -137,6 +134,26 @@ if [ -n "$brew_prefix" ] && [ -d "$brew_prefix/share" ]; then
 	fi
 fi
 
+# Web client files, served by the app's built-in AjaxServer.  The launcher
+# below exports CHEECH_RESOURCES, and AjaxServer::conv_filename looks in
+# share/cheech/cheechweb under it (same relative layout as make install).
+webdir="$res/share/cheech/cheechweb"
+if [ -d "$srcdir/ajax/www/com.benjie.cheech" ]; then
+	mkdir -p "$webdir/images"
+	for f in "$srcdir"/ajax/www/com.benjie.cheech/*; do
+		case "$f" in
+			*/Makefile*|*.bak)	continue ;;
+		esac
+		if [ -f "$f" ]; then
+			cp "$f" "$webdir/"
+		fi
+	done
+	for f in "$srcdir"/ajax/www/com.benjie.cheech/images/*.png; do
+		[ -e "$f" ] || continue
+		cp "$f" "$webdir/images/"
+	done
+fi
+
 # Launcher script.
 cat > "$macos/cheech" <<EOF
 #!/bin/sh
@@ -145,11 +162,12 @@ cat > "$macos/cheech" <<EOF
 bundle="\$(cd "\$(dirname "\$0")/../.." && pwd)"
 resources="\$bundle/Contents/Resources"
 
+CHEECH_RESOURCES="\$resources"
 GTK_DATA_PREFIX="\$resources"
 GTK_EXE_PREFIX="\$resources"
 GTK_PATH="\$resources"
 XDG_DATA_DIRS="\$resources/share${brew_prefix:+:$brew_prefix/share}"
-export GTK_DATA_PREFIX GTK_EXE_PREFIX GTK_PATH XDG_DATA_DIRS
+export CHEECH_RESOURCES GTK_DATA_PREFIX GTK_EXE_PREFIX GTK_PATH XDG_DATA_DIRS
 
 if [ -d "\$resources/share/glib-2.0/schemas" ]; then
 	GSETTINGS_SCHEMA_DIR="\$resources/share/glib-2.0/schemas"

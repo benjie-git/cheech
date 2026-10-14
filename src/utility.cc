@@ -20,6 +20,9 @@
 
 #include <glibmm.h>
 
+#include <config.h>
+#include <iostream>
+
 #ifdef WIN32
 #include <windows.h>
 #include <shlwapi.h>
@@ -109,6 +112,12 @@ void util::delay_us(int us)
 #else
 	Sleep((us + 999) / 1000);
 #endif
+}
+
+
+void util::print_banner(const char *tool)
+{
+	std::cout << tool << " -- Cheech v" VERSION " Chinese Checkers" << std::endl;
 }
 
 

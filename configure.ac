@@ -173,6 +173,7 @@ AC_CHECK_LIB([resolv], [main])
 
 dnl gtkmm (GUIs)
 PKG_CHECK_MODULES([GTKMM], [gtkmm-4.0])
+PKG_CHECK_VAR([GLIB_COMPILE_RESOURCES], [gio-2.0], [glib_compile_resources])
 
 dnl GLib / GThread
 GLIB_REQ=2.6.0

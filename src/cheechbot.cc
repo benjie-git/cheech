@@ -231,6 +231,8 @@ void process_options(int &argc, char **&argv)
 
 int main(int argc, char **argv)
 {
+	util::print_banner("cheechbot");
+
 #if defined(ENABLE_NLS)
 	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");

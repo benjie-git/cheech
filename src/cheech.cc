@@ -21,12 +21,16 @@
 #include "gnet-2.0/gnet.h"
 #include <glib/gi18n.h>
 #include <glibmm/optioncontext.h>
+#include <gdkmm/display.h>
 #include <gtkmm/application.h>
+#include <gtkmm/cssprovider.h>
+#include <gtkmm/stylecontext.h>
 
 #include "config.h"
 #include "prefs.hh"
 #include "main_win.hh"
 #include "game_images.hh"
+#include "utility.hh"
 
 
 // cheech Options
@@ -167,6 +171,8 @@ void process_options(int &argc, char **&argv)
 
 int main(int argc, char **argv)
 {
+	util::print_banner("cheech");
+
 #if defined(ENABLE_NLS)
 	bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
@@ -239,6 +245,16 @@ int main(int argc, char **argv)
 			{ main_win->activate_action("win.quit"); });
 		app->add_action("about", [main_win]()
 			{ main_win->activate_action("win.about"); });
+
+		// The theme only rounds the corners of widgets whose CSS node is
+		// named `frame`; the .frame style class (which the Server Setup
+		// expander borrows for its border) draws a square border.  Round
+		// those to match the theme's window radius (5px button radius + 3).
+		Glib::RefPtr<Gtk::CssProvider> css = Gtk::CssProvider::create();
+		css->load_from_string("expander-widget.frame { border-radius: 8px; }");
+		Gtk::StyleContext::add_provider_for_display(
+			Gdk::Display::get_default(), css,
+			GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 		app->add_window(*main_win);
 

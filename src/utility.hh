@@ -22,6 +22,7 @@
 #define INCL_UTILITY_HH
 
 #include <sstream>
+#include <locale>
 #include <glibmm/ustring.h>
 
 
@@ -43,6 +44,8 @@ namespace util {
 
 	int hex_decode(char hex);
 	Glib::ustring url_decode(Glib::ustring encoded);
+
+	void print_banner(const char *tool);
 }
 
 
@@ -51,6 +54,7 @@ Glib::ustring
 util::to_str(const T& value)
 {
 	std::ostringstream stream;
+	stream.imbue(std::locale::classic());
 	stream << value;
 	return stream.str();
 }
@@ -60,6 +64,7 @@ template <typename T>
 T util::from_str(const Glib::ustring& str)
 {
 	std::istringstream stream(str);
+	stream.imbue(std::locale::classic());
 	T value;
 	stream >> value;
 

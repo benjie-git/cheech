@@ -28,6 +28,28 @@
 #include "utility.hh"
 
 
+// Numeric values were once saved with the machine's locale active, so
+// digits could be grouped ("3,838", "3.838", or "3 838"/no-break-space
+// in French locales).  Strip the separators before parsing so stale
+// prefs read back as the number that was meant.
+static Glib::ustring strip_grouping(const Glib::ustring& value)
+{
+	std::string clean(value.raw());
+	const std::string seps[] =
+		{",", ".", " ", "\t", "\xC2\xA0", "\xE2\x80\xAF"};
+	for (const std::string &sep : seps)
+	{
+		std::string::size_type pos = clean.find(sep);
+		while (pos != std::string::npos)
+		{
+			clean.erase(pos, sep.length());
+			pos = clean.find(sep, pos);
+		}
+	}
+	return Glib::ustring(clean);
+}
+
+
 Prefs::Prefs()
 {
 	set_defaults();
@@ -130,17 +152,17 @@ void Prefs::read(void)
 		if (key == "name")
 			name = value;
 		else if (key == "color")
-			color = util::from_str<unsigned int>(value);
+			color = util::from_str<unsigned int>(strip_grouping(value));
 
 		else if (key == "host_port")
-			host_port = util::from_str<unsigned int>(value);
+			host_port = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "start_cheechweb")
 			start_cheechweb = (value == "yes") ? true : false;
 		else if (key == "cheechweb_port")
-			cheechweb_port = util::from_str<unsigned int>(value);
+			cheechweb_port = util::from_str<unsigned int>(strip_grouping(value));
 
 		else if (key == "num_players")
-			num_players = util::from_str<unsigned int>(value);
+			num_players = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "long_jumps")
 			long_jumps = (value == "yes") ? true : false;
 		else if (key == "hop_others")
@@ -153,7 +175,7 @@ void Prefs::read(void)
 		else if (key == "seat")
 			seats.push_back(value);
 		else if (key == "join_port")
-			join_port = util::from_str<unsigned int>(value);
+			join_port = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "spectator")
 			spectator = (value == "yes") ? true : false;
 
@@ -176,17 +198,17 @@ void Prefs::read(void)
 		}
 		else if (key == "bot_level")
 		{
-			bot_level = util::from_str<unsigned int>(value);
+			bot_level = util::from_str<unsigned int>(strip_grouping(value));
 			have_level = true;
 		}
 		else if (key == "bot_depth")
-			bot_depth = util::from_str<unsigned int>(value);
+			bot_depth = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "move_delay")
-			move_delay = util::from_str<unsigned int>(value);
+			move_delay = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "think_delay")
-			think_delay = util::from_str<unsigned int>(value);
+			think_delay = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "smarts")
-			smarts = util::from_str<unsigned int>(value);
+			smarts = util::from_str<unsigned int>(strip_grouping(value));
 	}
 
 	pfile->close();

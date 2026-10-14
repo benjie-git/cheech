@@ -142,6 +142,15 @@ cheech_SOURCES = \
 	ajax_server_conn.hh \
 	$(gnet_sources)
 
+# The About-window icon is embedded in the GUI binary as a GResource.
+nodist_cheech_SOURCES = cheech_resources.c
+CLEANFILES = cheech_resources.c
+
+cheech_resources.c: $(top_srcdir)/pixmaps/cheech.gresource.xml $(top_srcdir)/pixmaps/cheech.png
+	$(GLIB_COMPILE_RESOURCES) --generate-source --target=$@ \
+		--sourcedir=$(top_srcdir)/pixmaps \
+		$(top_srcdir)/pixmaps/cheech.gresource.xml
+
 cheechd_SOURCES = \
 	cheechd.cc \
 	$(bot_sources) \

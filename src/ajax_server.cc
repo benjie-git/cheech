@@ -176,7 +176,13 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
     while ((pos = filename.find("/", 0)) < filename.size())
 		filename.replace(pos, 1, "\\");
 #else
-	filename = PACKAGE_DATA_DIR "/" PACKAGE "/cheechweb" + f;
+	// The macOS bundle launcher points CHEECH_RESOURCES at the app's
+	// Resources dir; the make-install layout lives under PACKAGE_DATA_DIR.
+	const char *resources = g_getenv("CHEECH_RESOURCES");
+	if (resources)
+		filename = Glib::ustring(resources) + "/share/cheech/cheechweb" + f;
+	else
+		filename = PACKAGE_DATA_DIR "/" PACKAGE "/cheechweb" + f;
 #endif
 
 	while ((pos = filename.find("..", 0)) < filename.size())

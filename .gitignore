@@ -1,4 +1,5 @@
 # generated autotools
+/src/cheech_resources.c
 /configure
 /configure~
 /config.h

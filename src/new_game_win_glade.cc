@@ -101,12 +101,19 @@ new_game_win_glade::new_game_win_glade()
 	network_table->attach(*web_port_label, 0, 2);
 	network_table->attach(*cheechweb_port_entry, 1, 2);
 
+	Gtk::Expander *network_expander = Gtk::make_managed<Gtk::Expander>();
+	// "frame" is the style class Gtk::Frame uses for its rounded border,
+	// so this matches the Game Setup frame's look.
+	network_expander->add_css_class("frame");
 	Gtk::Label *network_label =
-		Gtk::make_managed<Gtk::Label>(_("<b>CheechWeb</b>"));
+		Gtk::make_managed<Gtk::Label>(_("<b>Server Setup</b>"));
 	network_label->set_use_markup(true);
-	Gtk::Frame *network_frame = Gtk::make_managed<Gtk::Frame>();
-	network_frame->set_label_widget(*network_label);
-	network_frame->set_child(*network_table);
+	network_label->set_margin_top(4);
+	network_label->set_margin_bottom(4);
+	network_label->set_margin_start(6);
+	network_label->set_margin_end(6);
+	network_expander->set_label_widget(*network_label);
+	network_expander->set_child(*network_table);
 
 	host_cancel_button = Gtk::make_managed<Gtk::Button>(_("_Cancel"), true);
 	host_button = Gtk::make_managed<Gtk::Button>(_("Start Game"));
@@ -128,7 +135,7 @@ new_game_win_glade::new_game_win_glade()
 	new_page->append(*players_frame);
 	new_page->append(*seat_buttons);
 	new_page->append(*rules_frame);
-	new_page->append(*network_frame);
+	new_page->append(*network_expander);
 	new_page->append(*host_buttons);
 
 	// The Join page.

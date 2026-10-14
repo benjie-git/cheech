@@ -84,7 +84,6 @@ To build a self-contained Cheech.app instead of installing system-wide:
 
 - Install gtkmm4
 - Use the included Dev-C++ files to build the cheech binaries.
-- Put the cheech*.exe files and the pixmap directory into a folder together
 - Rename the ajax/www/com.benjie.cheech directory cheechweb, and put it into
   the same folder as cheech.exe, and it should all work.
 
