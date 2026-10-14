@@ -21,7 +21,7 @@
 
 using namespace std;
 
-Gdk::Point GameImages::_peg_size;
+GamePoint GameImages::_peg_size;
 
 Gdk::RGBA GameImages::_peg_fill[GameImages::NUM_COLORS+1];
 Gdk::RGBA GameImages::_peg_edge[GameImages::NUM_COLORS+1];
@@ -70,11 +70,11 @@ void GameImages::init()
 		_peg_edge[i].set_rgba(edge_rgb[i].r, edge_rgb[i].g, edge_rgb[i].b);
 	}
 
-	_peg_size = Gdk::Point(peg_size, peg_size);
+	_peg_size = GamePoint(peg_size, peg_size);
 }
 
 
-Gdk::Point GameImages::get_peg_size()
+GamePoint GameImages::get_peg_size()
 {
 	return _peg_size;
 }

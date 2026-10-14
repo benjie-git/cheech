@@ -25,6 +25,7 @@
 #include <gtkmm/separator.h>
 #include "bot_catalog.hh"
 #include "color_picker.hh"
+#include "combo_drop_down.hh"
 #include "prefs.hh"
 
 
@@ -53,10 +54,10 @@ class new_game_win : public new_game_win_glade
 
 		void show_join_page(bool joining);
 
-		sigc::signal<bool, unsigned int, unsigned int,
-			bool, bool, bool, std::vector<NewGameSeat> > signal_start_server;
-		sigc::signal<void, Glib::ustring, unsigned int, Glib::ustring,
-			unsigned int, bool> signal_start_client;
+		sigc::signal<bool(unsigned int, unsigned int,
+			bool, bool, bool, std::vector<NewGameSeat>)> signal_start_server;
+		sigc::signal<void(Glib::ustring, unsigned int, Glib::ustring,
+			unsigned int, bool)> signal_start_client;
 
 	private:
 		// The widgets of one seat row.  Rows are created plain-new (their
@@ -68,15 +69,15 @@ class new_game_win : public new_game_win_glade
 			// A thin line between this row and the one above (NULL for the
 			// first seat).  Plain-new and deleted with the row.
 			Gtk::Separator *sep;
-			Gtk::VBox *box;
-			Gtk::ComboBoxText *kind_box;
-			Gtk::ComboBoxText *family_box;
+			Gtk::Box *box;
+			ComboDropDown *kind_box;
+			ComboDropDown *family_box;
 			Gtk::Entry *name_entry;
 			ColorPicker *color_picker;
 			Gtk::Expander *details;
-			Gtk::ComboBoxText *depth_box;
-			Gtk::ComboBoxText *smarts_box;
-			Gtk::HBox *focus_box;
+			ComboDropDown *depth_box;
+			ComboDropDown *smarts_box;
+			Gtk::Box *focus_box;
 			std::vector<Gtk::CheckButton *> focus_checks;
 			// The seat ids the checkboxes were built for, parallel to
 			// focus_checks, so a rebuilt row keeps each seat's own state.

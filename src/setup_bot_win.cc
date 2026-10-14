@@ -24,7 +24,6 @@
 #include <glibmm/i18n.h>
 #include <gtkmm/label.h>
 #include <glibmm/main.h>
-#include <gdkmm/window.h>
 
 
 static unsigned int focus_mask_from_checks(
@@ -304,7 +303,7 @@ void setup_bot_win::rebuild_focus()
 	_focus_widgets.clear();
 	_focus_checks.clear();
 
-	config_table->resize(3, 2);
+	// Gtk::Grid grows its rows automatically; nothing to resize here.
 
 	if (!_bot || !_client || !_client->get_board())
 		return;
@@ -319,25 +318,22 @@ void setup_bot_win::rebuild_focus()
 	if (num < 1 || num > 6)
 		return;
 
-	config_table->resize(5, 2);
-
 	Gtk::Label *label = new Gtk::Label(
 		friendly ? _("Friendly to:") : _("Mean to:"));
-	label->set_alignment(0.5, 0.5);
-	label->set_padding(0, 0);
-	label->set_justify(Gtk::JUSTIFY_RIGHT);
-	label->set_line_wrap(false);
+	label->set_xalign(0.5);
+	label->set_yalign(0.5);
+	label->set_justify(Gtk::Justification::RIGHT);
+	label->set_wrap(false);
 	label->set_use_markup(false);
 	label->set_selectable(false);
-	config_table->attach(*label, 0, 1, 3, 4, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
+	config_table->attach(*label, 0, 3, 1, 1);
 	label->show();
 	_focus_widgets.push_back(label);
 
 	// Lay the checkboxes out horizontally on one line beside the label.
-	Gtk::HBox *hbox = new Gtk::HBox(false, 6);
-	config_table->attach(*hbox, 1, 2, 3, 4, Gtk::EXPAND|Gtk::FILL,
-		Gtk::FILL, 0, 0);
+	Gtk::Box *hbox = new Gtk::Box(Gtk::Orientation::HORIZONTAL, 6);
+	hbox->set_hexpand(true);
+	config_table->attach(*hbox, 1, 3, 1, 1);
 	hbox->show();
 
 	for (unsigned int player = 1; player <= num; player++)
@@ -349,7 +345,7 @@ void setup_bot_win::rebuild_focus()
 		Gtk::CheckButton *check = new Gtk::CheckButton(text);
 		check->set_active((_focus_mask == BotBase::ALL_PLAYERS)
 			|| (_focus_mask & (1u << (player - 1))));
-		hbox->pack_start(*check, Gtk::PACK_SHRINK);
+		hbox->append(*check);
 		check->show();
 		_focus_checks.push_back(check);
 	}
@@ -379,11 +375,6 @@ void setup_bot_win::present_focused()
 
 void setup_bot_win::grab_dialog_focus()
 {
-	Glib::RefPtr<Gdk::Window> window = get_window();
-
-	if (window)
-		window->focus(GDK_CURRENT_TIME);
-
 	set_focus(*type_box);
 	type_box->grab_focus();
 }

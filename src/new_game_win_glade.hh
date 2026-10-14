@@ -25,9 +25,8 @@
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/button.h>
 #include <gtkmm/box.h>
-#include <gtkmm/table.h>
+#include <gtkmm/grid.h>
 #include <gtkmm/frame.h>
-#include <gtkmm/alignment.h>
 #include <gtkmm/notebook.h>
 #include <gtkmm/comboboxtext.h>
 #include <gtkmm/expander.h>
@@ -41,7 +40,7 @@ class new_game_win_glade : public Gtk::Window
 	protected:
 		// The New Game page.
 		class Gtk::ScrolledWindow *seats_scroll;
-		class Gtk::VBox *seats_box;
+		class Gtk::Box *seats_box;
 		class Gtk::Button *add_seat_button;
 		class Gtk::Button *remove_seat_button;
 		class Gtk::CheckButton *long_jumps;

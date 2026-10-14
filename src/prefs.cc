@@ -109,7 +109,7 @@ void Prefs::read(void)
 
 	Glib::ustring line, key, value;
 
-	while (pfile->read_line(line) == Glib::IO_STATUS_NORMAL)
+	while (pfile->read_line(line) == Glib::IOStatus::NORMAL)
 	{
 		while (line.substr(line.length()-1,1) == "\n" ||
 			line.substr(line.length()-1,1) == "\r")

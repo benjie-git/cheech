@@ -29,7 +29,7 @@ class name_win : public name_win_glade
 
 		void set_name(Glib::ustring *name, bool force = false);
 
-		sigc::signal<void, Glib::ustring> signal_change_name;
+		sigc::signal<void(Glib::ustring)> signal_change_name;
 
 		void on_disconnected();
 

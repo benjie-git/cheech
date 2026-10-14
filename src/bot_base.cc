@@ -357,7 +357,7 @@ void BotBase::schedule_search()
 		return;
 
 	// Work around a gnet bug by using a timeout
-	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(this,
+	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(*this,
 		&BotBase::make_best_move), false), 1);
 }
 
@@ -575,7 +575,7 @@ void BotBase::on_cmd_game_turn(unsigned int posn,
 			_awaiting_mapping = true;
 			_mapping_timeout.disconnect();
 			_mapping_timeout = Glib::signal_timeout().connect(sigc::bind_return(
-				sigc::mem_fun(this, &BotBase::on_mapping_timeout), false), 250);
+				sigc::mem_fun(*this, &BotBase::on_mapping_timeout), false), 250);
 			request_player_mapping();
 		}
 		else
@@ -1129,7 +1129,7 @@ void BotBase::make_move(MoveList *list)
 
 	_client.make_move(list);
 
-	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(&_client,
+	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(_client,
 								   &GameClient::hide_move), false), 0);
 #endif
 }
@@ -1147,7 +1147,7 @@ bool BotBase::try_commit_move(MoveList move)
 
 	_client.make_move(&move);
 
-	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(&_client,
+	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(_client,
 								   &GameClient::hide_move), false), 0);
 
 	return false;

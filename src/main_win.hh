@@ -34,6 +34,10 @@
 #include "game_client.hh"
 #include "bot_base.hh"
 
+#include <giomm/simpleactiongroup.h>
+#include <giomm/menuitem.h>
+#include <gtkmm/messagedialog.h>
+
 
 class main_win : public main_win_glade
 {
@@ -95,9 +99,11 @@ class main_win : public main_win_glade
         void on_change_name_activate();
 		void on_change_color_activate();
 		void on_resync_activate();
-		bool on_delete_event(GdkEventAny* event);
+		bool on_close_request();
 		void on_quit_activate();
 		bool confirm_end_game();
+		void on_confirm_quit_response(int response);
+		void quit_now();
 		void on_dialog_hidden();
 		void on_game_settings_activate();
 
@@ -119,12 +125,6 @@ class main_win : public main_win_glade
 		void add_bot(BotBase *bot);
 		void bot_disconnected(BotBase *bot);
 		void update_menus();
-
-#ifdef MACOS_APP
-		void setup_macos_menubar();
-		static gboolean on_macos_block_termination(gpointer osx,
-			gpointer data);
-#endif
 
 		void on_about_activate();
 		void on_how_to_play_activate();
@@ -181,6 +181,29 @@ class main_win : public main_win_glade
 		// second entry would finish the teardown and leave the outer run
 		// using freed state (the quit-midgame crash).
 		bool					_leaving_game;
+
+		// The win.* actions the Gio::Menu model in main_win_glade refers to.
+		Glib::RefPtr<Gio::SimpleActionGroup>	_win_actions;
+
+		Gtk::MessageDialog * _confirm_quit_dialog;
+		// Held so update_menus() can enable/disable menu entries.
+		Glib::RefPtr<Gio::SimpleAction> _end_game_action;
+		Glib::RefPtr<Gio::SimpleAction> _leave_game_action;
+		Glib::RefPtr<Gio::SimpleAction> _game_settings_action;
+		Glib::RefPtr<Gio::SimpleAction> _restart_game_action;
+		Glib::RefPtr<Gio::SimpleAction> _rotate_action;
+		Glib::RefPtr<Gio::SimpleAction> _shuffle_action;
+		Glib::RefPtr<Gio::SimpleAction> _change_name_action;
+		Glib::RefPtr<Gio::SimpleAction> _change_color_action;
+		Glib::RefPtr<Gio::SimpleAction> _add_computer_player_action;
+		Glib::RefPtr<Gio::SimpleAction> _remove_computer_players_action;
+
+		Glib::RefPtr<Gio::SimpleAction> _setup_computer_player_action;
+		Glib::RefPtr<Gio::SimpleAction> _show_last_move_action;
+		Glib::RefPtr<Gio::SimpleAction> _undo_action;
+		Glib::RefPtr<Gio::SimpleAction> _redo_action;
+		// The Show Chat item label is toggled at runtime.
+		Glib::RefPtr<Gio::MenuItem>		_show_chat_item;
 };
 
 #endif

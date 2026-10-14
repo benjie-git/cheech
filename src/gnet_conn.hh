@@ -65,11 +65,11 @@ class Gnet::Conn : public sigc::trackable
 		// Number of times evt_data_available has been called
 		unsigned int get_read_count() const;
 
-		sigc::signal<void>					evt_connected;
-		sigc::signal<void>					evt_cancelled;
-		sigc::signal<void, Glib::ustring>	evt_data_available;
-		sigc::signal<void>					evt_closed;
-		sigc::signal<void, Error>			evt_error;   
+		sigc::signal<void()>					evt_connected;
+		sigc::signal<void()>					evt_cancelled;
+		sigc::signal<void(Glib::ustring)>	evt_data_available;
+		sigc::signal<void()>					evt_closed;
+		sigc::signal<void(Error)>			evt_error;   
 	
 		Conn& operator<<(const Glib::ustring& data);
 		Conn& write(gchar *data, unsigned long count);

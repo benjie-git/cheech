@@ -102,12 +102,13 @@ std::shared_ptr<trackable_state> state_of(const F&, long)
 
 } // namespace internal
 
-template <class T_return, class... T_arg>
-class signal;
+template <class Signature> class signal;
 
-template <class... Args>
-class signal<void, Args...>
+template <class R, class... Args>
+class signal<R(Args...)>
 {
+	static_assert(std::is_void<R>::value,
+		"the compat signal only supports void return types");
 private:
 	struct entry
 	{

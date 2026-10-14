@@ -33,7 +33,7 @@ class setup_game_win : public setup_game_win_glade
 		void setup(unsigned int num, bool lj, bool ho, bool so,
 				   GameServer::GameStatus status);
 
-		sigc::signal<void, unsigned int, bool, bool, bool> signal_restart_game;
+		sigc::signal<void(unsigned int, bool, bool, bool)> signal_restart_game;
 
 		void on_cmd_game_turn(unsigned int posn,
 							  GameServer::GameStatus status,

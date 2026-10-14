@@ -119,8 +119,8 @@ public:
 	bool load_state(const Glib::ustring& state);
 
 public:
-	sigc::signal<void, Glib::ustring> evt_message;
-	sigc::signal<void> evt_game_over;
+	sigc::signal<void(Glib::ustring)> evt_message;
+	sigc::signal<void()> evt_game_over;
 
 private:
 	GameServer& operator<<(const Glib::ustring& text);

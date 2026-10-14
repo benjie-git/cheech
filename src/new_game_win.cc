@@ -131,12 +131,17 @@ new_game_win::new_game_win() : new_game_win_glade()
 	join_host_entry->get_entry()->signal_activate().connect(sigc::mem_fun(*this,
 		&new_game_win::on_join_button_clicked));
 	join_host_entry->signal_changed().connect(
-		sigc::mem_fun(*(join_host_entry->get_entry()), &Widget::grab_focus));
+		sigc::hide_return(sigc::mem_fun(*(join_host_entry->get_entry()),
+			&Widget::grab_focus)));
 	join_host_entry->set_focus_on_click(false);
 
 	// Remember the seat layout across games and app runs, even when the
 	// dialog is closed without starting a game.
 	signal_hide().connect(sigc::mem_fun(*this, &new_game_win::save_seats));
+
+	// Focus the Start Game button when the dialog is opened (also on
+	// re-show, since the window is only hidden on close).
+	signal_map().connect([this]() { host_button->grab_focus(); });
 }
 
 
@@ -145,12 +150,12 @@ void new_game_win::show_join_page(bool joining)
 	if (joining)
 	{
 		role_notebook->set_current_page(1);
-		join_button->grab_default();
+		set_default_widget(*join_button);
 	}
 	else
 	{
 		role_notebook->set_current_page(0);
-		host_button->grab_default();
+		set_default_widget(*host_button);
 	}
 }
 
@@ -170,70 +175,80 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	if (!_rows.empty())
 	{
 		// A thin line between the seats.
-		row->sep = new class Gtk::Separator(Gtk::ORIENTATION_HORIZONTAL);
-		seats_box->pack_start(*row->sep, false, false, 2);
+		row->sep = new class Gtk::Separator(Gtk::Orientation::HORIZONTAL);
+		seats_box->append(*row->sep);
+		row->sep->set_margin_top(2);
 		row->sep->show();
 	}
 
-	row->box = new Gtk::VBox(false, 3);
-	row->box->set_border_width(3);
+	row->box = new Gtk::Box(Gtk::Orientation::VERTICAL, 3);
+	row->box->set_margin_top(3);
+	row->box->set_margin_bottom(3);
+	row->box->set_margin_start(3);
+	row->box->set_margin_end(3);
 
-	row->kind_box = Gtk::manage(new class Gtk::ComboBoxText());
+	row->kind_box = Gtk::make_managed<ComboDropDown>();
 	row->kind_box->append(_("Human"));
 	row->kind_box->append(_("Computer"));
 	row->kind_box->append(_("Remote"));
 	row->kind_box->set_active(seat.kind);
 
-	row->family_box = Gtk::manage(new class Gtk::ComboBoxText());
+	row->family_box = Gtk::make_managed<ComboDropDown>();
 	row->family_box->append(BotUI::FRIENDLY);
 	row->family_box->append(BotUI::NEUTRAL);
 	row->family_box->append(BotUI::MEAN);
 
-	row->name_entry = Gtk::manage(new class Gtk::Entry());
+	row->name_entry = Gtk::make_managed<class Gtk::Entry>();
 	row->name_entry->set_text(seat.name);
 	row->name_entry->set_max_width_chars(12);
 
-	row->color_picker = Gtk::manage(new class ColorPicker());
+	row->color_picker = Gtk::make_managed<class ColorPicker>();
 	row->color_picker->set_selected(row->color >= 1 && row->color <= 8 ?
 		row->color : 1);
 
-	Gtk::HBox *top_box = Gtk::manage(new class Gtk::HBox(false, 6));
-	top_box->pack_start(*row->kind_box, Gtk::PACK_SHRINK);
-	top_box->pack_start(*row->family_box, Gtk::PACK_SHRINK);
-	top_box->pack_start(*row->name_entry, Gtk::PACK_SHRINK);
+	Gtk::Box *top_box = Gtk::make_managed<class Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
+	top_box->append(*row->kind_box);
+	top_box->append(*row->family_box);
+	top_box->append(*row->name_entry);
 
-	Gtk::HBox *depth_box = Gtk::manage(new class Gtk::HBox(false, 6));
-	depth_box->pack_start(*Gtk::manage(new class Gtk::Label(_("Depth:"))),
-		Gtk::PACK_SHRINK);
-	row->depth_box = Gtk::manage(new class Gtk::ComboBoxText());
+	Gtk::Box *depth_box = Gtk::make_managed<class Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
+	depth_box->append(*Gtk::make_managed<class Gtk::Label>(_("Depth:")));
+	row->depth_box = Gtk::make_managed<ComboDropDown>();
 	for (size_t i = 0; i < BotUI::depth_values().size(); i++)
 		row->depth_box->append(
 			BotUI::depth_label(BotUI::depth_values()[i]));
-	depth_box->pack_start(*row->depth_box, Gtk::PACK_SHRINK);
+	depth_box->append(*row->depth_box);
 
-	Gtk::HBox *smarts_box = Gtk::manage(new class Gtk::HBox(false, 6));
-	smarts_box->pack_start(*Gtk::manage(new class Gtk::Label(_("Smarts:"))),
-		Gtk::PACK_SHRINK);
-	row->smarts_box = Gtk::manage(new class Gtk::ComboBoxText());
+	Gtk::Box *smarts_box = Gtk::make_managed<class Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
+	smarts_box->append(*Gtk::make_managed<class Gtk::Label>(_("Smarts:")));
+	row->smarts_box = Gtk::make_managed<ComboDropDown>();
 	for (size_t i = 0; i < BotUI::skill_levels().size(); i++)
 		row->smarts_box->append(
 			BotUI::skill_label(BotUI::skill_levels()[i]));
-	smarts_box->pack_start(*row->smarts_box, Gtk::PACK_SHRINK);
+	smarts_box->append(*row->smarts_box);
 
-	row->focus_box = Gtk::manage(new class Gtk::HBox(false, 6));
+	row->focus_box = Gtk::make_managed<class Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
 
-	Gtk::VBox *details_box = Gtk::manage(new class Gtk::VBox(false, 3));
-	details_box->set_border_width(3);
-	details_box->pack_start(*depth_box, Gtk::PACK_SHRINK);
-	details_box->pack_start(*smarts_box, Gtk::PACK_SHRINK);
-	details_box->pack_start(*row->focus_box, Gtk::PACK_SHRINK);
+	Gtk::Box *details_box = Gtk::make_managed<class Gtk::Box>(
+		Gtk::Orientation::VERTICAL, 3);
+	details_box->set_margin_top(3);
+	details_box->set_margin_bottom(3);
+	details_box->set_margin_start(3);
+	details_box->set_margin_end(3);
+	details_box->append(*depth_box);
+	details_box->append(*smarts_box);
+	details_box->append(*row->focus_box);
 
-	row->details = Gtk::manage(new class Gtk::Expander(_("Details")));
-	row->details->add(*details_box);
+	row->details = Gtk::make_managed<class Gtk::Expander>(_("Details"));
+	row->details->set_child(*details_box);
 
-	row->box->pack_start(*top_box, Gtk::PACK_SHRINK);
-	row->box->pack_start(*row->color_picker, Gtk::PACK_SHRINK);
-	row->box->pack_start(*row->details, Gtk::PACK_SHRINK);
+	row->box->append(*top_box);
+	row->box->append(*row->color_picker);
+	row->box->append(*row->details);
 
 	// Per-row state so changed handlers know which row fired.
 	row->kind_box->signal_changed().connect(
@@ -266,10 +281,9 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	_human_names[row->id] = (seat.kind == 0 && !seat.name.empty()) ?
 		seat.name : _player_name;
 
-	seats_box->pack_start(*row->box, Gtk::PACK_SHRINK);
-	// Show only this row's subtree: show_all() on the whole seats_box would
-	// re-show widgets that sync_seat_row hid on earlier rows.
-	row->box->show_all();
+	seats_box->append(*row->box);
+	// In GTK4 widgets are visible by default; sync_seat_row() below hides
+	// the entries that do not apply to this row's kind.
 	_rows.push_back(row);
 
 	sync_seat_row(*row);
@@ -506,9 +520,12 @@ void new_game_win::refresh_focus_rows()
 		if (family != BotUI::FRIENDLY && family != BotUI::MEAN)
 			continue;
 
-		Gtk::Label *label = Gtk::manage(new class Gtk::Label(
-			family == BotUI::FRIENDLY ? _("Friendly to:") : _("Mean to:")));
-		row->focus_box->pack_start(*label, Gtk::PACK_SHRINK);
+		// Plain-new, not make_managed: this label is deleted manually in the
+		// removal loop above the next time this row is refreshed (a managed
+		// wrapper would already be gone once remove() drops the box's ref).
+		Gtk::Label *label = new class Gtk::Label(
+			family == BotUI::FRIENDLY ? _("Friendly to:") : _("Mean to:"));
+		row->focus_box->append(*label);
 
 		for (size_t j = 0; j < _rows.size(); j++)
 		{
@@ -528,11 +545,10 @@ void new_game_win::refresh_focus_rows()
 			Gtk::CheckButton *check = new class Gtk::CheckButton(
 				other_label(_rows[j]));
 			check->set_active(mine);
-			row->focus_box->pack_start(*check, Gtk::PACK_SHRINK);
+			row->focus_box->append(*check);
 			row->focus_checks.push_back(check);
 			row->focus_check_ids.push_back(_rows[j]->id);
 		}
-		row->focus_box->show_all();
 		// focus_pending stays set until load_seats() has added every row, so
 		// indices that point at rows loaded later are not lost.
 	}

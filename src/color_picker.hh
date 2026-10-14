@@ -23,6 +23,7 @@
 
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/box.h>
+#include <gtkmm/gestureclick.h>
 #include <cairomm/context.h>
 #include <sigc++/sigc++.h>
 #include "game_images.hh"
@@ -34,7 +35,13 @@ class ColorSwatch : public Gtk::DrawingArea
 		ColorSwatch(unsigned int color) : _color(color), _selected(false)
 		{
 			set_size_request(24, 24);
-			add_events(Gdk::BUTTON_PRESS_MASK);
+			// GTK4 has no on_draw vfunc; drawing goes through set_draw_func.
+			set_draw_func(sigc::mem_fun(*this, &ColorSwatch::on_draw));
+			Glib::RefPtr<Gtk::GestureClick> gesture = Gtk::GestureClick::create();
+			gesture->set_button(0);
+			gesture->signal_pressed().connect(sigc::mem_fun(*this,
+				&ColorSwatch::on_swatch_pressed));
+			add_controller(gesture);
 		}
 
 		unsigned int color() const { return _color; }
@@ -45,19 +52,24 @@ class ColorSwatch : public Gtk::DrawingArea
 			queue_draw();
 		}
 
-		sigc::signal<void, unsigned int> signal_clicked;
+		sigc::signal<void(unsigned int)> signal_clicked;
 
 	protected:
-		virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
-		virtual bool on_button_press_event(GdkEventButton* event);
+		void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int);
 
 	private:
+		void on_swatch_pressed(int, double, double)
+		{
+			signal_clicked.emit(_color);
+		}
+
 		unsigned int _color;
 		bool _selected;
 };
 
 
-inline bool ColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+inline void ColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
+	int, int)
 {
 	static const double CP_PI = 3.14159265358979;
 
@@ -65,13 +77,12 @@ inline bool ColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 	double h = get_height();
 	double r = (w < h ? w : h) / 2.0 - 2.5;
 	if (r <= 0)
-		return true;
+		return;
 	double cx = w / 2.0;
 	double cy = h / 2.0;
 
 	Gdk::RGBA fill = GameImages::get_peg_fill(_color);
-	Gdk::RGBA fg;
-	get_style_context()->get_color(Gtk::STATE_FLAG_NORMAL);
+	Gdk::RGBA fg = get_style_context()->get_color();
 
 	cr->set_source_rgba(fill.get_red(), fill.get_green(), fill.get_blue(),
 		_selected ? 1.0 : 0.7);
@@ -83,29 +94,20 @@ inline bool ColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 	cr->set_line_width(_selected ? 2.5 : 1.0);
 	cr->arc(cx, cy, r, 0, 2 * CP_PI);
 	cr->stroke();
-
-	return true;
 }
 
 
-inline bool ColorSwatch::on_button_press_event(GdkEventButton*)
-{
-	signal_clicked(_color);
-	return true;
-}
-
-
-class ColorPicker : public Gtk::HBox
+class ColorPicker : public Gtk::Box
 {
 	public:
-		ColorPicker() : Gtk::HBox(false, 5), _selected(1)
+		ColorPicker() : Gtk::Box(Gtk::Orientation::HORIZONTAL, 5), _selected(1)
 		{
 			for (unsigned int c = 1; c <= 8; c++)
 			{
-				ColorSwatch *swatch = Gtk::manage(new class ColorSwatch(c));
+				ColorSwatch *swatch = Gtk::make_managed<ColorSwatch>(c);
 				swatch->signal_clicked.connect(
 					sigc::mem_fun(*this, &ColorPicker::on_swatch_clicked));
-				pack_start(*swatch, Gtk::PACK_SHRINK);
+				append(*swatch);
 				_swatches.push_back(swatch);
 			}
 			set_selected(_selected);
@@ -122,7 +124,7 @@ class ColorPicker : public Gtk::HBox
 				_swatches[i]->set_selected(_swatches[i]->color() == color);
 		}
 
-		sigc::signal<void, unsigned int> signal_changed;
+		sigc::signal<void(unsigned int)> signal_changed;
 
 	private:
 		void on_swatch_clicked(unsigned int color)

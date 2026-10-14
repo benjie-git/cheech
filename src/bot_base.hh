@@ -75,10 +75,10 @@ class BotBase : public sigc::trackable
 
 		GameClient *get_game_client();
 
-		sigc::signal<void, Glib::ustring> evt_message;
-		sigc::signal<void> evt_connected;
-		sigc::signal<void> evt_cancelled;
-		sigc::signal<void> evt_disconnected;
+		sigc::signal<void(Glib::ustring)> evt_message;
+		sigc::signal<void()> evt_connected;
+		sigc::signal<void()> evt_cancelled;
+		sigc::signal<void()> evt_disconnected;
 
 		void join_game(Glib::ustring host, unsigned int port);
 		void leave_game();

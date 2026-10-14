@@ -17,8 +17,9 @@
  * 
  */
 
-#include <gdk/gdkkeysyms.h>
-#include <gtkmm/main.h>
+#include <gdk/gdk.h>
+#include "click_counter.hh"
+#include <gtkmm/eventcontrollerkey.h>
 #include <sstream>
 #include <cmath>
 
@@ -42,8 +43,8 @@ game_view::game_view() : Gtk::DrawingArea()
 	_client = NULL;
 	_board = NULL;
 	_locked = true;
-	_center = Gdk::Point();
-	_board_center = Gdk::Point();
+	_center = GamePoint();
+	_board_center = GamePoint();
 	_scale = 1.0;
 
 	double peg_x = GameImages::get_peg_size().get_x();
@@ -71,14 +72,33 @@ game_view::game_view() : Gtk::DrawingArea()
 	// it close to square) instead of filling the whole (tall) widget.
 	double pad = peg_x * MULTIPLIER * 0.8;
 
-	_board_center = Gdk::Point((int)lround((min_x + max_x) / 2.0),
+	_board_center = GamePoint((int)lround((min_x + max_x) / 2.0),
 							   (int)lround((min_y + max_y) / 2.0));
 	_base_width = (int)lround(max_x - min_x + 2.0 * pad);
 	_base_height = (int)lround(max_y - min_y + 2.0 * pad);
 
 	set_size_request(_base_width, _base_height);
 
+	set_focusable(true);
 	grab_focus();
+
+	// Clicks (any button; double-click commits a move) and key presses.
+	// ClickCounter counts successive clicks itself: GTK's built-in
+	// counter does not always restart when the pointer moves between
+	// clicks.
+	auto click = ClickCounter::create();
+	click->signal_counted().connect(sigc::mem_fun(*this,
+		&game_view::on_view_clicked));
+	add_controller(click);
+
+	auto key = Gtk::EventControllerKey::create();
+	key->signal_key_pressed().connect(sigc::mem_fun(*this,
+		&game_view::on_view_key_pressed), false);
+	add_controller(key);
+
+	set_draw_func(sigc::mem_fun(*this, &game_view::on_draw));
+
+	signal_resize().connect(sigc::mem_fun(*this, &game_view::on_resize));
 }
 
 
@@ -91,12 +111,12 @@ void game_view::on_realize()
 }
 
 
-bool game_view::on_configure_event(GdkEventConfigure* event)
+void game_view::on_resize(int width, int height)
 {
-	_center = Gdk::Point(event->width/2, event->height/2);
+	_center = GamePoint(width/2, height/2);
 
-	double sx = (double)event->width / _base_width;
-	double sy = (double)event->height / _base_height;
+	double sx = (double)width / _base_width;
+	double sy = (double)height / _base_height;
 	_scale = (sx < sy) ? sx : sy;
 
 	for (std::vector<GameViewHole*>::iterator hole = _holes.begin();
@@ -107,8 +127,6 @@ bool game_view::on_configure_event(GdkEventConfigure* event)
 	queue_draw();
 
 	evt_board_resized.emit();
-
-	return true;
 }
 
 
@@ -127,7 +145,7 @@ void game_view::create_holes()
 			double x_offset = (util::even(i / GameBoard::SIZE_X) ? 0.5 : 0.0)
 								+ 1.0;
 			double y_offset = 0;
-			Gdk::Point offset((int)(((i % GameBoard::SIZE_X)
+			GamePoint offset((int)(((i % GameBoard::SIZE_X)
 				+ x_offset) * x * MULTIPLIER)-_board_center.get_x(),
 				(int)(((i / GameBoard::SIZE_X) + y_offset) * y * MULTIPLIER 
 				* (sqrt(3.0) / 2.0))-_board_center.get_y());
@@ -185,53 +203,45 @@ void game_view::set_locked(bool l)
 }
 
 
-bool game_view::on_button_press_event(GdkEventButton *ev)
+// Any button press clears/rebuilds the selection; double-click on the last
+// hole of a path commits the move.  The click count comes from ClickCounter
+// (see click_counter.hh).
+void game_view::on_view_clicked(unsigned int clicks, double x, double y)
 {
 	grab_focus();
-	evt_user_action();
+	evt_user_action.emit();
 
 	if (_locked)
-		return false;
+		return;
 
-	if (ev->button == 1)
+	for (unsigned int i = 0; i < _holes.size(); i++)
 	{
-		for (unsigned int i = 0; i < _holes.size(); i++)
+		if (_holes[i] && _holes[i]->in_bounds((int)x, (int)y))
 		{
-			if (_holes[i] && _holes[i]->in_bounds((int)ev->x, (int)ev->y))
+			if (clicks == 1)
 			{
-				if (ev->type == GDK_BUTTON_PRESS)
-				{
-					read_move(i);
-				}
-				else if (ev->type == GDK_2BUTTON_PRESS)
-				{
-					if (_move_list.size() > 0 && _move_list.back() != i)
-						read_move(i);
-					if (_move_list.size() >= 2 && i == _move_list.back())
-						write_move();
-				}
-				else
-					return false;
-			
-				return true;
+				read_move(i);
 			}
+			else if (clicks == 2)
+			{
+				if (_move_list.size() > 0 && _move_list.back() != i)
+					read_move(i);
+				if (_move_list.size() >= 2 && i == _move_list.back())
+					write_move();
+			}
+
+			return;
 		}
 	}
-	else
-	{
-		erase_move();
-		return true;
-	}
-
-	return false;
 }
 
 
-bool game_view::on_key_press_event(GdkEventKey *ev)
+bool game_view::on_view_key_pressed(guint keyval, guint keycode,
+	Gdk::ModifierType state)
 {
-	evt_user_action();
+	evt_user_action.emit();
 
-	switch (ev->keyval)
+	switch (keyval)
 	{
 		case GDK_KEY_Escape:
 			if (!_locked)
@@ -247,9 +257,10 @@ bool game_view::on_key_press_event(GdkEventKey *ev)
 				return true;
 			}
 		default:
-			if (ev->state == 0 || ev->state == GDK_SHIFT_MASK)
+			if (state == Gdk::ModifierType(0) ||
+				state == Gdk::ModifierType(GDK_SHIFT_MASK))
 			{
-				evt_unhandled_key(ev->keyval);
+				evt_unhandled_key.emit(keyval);
 				return true;
 			}
 			break;
@@ -373,7 +384,7 @@ bool game_view::move_list_contains(unsigned int i)
 }
 
 
-bool game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+void game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int)
 {
 	// Fill the widget with black (the letterbox area around the board),
 	// then paint the board background as a rounded rectangle that hugs the
@@ -405,6 +416,54 @@ bool game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 	cr->translate(_center.get_x(), _center.get_y());
 	cr->scale(_scale, _scale);
 
+	// Draw the lattice connecting adjacent holes (same edge rule as the
+	// iOS board: each hole's forward neighbours, guarded by distance so
+	// row boundaries don't wrap).
+	double unit_x = GameImages::get_peg_size().get_x() * MULTIPLIER;
+	cr->set_source_rgb(0.49, 0.34, 0.20);
+	cr->set_line_width(std::max(1.0, unit_x * 0.06));
+	cr->begin_new_path();
+	for (unsigned int i = 0; i < _holes.size(); i++)
+	{
+		if (!_holes[i])
+			continue;
+
+		unsigned int row = i / GameBoard::SIZE_X;
+		unsigned int candidates[3];
+		unsigned int ncand;
+		if (util::even(row))
+		{
+			candidates[0] = i + 1;
+			candidates[1] = i + GameBoard::SIZE_X + 1;
+			candidates[2] = i + GameBoard::SIZE_X;
+			ncand = 3;
+		}
+		else
+		{
+			candidates[0] = i + 1;
+			candidates[1] = i + GameBoard::SIZE_X;
+			candidates[2] = i + GameBoard::SIZE_X - 1;
+			ncand = 3;
+		}
+
+		GamePoint a = _holes[i]->get_offset();
+		for (unsigned int c = 0; c < ncand; c++)
+		{
+			if (candidates[c] >= _holes.size() || !_holes[candidates[c]])
+				continue;
+
+			GamePoint b = _holes[candidates[c]]->get_offset();
+			double dx = b.get_x() - a.get_x();
+			double dy = b.get_y() - a.get_y();
+			if (sqrt(dx * dx + dy * dy) >= unit_x * 1.1)
+				continue;
+
+			cr->move_to(a.get_x(), a.get_y());
+			cr->line_to(b.get_x(), b.get_y());
+		}
+	}
+	cr->stroke();
+
 	// Draw all the holes
 	for (std::vector<GameViewHole*>::iterator hole = _holes.begin();
 		hole < _holes.end(); hole++)
@@ -427,12 +486,12 @@ bool game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
 	cr->restore();
 
-	return true;
+	return;
 }
 
 
 void game_view::draw_move_arc(const Cairo::RefPtr<Cairo::Context>& cr,
-							  Gdk::Point from, Gdk::Point to)
+							  GamePoint from, GamePoint to)
 {
 	cr->set_source_rgb(0, 0, 0);
 	cr->set_line_width(4);

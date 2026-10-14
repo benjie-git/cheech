@@ -21,9 +21,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#if defined(CHEECH_IOS)
 #include <random>
-#endif
 #include <glibmm/main.h>
 #include <sigc++/bind.h>
 #include <sigc++/bind_return.h>
@@ -404,7 +402,8 @@ void GameServer::shuffle_players()
 	evt_message(message);
 	*this << "CLIENT_MESSAGE " + message + "\n";
 
-	random_shuffle(_players.begin() + 1, _players.end());
+	std::mt19937 rng(std::random_device{}());
+	std::shuffle(_players.begin() + 1, _players.end(), rng);
 	restart_game();
 }
 

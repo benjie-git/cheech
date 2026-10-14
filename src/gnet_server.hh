@@ -44,8 +44,8 @@ public:
 	Server();
 	virtual ~Server();
 
-	sigc::signal<void, Conn*>			evt_connection_available;
-	sigc::signal<void>					evt_error;   
+	sigc::signal<void(Conn*)>			evt_connection_available;
+	sigc::signal<void()>					evt_error;   
 
 	bool listen(unsigned int port, bool buffered = false);
 	bool ready() const;

@@ -22,14 +22,12 @@
 #include <glibmm/main.h>
 
 #include <gtkmm/textview.h>
-#include <gtkmm/messagedialog.h> 
-#include <gdkmm/window.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/application.h>
+#include <gdkmm/display.h>
+#include <gdkmm/clipboard.h>
 
 #include <map>
-
-#ifdef MACOS_APP
-#include <gtkosxapplication.h>
-#endif
 
 #include "main_win.hh"
 
@@ -42,18 +40,17 @@
 // the keyboard grab, so the window manager would hand focus back to the parent.
 static void grab_window_focus(Gtk::Window *window)
 {
-	Glib::RefPtr<Gdk::Window> gdk_window = window->get_window();
-
-	if (gdk_window)
-		gdk_window->focus(GDK_CURRENT_TIME);
-
 	if (!window->get_focus())
-		window->child_focus(Gtk::DIR_TAB_FORWARD);
+		window->grab_focus();
 }
 
 
 static void present_and_focus(Gtk::Window *window)
 {
+	// show() first so a re-opened dialog takes the normal map path;
+	// present() alone only re-presents an already-mapped surface.
+	if (!window->get_visible())
+		window->show();
 	window->present();
 	Glib::signal_timeout().connect_once(
 		sigc::bind(sigc::ptr_fun(&grab_window_focus), window), 1);
@@ -73,6 +70,7 @@ main_win::main_win() : main_win_glade()
 	_seat_join_ticks = 0;
 	_hosted_port = 0;
 	_active_input_client = NULL;
+	_confirm_quit_dialog = NULL;
 
 	_player_name[0]=player_name1;
 	_player_name[1]=player_name2;
@@ -93,8 +91,64 @@ main_win::main_win() : main_win_glade()
 
 	game_view->evt_unhandled_key.connect(sigc::mem_fun(*this,
 		&main_win::append_to_chat_entry));
-	game_view->evt_user_action.connect(sigc::bind(sigc::mem_fun(*this,
-		&Gtk::Window::set_urgency_hint), false));
+
+	// The win.* actions referenced by the Gio::Menu model built in
+	// main_win_glade.
+	_win_actions = Gio::SimpleActionGroup::create();
+	_win_actions->add_action("new_game", sigc::mem_fun(*this,
+		&main_win::on_new_game_activate));
+	_end_game_action = _win_actions->add_action("end_game", sigc::mem_fun(*this,
+		&main_win::on_end_game_activate));
+	_leave_game_action = _win_actions->add_action("leave_game",
+		sigc::mem_fun(*this, &main_win::on_leave_game_activate));
+	_game_settings_action = _win_actions->add_action("game_settings",
+		sigc::mem_fun(*this, &main_win::on_game_settings_activate));
+	_rotate_action = _win_actions->add_action("rotate", sigc::mem_fun(*this,
+		&main_win::on_rotate_activate));
+	_shuffle_action = _win_actions->add_action("shuffle", sigc::mem_fun(*this,
+		&main_win::on_shuffle_activate));
+	_restart_game_action = _win_actions->add_action("restart_game",
+		sigc::mem_fun(*this, &main_win::on_restart_game_activate));
+	_win_actions->add_action("quit", sigc::mem_fun(*this,
+		&main_win::on_quit_activate));
+	_undo_action = _win_actions->add_action("undo", sigc::mem_fun(*this,
+		&main_win::on_undo_activate));
+	_redo_action = _win_actions->add_action("redo", sigc::mem_fun(*this,
+		&main_win::on_redo_activate));
+	_show_last_move_action = _win_actions->add_action("show_last_move",
+		sigc::mem_fun(*this, &main_win::on_show_last_move_activate));
+	_win_actions->add_action("cut", sigc::mem_fun(*this,
+		&main_win::on_cut_activate));
+	_win_actions->add_action("copy", sigc::mem_fun(*this,
+		&main_win::on_copy_activate));
+	_win_actions->add_action("paste", sigc::mem_fun(*this,
+		&main_win::on_paste_activate));
+	_win_actions->add_action("delete", sigc::mem_fun(*this,
+		&main_win::on_delete_activate));
+	_change_name_action = _win_actions->add_action("change_name",
+		sigc::mem_fun(*this, &main_win::on_change_name_activate));
+	_change_color_action = _win_actions->add_action("change_color",
+		sigc::mem_fun(*this, &main_win::on_change_color_activate));
+	_add_computer_player_action = _win_actions->add_action(
+		"add_computer_player", sigc::mem_fun(*this,
+		&main_win::on_add_computer_player_activate));
+	_remove_computer_players_action = _win_actions->add_action(
+		"remove_computer_players", sigc::mem_fun(*this,
+		&main_win::on_remove_computer_players_activate));
+	_setup_computer_player_action = _win_actions->add_action(
+		"setup_computer_player", sigc::mem_fun(*this,
+		&main_win::on_setup_computer_player_activate));
+	_win_actions->add_action("show_chat", sigc::mem_fun(*this,
+		&main_win::on_show_chat_activate));
+	_win_actions->add_action("how_to_play", sigc::mem_fun(*this,
+		&main_win::on_how_to_play_activate));
+	_win_actions->add_action("about", sigc::mem_fun(*this,
+		&main_win::on_about_activate));
+	insert_action_group("win", _win_actions);
+
+	// The window is only ever hidden on close (see on_close_request).
+	signal_close_request().connect(sigc::mem_fun(*this,
+		&main_win::on_close_request), false);
 
 	update_menus();
 
@@ -116,6 +170,17 @@ main_win::main_win() : main_win_glade()
 	_help_win.set_transient_for(*this);
 	_setup_game_win.set_transient_for(*this);
 
+	// These dialogs live for the whole app run; the window close button
+	// must hide them rather than destroy them (GTK4's default), otherwise
+	// the widget surface is torn down and the next open comes up empty.
+	_new_game_win.set_hide_on_close(true);
+	_setup_bot_win.set_hide_on_close(true);
+	_color_win.set_hide_on_close(true);
+	_name_win.set_hide_on_close(true);
+	_about_win.set_hide_on_close(true);
+	_help_win.set_hide_on_close(true);
+	_setup_game_win.set_hide_on_close(true);
+
 	_new_game_win.signal_hide().connect(sigc::mem_fun(*this,
 		&main_win::on_dialog_hidden));
 	_setup_bot_win.signal_hide().connect(sigc::mem_fun(*this,
@@ -130,46 +195,7 @@ main_win::main_win() : main_win_glade()
 		&main_win::on_dialog_hidden));
 	_setup_game_win.signal_hide().connect(sigc::mem_fun(*this,
 		&main_win::on_dialog_hidden));
-
-#ifdef MACOS_APP
-	setup_macos_menubar();
-#endif
 }
-
-
-#ifdef MACOS_APP
-void main_win::setup_macos_menubar()
-{
-	GtkosxApplication *osx = gtkosx_application_get();
-
-	// The menu bar is rendered by the system, so hide the in-window copy.
-	menubar1->set_no_show_all(true);
-	menubar1->hide();
-
-	gtkosx_application_set_menu_bar(osx, GTK_MENU_SHELL(menubar1->gobj()));
-	gtkosx_application_set_about_item(osx, GTK_WIDGET(about->gobj()));
-	gtkosx_application_set_help_menu(osx, GTK_MENU_ITEM(help_menu->gobj()));
-	gtkosx_application_set_use_quartz_accelerators(osx, TRUE);
-
-	g_signal_connect(osx, "NSApplicationBlockTermination",
-		G_CALLBACK(main_win::on_macos_block_termination), this);
-
-	gtkosx_application_ready(osx);
-}
-
-
-gboolean main_win::on_macos_block_termination(gpointer, gpointer data)
-{
-	main_win *win = static_cast<main_win *>(data);
-
-	if (win->confirm_end_game())
-		gtk_main_quit();
-
-	// Always block Cocoa's own termination and quit through the main loop
-	// so that the game is torn down cleanly.
-	return TRUE;
-}
-#endif
 
 
 void main_win::on_dialog_hidden()
@@ -181,6 +207,7 @@ void main_win::on_dialog_hidden()
 
 main_win::~main_win()
 {
+	delete _confirm_quit_dialog;
 	if (_server)
 		stop_server();
 	if (_client)
@@ -190,6 +217,9 @@ main_win::~main_win()
 
 void main_win::on_realize()
 {
+	// The keyboard accelerators are registered by cheech.cc in its
+	// application startup handler; on_realize() runs before the window has
+	// been added to the application, so there is no application here yet.
 	update_menus();
 }
 
@@ -293,7 +323,7 @@ void main_win::connect_client_dialogs(GameClient *client)
 		&setup_game_win::on_cmd_game_turn));
 	client->evt_disconnected.connect(sigc::mem_fun(_setup_game_win,
 		&setup_game_win::on_disconnected));
-	_setup_game_win.signal_restart_game.connect(sigc::mem_fun(this,
+	_setup_game_win.signal_restart_game.connect(sigc::mem_fun(*this,
 		&main_win::on_game_setup));
 	_setup_game_win.setup(1, false, false, false, _game_status);
 
@@ -847,51 +877,35 @@ void main_win::on_leave_game_activate()
 
 void main_win::update_menus()
 {
-	if (_server)
-	{
-		end_game->set_sensitive(true);
-	}
-	else
-	{
-		end_game->set_sensitive(false);
-	}
+	_end_game_action->set_enabled(_server != NULL);
+
+	_leave_game_action->set_enabled(_client != NULL);
+	_game_settings_action->set_enabled(_client != NULL);
+	_restart_game_action->set_enabled(_client != NULL);
+	_rotate_action->set_enabled(_client != NULL);
+	_shuffle_action->set_enabled(_client != NULL);
+	_change_name_action->set_enabled(_client != NULL);
+	_change_color_action->set_enabled(_client != NULL);
+	_add_computer_player_action->set_enabled(_client != NULL &&
+		_game_status == GameServer::WaitingForPlayers);
+	_remove_computer_players_action->set_enabled(_client != NULL &&
+		_bots.size() > 0);
+	_show_last_move_action->set_enabled(_client != NULL);
+	_undo_action->set_enabled(_client != NULL);
+	_redo_action->set_enabled(_client != NULL);
+	// Only meaningful once a game is underway.  Note the entire first
+	// turn reports Start, not Playing (get_game_status()).
+	_setup_computer_player_action->set_enabled(_client != NULL &&
+		_game_status != GameServer::WaitingForPlayers &&
+		_game_status != GameServer::End);
 
 	if (_client)
 	{
-		leave_game->set_sensitive(true);
-
 		bool active_member = (!_client->is_spectator()) || (_bots.size() > 0);
-		game_settings->set_sensitive(active_member);
-		restart_submenu->set_sensitive(active_member);
-		restart_game->set_sensitive(active_member);
-		rotate->set_sensitive(active_member);
-		shuffle->set_sensitive(active_member);
-
-		change_name->set_sensitive(true);
-		change_color->set_sensitive(true);
-		add_computer_player->set_sensitive(_game_status == GameServer::WaitingForPlayers);
-		remove_computer_players->set_sensitive(_bots.size() > 0);
-		show_last_move->set_sensitive(true);
-		undo->set_sensitive(true);
-		redo->set_sensitive(true);
-	}
-	else
-	{
-		leave_game->set_sensitive(false);
-
-		game_settings->set_sensitive(false);
-		restart_submenu->set_sensitive(false);
-		restart_game->set_sensitive(false);
-		rotate->set_sensitive(false);
-		shuffle->set_sensitive(false);
-
-		change_name->set_sensitive(false);
-		change_color->set_sensitive(false);
-		add_computer_player->set_sensitive(false);
-		remove_computer_players->set_sensitive(false);
-		show_last_move->set_sensitive(false);
-		undo->set_sensitive(false);
-		redo->set_sensitive(false);
+		_game_settings_action->set_enabled(active_member);
+		_restart_game_action->set_enabled(active_member);
+		_rotate_action->set_enabled(active_member);
+		_shuffle_action->set_enabled(active_member);
 	}
 }
 
@@ -1006,12 +1020,12 @@ void main_win::on_show_chat_activate()
 	if (chat_area->get_visible())
 	{
 		chat_area->hide();
-		show_chat->set_label(_("Show _Chat"));
+		show_chat_item->set_label(_("Show Chat"));
 	}
 	else
 	{
-		chat_area->show_all();
-		show_chat->set_label(_("Hide _Chat"));
+		chat_area->show();
+		show_chat_item->set_label(_("Hide Chat"));
 	}
 }
 
@@ -1071,28 +1085,55 @@ void main_win::on_redo_activate()
 
 void main_win::on_cut_activate()
 {
+	Glib::RefPtr<Gdk::Clipboard> clipboard = get_display()->get_clipboard();
 	Gtk::Widget *focused = get_focus();
 	if (focused == message_view)
-		message_view->get_buffer()->cut_clipboard(Gtk::Clipboard::get());
+		message_view->get_buffer()->cut_clipboard(clipboard, true);
 	else if (focused == chat_entry)
-		chat_entry->cut_clipboard();
+	{
+		// GTK4 dropped the entry clipboard helpers; copy the selection and
+		// delete it.
+		int start = 0, end = 0;
+		if (chat_entry->get_selection_bounds(start, end))
+		{
+			clipboard->set_text(chat_entry->get_chars(start, end));
+			chat_entry->delete_selection();
+		}
+	}
 }
 
 
 void main_win::on_copy_activate()
 {
+	Glib::RefPtr<Gdk::Clipboard> clipboard = get_display()->get_clipboard();
 	Gtk::Widget *focused = get_focus();
 	if (focused == message_view)
-		message_view->get_buffer()->copy_clipboard(Gtk::Clipboard::get());
+		message_view->get_buffer()->copy_clipboard(clipboard);
 	else if (focused == chat_entry)
-		chat_entry->copy_clipboard();
+	{
+		int start = 0, end = 0;
+		if (chat_entry->get_selection_bounds(start, end))
+			clipboard->set_text(chat_entry->get_chars(start, end));
+	}
 }
 
 
 void main_win::on_paste_activate()
 {
-	chat_entry->paste_clipboard();
-	chat_entry->grab_focus();
+	Glib::RefPtr<Gdk::Clipboard> clipboard = get_display()->get_clipboard();
+	// GTK4 reads clipboard text asynchronously.
+	clipboard->read_text_async(
+		[this, clipboard](Glib::RefPtr<Gio::AsyncResult>& result)
+		{
+			Glib::ustring text = clipboard->read_text_finish(result);
+			if (!text.empty())
+			{
+				int pos = chat_entry->get_position();
+				chat_entry->insert_text(text, text.size(), pos);
+				chat_entry->set_position(pos);
+				chat_entry->grab_focus();
+			}
+		});
 }
 
 
@@ -1106,7 +1147,9 @@ void main_win::on_delete_activate()
 }
 
 
-bool main_win::on_delete_event(GdkEventAny* event)
+// Closing the window hides it and tears the game down cleanly; returning
+// true blocks GTK's default destroy.
+bool main_win::on_close_request()
 {
 	on_quit_activate();
 
@@ -1117,10 +1160,25 @@ bool main_win::on_delete_event(GdkEventAny* event)
 void main_win::on_quit_activate()
 {
 	if (!_server || confirm_end_game())
-		hide();
+		quit_now();
 }
 
 
+void main_win::quit_now()
+{
+	hide();
+	// Gtk::Main::run() used to return when the window was hidden;
+	// Gtk::Application::run() keeps running, so end it explicitly.
+	if (auto app = get_application())
+		app->quit();
+}
+
+
+// Returns true when quitting may proceed right away.  Otherwise the
+// confirmation alert is shown asynchronously (no nested main-context
+// iteration) and quit_now() runs from its response handler.  The dialog
+// is kept around so it can simply be re-presented if quit is requested
+// again while it is up.
 bool main_win::confirm_end_game()
 {
 	if (_game_status == GameServer::Start || _game_status == GameServer::End)
@@ -1129,12 +1187,28 @@ bool main_win::confirm_end_game()
 	if (_move_count == 1 && (_current_player == 1 || _current_player == 0))
 		return true;
 
-	Gtk::MessageDialog dlg("This will end your current game!  Is that okay?",
-		false, Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
-	if (dlg.run() == Gtk::RESPONSE_YES)
-		return true;
+	if (!_confirm_quit_dialog)
+	{
+		_confirm_quit_dialog = new Gtk::MessageDialog(
+			"This will end your current game!  Is that okay?",
+			false, Gtk::MessageType::WARNING, Gtk::ButtonsType::YES_NO, true);
+		_confirm_quit_dialog->set_transient_for(*this);
+		_confirm_quit_dialog->signal_response().connect(sigc::mem_fun(*this,
+			&main_win::on_confirm_quit_response));
+	}
+
+	_confirm_quit_dialog->show();
 
 	return false;
+}
+
+
+void main_win::on_confirm_quit_response(int response)
+{
+	_confirm_quit_dialog->hide();
+
+	if (response == (int)Gtk::ResponseType::YES)
+		quit_now();
 }
 
 
@@ -1329,17 +1403,14 @@ void main_win::on_cmd_game_turn(unsigned int posn,
 	{
 		// Hot-seat: the seat whose turn it is drives the board.
 		route_input();
-		set_urgency_hint(active_seat() != NULL);
 	}
 	else if (posn > 0 && posn == _client->get_my_player_number())
 	{
 		game_view->set_locked(false);
-		set_urgency_hint(true);
 	}
 	else
 	{
 		game_view->set_locked(true);
-		set_urgency_hint(false);
 	}
 	game_view->queue_draw();
 	update_menus();

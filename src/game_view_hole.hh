@@ -25,23 +25,24 @@
 #include <cairomm/context.h>
 
 #include "game_hole.hh"
+#include "game_images.hh"
 #include "game_client.hh"
 
 
 class GameViewHole : public sigc::trackable
 {
 	public:
-		GameViewHole(Gdk::Point *view_center, Gdk::Point *orig_offset);
+		GameViewHole(GamePoint *view_center, GamePoint *orig_offset);
 		~GameViewHole();
 
 		void setup(GameClient *cl, GameHole *h);
-		Gdk::Point get_location();
-		Gdk::Point get_offset();
+		GamePoint get_location();
+		GamePoint get_offset();
 		bool get_hilighted();
-		void set_offset(Gdk::Point p);
+		void set_offset(GamePoint p);
 		void set_scale(double s);
 		void set_hilighted(bool h);
-		void recenter(Gdk::Point view_center);
+		void recenter(GamePoint view_center);
 		void draw(const Cairo::RefPtr<Cairo::Context>& cr);
 		bool in_bounds(int x, int y);
 		void rotate(double theta);
@@ -49,9 +50,9 @@ class GameViewHole : public sigc::trackable
 	private:
 		GameClient *_client;
 		GameHole *_hole;
-		Gdk::Point *_center; // Center of game_view
-		Gdk::Point _orig_offset;  // original location with middle peg as 0,0
-		Gdk::Point _offset;  // location with middle peg as 0,0
+		GamePoint *_center; // Center of game_view
+		GamePoint _orig_offset;  // original location with middle peg as 0,0
+		GamePoint _offset;  // location with middle peg as 0,0
 		double _scale;  // board scale factor applied by game_view
 		bool _hilighted;
 };

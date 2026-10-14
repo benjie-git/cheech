@@ -22,205 +22,213 @@
 #include <glibmm/i18n.h>
 #include <gtkmm/label.h>
 #include <gtkmm/box.h>
-#include <gtkmm/buttonbox.h>
-#include <gtkmm/stock.h>
 
 
 new_game_win_glade::new_game_win_glade()
-	: Gtk::Window(Gtk::WINDOW_TOPLEVEL)
+	: Gtk::Window()
 {
 	// The seat rows are built and owned by new_game_win.
-	seats_box = Gtk::manage(new class Gtk::VBox(false, 6));
+	seats_box = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 6);
 
-	seats_scroll = Gtk::manage(new class Gtk::ScrolledWindow());
-	seats_scroll->set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC);
-	seats_scroll->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
+	seats_scroll = Gtk::make_managed<Gtk::ScrolledWindow>();
+	seats_scroll->set_policy(Gtk::PolicyType::NEVER, Gtk::PolicyType::AUTOMATIC);
 	seats_scroll->set_size_request(-1, 220);
-	seats_scroll->add(*seats_box);
-
-	Gtk::Alignment *players_align =
-		Gtk::manage(new class Gtk::Alignment(0.5, 0.5, 1, 1));
-	players_align->set_padding(6, 6, 6, 6);
-	players_align->add(*seats_scroll);
+	seats_scroll->set_child(*seats_box);
 
 	Gtk::Label *players_label =
-		Gtk::manage(new class Gtk::Label(_("<b>Players</b>")));
+		Gtk::make_managed<Gtk::Label>(_("<b>Players</b>"));
 	players_label->set_use_markup(true);
-	Gtk::Frame *players_frame = Gtk::manage(new class Gtk::Frame());
+	Gtk::Frame *players_frame = Gtk::make_managed<Gtk::Frame>();
 	players_frame->set_label_widget(*players_label);
-	players_frame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	players_frame->add(*players_align);
+	players_frame->set_child(*seats_scroll);
+	// The Players Setup area is what should grow when the dialog grows;
+	// the scrolled seat list inside it absorbs the extra height.
+	players_frame->set_vexpand(true);
 
-	add_seat_button = Gtk::manage(new class Gtk::Button(_("Add Seat")));
+	add_seat_button = Gtk::make_managed<Gtk::Button>(_("Add Seat"));
 	remove_seat_button =
-		Gtk::manage(new class Gtk::Button(_("Remove Seat")));
-	Gtk::HButtonBox *seat_buttons = Gtk::manage(
-		new class Gtk::HButtonBox(Gtk::BUTTONBOX_END, 6));
-	seat_buttons->pack_start(*add_seat_button);
-	seat_buttons->pack_start(*remove_seat_button);
+		Gtk::make_managed<Gtk::Button>(_("Remove Seat"));
+	Gtk::Box *seat_buttons = Gtk::make_managed<Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
+	seat_buttons->set_halign(Gtk::Align::END);
+	seat_buttons->append(*add_seat_button);
+	seat_buttons->append(*remove_seat_button);
 
-	long_jumps = Gtk::manage(new class Gtk::CheckButton(
-		_("Allow Long Jumps (Sue Wen Rules)")));
-	hop_others = Gtk::manage(new class Gtk::CheckButton(
-		_("Allow Hopping Through Other Players' Triangles")));
-	stop_others = Gtk::manage(new class Gtk::CheckButton(
-		_("Allow Stopping In Other Players' Triangles")));
-	Gtk::VBox *rules_box = Gtk::manage(new class Gtk::VBox(false, 0));
-	rules_box->set_border_width(6);
-	rules_box->pack_start(*long_jumps, Gtk::PACK_SHRINK);
-	rules_box->pack_start(*hop_others, Gtk::PACK_SHRINK);
-	rules_box->pack_start(*stop_others, Gtk::PACK_SHRINK);
+	long_jumps = Gtk::make_managed<Gtk::CheckButton>(
+		_("Allow Long Jumps (Sue Wen Rules)"));
+	hop_others = Gtk::make_managed<Gtk::CheckButton>(
+		_("Allow Hopping Through Other Players' Triangles"));
+	stop_others = Gtk::make_managed<Gtk::CheckButton>(
+		_("Allow Stopping In Other Players' Triangles"));
+	Gtk::Box *rules_box = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 0);
+	rules_box->set_margin_top(6);
+	rules_box->set_margin_bottom(6);
+	rules_box->set_margin_start(6);
+	rules_box->set_margin_end(6);
+	rules_box->append(*long_jumps);
+	rules_box->append(*hop_others);
+	rules_box->append(*stop_others);
 
 	Gtk::Label *rules_label =
-		Gtk::manage(new class Gtk::Label(_("<b>Game Setup</b>")));
+		Gtk::make_managed<Gtk::Label>(_("<b>Game Setup</b>"));
 	rules_label->set_use_markup(true);
-	Gtk::Frame *rules_frame = Gtk::manage(new class Gtk::Frame());
+	Gtk::Frame *rules_frame = Gtk::make_managed<Gtk::Frame>();
 	rules_frame->set_label_widget(*rules_label);
-	rules_frame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	rules_frame->add(*rules_box);
+	rules_frame->set_child(*rules_box);
 
 	Gtk::Label *port_label =
-		Gtk::manage(new class Gtk::Label(_("Port Number:")));
-	host_port_entry = Gtk::manage(new class Gtk::Entry());
+		Gtk::make_managed<Gtk::Label>(_("Port Number:"));
+	host_port_entry = Gtk::make_managed<Gtk::Entry>();
 	host_port_entry->set_text(_("3838"));
 	host_port_entry->set_max_width_chars(8);
-	cheechweb = Gtk::manage(new class Gtk::CheckButton(
-		_("Also Start a CheechWeb server")));
-	Gtk::Label *web_port_label = Gtk::manage(
-		new class Gtk::Label(_("CheechWeb Port Number:")));
-	cheechweb_port_entry = Gtk::manage(new class Gtk::Entry());
+	cheechweb = Gtk::make_managed<Gtk::CheckButton>(
+		_("Also Start a CheechWeb server"));
+	Gtk::Label *web_port_label = Gtk::make_managed<Gtk::Label>(
+		_("CheechWeb Port Number:"));
+	cheechweb_port_entry = Gtk::make_managed<Gtk::Entry>();
 	cheechweb_port_entry->set_text(_("3839"));
 	cheechweb_port_entry->set_max_width_chars(8);
-	Gtk::Table *network_table =
-		Gtk::manage(new class Gtk::Table(2, 3, false));
-	network_table->set_border_width(6);
-	network_table->set_row_spacings(3);
-	network_table->set_col_spacings(3);
-	network_table->attach(*port_label, 0, 1, 0, 1, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	network_table->attach(*host_port_entry, 1, 2, 0, 1,
-		Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-	network_table->attach(*cheechweb, 0, 2, 1, 2, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	network_table->attach(*web_port_label, 0, 1, 2, 3, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	network_table->attach(*cheechweb_port_entry, 1, 2, 2, 3,
-		Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+	Gtk::Grid *network_table = Gtk::make_managed<Gtk::Grid>();
+	network_table->set_margin_top(6);
+	network_table->set_margin_bottom(6);
+	network_table->set_margin_start(6);
+	network_table->set_margin_end(6);
+	network_table->set_row_spacing(3);
+	network_table->set_column_spacing(3);
+	network_table->attach(*port_label, 0, 0);
+	network_table->attach(*host_port_entry, 1, 0);
+	network_table->attach(*cheechweb, 0, 1, 2, 1);
+	network_table->attach(*web_port_label, 0, 2);
+	network_table->attach(*cheechweb_port_entry, 1, 2);
 
 	Gtk::Label *network_label =
-		Gtk::manage(new class Gtk::Label(_("<b>CheechWeb</b>")));
+		Gtk::make_managed<Gtk::Label>(_("<b>CheechWeb</b>"));
 	network_label->set_use_markup(true);
-	Gtk::Frame *network_frame = Gtk::manage(new class Gtk::Frame());
+	Gtk::Frame *network_frame = Gtk::make_managed<Gtk::Frame>();
 	network_frame->set_label_widget(*network_label);
-	network_frame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	network_frame->add(*network_table);
+	network_frame->set_child(*network_table);
 
-	host_cancel_button = Gtk::manage(new class Gtk::Button(Gtk::Stock::CANCEL));
-	host_button = Gtk::manage(new class Gtk::Button(_("Start Game")));
-	host_button->set_can_default(true);
-	Gtk::HButtonBox *host_buttons = Gtk::manage(
-		new class Gtk::HButtonBox(Gtk::BUTTONBOX_END, 6));
-	host_buttons->set_border_width(6);
-	host_buttons->pack_start(*host_cancel_button);
-	host_buttons->pack_start(*host_button);
+	host_cancel_button = Gtk::make_managed<Gtk::Button>(_("_Cancel"), true);
+	host_button = Gtk::make_managed<Gtk::Button>(_("Start Game"));
+	Gtk::Box *host_buttons = Gtk::make_managed<Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
+	host_buttons->set_halign(Gtk::Align::END);
+	host_buttons->set_margin_top(6);
+	host_buttons->set_margin_bottom(6);
+	host_buttons->set_margin_start(6);
+	host_buttons->set_margin_end(6);
+	host_buttons->append(*host_cancel_button);
+	host_buttons->append(*host_button);
 
-	Gtk::VBox *new_page = Gtk::manage(new class Gtk::VBox(false, 6));
-	new_page->set_border_width(6);
-	new_page->pack_start(*players_frame);
-	new_page->pack_start(*seat_buttons, Gtk::PACK_SHRINK);
-	new_page->pack_start(*rules_frame, Gtk::PACK_SHRINK);
-	new_page->pack_start(*network_frame, Gtk::PACK_SHRINK);
-	new_page->pack_start(*host_buttons, Gtk::PACK_SHRINK);
+	Gtk::Box *new_page = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 6);
+	new_page->set_margin_top(6);
+	new_page->set_margin_bottom(6);
+	new_page->set_margin_start(6);
+	new_page->set_margin_end(6);
+	new_page->append(*players_frame);
+	new_page->append(*seat_buttons);
+	new_page->append(*rules_frame);
+	new_page->append(*network_frame);
+	new_page->append(*host_buttons);
 
 	// The Join page.
 	Gtk::Label *name_label =
-		Gtk::manage(new class Gtk::Label(_("Name:")));
-	name_entry = Gtk::manage(new class Gtk::Entry());
+		Gtk::make_managed<Gtk::Label>(_("Name:"));
+	name_entry = Gtk::make_managed<Gtk::Entry>();
 	Gtk::Label *color_label =
-		Gtk::manage(new class Gtk::Label(_("Color:")));
-	color_box = Gtk::manage(new class ColorPicker());
-	spectator = Gtk::manage(new class Gtk::CheckButton(
-		_("Join As A Spectator (Not Playing)")));
-	Gtk::Table *profile_table =
-		Gtk::manage(new class Gtk::Table(2, 3, false));
-	profile_table->set_border_width(6);
-	profile_table->set_row_spacings(3);
-	profile_table->set_col_spacings(3);
-	profile_table->attach(*name_label, 0, 1, 0, 1, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	profile_table->attach(*name_entry, 1, 2, 0, 1,
-		Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-	profile_table->attach(*color_label, 0, 1, 1, 2, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	profile_table->attach(*color_box, 1, 2, 1, 2,
-		Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-	profile_table->attach(*spectator, 0, 2, 2, 3, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
+		Gtk::make_managed<Gtk::Label>(_("Color:"));
+	color_box = Gtk::make_managed<ColorPicker>();
+	spectator = Gtk::make_managed<Gtk::CheckButton>(
+		_("Join As A Spectator (Not Playing)"));
+	Gtk::Grid *profile_table = Gtk::make_managed<Gtk::Grid>();
+	profile_table->set_margin_top(6);
+	profile_table->set_margin_bottom(6);
+	profile_table->set_margin_start(6);
+	profile_table->set_margin_end(6);
+	profile_table->set_row_spacing(3);
+	profile_table->set_column_spacing(3);
+	profile_table->attach(*name_label, 0, 0);
+	profile_table->attach(*name_entry, 1, 0);
+	profile_table->attach(*color_label, 0, 1);
+	profile_table->attach(*color_box, 1, 1);
+	profile_table->attach(*spectator, 0, 2, 2, 1);
+	name_entry->set_hexpand(true);
 
 	Gtk::Label *profile_label =
-		Gtk::manage(new class Gtk::Label(_("<b>Your Player</b>")));
+		Gtk::make_managed<Gtk::Label>(_("<b>Your Player</b>"));
 	profile_label->set_use_markup(true);
-	Gtk::Frame *profile_frame = Gtk::manage(new class Gtk::Frame());
+	Gtk::Frame *profile_frame = Gtk::make_managed<Gtk::Frame>();
 	profile_frame->set_label_widget(*profile_label);
-	profile_frame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	profile_frame->add(*profile_table);
+	profile_frame->set_child(*profile_table);
 
 	Gtk::Label *host_label =
-		Gtk::manage(new class Gtk::Label(_("Host Name:")));
-	join_host_entry = new class GtkComboBoxEntryText(true);
+		Gtk::make_managed<Gtk::Label>(_("Host Name:"));
+	join_host_entry = Gtk::make_managed<GtkComboBoxEntryText>(true);
 	Gtk::Label *join_port_label =
-		Gtk::manage(new class Gtk::Label(_("Port Number:")));
-	join_port_entry = Gtk::manage(new class Gtk::Entry());
+		Gtk::make_managed<Gtk::Label>(_("Port Number:"));
+	join_port_entry = Gtk::make_managed<Gtk::Entry>();
 	join_port_entry->set_text(_("3838"));
 	join_port_entry->set_max_width_chars(8);
-	Gtk::Table *join_table = Gtk::manage(new class Gtk::Table(2, 2, false));
-	join_table->set_border_width(6);
-	join_table->set_row_spacings(3);
-	join_table->set_col_spacings(3);
-	join_table->attach(*host_label, 0, 1, 0, 1, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	join_table->attach(*join_host_entry, 1, 2, 0, 1,
-		Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
-	join_table->attach(*join_port_label, 0, 1, 1, 2, Gtk::FILL,
-		Gtk::AttachOptions(), 0, 0);
-	join_table->attach(*join_port_entry, 1, 2, 1, 2,
-		Gtk::EXPAND|Gtk::FILL, Gtk::AttachOptions(), 0, 0);
+	Gtk::Grid *join_table = Gtk::make_managed<Gtk::Grid>();
+	join_table->set_margin_top(6);
+	join_table->set_margin_bottom(6);
+	join_table->set_margin_start(6);
+	join_table->set_margin_end(6);
+	join_table->set_row_spacing(3);
+	join_table->set_column_spacing(3);
+	join_table->attach(*host_label, 0, 0);
+	join_table->attach(*join_host_entry, 1, 0);
+	join_table->attach(*join_port_label, 0, 1);
+	join_table->attach(*join_port_entry, 1, 1);
+	join_host_entry->set_hexpand(true);
+	join_port_entry->set_hexpand(true);
 
 	Gtk::Label *server_label =
-		Gtk::manage(new class Gtk::Label(_("<b>Server</b>")));
+		Gtk::make_managed<Gtk::Label>(_("<b>Server</b>"));
 	server_label->set_use_markup(true);
-	Gtk::Frame *server_frame = Gtk::manage(new class Gtk::Frame());
+	Gtk::Frame *server_frame = Gtk::make_managed<Gtk::Frame>();
 	server_frame->set_label_widget(*server_label);
-	server_frame->set_shadow_type(Gtk::SHADOW_ETCHED_IN);
-	server_frame->add(*join_table);
+	server_frame->set_child(*join_table);
 
 	join_cancel_button =
-		Gtk::manage(new class Gtk::Button(Gtk::Stock::CANCEL));
-	join_button = Gtk::manage(new class Gtk::Button(_("Join Game")));
-	join_button->set_can_default(true);
-	Gtk::HButtonBox *join_buttons = Gtk::manage(
-		new class Gtk::HButtonBox(Gtk::BUTTONBOX_END, 6));
-	join_buttons->set_border_width(6);
-	join_buttons->pack_start(*join_cancel_button);
-	join_buttons->pack_start(*join_button);
+		Gtk::make_managed<Gtk::Button>(_("_Cancel"), true);
+	join_button = Gtk::make_managed<Gtk::Button>(_("Join Game"));
+	Gtk::Box *join_buttons = Gtk::make_managed<Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 6);
+	join_buttons->set_halign(Gtk::Align::END);
+	join_buttons->set_margin_top(6);
+	join_buttons->set_margin_bottom(6);
+	join_buttons->set_margin_start(6);
+	join_buttons->set_margin_end(6);
+	join_buttons->append(*join_cancel_button);
+	join_buttons->append(*join_button);
 
-	Gtk::VBox *join_page = Gtk::manage(new class Gtk::VBox(false, 6));
-	join_page->set_border_width(6);
-	join_page->pack_start(*profile_frame, Gtk::PACK_SHRINK);
-	join_page->pack_start(*server_frame, Gtk::PACK_SHRINK);
-	join_page->pack_start(*join_buttons, Gtk::PACK_SHRINK);
+	Gtk::Box *join_page = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 6);
+	join_page->set_margin_top(6);
+	join_page->set_margin_bottom(6);
+	join_page->set_margin_start(6);
+	join_page->set_margin_end(6);
+	join_page->append(*profile_frame);
+	join_page->append(*server_frame);
+	join_page->append(*join_buttons);
 
-	role_notebook = Gtk::manage(new class Gtk::Notebook());
+	role_notebook = Gtk::make_managed<Gtk::Notebook>();
 	role_notebook->append_page(*new_page, _("New Game"));
 	role_notebook->append_page(*join_page, _("Join An Existing Board"));
 
-	Gtk::VBox *top_box = Gtk::manage(new class Gtk::VBox(false, 0));
-	top_box->set_border_width(6);
-	top_box->pack_start(*role_notebook);
+	Gtk::Box *top_box = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 0);
+	top_box->set_margin_top(6);
+	top_box->set_margin_bottom(6);
+	top_box->set_margin_start(6);
+	top_box->set_margin_end(6);
+	// GTK4 GtkBox only gives extra main-axis space to children with
+	// expand set; without this the notebook stays at its minimum height.
+	role_notebook->set_vexpand(true);
+	top_box->append(*role_notebook);
 
-	add(*top_box);
+	set_child(*top_box);
 
-	set_title(_("Host Or Join A Board"));
+	set_title(_("New Game"));
 	set_resizable(true);
 
 	// Signal wiring.
@@ -238,7 +246,7 @@ new_game_win_glade::new_game_win_glade()
 		&new_game_win_glade::on_host_cancel_button_clicked));
 	host_button->signal_clicked().connect(sigc::mem_fun(*this,
 		&new_game_win_glade::on_host_button_clicked));
-	host_button->grab_default();
+	set_default_widget(*host_button);
 	name_entry->signal_activate().connect(sigc::mem_fun(*this,
 		&new_game_win_glade::on_join_button_clicked));
 	join_port_entry->signal_activate().connect(sigc::mem_fun(*this,
@@ -247,14 +255,9 @@ new_game_win_glade::new_game_win_glade()
 		&new_game_win_glade::on_join_cancel_button_clicked));
 	join_button->signal_clicked().connect(sigc::mem_fun(*this,
 		&new_game_win_glade::on_join_button_clicked));
-
-	// The old glade-generated code showed each widget individually; show
-	// everything now that the window is built.
-	show_all_children();
 }
 
 
 new_game_win_glade::~new_game_win_glade()
 {
-	delete join_host_entry;
 }

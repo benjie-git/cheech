@@ -23,7 +23,7 @@
 #include "game_images.hh"
 
 
-GameViewHole::GameViewHole(Gdk::Point *view_center, Gdk::Point *orig_offset)
+GameViewHole::GameViewHole(GamePoint *view_center, GamePoint *orig_offset)
 	:_client(NULL),
 	 _hole(NULL),
 	 _center(view_center),
@@ -48,14 +48,14 @@ void GameViewHole::setup(GameClient *cl, GameHole *h)
 }
 
 
-Gdk::Point GameViewHole::get_location()
+GamePoint GameViewHole::get_location()
 {
-	return Gdk::Point((int)lround(_center->get_x() + _offset.get_x() * _scale),
+	return GamePoint((int)lround(_center->get_x() + _offset.get_x() * _scale),
 					  (int)lround(_center->get_y() + _offset.get_y() * _scale));
 }
 
 
-Gdk::Point GameViewHole::get_offset()
+GamePoint GameViewHole::get_offset()
 {
 	return _offset;
 }
@@ -73,9 +73,9 @@ void GameViewHole::set_hilighted(bool h)
 }
 
 
-void GameViewHole::set_offset(Gdk::Point p)
+void GameViewHole::set_offset(GamePoint p)
 {
-	_offset = Gdk::Point(p.get_x(), p.get_y());
+	_offset = GamePoint(p.get_x(), p.get_y());
 }
 
 
@@ -130,7 +130,7 @@ bool GameViewHole::in_bounds(int x, int y)
 {
 	double half_x = GameImages::get_peg_size().get_x() / 2.0 * _scale;
 	double half_y = GameImages::get_peg_size().get_y() / 2.0 * _scale;
-	Gdk::Point location = get_location();
+	GamePoint location = get_location();
 
 	return (
 		x >= location.get_x() - half_x &&
@@ -147,5 +147,5 @@ void GameViewHole::rotate(double theta)
 	double new_y = _orig_offset.get_x() * sin (theta) 
 		+ _orig_offset.get_y() * cos (theta);
 
-	_offset = Gdk::Point((int)(new_x+0.5), (int)(new_y+0.5));
+	_offset = GamePoint((int)(new_x+0.5), (int)(new_y+0.5));
 }

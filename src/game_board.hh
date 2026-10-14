@@ -41,8 +41,8 @@ public:
 	const static unsigned int GOAL_MAP[7];
 	const static int BOARD_MAP[SIZE];
 
-	sigc::signal<void, unsigned int> evt_player_finished;
-	sigc::signal<void> evt_game_over;
+	sigc::signal<void(unsigned int)> evt_player_finished;
+	sigc::signal<void()> evt_game_over;
 
 private:
 	unsigned int				_num_players;

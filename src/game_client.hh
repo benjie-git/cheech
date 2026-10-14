@@ -69,27 +69,27 @@ public:
 
 	GameBoard *get_board();
 
-	sigc::signal<void, unsigned int> cmd_set_player_number;
-	sigc::signal<void, unsigned int, Glib::ustring, int> cmd_player_add;
-	sigc::signal<void, Glib::ustring> cmd_spectator_add;
-	sigc::signal<void, unsigned int> cmd_player_remove;
-	sigc::signal<void, unsigned int, unsigned int> cmd_player_finish;
-	sigc::signal<void> cmd_game_resync;
-	sigc::signal<void, Glib::ustring> cmd_choose_new_name;
-	sigc::signal<void, Glib::ustring, int> cmd_choose_new_color;
-	sigc::signal<void, unsigned int, GameServer::GameStatus, 
-				 unsigned int> cmd_game_turn;
-	sigc::signal<void, unsigned int, unsigned int> cmd_game_undo_move;
-	sigc::signal<void, MoveList*> cmd_game_show_move;
-	sigc::signal<void> cmd_game_hide_move;
-	sigc::signal<void, MoveList*> cmd_game_make_move;
-	sigc::signal<void, unsigned int, unsigned int> cmd_player_id;
-	sigc::signal<void> cmd_player_ids_end;
+	sigc::signal<void(unsigned int)> cmd_set_player_number;
+	sigc::signal<void(unsigned int, Glib::ustring, int)> cmd_player_add;
+	sigc::signal<void(Glib::ustring)> cmd_spectator_add;
+	sigc::signal<void(unsigned int)> cmd_player_remove;
+	sigc::signal<void(unsigned int, unsigned int)> cmd_player_finish;
+	sigc::signal<void()> cmd_game_resync;
+	sigc::signal<void(Glib::ustring)> cmd_choose_new_name;
+	sigc::signal<void(Glib::ustring, int)> cmd_choose_new_color;
+	sigc::signal<void(unsigned int, GameServer::GameStatus, 
+				 unsigned int)> cmd_game_turn;
+	sigc::signal<void(unsigned int, unsigned int)> cmd_game_undo_move;
+	sigc::signal<void(MoveList*)> cmd_game_show_move;
+	sigc::signal<void()> cmd_game_hide_move;
+	sigc::signal<void(MoveList*)> cmd_game_make_move;
+	sigc::signal<void(unsigned int, unsigned int)> cmd_player_id;
+	sigc::signal<void()> cmd_player_ids_end;
 
-	sigc::signal<void, Glib::ustring> evt_message;
-	sigc::signal<void> evt_connected;
-	sigc::signal<void> evt_cancelled;
-	sigc::signal<void> evt_disconnected;
+	sigc::signal<void(Glib::ustring)> evt_message;
+	sigc::signal<void()> evt_connected;
+	sigc::signal<void()> evt_cancelled;
+	sigc::signal<void()> evt_disconnected;
 
 	bool ready() const;
 	unsigned int get_port();

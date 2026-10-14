@@ -213,7 +213,7 @@ void AjaxServer::send_file(Glib::ustring f, Gnet::Conn *conn)
 		gchar buffer[1024];
 		gsize bytes_read;
 
-		while (pfile->read(buffer, 1024, bytes_read) == Glib::IO_STATUS_NORMAL)
+		while (pfile->read(buffer, 1024, bytes_read) == Glib::IOStatus::NORMAL)
 			conn->write(buffer, bytes_read);
 	}
 	catch (Glib::IOChannelError)

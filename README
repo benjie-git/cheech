@@ -56,7 +56,7 @@ Building cheech
 
 Build on *nix/MacOS:
 --------------
-- install gtkmm3 (on a mac, run: brew install gtkmm3)
+- install gtkmm4 (on a mac, run: brew install gtkmm4)
 - run the below commands in the root directory of the cheech project.
   - autoreconf -i
   - ./configure
@@ -81,7 +81,7 @@ To build a self-contained Cheech.app instead of installing system-wide:
 
 Build on Windows using Dev-C++
 ------------------------------
-- Install gtkmm3
+- Install gtkmm4
 - Use the included Dev-C++ files to build the cheech binaries.
 - Put the cheech*.exe files and the pixmap directory into a folder together
 - Rename the ajax/www/com.benjie.cheech directory cheechweb, and put it into

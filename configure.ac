@@ -27,17 +27,17 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 
 dnl ---------------------------------------------------------------
-dnl Language standard: the sources require C++11.
+dnl Language standard: the sources require C++17 (gtkmm4 / sigc++3).
 dnl ---------------------------------------------------------------
 AC_LANG_PUSH([C++])
-AC_MSG_CHECKING([whether $CXX accepts -std=c++11])
+AC_MSG_CHECKING([whether $CXX accepts -std=c++17])
 save_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS -std=c++11"
+CXXFLAGS="$CXXFLAGS -std=c++17"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
   [AC_MSG_RESULT([yes])],
   [CXXFLAGS="$save_CXXFLAGS"
    AC_MSG_RESULT([no])
-   AC_MSG_ERROR([a C++11 capable compiler is required])])
+   AC_MSG_ERROR([a C++17 capable compiler is required])])
 AC_LANG_POP([C++])
 
 dnl ---------------------------------------------------------------
@@ -159,12 +159,6 @@ AS_IF([test "x$enable_macos_app" = "xyes"], [
   AC_DEFINE([MACOS_APP], [1],
             [Define when the GUI is built to run from a Mac OS X .app bundle])
   MACOS_APP_LIBS="-framework CoreFoundation"
-
-dnl The standard Mac OS X menu bar is provided by gtk-mac-integration,
-dnl which adopts the GtkMenuBar and mirrors it into the system menu bar.
-  PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk3])
-  MACOS_APP_CFLAGS="$GTK_MAC_INTEGRATION_CFLAGS"
-  MACOS_APP_LIBS="$GTK_MAC_INTEGRATION_LIBS $MACOS_APP_LIBS"
 ])
 AC_SUBST([MACOS_APP_CFLAGS])
 AC_SUBST([MACOS_APP_LIBS])
@@ -178,7 +172,7 @@ AC_CHECK_LIB([nsl], [main])
 AC_CHECK_LIB([resolv], [main])
 
 dnl gtkmm (GUIs)
-PKG_CHECK_MODULES([GTKMM], [gtkmm-3.0])
+PKG_CHECK_MODULES([GTKMM], [gtkmm-4.0])
 
 dnl GLib / GThread
 GLIB_REQ=2.6.0

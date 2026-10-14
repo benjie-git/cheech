@@ -19,9 +19,9 @@
 
 #include <iostream>
 #include "gnet-2.0/gnet.h"
-#include <gtkmm/main.h>
 #include <glib/gi18n.h>
 #include <glibmm/optioncontext.h>
+#include <gtkmm/application.h>
 
 #include "config.h"
 #include "prefs.hh"
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 
 	process_options(argc, argv);
 
-	Gtk::Main m(&argc, &argv);
+	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create();
 	GameImages::init();
 
 	main_win *main_win = new class main_win();
@@ -218,8 +218,63 @@ int main(int argc, char **argv)
 							   (unsigned int)color, spectator);
 	}
 	
-	m.run(*main_win);
+	// GTK4 requires application windows to be added after the startup
+	// signal has been emitted (i.e. inside run()), not before.  The
+	// keyboard accelerators are also registered here: they live on the
+	// application, which the window only knows once it has been added.
+	app->signal_startup().connect([&]() {
+		// Handing the model to the application shows it in the native
+		// macOS menu bar (on other platforms it is inert, since the
+		// in-window Gtk::PopoverMenuBar is what the user sees).
+		app->set_menubar(main_win->get_menu_model());
+
+		// GTK fills the macOS app menu (next to the Apple menu) with
+		// items targeting app.* actions; without these, Quit (and About)
+		// show up disabled there.  They route to the window's win.*
+		// actions so the confirm-quit dialog and everything else applies.
+		// Registering app.quit also makes native termination (Cmd+Q) go
+		// through the same path instead of killing the process outright.
+		// Widget::activate_action() takes the fully-prefixed action name.
+		app->add_action("quit", [main_win]()
+			{ main_win->activate_action("win.quit"); });
+		app->add_action("about", [main_win]()
+			{ main_win->activate_action("win.about"); });
+
+		app->add_window(*main_win);
+
+// GTK4 dropped the GTK3 <Primary>-to-Command mapping; on macOS the Command
+// key is the Meta modifier, and the GTK4 docs say apps must register
+// macOS-specific shortcuts themselves.
+#ifdef MACOS_APP
+#  define CHEECH_PRIMARY "<Meta>"
+#else
+#  define CHEECH_PRIMARY "<Primary>"
+#endif
+		app->set_accels_for_action("win.new_game", {CHEECH_PRIMARY "n"});
+		app->set_accels_for_action("win.end_game", {CHEECH_PRIMARY "t"});
+		app->set_accels_for_action("win.leave_game", {CHEECH_PRIMARY "l"});
+		app->set_accels_for_action("win.game_settings", {CHEECH_PRIMARY "g"});
+		app->set_accels_for_action("win.rotate", {CHEECH_PRIMARY "a"});
+		app->set_accels_for_action("win.shuffle", {CHEECH_PRIMARY "f"});
+		app->set_accels_for_action("win.restart_game", {CHEECH_PRIMARY "k"});
+#ifndef MACOS_APP
+		// On macOS GTK's quartz backend already binds Cmd+Q to app.quit
+		// (above), which routes to win.quit.
+		app->set_accels_for_action("win.quit", {CHEECH_PRIMARY "q"});
+#endif
+		app->set_accels_for_action("win.undo", {CHEECH_PRIMARY "z"});
+		app->set_accels_for_action("win.redo", {CHEECH_PRIMARY "y"});
+		app->set_accels_for_action("win.show_last_move", {CHEECH_PRIMARY "h"});
+		app->set_accels_for_action("win.add_computer_player", {CHEECH_PRIMARY "d"});
+		app->set_accels_for_action("win.remove_computer_players", {CHEECH_PRIMARY "e"});
+		app->set_accels_for_action("win.setup_computer_player", {CHEECH_PRIMARY "p"});
+		app->set_accels_for_action("win.cut", {CHEECH_PRIMARY "x"});
+		app->set_accels_for_action("win.copy", {CHEECH_PRIMARY "c"});
+		app->set_accels_for_action("win.paste", {CHEECH_PRIMARY "v"});
+	});
+
+	int rc = app->run();
 	delete main_win;
 
-	return 0;
+	return rc;
 }

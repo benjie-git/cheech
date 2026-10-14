@@ -36,7 +36,7 @@ struct BoardView: View {
 							lattice.move(to: pa)
 							lattice.addLine(to: pb)
 						}
-						context.stroke(lattice, with: .color(Color(red: 0.46, green: 0.30, blue: 0.18)), lineWidth: max(1, unit * 0.06))
+						context.stroke(lattice, with: .color(Color(red: 0.49, green: 0.34, blue: 0.20)), lineWidth: max(1, unit * 0.06))
 
 						// Holes
 						for i in 0..<BoardGeometry.count where BoardGeometry.present[i] {

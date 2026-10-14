@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 
 	Glib::signal_io().connect(sigc::bind(sigc::ptr_fun(on_stdin), server),
 							  Glib::IOChannel::create_from_fd(0),
-							  Glib::IO_IN);
+							  Glib::IOCondition::IO_IN);
 
 	m->run();
 

@@ -33,7 +33,7 @@ public:
 	GameHole& operator=(const GameHole& hole);
 	virtual ~GameHole();
 
-	sigc::signal<void, int> evt_player_changed;
+	sigc::signal<void(int)> evt_player_changed;
 
 	unsigned int get_id() const;
 	unsigned int get_start_player() const;

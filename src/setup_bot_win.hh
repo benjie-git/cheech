@@ -43,8 +43,8 @@ class setup_bot_win : public setup_bot_win_glade
 		// Shows the window and gives it keyboard focus.
 		void present_focused();
 
-		sigc::signal<void, BotBase*> signal_add_bot;
-		sigc::signal<void> signal_remove_bots;
+		sigc::signal<void(BotBase*)> signal_add_bot;
+		sigc::signal<void()> signal_remove_bots;
 
 		void on_cmd_game_turn(unsigned int posn,
 							  GameServer::GameStatus status,

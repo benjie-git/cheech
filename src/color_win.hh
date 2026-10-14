@@ -29,7 +29,7 @@ class color_win : public color_win_glade
 
 		void set_force_info(Glib::ustring *name, int color);
 
-		sigc::signal<void, int> signal_change_color;
+		sigc::signal<void(int)> signal_change_color;
 
 		void on_disconnected();
 

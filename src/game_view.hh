@@ -37,9 +37,9 @@ class game_view : public Gtk::DrawingArea
 		game_view();
 		~game_view();
 
-		sigc::signal<void, unsigned int> evt_unhandled_key;
-		sigc::signal<void> evt_user_action;  // e.g. For turning off urgency
-		sigc::signal<void> evt_board_resized;
+		sigc::signal<void(unsigned int)> evt_unhandled_key;
+		sigc::signal<void()> evt_user_action;  // e.g. For turning off urgency
+		sigc::signal<void()> evt_board_resized;
 
 		void set_client(GameClient *c);
 		void rebuild_board();
@@ -52,7 +52,7 @@ class game_view : public Gtk::DrawingArea
 		void show_move(MoveList *list);
 		void hide_move();
 
-		Gdk::Point get_view_center() const { return _center; }
+		GamePoint get_view_center() const { return _center; }
 		double get_scale() const { return _scale; }
 		int get_base_width() const { return _base_width; }
 		int get_base_height() const { return _base_height; }
@@ -61,20 +61,23 @@ class game_view : public Gtk::DrawingArea
 		void create_holes();
 		void destroy_holes();
 
-		//Override default signal handlers:
 		void on_realize();
-		bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
-		bool on_configure_event(GdkEventConfigure* event);
-		bool on_button_press_event(GdkEventButton *ev);
-		bool on_key_press_event(GdkEventKey *ev);
+
+		//Input handlers (wired to controllers in the constructor):
+		void on_view_clicked(unsigned int clicks, double x, double y);
+		bool on_view_key_pressed(guint keyval, guint keycode,
+			Gdk::ModifierType state);
+		void on_resize(int width, int height);
 
 		void read_move(unsigned int i);
 		void write_move();
 		void erase_move();
 
 		bool move_list_contains(unsigned int i);
+		void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width,
+			int height);
 		void draw_move_arc(const Cairo::RefPtr<Cairo::Context>& cr,
-						   Gdk::Point from, Gdk::Point to);
+						   GamePoint from, GamePoint to);
 
 		std::vector<GameViewHole*>  _holes;
 		MoveList _move_list;
@@ -82,8 +85,8 @@ class game_view : public Gtk::DrawingArea
 		GameClient *_client;
 		GameBoard *_board;
 		bool _locked;
-		Gdk::Point _center;
-		Gdk::Point _board_center;
+		GamePoint _center;
+		GamePoint _board_center;
 		double _scale;
 		int _base_width;
 		int _base_height;

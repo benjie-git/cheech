@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-DGNET_EXPERIMENTAL
 
 AM_CFLAGS = -Wall
-AM_CXXFLAGS = -Wall
+AM_CXXFLAGS = -Wall -std=c++17
 
 bin_PROGRAMS = cheech cheechd cheechbot cheechwebd
 
