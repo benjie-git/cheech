@@ -64,9 +64,6 @@
 		B9495A6C24341CDA00DF2CF1 /* inetaddr.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5524341CD900DF2CF1 /* inetaddr.c */; };
 		B9495A6D24341CDA00DF2CF1 /* server.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5624341CD900DF2CF1 /* server.c */; };
 		B9495A6E24341CDA00DF2CF1 /* mcast.c in Sources */ = {isa = PBXBuildFile; fileRef = B9495A5824341CDA00DF2CF1 /* mcast.c */; };
-		B9495A752434559D00DF2CF1 /* pegs.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A712434559D00DF2CF1 /* pegs.png */; };
-		B9495A762434559D00DF2CF1 /* smiley.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A722434559D00DF2CF1 /* smiley.png */; };
-		B9495A772434559D00DF2CF1 /* highlight.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A732434559D00DF2CF1 /* highlight.png */; };
 		B9495A782434559D00DF2CF1 /* cheech.png in Resources */ = {isa = PBXBuildFile; fileRef = B9495A742434559D00DF2CF1 /* cheech.png */; };
 		B9495A7B24345A0D00DF2CF1 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */; };
 		B9B823D22438095D0021755E /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B9B823D12438095D0021755E /* libbz2.tbd */; };
@@ -203,9 +200,6 @@
 		B9495A5924341CDA00DF2CF1 /* udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = udp.h; path = "../../src/gnet-2.0/udp.h"; sourceTree = "<group>"; usesTabs = 1; };
 		B9495A5A24341CDA00DF2CF1 /* socks-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "socks-private.h"; path = "../../src/gnet-2.0/socks-private.h"; sourceTree = "<group>"; usesTabs = 1; };
 		B9495A6F24341D5200DF2CF1 /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../config.h; sourceTree = "<group>"; usesTabs = 1; };
-		B9495A712434559D00DF2CF1 /* pegs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pegs.png; path = ../../pixmaps/pegs.png; sourceTree = "<group>"; };
-		B9495A722434559D00DF2CF1 /* smiley.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = smiley.png; path = ../../pixmaps/smiley.png; sourceTree = "<group>"; };
-		B9495A732434559D00DF2CF1 /* highlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = highlight.png; path = ../../pixmaps/highlight.png; sourceTree = "<group>"; };
 		B9495A742434559D00DF2CF1 /* cheech.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cheech.png; path = ../../pixmaps/cheech.png; sourceTree = "<group>"; };
 		B9495A7A24345A0D00DF2CF1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		B9B823642437D3CE0021755E /* libgtkmm-2.4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libgtkmm-2.4.a"; path = "../../../../../usr/local/lib/libgtkmm-2.4.a"; sourceTree = "<group>"; };
@@ -442,9 +436,6 @@
 			isa = PBXGroup;
 			children = (
 				B9495A742434559D00DF2CF1 /* cheech.png */,
-				B9495A732434559D00DF2CF1 /* highlight.png */,
-				B9495A712434559D00DF2CF1 /* pegs.png */,
-				B9495A722434559D00DF2CF1 /* smiley.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -575,9 +566,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9495A782434559D00DF2CF1 /* cheech.png in Resources */,
-				B9495A772434559D00DF2CF1 /* highlight.png in Resources */,
-				B9495A752434559D00DF2CF1 /* pegs.png in Resources */,
-				B9495A762434559D00DF2CF1 /* smiley.png in Resources */,
 				B94959AA24341BAC00DF2CF1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

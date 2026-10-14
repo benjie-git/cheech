@@ -1,39 +1,41 @@
-cheech - Chinese Checkers 
-http://cheech.sourceforge.net/
+![cheech icon](pixmaps/cheech.png)
+
+# cheech - Chinese Checkers
+
+https://github.com/benjie-git/cheech
 
 cheech is a networked, cross-platform Chinese Checkers game supporting a few
 rule variations (please tell me if you know of other fun rule variations!),
 chatting with other players, and AI computer players.
 
-cheech runs on on *nix systems, Windows, and MacOS, and there is a 
+cheech runs on on *nix systems, Windows, and MacOS, and there is a
 web-based client as well.
 
 cheech is based on Loban Rahman's Gnome Chinese Checkers
-(http://gchch.sourceforge.net/).
+(https://github.com/benjie-git/cheech).
 
 
-Using cheech
-============
+## Using cheech
 
-Basic cheech
-------------
+### Basic cheech
+
 Run the program called cheech.  Choose the 'Host New Board' menu item and have
-your friends connect to you.  Or use the 'Join a Board' menu item if someone 
+your friends connect to you.  Or use the 'Join a Board' menu item if someone
 else is already hosting a cheech board.
 
-If your friends are busy, Host a New Board, and add computer players into the 
+If your friends are busy, Host a New Board, and add computer players into the
 game using the 'Setup Computer Player...' and 'Add Computer Player' menu items.
 Watch out, they're not super smart, but they are thorough!
 
-To make a move, click on the peg you want to move, then on the empty hole to 
-move your peg to.  If you're making a multiple-hop move, you need to click on 
+To make a move, click on the peg you want to move, then on the empty hole to
+move your peg to.  If you're making a multiple-hop move, you need to click on
 each hole that you're hopping through along your chain of hops.  When you've
-finished clicking out your hopping path, double click the last hole, or press 
+finished clicking out your hopping path, double click the last hole, or press
 Enter to make your move.
 
 
-Advanced cheech
----------------
+### Advanced cheech
+
 If you and your friends are all behind a port-blocking firewall, you can run
 a separate cheech server on some publicly accessible server.  Run cheechd
 on that server, and everyone can Join to that server's address.
@@ -46,16 +48,15 @@ pages.
 - start cheechd with the -W flag, or host a game from cheech.
   (Make sure to enable cheechweb from the Host a new Board dialog in cheech.)
 - point people to the url of the cheechserver.  This will be:
-  http://<computerHostingCheechweb>:<cheechwebPort>/
+  `http://<computerHostingCheechweb>:<cheechwebPort>/`
   (by default this is http://localhost:3839/ , where other people should replace
   localhost with the IP address of your computer.)
 
 
-Building cheech
-===============
+## Building cheech
 
-Build on *nix/MacOS:
---------------
+### Build on *nix/MacOS:
+
 - install gtkmm4 (on a mac, run: brew install gtkmm4)
 - run the below commands in the root directory of the cheech project.
   - autoreconf -i
@@ -64,8 +65,8 @@ Build on *nix/MacOS:
   - make install
 
 
-Building a MacOS app bundle
----------------------------
+### Building a MacOS app bundle
+
 To build a self-contained Cheech.app instead of installing system-wide:
 - install dylibbundler (on a mac, run: brew install dylibbundler)
 - install gtk-mac-integration (on a mac, run: brew install gtk-mac-integration)
@@ -79,8 +80,8 @@ To build a self-contained Cheech.app instead of installing system-wide:
   bundle and links them from there.
 
 
-Build on Windows using Dev-C++
-------------------------------
+### Build on Windows using Dev-C++
+
 - Install gtkmm4
 - Use the included Dev-C++ files to build the cheech binaries.
 - Put the cheech*.exe files and the pixmap directory into a folder together

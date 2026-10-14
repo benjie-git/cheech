@@ -87,17 +87,21 @@ if [ -f "$icon_src" ] && command -v sips >/dev/null 2>&1; then
 	fi
 fi
 
-# GTK/GLib runtime data.  A modest subset (schemas and the hicolor icon
-# theme) is enough for this application; the GTK 2 default theme is
-# compiled into the library and PNG loading is built into gdk-pixbuf.
+# GTK/GLib runtime data.  GTK 4 embeds its theme and icons in libgtk's
+# GResource, so no icon themes or theme files are needed; PNG loading is
+# built into gdk-pixbuf itself, so no pixbuf loader modules are bundled
+# either (the app loads no image files of its own).  GSettings schemas,
+# however, must exist on disk:
+# copy only GTK's own (org.gtk.*) schemas, not every Homebrew app's.
 brew_prefix=""
 if command -v brew >/dev/null 2>&1; then
 	brew_prefix=$(brew --prefix 2>/dev/null || true)
 fi
 if [ -z "$brew_prefix" ] && command -v pkg-config >/dev/null 2>&1; then
 	# Derive the Homebrew root from a pkg-config prefix (e.g.
-	# /opt/homebrew/Cellar/gtk+/2.24.33_2 -> /opt/homebrew).
-	for m in gtk+-2.0 glib-2.0 gdk-pixbuf-2.0; do
+	# /opt/homebrew/opt/gtk4 or /opt/homebrew/Cellar/glib/2.84.0
+	# -> /opt/homebrew).
+	for m in gtkmm-4.0 gtk4 glib-2.0 gdk-pixbuf-2.0; do
 		p=$(pkg-config --variable=prefix "$m" 2>/dev/null || true)
 		[ -n "$p" ] || continue
 		case "$p" in
@@ -109,33 +113,20 @@ if [ -z "$brew_prefix" ] && command -v pkg-config >/dev/null 2>&1; then
 fi
 
 if [ -n "$brew_prefix" ] && [ -d "$brew_prefix/share" ]; then
-	mkdir -p "$res/share"
-	for d in glib-2.0/schemas icons themes; do
-		if [ -d "$brew_prefix/share/$d" ]; then
-			mkdir -p "$res/share/$(dirname "$d")"
-			cp -R "$brew_prefix/share/$d" "$res/share/$d"
-		fi
-	done
-	if command -v glib-compile-schemas >/dev/null 2>&1 && [ -d "$res/share/glib-2.0/schemas" ]; then
-		glib-compile-schemas "$res/share/glib-2.0/schemas" 2>/dev/null || true
-	fi
-
-	# gdk-pixbuf loaders.  PNG support is built into the library, but
-	# bundle the loader modules too so other image formats keep working.
-	moddir=$(ls -d "$brew_prefix"/lib/gdk-pixbuf-2.0/*/ 2>/dev/null | head -1 || true)
-	moddir=${moddir%/}
-	if [ -n "$moddir" ] && [ -d "$moddir/loaders" ]; then
-		dest="$res/lib/gdk-pixbuf-2.0"
-		mkdir -p "$dest"
-		cp "$moddir/loaders.cache" "$dest/loaders.cache"
-		cp -R "$moddir/loaders" "$dest/loaders"
-		sed "s|$moddir/loaders|$dest/loaders|g" "$dest/loaders.cache" > "$dest/loaders.cache.tmp" && \
-			mv "$dest/loaders.cache.tmp" "$dest/loaders.cache"
-		for so in "$dest/loaders/"*.so; do
-			[ -e "$so" ] || continue
-			dylibbundler -b -of -x "$so" -d "$frameworks" \
-				-p "@executable_path/../Frameworks" >/dev/null 2>&1 || true
+	schemas_src="$brew_prefix/share/glib-2.0/schemas"
+	if [ -d "$schemas_src" ]; then
+		mkdir -p "$res/share/glib-2.0/schemas"
+		for f in "$schemas_src"/org.gtk.*.gschema.xml; do
+			[ -e "$f" ] || continue
+			# -L: Homebrew populates its share dirs with relative
+			# symlinks into the Cellar; copy the real files so the
+			# bundle contains no links pointing outside itself
+			# (Gatekeeper rejects those, and they would dangle anyway).
+			cp -L "$f" "$res/share/glib-2.0/schemas/"
 		done
+		if command -v glib-compile-schemas >/dev/null 2>&1; then
+			glib-compile-schemas "$res/share/glib-2.0/schemas" 2>/dev/null || true
+		fi
 	fi
 fi
 
@@ -153,10 +144,6 @@ GTK_PATH="\$resources"
 XDG_DATA_DIRS="\$resources/share${brew_prefix:+:$brew_prefix/share}"
 export GTK_DATA_PREFIX GTK_EXE_PREFIX GTK_PATH XDG_DATA_DIRS
 
-if [ -f "\$resources/lib/gdk-pixbuf-2.0/loaders.cache" ]; then
-	GDK_PIXBUF_MODULE_FILE="\$resources/lib/gdk-pixbuf-2.0/loaders.cache"
-	export GDK_PIXBUF_MODULE_FILE
-fi
 if [ -d "\$resources/share/glib-2.0/schemas" ]; then
 	GSETTINGS_SCHEMA_DIR="\$resources/share/glib-2.0/schemas"
 	export GSETTINGS_SCHEMA_DIR
@@ -209,7 +196,7 @@ echo "make-bundle.sh: bundling libraries with dylibbundler"
 dylibbundler -b -cd \
 	-x "$macos/cheech-bin" \
 	-d "$frameworks" \
-	-p "@executable_path/../Frameworks"
+	-p "@executable_path/../Frameworks" </dev/null
 
 # Ad-hoc code signature so macOS is happy to launch the bundle locally.
 if command -v codesign >/dev/null 2>&1; then

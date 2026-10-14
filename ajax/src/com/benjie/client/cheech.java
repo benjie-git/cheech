@@ -665,7 +665,7 @@ public class Cheech implements EntryPoint
 		});
 		helpMenu.addItem("About cheech...", new Command() {
 			public void execute() {
-				Window.open("http://cheech.sourceforge.net/", "_blank", "");
+				Window.open("https://github.com/benjie-git/cheech", "_blank", "");
 			}
 		});
 		menu.addItem("Help", helpMenu);

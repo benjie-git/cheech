@@ -3,9 +3,9 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
 AC_INIT([cheech],
         [0.1],
-        [http://cheech.sourceforge.net/],
+        [https://github.com/benjie-git/cheech],
         [cheech],
-        [http://cheech.sourceforge.net/])
+        [https://github.com/benjie-git/cheech])
 AC_CONFIG_SRCDIR([src/cheech.cc])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])

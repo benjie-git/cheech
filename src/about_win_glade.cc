@@ -37,11 +37,9 @@ about_win_glade::about_win_glade()
 
    Gtk::Label *label12 = Gtk::make_managed<Gtk::Label>(_("<b>cheech</b> is a multiplatform, networked implementation of the classic game Chinese Checkers.  It allows for some of the most common rule varriations that I've seen used.  I personally think the 'long jumps' rule makes the game infinitely more interesting.  :)\n"
 		"\n"
-		"http://cheech.sourceforge.net\n"
+		"https://github.com/benjie-git/cheech\n"
 		"\n"
-		"cheech is based on gchch by Loban A Rahman.\n"
-		"\n"
-		"2005-2020 Ben Levitt"));
+		"2005-2026 Ben Levitt"));
    Gtk::Button *close_button = Gtk::make_managed<Gtk::Button>(_("_Close"), true);
    Gtk::Box *hbuttonbox6 = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 0);
    Gtk::Box *vbox9 = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 0);
