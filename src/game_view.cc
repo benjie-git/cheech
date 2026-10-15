@@ -668,9 +668,6 @@ void game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int)
 	// Fill the widget with black (the letterbox area around the board),
 	// then paint the board background as a rounded rectangle that hugs the
 	// lattice and is centered in the available space.
-	double w = get_width();
-	double h = get_height();
-
 	cr->set_source_rgb(0, 0, 0);
 	cr->paint();
 

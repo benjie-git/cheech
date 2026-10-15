@@ -17,10 +17,8 @@ AM_CXXFLAGS = -Wall -std=c++17
 # them empty so the server/bot binaries need no GTK).
 if ENABLE_GUI
 GUI_CFLAGS = $(GTKMM_CFLAGS)
-GUI_LIBS = $(GTKMM_LIBS)
 else
 GUI_CFLAGS =
-GUI_LIBS =
 endif
 
 bin_PROGRAMS = cheechd cheechbot cheechwebd
@@ -29,15 +27,11 @@ bin_PROGRAMS += cheech
 endif
 
 cheech_LDADD = \
-	$(GUI_LIBS) $(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) \
-	-lpthread $(WIN32_LIBS) $(MACOS_APP_LIBS)
+	$(CHEECH_GUI_LIBS) -lpthread $(WIN32_LIBS) $(MACOS_APP_LIBS)
 cheech_LDFLAGS = $(WIN32_GUI_LDFLAGS)
-cheechd_LDADD = \
-	$(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
-cheechbot_LDADD = \
-	$(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
-cheechwebd_LDADD = \
-	$(GLIBMM_LIBS) $(GIOMM_LIBS) $(GTHREAD_LIBS) $(GLIB_LIBS) -lpthread $(WIN32_LIBS)
+cheechd_LDADD = $(CHEECH_CORE_LIBS) -lpthread $(WIN32_LIBS)
+cheechbot_LDADD = $(CHEECH_CORE_LIBS) -lpthread $(WIN32_LIBS)
+cheechwebd_LDADD = $(CHEECH_CORE_LIBS) -lpthread $(WIN32_LIBS)
 
 bot_sources = \
 	bot_base.cc \

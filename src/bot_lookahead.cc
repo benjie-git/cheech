@@ -424,7 +424,6 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 
 	long best = maximizing ? LONG_MIN : LONG_MAX;
 	uint32_t best_move = 0;
-	bool cutoff = false;
 
 	for (unsigned int i = 0; i < moves.size(); i++)
 	{
@@ -469,10 +468,7 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 		}
 
 		if (alpha >= beta)
-		{
-			cutoff = true;
 			break;
-		}
 	}
 
 	if (entry)

@@ -348,6 +348,33 @@ AS_IF([test "x$is_win32_host" = "xyes"], [
   GTHREAD_LIBS=`AS_ECHO_N([" $GTHREAD_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
   GLIB_LIBS=`AS_ECHO_N([" $GLIB_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
 ])
+
+dnl Deduplicate the library lists.  The pkg-config modules overlap heavily
+dnl (gtkmm brings in glibmm/giomm/sigc/glib, and glibmm, giomm, gthread and
+dnl glib all repeat -lglib-2.0 and friends), and macOS ld warns
+dnl "ignoring duplicate libraries" on every link line they touch.
+cheech_core_libs=
+for cheech_lib in $GLIBMM_LIBS $GIOMM_LIBS $GTHREAD_LIBS $GLIB_LIBS; do
+  case " $cheech_core_libs " in
+  *" $cheech_lib "*) ;;
+  *) cheech_core_libs="$cheech_core_libs $cheech_lib" ;;
+  esac
+done
+CHEECH_CORE_LIBS=`AS_ECHO_N(["$cheech_core_libs"]) | sed 's/^ *//;s/ *$//'`
+AS_IF([test "x$enable_gui" = "xyes"], [
+  cheech_gui_libs=
+  for cheech_lib in $GTKMM_LIBS $CHEECH_CORE_LIBS; do
+    case " $cheech_gui_libs " in
+    *" $cheech_lib "*) ;;
+    *) cheech_gui_libs="$cheech_gui_libs $cheech_lib" ;;
+    esac
+  done
+  CHEECH_GUI_LIBS=`AS_ECHO_N(["$cheech_gui_libs"]) | sed 's/^ *//;s/ *$//'`
+], [
+  CHEECH_GUI_LIBS="$CHEECH_CORE_LIBS"
+])
+AC_SUBST([CHEECH_CORE_LIBS])
+AC_SUBST([CHEECH_GUI_LIBS])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
