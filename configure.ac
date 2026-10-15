@@ -337,6 +337,17 @@ PKG_CHECK_MODULES([VALGRIND], [valgrind > 2.1], [
 dnl ---------------------------------------------------------------
 dnl Output
 dnl ---------------------------------------------------------------
+dnl On MinGW, -static-libstdc++ makes the gcc driver link the static
+dnl libstdc++.a; the -lstdc++ that some static .pc files inject (e.g.
+dnl harfbuzz) would additionally pull in libstdc++.dll.a, and ld
+dnl rejects the overlapping definitions.  Drop the pkg-config copy.
+AS_IF([test "x$is_win32_host" = "xyes"], [
+  GTKMM_LIBS=`AS_ECHO_N([" $GTKMM_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
+  GLIBMM_LIBS=`AS_ECHO_N([" $GLIBMM_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
+  GIOMM_LIBS=`AS_ECHO_N([" $GIOMM_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
+  GTHREAD_LIBS=`AS_ECHO_N([" $GTHREAD_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
+  GLIB_LIBS=`AS_ECHO_N([" $GLIB_LIBS "]) | sed 's/ -lstdc+\\+ / /g;s/^ *//;s/ *$//'`
+])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
