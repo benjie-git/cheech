@@ -79,9 +79,9 @@ To build a self-contained Cheech.app instead of installing system-wide:
   - ./configure
   - make
   - make bundle
-- the resulting Cheech.app is in the build directory and can be dragged to
-  /Applications.  It uses dylibbundler to copy the GTK libraries into the
-  bundle and links them from there.
+- This results in a built Cheech.app, which can be dragged to
+  /Applications if desired.  It pulls in all needed parts, and 
+  can be safely be copied to other machines.
 
 
 ### Build on Windows (MSYS2 / UCRT64):
@@ -96,13 +96,9 @@ To build a self-contained Cheech.app instead of installing system-wide:
   - make
   - make bundle
 
-The non-standard libraries (glib/glibmm/gtkmm and everything they pull in,
-plus libgcc/libstdc++) are linked statically on Windows, so the resulting
-binaries depend only on Windows itself.  (Use --disable-static-libs if you
-prefer to link them dynamically instead.)
-
-For a server-only build, leave out the mingw-w64-ucrt-x86_64-gtkmm-4.0
-package and run ./configure with the --disable-gui flag.
+- This results in a cleanly set-up Cheech folder containing cheech.exe.  You 
+  can move this whole folder to where ever you'd like it - it pulls in all 
+  needed parts, and can be safely zipped up and moved to other machines.
 
 
 Ben Levitt 2005-2026
