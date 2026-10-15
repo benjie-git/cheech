@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <glib/gi18n.h>
+#include <glibmm/main.h>
 #include <glibmm/optioncontext.h>
 #include <gdkmm/display.h>
 #include <gtkmm/application.h>
@@ -258,10 +259,16 @@ int main(int argc, char **argv)
 
 		// Without a command-line game, land on the New Game dialog so the
 		// first thing a player sees is how to start (or join) a game.
+		// Show the main window first, then let the window manager settle
+		// before opening the transient dialog: opening it in the same tick
+		// as the main window's map left it half off-screen (Linux) or at
+		// top-left (Windows), because the parent had no on-screen geometry
+		// for the WM to place it over yet.
 		if (!host && host_name == "")
 		{
-			main_win->present();
-			main_win->activate_action("win.new_game");
+			main_win->show();
+			Glib::signal_timeout().connect_once([main_win]()
+				{ main_win->activate_action("win.new_game"); }, 50);
 		}
 
 // GTK4 dropped the GTK3 <Primary>-to-Command mapping; on macOS the Command
