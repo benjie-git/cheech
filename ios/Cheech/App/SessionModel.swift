@@ -297,7 +297,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		playerName = defaults.string(forKey: PrefKey.playerName) ?? "Player"
 		playerColor = defaults.object(forKey: PrefKey.playerColor) as? Int ?? 1
 		hostPort = defaults.object(forKey: PrefKey.hostPort) as? Int ?? 3838
-		longJumps = defaults.object(forKey: PrefKey.longJumps) as? Bool ?? false
+		longJumps = defaults.object(forKey: PrefKey.longJumps) as? Bool ?? true
 		hopOthers = defaults.object(forKey: PrefKey.hopOthers) as? Bool ?? true
 		stopOthers = defaults.object(forKey: PrefKey.stopOthers) as? Bool ?? true
 		joinHost = defaults.string(forKey: PrefKey.joinHost) ?? "127.0.0.1"

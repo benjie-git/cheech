@@ -1114,7 +1114,7 @@ struct ProfileEditorView: View {
 // ObservableObject because this toolchain cannot expand @State.)
 final class GameSetupDraft: ObservableObject {
 	@Published var numPlayers = 3
-	@Published var longJumps = false
+	@Published var longJumps = true
 	@Published var hopOthers = true
 	@Published var stopOthers = true
 	@Published var botType = "LookAhead(3)"

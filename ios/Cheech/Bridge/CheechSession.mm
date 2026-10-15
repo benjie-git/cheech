@@ -73,7 +73,7 @@ struct Snapshot
 	int playerCount = 0;
 	std::string serverHost;
 	int serverPort = 0;
-	bool longJumps = false;
+	bool longJumps = true;
 	bool hopOthers = true;
 	bool stopOthers = true;
 	int extraBotCount = 0;
@@ -501,7 +501,7 @@ struct LocalSave
 {
 	int port = 0;
 	int numPlayers = 0;
-	bool longJumps = false;
+	bool longJumps = true;
 	bool hopOthers = true;
 	bool stopOthers = true;
 	std::vector<Seat> seats;
@@ -1837,7 +1837,7 @@ LocalSave parseLocalSave(const std::string &text)
 	snap.numPlayers = impl->configuredPlayers;
 	snap.serverHost.clear();
 	snap.serverPort = 0;
-	snap.longJumps = false;
+	snap.longJumps = true;
 	snap.hopOthers = true;
 	snap.stopOthers = true;
 	snap.extraBotCount = (int)impl->extraBots.size();

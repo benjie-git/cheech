@@ -90,7 +90,7 @@ inline void ColorSwatch::on_draw(const Cairo::RefPtr<Cairo::Context>& cr,
 	cr->fill();
 
 	cr->set_source_rgba(fg.get_red(), fg.get_green(), fg.get_blue(),
-		_selected ? 0.9 : 0.35);
+		_selected ? 0.9 : 0.5);
 	cr->set_line_width(_selected ? 2.5 : 1.0);
 	cr->arc(cx, cy, r, 0, 2 * CP_PI);
 	cr->stroke();
