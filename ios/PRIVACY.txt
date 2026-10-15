@@ -1,0 +1,41 @@
+Cheech Privacy Policy
+
+Last updated: October 15, 2026
+
+Cheech does not collect, transmit, sell, or share any personal
+information. There is nothing to manage, export, or delete, because
+nothing about you ever leaves your devices.
+
+What we do not do
+
+- We do not collect or track any personal data.
+- We do not include analytics, advertising, or tracking of any kind.
+- We do not require an account and do not ask for your name, email, or
+  contacts.
+- We do not operate any servers. Games are played directly between the
+  devices of the people playing.
+
+What stays on your device
+
+- Your player name, color, seat layout, and other game preferences are
+  saved locally on your device so your next game is ready to go.
+- Hostnames of games you have joined are saved locally to make joining
+  again easier.
+
+Multiplayer connections
+
+When you play a multiplayer game, your device connects directly to the
+host device (or accepts direct connections from players you invite) over
+your local network. Game data -- board moves, player names, and chat
+messages -- is exchanged only between the devices of the players in that
+game. The developer never sees any of it.
+
+Invite links
+
+Invite links you share contain the address of the hosting device, so
+treat them like you would any invitation to your home network: only
+share them with people you want to play with.
+
+Children
+
+Cheech collects no data from anyone, including children.
