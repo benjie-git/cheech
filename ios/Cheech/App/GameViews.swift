@@ -728,9 +728,13 @@ struct GameScreenView: View {
 
 	// Actions that discard the current game ask for confirmation once any move
 	// has been played; before the first move, or once the game has finished,
-	// they run straight away.
+	// they run straight away.  Leaving a game whose server is gone (joined
+	// remotely and the connection dropped), or a game joined as a spectator,
+	// loses nothing, so close directly.
 	private func perform(_ action: GameAction) {
-		if session.moveNumber > 0 && !model.allPlayersFinished {
+		if action == .leave && (!session.connected || session.isSpectator) {
+			execute(action)
+		} else if session.moveNumber > 0 && !model.allPlayersFinished {
 			model.confirmAction = action
 			model.showConfirm = true
 		} else {
