@@ -284,16 +284,27 @@ void GameServer::end_game()
 
 	_socket.close();
 
+	// Null every table entry BEFORE closing: close() emits evt_closed
+	// synchronously, and remove_client would otherwise erase the spectator
+	// (making pop_back() below run on a vector it already shrank — or on an
+	// empty one) and broadcast to the remaining connections mid-teardown.
+	// This mirrors ~GameServer.
 	for (unsigned int i = 1; i <= 6; i++)
-		if (_players[i].socket != 0)
-			_players[i].socket->close();
-
-	while (!_spectators.empty())
 	{
-		if (_spectators.back().socket != 0)
-			_spectators.back().socket->close();
-		_spectators.pop_back();
+		Net::Conn *c = _players[i].socket;
+		_players[i].socket = NULL;
+		if (c)
+			c->close();
 	}
+
+	for (unsigned int i = 0; i < _spectators.size(); i++)
+	{
+		Net::Conn *c = _spectators[i].socket;
+		_spectators[i].socket = NULL;
+		if (c)
+			c->close();
+	}
+	_spectators.clear();
 }
 
 

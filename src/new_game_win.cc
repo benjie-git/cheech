@@ -235,6 +235,11 @@ new_game_win::~new_game_win()
 		delete row;
 	}
 	_rows.clear();
+
+	// The popover is parented to the host-name entry (to anchor it below
+	// it), which is not enough for GTK4's child bookkeeping: unparent it
+	// here so the entry is not finalized with a leftover child.
+	join_host_popup->unparent();
 }
 
 
