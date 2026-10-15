@@ -93,6 +93,11 @@ class new_game_win : public new_game_win_glade
 		void on_host_cancel_button_clicked();
 		void on_host_button_clicked();
 		void on_join_cancel_button_clicked();
+		void on_join_host_icon_pressed(Gtk::Entry::IconPosition icon_pos);
+		void on_join_host_picked(Gtk::ListBoxRow *row);
+		bool on_join_host_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state);
+		void on_join_host_delete_selected();
+		void refresh_join_hostnames();
 		void on_join_button_clicked();
 		void on_cheechweb_toggled();
 

@@ -27,11 +27,11 @@
 #include <gtkmm/box.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/frame.h>
+#include <gtkmm/listbox.h>
 #include <gtkmm/notebook.h>
-#include <gtkmm/comboboxtext.h>
+#include <gtkmm/popover.h>
 #include <gtkmm/expander.h>
 #include <gtkmm/scrolledwindow.h>
-#include "GtkComboBoxEntryText.hh"
 #include "color_picker.hh"
 
 
@@ -56,7 +56,9 @@ class new_game_win_glade : public Gtk::Window
 		class Gtk::Entry *name_entry;
 		class ColorPicker *color_box;
 		class Gtk::CheckButton *spectator;
-		class GtkComboBoxEntryText *join_host_entry;
+		class Gtk::Entry *join_host_entry;
+		class Gtk::ListBox *join_host_list;
+		class Gtk::Popover *join_host_popup;
 		class Gtk::Entry *join_port_entry;
 		class Gtk::Button *join_button;
 		class Gtk::Button *join_cancel_button;

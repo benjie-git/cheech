@@ -170,7 +170,21 @@ new_game_win_glade::new_game_win_glade()
 
 	Gtk::Label *host_label =
 		Gtk::make_managed<Gtk::Label>(_("Host Name:"));
-	join_host_entry = Gtk::make_managed<GtkComboBoxEntryText>(true);
+	join_host_entry = Gtk::make_managed<Gtk::Entry>();
+	join_host_entry->set_icon_from_icon_name("pan-down-symbolic",
+		Gtk::Entry::IconPosition::SECONDARY);
+	join_host_popup = Gtk::make_managed<Gtk::Popover>();
+	join_host_popup->set_parent(*join_host_entry);
+	join_host_popup->set_has_arrow(false);
+	join_host_popup->set_position(Gtk::PositionType::BOTTOM);
+	join_host_list = Gtk::make_managed<Gtk::ListBox>();
+	join_host_list->set_margin(6);
+	Gtk::ScrolledWindow *join_host_scroll = Gtk::make_managed<Gtk::ScrolledWindow>();
+	join_host_scroll->set_policy(Gtk::PolicyType::NEVER, Gtk::PolicyType::AUTOMATIC);
+	join_host_scroll->set_max_content_height(5 * 36);
+	join_host_scroll->set_propagate_natural_height(true);
+	join_host_scroll->set_child(*join_host_list);
+	join_host_popup->set_child(*join_host_scroll);
 	Gtk::Label *join_port_label =
 		Gtk::make_managed<Gtk::Label>(_("Port Number:"));
 	join_port_entry = Gtk::make_managed<Gtk::Entry>();

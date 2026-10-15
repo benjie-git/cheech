@@ -21,6 +21,8 @@
 #include "config.h"
 #include "new_game_win.hh"
 #include "bot_catalog.hh"
+#include <gtkmm/eventcontrollerkey.h>
+#include <gdkmm/event.h>
 #include <glibmm/i18n.h>
 #include "utility.hh"
 
@@ -119,29 +121,56 @@ new_game_win::new_game_win() : new_game_win_glade()
 	hop_others->set_active(prefs.hop_others);
 	stop_others->set_active(prefs.stop_others);
 
-	for (std::vector<Glib::ustring>::iterator i = prefs.join_hostnames.begin();
-		 i != prefs.join_hostnames.end(); i++)
-			join_host_entry->append(*i);
-	if (prefs.join_hostnames.size() > 0)
-		join_host_entry->set_active_text(prefs.join_hostnames.front());
+	refresh_join_hostnames();
+	join_host_entry->signal_activate().connect(sigc::mem_fun(*this,
+		&new_game_win::on_join_button_clicked));
+	join_host_list->signal_row_activated().connect(sigc::mem_fun(*this,
+		&new_game_win::on_join_host_picked));
+	join_host_entry->signal_icon_press().connect(sigc::mem_fun(*this,
+		&new_game_win::on_join_host_icon_pressed));
+
+	// Delete/backspace removes the selected host from the saved history
+	// and the popup list (so accidentally added rows can be pruned).
+	auto controller = Gtk::EventControllerKey::create();
+	controller->signal_key_pressed().connect(sigc::mem_fun(*this,
+		&new_game_win::on_join_host_key_pressed), false);
+	join_host_list->add_controller(controller);
 
 	join_port_entry->set_text(util::to_str<unsigned int>(prefs.join_port));
 	spectator->set_active(prefs.spectator);
-
-	join_host_entry->get_entry()->signal_activate().connect(sigc::mem_fun(*this,
-		&new_game_win::on_join_button_clicked));
-	join_host_entry->signal_changed().connect(
-		sigc::hide_return(sigc::mem_fun(*(join_host_entry->get_entry()),
-			&Widget::grab_focus)));
-	join_host_entry->set_focus_on_click(false);
 
 	// Remember the seat layout across games and app runs, even when the
 	// dialog is closed without starting a game.
 	signal_hide().connect(sigc::mem_fun(*this, &new_game_win::save_seats));
 
 	// Focus the Start Game button when the dialog is opened (also on
-	// re-show, since the window is only hidden on close).
-	signal_map().connect([this]() { host_button->grab_focus(); });
+	// re-show, since the window is only hidden on close), and refresh
+	// the join hostname list (hostnames learned during a session show
+	// up the next time the dialog is opened).
+	signal_map().connect([this]() {
+		refresh_join_hostnames();
+		host_button->grab_focus();
+	});
+}
+
+
+void new_game_win::refresh_join_hostnames()
+{
+	Prefs prefs;
+	prefs.read();
+
+	join_host_list->remove_all();
+
+	for (std::vector<Glib::ustring>::iterator i = prefs.join_hostnames.begin();
+		 i != prefs.join_hostnames.end(); i++) {
+		Gtk::Label *host_row = Gtk::make_managed<Gtk::Label>(*i);
+		host_row->set_halign(Gtk::Align::START);
+		host_row->set_margin(6);
+		join_host_list->append(*host_row);
+	}
+
+	join_host_entry->set_text(prefs.join_hostnames.size() > 0 ?
+		prefs.join_hostnames.front() : "");
 }
 
 
@@ -800,9 +829,70 @@ void new_game_win::on_join_cancel_button_clicked()
 }
 
 
+void new_game_win::on_join_host_icon_pressed(Gtk::Entry::IconPosition)
+{
+	const auto alloc = join_host_entry->get_allocation();
+	join_host_list->set_size_request(alloc.get_width() - 12, -1);
+	if (join_host_popup->get_visible())
+		join_host_popup->popdown();
+	else
+		join_host_popup->popup();
+}
+
+
+void new_game_win::on_join_host_picked(Gtk::ListBoxRow *row)
+{
+	Gtk::Label *label = dynamic_cast<Gtk::Label *>(row->get_child());
+	if (!label)
+		return;
+	join_host_entry->set_text(label->get_text());
+	join_host_popup->popdown();
+}
+
+
+bool new_game_win::on_join_host_key_pressed(guint keyval, guint, Gdk::ModifierType)
+{
+	if (keyval == GDK_KEY_BackSpace || keyval == GDK_KEY_Delete)
+	{
+		on_join_host_delete_selected();
+		return true;
+	}
+	return false;
+}
+
+
+void new_game_win::on_join_host_delete_selected()
+{
+	Gtk::ListBoxRow *row = join_host_list->get_selected_row();
+	if (!row)
+		return;
+
+	Gtk::Label *label = dynamic_cast<Gtk::Label *>(row->get_child());
+	if (!label)
+		return;
+
+	// Drop the host from the saved history so it doesn't reappear next
+	// time, then remove the live row from the open popup.
+	Prefs prefs;
+	prefs.read();
+	for (auto i = prefs.join_hostnames.begin();
+		 i != prefs.join_hostnames.end(); i++)
+	{
+		if (*i == label->get_text())
+		{
+			prefs.join_hostnames.erase(i);
+			break;
+		}
+	}
+	prefs.write();
+
+	join_host_list->remove(*row);
+}
+
+
 void new_game_win::on_join_button_clicked()
 {
-	if (join_host_entry->get_entry()->get_text().length() > 0 &&
+	if (join_host_entry->get_text().length() > 0 &&
 		join_port_entry->get_text().length() > 0 &&
 		name_entry->get_text().length() > 0)
 	{
@@ -816,10 +906,7 @@ void new_game_win::on_join_button_clicked()
 
 		Glib::ustring hostname;
 
-		if (join_host_entry->get_active_text() != "")
-			hostname = join_host_entry->get_active_text();
-		else
-			hostname = join_host_entry->get_entry()->get_text();
+		hostname = join_host_entry->get_text();
 
 		prefs.join_port = util::from_str<unsigned int>(join_port_entry->get_text());
 		prefs.write();
