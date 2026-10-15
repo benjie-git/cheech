@@ -46,3 +46,6 @@ xcuserdata/
 
 # editor backups
 *.bak
+
+# Xcode user/scheme state
+ios/Cheech.xcodeproj/xcshareddata/xcschemes/
