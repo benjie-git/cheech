@@ -196,6 +196,12 @@ AS_IF([test "x$is_win32_host" = "xyes"], [
     WIN32_CFLAGS="$WIN32_CFLAGS -flto-partition=none"
     dnl the option must also reach the final LTO link
     LDFLAGS="$LDFLAGS -flto-partition=none"
+    dnl With LTO the vague-linkage symbols reach ld through the plugin
+    dnl as strong definitions instead of weak ones, so ld fails to
+    dnl dedupe the .gnu.linkonce copies and errors out with "multiple
+    dnl definition" (binutils PR 26198, GCC PR 94156).  The copies are
+    dnl identical, so keeping the first is safe.
+    LDFLAGS="$LDFLAGS -Wl,--allow-multiple-definition"
   ])
   WIN32_LIBS="-lws2_32"
   dnl keep the GUI binary from opening a console window
