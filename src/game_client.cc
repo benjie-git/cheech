@@ -48,6 +48,7 @@ GameClient::GameClient()
 	  _color(0),
 	  _player_number(0),
 	  _my_player_id(0),
+	  _spectator(false),
 	  _client_heartbeat(0),
 	  _server_heartbeat(0)
 {
@@ -123,12 +124,16 @@ unsigned int GameClient::get_current_player()
 
 unsigned int GameClient::get_player_color(unsigned int posn)
 {
+	if (posn > 6)
+		return 0;
 	return _players[posn].color;
 }
 
 
 Glib::ustring GameClient::get_player_name(unsigned int posn)
 {
+	if (posn > 6)
+		return "";
 	return _players[posn].name;
 }
 
@@ -141,6 +146,8 @@ unsigned int GameClient::get_my_player_id()
 
 unsigned int GameClient::get_player_id(unsigned int posn)
 {
+	if (posn > 6)
+		return 0;
 	return _players[posn].id;
 }
 
@@ -303,6 +310,12 @@ void GameClient::leave_game()
 }
 
 
+void GameClient::dispose()
+{
+	delete this;
+}
+
+
 void GameClient::heartbeat()
 {
 #if defined(CHEECH_IOS)
@@ -373,8 +386,8 @@ GameClient::read(Glib::ustring message)
 {
 	Glib::ustring command, arguments;
 
-	u_long seperator = message.find_first_of(" ");
-	if (seperator < 0)
+	Glib::ustring::size_type seperator = message.find_first_of(" ");
+	if (seperator == Glib::ustring::npos)
 	{
 		command = message.substr(0, message.length());
 	}
@@ -462,6 +475,39 @@ void GameClient::command_HELLO(const Glib::ustring& arguments)
 }
 
 
+bool GameClient::parse_move_list(const Glib::ustring& arguments,
+								 MoveList& move_list)
+{
+	istringstream argStream(std::string(arguments.c_str()));
+	int numMoves;
+
+	argStream >> numMoves;
+	if (argStream.fail() || numMoves < 0 || numMoves > 64)
+		return false;
+
+	for (int i = 0; i < numMoves; i++)
+	{
+		int j;
+		argStream >> j;
+		if (argStream.fail())
+			return false;
+
+		if (j < 0 || j >= static_cast<int>(GameBoard::SIZE))
+			return false;
+
+		move_list.push_back(j);
+	}
+
+	return true;
+}
+
+
+bool GameClient::valid_move_index(unsigned int hole) const
+{
+	return (hole < GameBoard::SIZE);
+}
+
+
 void GameClient::command_SET_PLAYER_NUMBER(const Glib::ustring& arguments)
 {
 	unsigned int posn = util::from_str<unsigned int>(arguments);
@@ -473,10 +519,22 @@ void GameClient::command_SET_PLAYER_NUMBER(const Glib::ustring& arguments)
 
 void GameClient::command_PLAYER_ADD(const Glib::ustring& arguments)
 {
-	unsigned int posn = util::from_str<unsigned int>(arguments);
+	istringstream argStream(std::string(arguments.c_str()));
+	unsigned int posn = 0;
+	int color = 0;
+	std::string name;
 
-	_players[posn].color = util::from_str<int>(arguments.substr(2));
-	_players[posn].name = arguments.substr(4);
+	argStream >> posn >> color;
+	std::getline(argStream, name);
+
+	if (argStream.fail() || posn < 1 || posn > 6)
+		return;
+
+	Glib::ustring player_name(name);
+	util::ltrim(player_name);
+
+	_players[posn].color = color;
+	_players[posn].name = player_name;
 	_players[posn].id = 0;
 
 	cmd_player_add(posn, _players[posn].name, _players[posn].color);
@@ -523,6 +581,9 @@ void GameClient::command_PLAYER_REMOVE(const Glib::ustring& arguments)
 {
 	unsigned int posn = util::from_str<unsigned int>(arguments);
 
+	if (posn < 1 || posn > 6)
+		return;
+
 	_players[posn].name = "";
 	_players[posn].color = 0;
 	_players[posn].id = 0;
@@ -541,8 +602,14 @@ void GameClient::command_PLAYER_CHAT(const Glib::ustring& arguments)
 
 void GameClient::command_PLAYER_FINISH(const Glib::ustring& arguments)
 {
-	unsigned int posn = util::from_str<unsigned int>(arguments);
-	unsigned int move_count = util::from_str<unsigned int>(arguments.substr(2));
+	istringstream argStream(std::string(arguments.c_str()));
+	unsigned int posn = 0;
+	unsigned int move_count = 0;
+
+	argStream >> posn >> move_count;
+
+	if (argStream.fail() || posn < 1 || posn > 6)
+		return;
 
 	cmd_player_finish(posn, move_count);
 }
@@ -568,17 +635,23 @@ void GameClient::command_SERVER_HEARTBEAT(const Glib::ustring& arguments)
 
 void GameClient::command_GAME_SETUP(const Glib::ustring& arguments)
 {
-	unsigned int num_players = util::from_str<unsigned int>(arguments);
-	bool long_jumps = (bool)((int)util::from_str<int>(arguments.substr(2)));
-	bool hop_others = (bool)((int)util::from_str<int>(arguments.substr(4)));
-	bool stop_others = (bool)((int)util::from_str<int>(arguments.substr(6)));
+	istringstream argStream(std::string(arguments.c_str()));
+	unsigned int num_players = 0;
+	int long_jumps = 0, hop_others = 0, stop_others = 0;
+
+	argStream >> num_players >> long_jumps >> hop_others >> stop_others;
+
+	// num_players indexes START_MAP[7][7] and _pegs[6][]; reject anything
+	// outside 1..6 instead of corrupting memory.
+	if (argStream.fail() || num_players < 1 || num_players > 6)
+		return;
 
 	if (_board)
-		_board->reconfigure_board(num_players, long_jumps, hop_others,
-								  stop_others);
+		_board->reconfigure_board(num_players, long_jumps != 0,
+								  hop_others != 0, stop_others != 0);
 	else
-		_board = new GameBoard(num_players, long_jumps, hop_others,
-							   stop_others);
+		_board = new GameBoard(num_players, long_jumps != 0,
+							   hop_others != 0, stop_others != 0);
 }
 
 
@@ -592,39 +665,45 @@ void GameClient::command_PLAYER_CHOOSE_NAME(const Glib::ustring& arguments)
 
 void GameClient::command_PLAYER_CHOOSE_COLOR(const Glib::ustring& arguments)
 {
-	int color = util::from_str<int>(arguments);
-	Glib::ustring name = arguments.substr(2);
+	istringstream argStream(std::string(arguments.c_str()));
+	int color = 0;
+	std::string name;
 
-	cmd_choose_new_color(name, color);
+	argStream >> color;
+	std::getline(argStream, name);
+
+	if (argStream.fail())
+		return;
+
+	Glib::ustring player_name(name);
+	util::ltrim(player_name);
+
+	cmd_choose_new_color(player_name, color);
 }
 
 
 void GameClient::command_GAME_TURN(const Glib::ustring& arguments)
 {
-	unsigned int posn = util::from_str<unsigned int>(arguments);
-	GameServer::GameStatus status = (GameServer::GameStatus)
-		util::from_str<unsigned int>(arguments.substr(2));
-	unsigned int move_number =
-		util::from_str<unsigned int>(arguments.substr(4));
+	istringstream argStream(std::string(arguments.c_str()));
+	unsigned int posn = 0;
+	unsigned int status = 0;
+	unsigned int move_number = 0;
+
+	argStream >> posn >> status >> move_number;
+
+	if (argStream.fail() || posn > 6 || status > 4)
+		return;
 
 	_current_player = posn;
-	cmd_game_turn(posn, status, move_number);
+	cmd_game_turn(posn, (GameServer::GameStatus)status, move_number);
 }
 
 
 void GameClient::command_GAME_SHOWMOVE(const Glib::ustring& arguments)
 {
-	istringstream argStream(arguments);
 	MoveList move_list;
-	int numMoves;
-
-	argStream >> numMoves;
-	for (int i = 0; i < numMoves; i++)
-	{
-		int j;
-		argStream >> j;
-		move_list.push_back(j);
-	}
+	if (!parse_move_list(arguments, move_list))
+		return;
 
 	cmd_game_show_move(&move_list);
 }
@@ -638,17 +717,12 @@ void GameClient::command_GAME_HIDEMOVE(const Glib::ustring& arguments)
 
 void GameClient::command_GAME_MAKEMOVE(const Glib::ustring& arguments)
 {
-	istringstream argStream(arguments);
 	MoveList move_list;
-	int numMoves;
+	if (!parse_move_list(arguments, move_list))
+		return;
 
-	argStream >> numMoves;
-	for (int i = 0; i < numMoves; i++)
-	{
-		int j;
-		argStream >> j;
-		move_list.push_back(j);
-	}
+	if (!_board)
+		return;
 
 	_board->make_move_list(move_list);
 	cmd_game_make_move(&move_list);
@@ -657,12 +731,15 @@ void GameClient::command_GAME_MAKEMOVE(const Glib::ustring& arguments)
 
 void GameClient::command_GAME_UNDOMOVE(const Glib::ustring& arguments)
 {
-	istringstream argStream(arguments);
+	istringstream argStream(std::string(arguments.c_str()));
 	unsigned int from;
 	unsigned int to;
 
-	argStream >> from;
-	argStream >> to;
+	argStream >> from >> to;
+
+	if (argStream.fail() || !_board || !valid_move_index(from)
+		|| !valid_move_index(to))
+			return;
 
 	_board->move_peg(from, to);
 	cmd_game_undo_move(from, to);
@@ -671,7 +748,10 @@ void GameClient::command_GAME_UNDOMOVE(const Glib::ustring& arguments)
 
 void GameClient::command_GAME_BOARD(const Glib::ustring& arguments)
 {
-	istringstream argStream(arguments);
+	if (!_board)
+		return;
+
+	istringstream argStream(std::string(arguments.c_str()));
 	int holePlayer;
 
 	for (unsigned int i = 0; i < GameBoard::SIZE; i++)
@@ -680,7 +760,14 @@ void GameClient::command_GAME_BOARD(const Glib::ustring& arguments)
 		if (hole != 0)
 		{
 			argStream >> holePlayer;
-			hole->set_current_player(static_cast<int>(holePlayer));
+			if (argStream.fail())
+				return;
+
+			// reset_peg_lists() indexes _pegs[player-1][] with this value.
+			if (holePlayer < 0 || holePlayer > 6)
+				return;
+
+			hole->set_current_player(holePlayer);
 		}
 	}
 	_board->reset_peg_lists();

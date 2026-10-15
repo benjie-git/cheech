@@ -321,6 +321,9 @@ void associateRemoteSeats(SessionImpl *impl)
 // empty mask; it is re-applied once the mapping arrives.
 void applySeatFocus(SessionImpl *impl)
 {
+	if (!impl)
+		return;
+
 	for (Seat &seat : impl->seats)
 	{
 		if (seat.kind != CheechSeatComputer || !seat.bot || !seat.focusConfigured)
@@ -375,6 +378,9 @@ unsigned int idForPlayerName(SessionImpl *impl, const std::string &name)
 
 void applyExtraBotFocus(SessionImpl *impl)
 {
+	if (!impl)
+		return;
+
 	for (size_t i = 0; i < impl->extraBots.size() && i < impl->extraBotInfos.size(); i++)
 	{
 		SessionImpl::ExtraBotInfo &info = impl->extraBotInfos[i];
@@ -586,7 +592,8 @@ LocalSave parseLocalSave(const std::string &text)
 		}
 	}
 	save.valid = save.port > 0 && save.port <= 65535
-		&& save.numPlayers >= 2 && save.numPlayers <= 6 && !save.seats.empty();
+		&& save.numPlayers >= 2 && save.numPlayers <= 6
+		&& !save.seats.empty() && save.seats.size() <= 6;
 	return save;
 }
 
@@ -746,6 +753,7 @@ LocalSave parseLocalSave(const std::string &text)
 		[s stopCore];
 
 		SessionImpl *impl = s->_impl;
+		if (!impl) return;
 		impl->isHost = false;
 		impl->isSpectator = spectator;
 		impl->configuredPlayers = 0;
@@ -800,6 +808,7 @@ LocalSave parseLocalSave(const std::string &text)
 		[s stopCore];
 
 		SessionImpl *impl = s->_impl;
+		if (!impl) return;
 		impl->isHost = true;
 		impl->isSpectator = false;
 		impl->configuredPlayers = (int)numPlayers;
@@ -847,6 +856,7 @@ LocalSave parseLocalSave(const std::string &text)
 		[s stopCore];
 
 		SessionImpl *impl = s->_impl;
+		if (!impl) return;
 		impl->isHost = true;
 		impl->isSpectator = false;
 		impl->configuredPlayers = parsed.numPlayers;
@@ -878,7 +888,7 @@ LocalSave parseLocalSave(const std::string &text)
 // number by the server (remote seats are never joined and count as done).
 - (BOOL)seatIsJoinedAtIndex:(int)index
 {
-	if (index < 0 || index >= (int)_impl->seats.size())
+	if (!_impl || index < 0 || index >= (int)_impl->seats.size())
 		return YES;
 
 	Seat &seat = _impl->seats[index];
@@ -901,6 +911,8 @@ LocalSave parseLocalSave(const std::string &text)
 - (void)joinHostedSeatsFromIndex:(int)index
 {
 	SessionImpl *impl = _impl;
+	if (!impl)
+		return;
 
 	while (index < (int)impl->seats.size()
 		   && impl->seats[index].kind == CheechSeatRemote)
@@ -986,6 +998,7 @@ LocalSave parseLocalSave(const std::string &text)
 		CheechSession *s = weakSelf;
 		if (!s) return;
 		SessionImpl *impl = s->_impl;
+		if (!impl) return;
 		GameClient *target = [s activeClient];
 
 		// Host actions (change name/color) must come from a player, not the
@@ -1440,7 +1453,7 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_player_id.connect([weakSelf, client, index](unsigned int posn, unsigned int id)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		SessionImpl *impl = s->_impl;
+		SessionImpl *impl = s->_impl; if (!impl) return;
 		if (index >= 0 && index < (int)impl->seats.size()
 			&& posn == client->get_my_player_number())
 		{
@@ -1461,7 +1474,7 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_set_player_number.connect([weakSelf, client, index](unsigned int n)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		SessionImpl *impl = s->_impl;
+		SessionImpl *impl = s->_impl; if (!impl) return;
 		// A rotate/shuffle renumbers the seats, so drop this client's previous
 		// mapping before recording the new one; otherwise stale keys accumulate
 		// and the "exactly one local human" test below never holds again.
@@ -1581,7 +1594,12 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_player_finish.connect([weakSelf](unsigned int posn, unsigned int move_count)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		if (posn >= 1 && posn <= 6) s->_impl->snap.finishedInMoves[posn] = (int)move_count;
+		SessionImpl *impl = s->_impl; if (!impl) return;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			if (posn >= 1 && posn <= 6)
+				impl->snap.finishedInMoves[posn] = (int)move_count;
+		}
 		[s rebuildAndNotify];
 	});
 
@@ -1598,23 +1616,26 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_game_turn.connect([weakSelf](unsigned int posn, GameServer::GameStatus status, unsigned int move_number)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		SessionImpl *impl = s->_impl;
-		impl->status = (int)status;
-		if (posn == 1 && move_number == 1)
-			for (int i = 0; i < 7; i++)
-			{
-				impl->snap.finishedInMoves[i] = 0;
-				impl->snap.movesTaken[i] = 0;
-			}
-		if (posn == 1 && move_number == 1)
-			impl->snap.moveNumber = 0;
+		SessionImpl *impl = s->_impl; if (!impl) return;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			impl->status = (int)status;
+			if (posn == 1 && move_number == 1)
+				for (int i = 0; i < 7; i++)
+				{
+					impl->snap.finishedInMoves[i] = 0;
+					impl->snap.movesTaken[i] = 0;
+				}
+			if (posn == 1 && move_number == 1)
+				impl->snap.moveNumber = 0;
+		}
 		[s rebuildAndNotify];
 	});
 
 	client->cmd_game_show_move.connect([weakSelf](MoveList *move)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		SessionImpl *impl = s->_impl;
+		SessionImpl *impl = s->_impl; if (!impl) return;
 		if (!move) { [s rebuildAndNotify]; return; }
 
 		// This signal fires for the local player's own echoed selection and
@@ -1630,7 +1651,10 @@ LocalSave parseLocalSave(const std::string &text)
 
 		if (owner != 0 && owner == (int)impl->client->get_my_player_number())
 		{
-			impl->selection = *move;
+			{
+				std::lock_guard<std::mutex> lock(impl->mutex);
+				impl->selection = *move;
+			}
 			[s rebuildAndNotify];
 		}
 		else if (owner != 0
@@ -1639,7 +1663,10 @@ LocalSave parseLocalSave(const std::string &text)
 			// Another player's in-progress move, telegraphed through the
 			// server.  Local human seats are skipped: their selections are
 			// already tracked and drawn from local state.
-			impl->snap.telegraph.assign(move->begin(), move->end());
+			{
+				std::lock_guard<std::mutex> lock(impl->mutex);
+				impl->snap.telegraph.assign(move->begin(), move->end());
+			}
 			[s rebuildAndNotify];
 		}
 	});
@@ -1647,17 +1674,22 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_game_hide_move.connect([weakSelf]()
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		s->_impl->selection.clear();
-		s->_impl->snap.telegraph.clear();
+		SessionImpl *impl = s->_impl; if (!impl) return;
+		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			impl->selection.clear();
+			impl->snap.telegraph.clear();
+		}
 		[s rebuildAndNotify];
 	});
 
 	client->cmd_game_make_move.connect([weakSelf](MoveList *move)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		SessionImpl *impl = s->_impl;
+		SessionImpl *impl = s->_impl; if (!impl) return;
 		if (move && !move->empty())
 		{
+			std::lock_guard<std::mutex> lock(impl->mutex);
 			impl->snap.lastMove.assign(move->begin(), move->end());
 			impl->snap.moveSerial++;
 			impl->snap.moveNumber++;
@@ -1699,15 +1731,18 @@ LocalSave parseLocalSave(const std::string &text)
 	client->cmd_game_undo_move.connect([weakSelf](unsigned int from, unsigned int)
 	{
 		CheechSession *s = weakSelf; if (!s) return;
-		SessionImpl *impl = s->_impl;
-		if (impl->snap.moveNumber > 0) impl->snap.moveNumber--;
-		if (impl->client)
+		SessionImpl *impl = s->_impl; if (!impl) return;
 		{
-			GameBoard *board = impl->client->get_board();
-			int mover = (board && (*board)[from])
-				? (int)(*board)[from]->get_current_player() : 0;
-			if (mover >= 1 && mover <= 6 && impl->snap.movesTaken[mover] > 0)
-				impl->snap.movesTaken[mover]--;
+			std::lock_guard<std::mutex> lock(impl->mutex);
+			if (impl->snap.moveNumber > 0) impl->snap.moveNumber--;
+			if (impl->client)
+			{
+				GameBoard *board = impl->client->get_board();
+				int mover = (board && (*board)[from])
+					? (int)(*board)[from]->get_current_player() : 0;
+				if (mover >= 1 && mover <= 6 && impl->snap.movesTaken[mover] > 0)
+					impl->snap.movesTaken[mover]--;
+			}
 		}
 		[s rebuildAndNotify];
 	});
@@ -2066,7 +2101,7 @@ LocalSave parseLocalSave(const std::string &text)
 - (NSString *)serverHost
 {
 	std::lock_guard<std::mutex> lock(_impl->mutex);
-	return [NSString stringWithUTF8String:_impl->snap.serverHost.c_str()];
+	return ns(_impl->snap.serverHost);
 }
 
 - (NSInteger)serverPort

@@ -20,6 +20,7 @@
  */
 
 #include <iostream>
+#include <random>
 #include <sigc++/bind.h>
 #include <sigc++/bind_return.h>
 #include <glibmm/main.h>
@@ -35,9 +36,21 @@
 #include "config.h"
 
 
+#define MAX_AJAX_CLIENTS 64
+
+
+// Unpredictable session ids: sequential counters let any same-host process
+// hijack a web session by guessing the id.
+static unsigned int new_session_id()
+{
+	static std::mt19937 rng(std::random_device{}());
+
+	return (rng() & 0x3FFFFFFF);
+}
+
+
 AjaxServer::AjaxServer()
 {
-	_next_id = 1;
 	_socket.evt_connection_available.connect(sigc::mem_fun(*this,
 		&AjaxServer::connection_open));
 }
@@ -45,6 +58,15 @@ AjaxServer::AjaxServer()
 
 AjaxServer::~AjaxServer()
 {
+	// Disconnect every session's game client: this both frees the clients
+	// (via disconnect()'s deferred dispose) and detaches their
+	// evt_disconnected handlers so pending disconnect processing can never
+	// call into this partly-destroyed object.  disconnect() only mutates
+	// _clients through schedule_client_sweep(), whose timer dies with this
+	// server, so erasure cannot happen under this loop.
+	for (std::list<AjaxServerConn>::iterator i = _clients.begin();
+		i != _clients.end(); i++)
+		(*i).disconnect();
 }
 
 
@@ -74,7 +96,7 @@ void AjaxServer::connection_closed(Net::Conn* socket)
 		i != _clients.end(); i++)
 			(*i).on_connection_closed(socket);
 
-	delete socket;
+	socket->delete_later();
 }
 
 
@@ -117,24 +139,33 @@ void AjaxServer::handle_request(Glib::ustring message, Net::Conn *conn)
 	if (conn->get_read_count() > 0)
 		return;
 
-	int separator = message.find_first_of(" ");
+	// Refuse absurdly long request lines outright.
+	if (message.length() > 4096)
+	{
+		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
+			*(conn), &Net::Conn::close), false), 100);
+		return;
+	}
+
+	Glib::ustring::size_type separator = message.find_first_of(" ");
 
 	// If the first line is not a GET request, disconnect
-	if (separator <= 0 ||
-		(separator > 0 && message.substr(0, separator) != "GET"))
+	if (separator == Glib::ustring::npos || separator == 0 ||
+		message.substr(0, separator) != "GET")
 	{
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
 			*conn, &Net::Conn::close), false), 100);
 		return;
 	}
 
-	int separator2 = message.find_first_of(" ", separator+1);
+	Glib::ustring::size_type separator2 = message.find_first_of(" ", separator+1);
 
 	Glib::ustring resource = util::url_decode(
-		message.substr(separator+1, separator2-separator-1));
+		message.substr(separator+1, (separator2 == Glib::ustring::npos)
+			? Glib::ustring::npos : separator2-separator-1));
 
 	separator = resource.find_first_of("?");
-	if (separator < 0)
+	if (separator == Glib::ustring::npos)
 	{
 		if (resource == "/")
 			resource = "/index.html";
@@ -163,6 +194,12 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 {
 	Glib::ustring filename;
 	unsigned int pos;
+
+	// Reject control characters (e.g. an embedded NUL from a %00 escape)
+	// so they can't truncate the path and smuggle a different file.
+	for (unsigned int i = 0; i < f.length(); i++)
+		if (f[i] < 0x20)
+			return "";
 
 #ifdef WIN32
 	char module_path[PATH_MAX];
@@ -264,9 +301,9 @@ void AjaxServer::handle_ajax_message(Glib::ustring message, Net::Conn *conn)
 	unsigned int id = 0;
 	Glib::ustring command;
 
-	int seperator = message.find_first_of(" ");
+	Glib::ustring::size_type seperator = message.find_first_of(" ");
 
-	if (seperator < 0)
+	if (seperator == Glib::ustring::npos)
 	{
 		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
 			*(conn), &Net::Conn::close), false), 100);
@@ -284,9 +321,20 @@ void AjaxServer::handle_ajax_message(Glib::ustring message, Net::Conn *conn)
 	{
 		if (command.substr(0,4) == "init")
 		{
+			// Cap the number of concurrent sessions
+			if (_clients.size() >= MAX_AJAX_CLIENTS)
+			{
+				Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(
+					*(conn), &Net::Conn::close), false), 100);
+				return;
+			}
 			_clients.resize(_clients.size()+1);
 			client = &(_clients.back());
-			client->init(this, _next_id++, conn->get_host_name());
+			unsigned int id;
+			do
+				id = new_session_id();
+			while (id == 0 || get_client_by_id(id) != NULL);
+			client->init(this, id, conn->get_host_name());
 		}
 		else
 		{
@@ -312,12 +360,29 @@ void AjaxServer::handle_ajax_message(Glib::ustring message, Net::Conn *conn)
 void AjaxServer::on_client_disconnect(AjaxServerConn *client)
 {
 	client->disconnect();
+	schedule_client_sweep();
+}
 
-	for (std::list<AjaxServerConn>::iterator i = _clients.begin();
-		i != _clients.end(); i++)
-			if (&(*i) == client)
-			{
-				_clients.erase(i);
-				return;
-			}
+
+void AjaxServer::schedule_client_sweep()
+{
+	Glib::signal_timeout().connect(
+		sigc::mem_fun(*this, &AjaxServer::sweep_dead_clients), 0);
+}
+
+
+bool AjaxServer::sweep_dead_clients()
+{
+	// Deferred so we never erase a client while one of its callbacks is
+	// still on the stack.
+	std::list<AjaxServerConn>::iterator i = _clients.begin();
+	while (i != _clients.end())
+	{
+		if ((*i).is_disconnecting())
+			i = _clients.erase(i);
+		else
+			++i;
+	}
+
+	return false;
 }

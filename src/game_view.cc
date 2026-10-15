@@ -143,6 +143,10 @@ void game_view::on_resize(int width, int height)
 
 void game_view::create_holes()
 {
+	// on_realize can fire again (re-realize); don't leak the old holes.
+	if (!_holes.empty())
+		return;
+
 	GameBoard b(1, false, false, false);
 
 	_holes.resize(b.get_size());
@@ -192,6 +196,10 @@ void game_view::set_input_client(GameClient *c)
 	_client = c;
 	_board = (c && c->get_board()) ? c->get_board() : NULL;
 
+	// The holes are only created on realize; a signal can arrive first.
+	if (_holes.empty())
+		return;
+
 	// Re-point the holes at the new client, but keep drawing from the
 	// lagged view board: its state is still valid (all seat clients hold
 	// the same board) and any running or parked replay keeps running.
@@ -207,6 +215,10 @@ void game_view::rebuild_board()
 	// replay was actually running, let the turn label re-sync.
 	bool was_active = stop_anim();
 	_anim_pending_valid = false;
+
+	// The holes are only created on realize; a signal can arrive first.
+	if (_holes.empty())
+		return;
 
 	if (_client && _client->get_board())
 	{
@@ -383,7 +395,8 @@ void game_view::erase_move()
 
 	while (!_move_list.empty())
 	{
-		_holes[_move_list.back()]->set_hilighted(false);
+		if (!_holes.empty())
+			_holes[_move_list.back()]->set_hilighted(false);
 		_move_list.pop_back();
 	}
 
@@ -394,6 +407,9 @@ void game_view::erase_move()
 void game_view::show_move(MoveList *list)
 {
 	hide_move();
+
+	if (_holes.empty())
+		return;
 
 	for (MoveList::iterator move = list->begin();
 		move < list->end(); move++)
@@ -474,6 +490,13 @@ bool game_view::start_replay(const MoveList &list, int step_ms, int done_ms)
 	_anim_done_ms = done_ms;
 	_anim_player = mover;
 	_anim_start_us = g_get_monotonic_time();
+
+	// The holes are only created on realize; a move can arrive first.
+	if (_holes.empty())
+	{
+		_view_board->make_move_list(list);
+		return false;
+	}
 
 	GamePoint start = _holes[list.front()]->get_offset();
 	_anim_x = start.get_x();

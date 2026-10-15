@@ -26,6 +26,7 @@
 #include <glibmm/optioncontext.h>
 #include <giomm/init.h>
 #include <sigc++/bind.h>
+#include <sigc++/bind_return.h>
 
 #include "utility.hh"
 #include "bot_base.hh"
@@ -88,7 +89,10 @@ void connected()
 
 void cancelled(BotBase *bot, Glib::RefPtr<Glib::MainLoop> m)
 {
-	delete bot;
+	// Deleting the bot here would destroy the signal whose emission we are
+	// inside; free it on a later main-loop iteration instead.
+	Glib::signal_timeout().connect(
+		sigc::bind_return(sigc::mem_fun(*bot, &BotBase::dispose), false), 0);
 
 	std::cout << "Couldn't Connect." << std::endl;
 
@@ -98,7 +102,8 @@ void cancelled(BotBase *bot, Glib::RefPtr<Glib::MainLoop> m)
 
 void disconnected(BotBase *bot, Glib::RefPtr<Glib::MainLoop> m)
 {
-	delete bot;
+	Glib::signal_timeout().connect(
+		sigc::bind_return(sigc::mem_fun(*bot, &BotBase::dispose), false), 0);
 
 	std::cout << "Bot Disconnected." << std::endl;
 

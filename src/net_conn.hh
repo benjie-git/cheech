@@ -71,6 +71,16 @@ class Net::Conn : public sigc::trackable
 		virtual bool get_buffered() const;
 		void close();
 
+		// Schedule this object to be deleted on the next main-loop iteration.
+		// Use this instead of deleting the Conn from inside one of its own
+		// signal emissions (close() emits evt_closed synchronously).
+		void delete_later();
+
+		// Invoked by delete_later(); do not call directly.
+		void dispose();
+
+		const static unsigned int MAX_BUFFER_SIZE = 64 * 1024;
+
 		// Number of times evt_data_available has been called
 		unsigned int get_read_count() const;
 

@@ -20,6 +20,7 @@
  */
 
 #include <glibmm/ustring.h>
+#include <glibmm/main.h>
 #include <memory>
 #include <iostream>
 #include <vector>
@@ -113,6 +114,21 @@ Net::ConnBuffered::ConnBuffered(const Glib::RefPtr<Gio::SocketConnection>& conne
 Net::Conn::~Conn() 
 {
 	close(); 
+}
+
+
+void
+Net::Conn::delete_later()
+{
+	Glib::signal_timeout().connect(
+		sigc::bind_return(sigc::mem_fun(*this, &Net::Conn::dispose), false), 0);
+}
+
+
+void
+Net::Conn::dispose()
+{
+	delete this;
 }
 
 
@@ -331,6 +347,16 @@ Net::Conn::on_read_finished(Glib::RefPtr<Gio::AsyncResult>& result)
 	}
 
 	_read_buffer.append(data, size);
+
+	// A peer that floods us with data that never forms a complete line (or
+	// just an enormous line) must not be allowed to exhaust memory.
+	if (_read_buffer.size() > MAX_BUFFER_SIZE)
+	{
+		evt_error(errIO);
+		close();
+		return;
+	}
+
 	handle_data();
 
 	if (_status == statConnected)
@@ -367,6 +393,15 @@ Net::Conn::operator<<(const Glib::ustring &data)
 {
 	if (_status == statConnected)
 	{
+		// A peer that stops reading its socket must not be able to make us
+		// buffer data without limit.
+		if (_write_pending.size() + data.length() > MAX_BUFFER_SIZE)
+		{
+			evt_error(errIO);
+			close();
+			return *this;
+		}
+
 		_write_pending.append(data.c_str(), data.length());
 		flush();
 	}

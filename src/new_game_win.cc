@@ -218,6 +218,26 @@ new_game_win::new_game_win() : new_game_win_glade()
 }
 
 
+// Frees any seat rows still present (remove_seat() only runs on user
+// removal; rows alive at app exit would leak).
+new_game_win::~new_game_win()
+{
+	for (size_t i = 0; i < _rows.size(); i++)
+	{
+		SeatRow *row = _rows[i];
+		if (row->sep)
+		{
+			seats_box->remove(*row->sep);
+			delete row->sep;
+		}
+		seats_box->remove(*row->box);
+		delete row->box;
+		delete row;
+	}
+	_rows.clear();
+}
+
+
 void new_game_win::refresh_join_hostnames()
 {
 	Prefs prefs;

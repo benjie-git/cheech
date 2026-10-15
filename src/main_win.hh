@@ -38,6 +38,8 @@
 #include <giomm/menuitem.h>
 #include <gtkmm/messagedialog.h>
 
+#include <deque>
+
 
 class main_win : public main_win_glade
 {
@@ -98,6 +100,8 @@ class main_win : public main_win_glade
 		void on_shuffle_activate();
 		void on_game_setup(unsigned int num_players, bool long_jumps,
 						   bool hop_others, bool stop_others);
+		void on_dialog_change_color(int color);
+		void on_dialog_change_name(Glib::ustring name);
 		void on_end_game_activate();
 		void on_leave_game_activate();
         void on_change_name_activate();
@@ -193,6 +197,9 @@ class main_win : public main_win_glade
 		size_t					_next_seat;
 		unsigned int			_seat_join_ticks;
 		unsigned int			_hosted_port;
+		// Held so a second hosted game can cancel the previous poll timer
+		// before it repopulates the seats.
+		sigc::connection		_seat_poll;
 		GameClient				*_active_input_client;
 		// Set while on_leave_game_activate tears a game down: disconnecting
 		// seat clients re-emits evt_disconnected into the same handler, and a
@@ -204,8 +211,10 @@ class main_win : public main_win_glade
 		Glib::RefPtr<Gio::SimpleActionGroup>	_win_actions;
 
 		Gtk::MessageDialog * _confirm_quit_dialog;
-		// The action a Yes on the confirm dialog should perform.
-		sigc::slot<void()> _pending_confirm;
+		// The actions a Yes on the confirm dialog should perform, in the
+		// order they were requested (a second request while the dialog is
+		// up queues instead of replacing the first).
+		std::deque<sigc::slot<void()>> _pending_confirm;
 		// Held so update_menus() can enable/disable menu entries.
 		Glib::RefPtr<Gio::SimpleAction> _end_game_action;
 		Glib::RefPtr<Gio::SimpleAction> _leave_game_action;

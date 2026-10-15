@@ -101,6 +101,11 @@ public:
 	void new_game();
 	void restart_game();
 	void end_game();
+
+	// Frees the server on a later main-loop iteration (used instead of a
+	// direct delete so pending disconnect processing can never touch a
+	// freed server).
+	void dispose() { delete this; }
 	void reconfigure_game(unsigned int num_players, bool long_jumps,
 						  bool hop_others, bool stop_others);
 

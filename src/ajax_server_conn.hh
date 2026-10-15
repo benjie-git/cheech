@@ -41,6 +41,7 @@ public:
 	void init(AjaxServer *server, unsigned int id,
 			  Glib::ustring client_hostname);
 	void disconnect();
+	bool is_disconnecting() const { return _disconnecting; }
 	void send_cmd(Glib::ustring message);
 	void close_conn();
 	void on_connection_closed(Net::Conn *conn);
@@ -101,6 +102,7 @@ private:
 	sigc::connection			_timeout;
 	sigc::connection			_disconnect;
 	unsigned int				_timeout_counter;
+	bool						_disconnecting;
 	std::queue<Glib::ustring>	_pending_cmds;
 	std::vector<BotBase*>		_bots;
 	MoveList					_move_list;

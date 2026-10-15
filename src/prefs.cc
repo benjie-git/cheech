@@ -118,7 +118,7 @@ void Prefs::read(void)
 	{
 		pfile = Glib::IOChannel::create_from_file(get_filename(), "r");
 	}
-	catch (Glib::FileError)
+	catch (Glib::Error)
 	{
 		write();
 		return;
@@ -133,14 +133,16 @@ void Prefs::read(void)
 
 	while (pfile->read_line(line) == Glib::IOStatus::NORMAL)
 	{
-		while (line.substr(line.length()-1,1) == "\n" ||
-			line.substr(line.length()-1,1) == "\r")
+		try
+		{
+		while (!line.empty() && (line.substr(line.length()-1,1) == "\n" ||
+			line.substr(line.length()-1,1) == "\r"))
 				line = line.substr(0, line.length()-1);
 
-		int seperator = line.find_first_of(" ");
-		if (seperator < 0)
+		Glib::ustring::size_type seperator = line.find_first_of(" ");
+		if (seperator == Glib::ustring::npos)
 		{
-			key = line.substr(0, line.length()-1);
+			key = line;
 			value = "";
 		}
 		else
@@ -209,6 +211,11 @@ void Prefs::read(void)
 			think_delay = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "smarts")
 			smarts = util::from_str<unsigned int>(strip_grouping(value));
+		}
+		// A damaged or non-UTF-8 line shouldn't abort the whole app.
+		catch (Glib::Error)
+		{
+		}
 	}
 
 	pfile->close();
@@ -237,7 +244,7 @@ void Prefs::write(void)
 	{
 		pfile = Glib::IOChannel::create_from_file(get_filename(), "w");
 	}
-	catch (Glib::FileError)
+	catch (Glib::Error)
 	{
 		std::cerr << "Can't open preferences at '"
 			<< get_filename() << "'." << std::endl;

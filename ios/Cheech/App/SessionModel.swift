@@ -436,7 +436,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		session.setAnimationStepMs(opponentStepMs)
 		session.joinHost(
 			joinHost,
-			port: UInt16(joinPort),
+			port: joinPort >= 1 ? UInt16(clamping: joinPort) : 0,
 			spectator: spectator,
 			playerName: playerName,
 			color: playerColor
@@ -516,7 +516,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		}
 		session.setAnimationStepMs(opponentStepMs)
 		session.startGame(
-			onPort: UInt16(hostPort),
+			onPort: hostPort >= 1 ? UInt16(clamping: hostPort) : 0,
 			numPlayers: numPlayers,
 			longJumps: longJumps,
 			hopOthers: hopOthers,

@@ -31,12 +31,25 @@
 #include "utility.hh"
 
 
+namespace {
+
+// A template so it works with both the desktop UTF-8 iterator's gunichar
+// and the iOS shim's plain char; isspace() itself is undefined for
+// values outside unsigned char range.
+template <typename T> bool is_ascii_space(T c)
+{
+	return (c == ' ' || c == '\t' || c == '\n' ||
+		c == '\r' || c == '\v' || c == '\f');
+}
+
+}
+
 Glib::ustring& util::ltrim(Glib::ustring& str)
 {
 	if(!str.empty())
 	{
 		Glib::ustring::iterator it;
-		for(it = str.begin(); it < str.end() && isspace(*it); it++);
+		for(it = str.begin(); it < str.end() && is_ascii_space(*it); it++);
 		str.erase(str.begin(), it);
 	}
 
@@ -50,7 +63,7 @@ Glib::ustring& util::rtrim(Glib::ustring& str)
 	{
         Glib::ustring::iterator it;
         Glib::ustring::iterator end = --(str.end());
-		for(it = end; it > str.begin() && isspace(*it); it--);
+		for(it = end; it > str.begin() && is_ascii_space(*it); it--);
 		it++;
         str.erase(it, str.end());
 	}
@@ -124,10 +137,10 @@ void util::print_banner(const char *tool)
 int util::hex_decode(char hex)
 {
 	if ((hex >= 'A') && (hex <= 'F'))
-		return (hex - 'A');
+		return (hex - 'A' + 10);
 
 	if ((hex >= 'a') && (hex <= 'f'))
-		return (hex - 'a');
+		return (hex - 'a' + 10);
 
 	if ((hex >= '0') && (hex <= '9'))
 		return (hex - '0');

@@ -99,6 +99,13 @@ GameBoard::GameBoard(unsigned int num_players, bool long_jumps,
 	 _hop_others(hop_others),
 	 _stop_others(stop_others)
 {
+	// num_players indexes START_MAP[7][7] and _pegs[6][]; clamp hostile or
+	// corrupt values into the legal 1..6 range.
+	if (_num_players < 1)
+		_num_players = 1;
+	else if (_num_players > 6)
+		_num_players = 6;
+
 	// Creates all the holes with appropriate starting players
 	for (unsigned int i = 0; i < SIZE; i++)
 		if (BOARD_MAP[i] >= 0)
@@ -183,6 +190,11 @@ GameBoard::~GameBoard()
 void GameBoard::reconfigure_board(unsigned int num_players, bool long_jumps,
 								  bool hop_others, bool stop_others)
 {
+	if (num_players < 1)
+		num_players = 1;
+	else if (num_players > 6)
+		num_players = 6;
+
 	_num_players = num_players;
 	_long_jumps = long_jumps;
 	_hop_others = hop_others;
@@ -252,6 +264,14 @@ void GameBoard::reset_peg_lists()
 			unsigned int end_player;
 			if (cur_player)
 			{
+				// Defensive: a corrupt hole value (e.g. from a malicious
+				// GAME_BOARD message) must not index outside _pegs[6][10].
+				if (cur_player > 6 || peg_count[cur_player-1] >= 10)
+				{
+					_board[i]->set_current_player(0);
+					continue;
+				}
+
 				_pegs[cur_player-1][peg_count[cur_player-1]] = i;
 				_board[i]->set_peg_list_index(peg_count[cur_player-1]);
 				peg_count[cur_player-1]++;
@@ -311,6 +331,8 @@ uint64_t GameBoard::get_zobrist() const
 
 GameHole* GameBoard::operator[](unsigned int i) const 
 {
+	if (i >= SIZE)
+		return NULL;
 	return _board[i]; 
 }
 
@@ -318,6 +340,9 @@ GameHole* GameBoard::operator[](unsigned int i) const
 bool GameBoard::is_other_player_triangle(unsigned int player,
 										 unsigned int hole) const
 {
+	if (hole >= SIZE || _board[hole] == NULL)
+		return false;
+
 	return (_board[hole]->get_start_player() != player &&
 			_board[hole]->get_start_player() <= _num_players &&
 			_board[hole]->get_end_player() != player &&
@@ -329,6 +354,9 @@ bool GameBoard::is_other_player_triangle(unsigned int player,
 
 bool GameBoard::valid_move_to(unsigned int start, unsigned int to) const
 {
+	if (start >= SIZE || to >= SIZE || _board[start] == NULL)
+		return false;
+
 	if (!_hop_others &&
 		is_other_player_triangle(_board[start]->get_current_player(), to))
 			return false;
@@ -340,6 +368,10 @@ bool GameBoard::valid_move_to(unsigned int start, unsigned int to) const
 bool GameBoard::valid_move(unsigned int from, unsigned int to,
 						   int check_dir) const
 {
+	if (from >= SIZE || to >= SIZE || _board[from] == NULL
+		|| _board[to] == NULL)
+			return false;
+
 	if (check_dir > -1)
 		return (_board[from]->get_neighbor(check_dir) == _board[to]);
 
@@ -358,6 +390,10 @@ unsigned int GameBoard::find_valid_jump(unsigned int start, unsigned int from,
 {
 	GameHole *cur;
 	int N = 0;
+
+	if (from >= SIZE || start >= SIZE || _board[from] == NULL
+		|| _board[start] == NULL)
+			return 0;
 
 	// Is Valid if we can: Start with the from hole...
 	cur = _board[from];
@@ -417,6 +453,13 @@ bool GameBoard::valid_move_list(const MoveList& move_list,
 {
 	if (move_list.size() < 2)
 		return false;
+
+	// The entries can come straight off the network (GAME_MAKEMOVE, the ajax
+	// bridge); reject any index that is not an actual hole before touching
+	// the array.
+	for (unsigned int i = 0; i < move_list.size(); i++)
+		if (move_list[i] >= SIZE || _board[move_list[i]] == NULL)
+			return false;
 
 	int from = move_list[0];
 	int to = move_list[move_list.size() - 1];
@@ -483,7 +526,16 @@ bool GameBoard::make_move_list(const MoveList& move_list)
 
 void GameBoard::move_peg(unsigned int from, unsigned int to)
 {
+	// Defensive: from/to and the occupying player are validated so that
+	// corrupt input (or a corrupt undo entry) cannot index out of bounds.
+	if (from >= SIZE || to >= SIZE || _board[from] == NULL
+		|| _board[to] == NULL)
+			return;
+
 	unsigned int player = _board[from]->get_current_player();
+
+	if (player < 1 || player > 6)
+		return;
 
 	_board[to]->set_current_player(player);
 	_board[from]->set_current_player(0);
@@ -533,6 +585,8 @@ bool GameBoard::game_finished() const
 
 unsigned int GameBoard::get_num_pegs_in_goal(unsigned int player) const
 {
+	if (player < 1 || player > 6)
+		return 0;
 	return _pegs_in_goal[player-1];
 }
 

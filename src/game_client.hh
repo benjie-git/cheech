@@ -123,6 +123,9 @@ public:
 	void request_player_ids();
 	void resync_game();
 	void leave_game();
+	// Deletes this client; safe to schedule from inside the client's own
+	// signal emissions (use with a 0 ms timer, not called directly).
+	void dispose();
 
 private:
 	GameClient(const GameClient& client);
@@ -134,6 +137,13 @@ private:
 	void disconnected();
 	void read(Glib::ustring message);
 	void error(Net::Conn::Error error);
+
+	// Parse "count hole hole ..." with a hard bound on the count and on
+	// every hole index; returns false (leaving move_list empty) if the
+	// message is malformed.
+	bool parse_move_list(const Glib::ustring& arguments, MoveList& move_list);
+	// True if hole is a valid index into the board array.
+	bool valid_move_index(unsigned int hole) const;
 
 	// First message sent from server, includes protocol version
 	void command_HELLO(const Glib::ustring& arguments);

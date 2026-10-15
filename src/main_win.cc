@@ -80,6 +80,15 @@ main_win::main_win() : main_win_glade()
 	game_view->sig_anim_idle.connect(
 		sigc::mem_fun(*this, &main_win::on_anim_idle));
 
+	// One-time connections from the dialogs, forwarded to the current
+	// primary client (see on_dialog_change_color).
+	_color_win.signal_change_color.connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_change_color));
+	_name_win.signal_change_name.connect(sigc::mem_fun(*this,
+		&main_win::on_dialog_change_name));
+	_setup_game_win.signal_restart_game.connect(sigc::mem_fun(*this,
+		&main_win::on_game_setup));
+
 	_player_name[0]=player_name1;
 	_player_name[1]=player_name2;
 	_player_name[2]=player_name3;
@@ -260,6 +269,11 @@ bool main_win::do_start_server(unsigned int port, unsigned int cheechweb_port,
 	bool long_jumps, bool hop_others, bool stop_others,
 	std::vector<NewGameSeat> seats)
 {
+	// Hosting replaces any game this window is joined to (its client would
+	// otherwise be overwritten and leaked here).
+	if (_client)
+		on_leave_game_activate();
+
 	_server = new GameServer(port, seats.size(), long_jumps,
 							 hop_others, stop_others);
 	_server->evt_message.connect(sigc::mem_fun(*this, &main_win::show_message));
@@ -267,7 +281,7 @@ bool main_win::do_start_server(unsigned int port, unsigned int cheechweb_port,
 
 	if (!_server->ready())
 	{
-		// delete _server;
+		delete _server;
 		_server = NULL;
 		update_menus();
 		return false;
@@ -278,7 +292,7 @@ bool main_win::do_start_server(unsigned int port, unsigned int cheechweb_port,
 		_ajax_server = new AjaxServer();
 		if (!_ajax_server->listen(cheechweb_port, "localhost", port))
 		{
-			//delete _ajax_server;
+			delete _ajax_server;
 			_ajax_server = NULL;
 		}
 	}
@@ -346,25 +360,35 @@ void main_win::connect_client_dialogs(GameClient *client)
 {
 	client->evt_disconnected.connect(sigc::mem_fun(_color_win,
 		&color_win::on_disconnected));
-	_color_win.signal_change_color.connect(sigc::mem_fun(*client,
-		&GameClient::change_color));
-
 	client->evt_disconnected.connect(sigc::mem_fun(_name_win,
 		&name_win::on_disconnected));
-	_name_win.signal_change_name.connect(sigc::mem_fun(*client,
-		&GameClient::change_name));
 
 	client->cmd_game_turn.connect(sigc::mem_fun(_setup_game_win,
 		&setup_game_win::on_cmd_game_turn));
 	client->evt_disconnected.connect(sigc::mem_fun(_setup_game_win,
 		&setup_game_win::on_disconnected));
-	_setup_game_win.signal_restart_game.connect(sigc::mem_fun(*this,
-		&main_win::on_game_setup));
 	_setup_game_win.setup(1, false, false, false, _game_status);
 
 	_setup_bot_win.setup(_game_status, client);
 	client->cmd_game_turn.connect(sigc::mem_fun(_setup_bot_win,
 		&setup_bot_win::on_cmd_game_turn));
+}
+
+
+// The dialog signals are connected once (in the constructor) and forwarded
+// to the current primary client, so starting new games can't stack up
+// duplicate connections on the dialogs.
+void main_win::on_dialog_change_color(int color)
+{
+	if (_client)
+		_client->change_color(color);
+}
+
+
+void main_win::on_dialog_change_name(Glib::ustring name)
+{
+	if (_client)
+		_client->change_name(name);
 }
 
 
@@ -502,7 +526,7 @@ void main_win::start_hosted_seats(std::vector<NewGameSeat> seats,
 	join_next_seat();
 	// Poll fast like the iOS host (10ms): seats join one at a time, waiting
 	// for each player number, but a 10ms tick makes that imperceptible.
-	Glib::signal_timeout().connect(sigc::mem_fun(*this,
+	_seat_poll = Glib::signal_timeout().connect(sigc::mem_fun(*this,
 		&main_win::poll_seat_join), 10);
 }
 
@@ -758,12 +782,22 @@ void main_win::route_input()
 
 void main_win::clear_seats()
 {
-	// Seat bots were already removed from _bots by
-	// on_remove_computer_players_activate(); the clients stay allocated like
-	// the primary client does.
+	// A new hosted game is about to rebuild the seats; stop the old poll
+	// timer before it can drive the new seat vector.
+	_seat_poll.disconnect();
+
+	// Seat bots were already removed from _bots (and disposed) by
+	// on_remove_computer_players_activate(); the seat clients are
+	// disconnected here and freed on a later main-loop iteration, once
+	// their disconnect processing has finished.
 	for (size_t i = 0; i < _seats.size(); i++)
 		if (_seats[i].client && _seats[i].client != _client)
-			_seats[i].client->leave_game();
+		{
+			GameClient *client = _seats[i].client;
+			client->leave_game();
+			Glib::signal_timeout().connect(sigc::bind_return(
+				sigc::mem_fun(*client, &GameClient::dispose), false), 0);
+		}
 	_seats.clear();
 	_next_seat = 0;
 	_seat_join_ticks = 0;
@@ -878,10 +912,13 @@ void main_win::on_end_game_activate()
 
 void main_win::stop_server()
 {
+	_seat_poll.disconnect();
+
 	if (_ajax_server)
 	{
 		_ajax_server->close();
-		//delete _ajax_server;
+		Glib::signal_timeout().connect(sigc::bind_return(
+			sigc::mem_fun(*_ajax_server, &AjaxServer::dispose), false), 0);
 		_ajax_server = NULL;
 	}
 
@@ -891,7 +928,8 @@ void main_win::stop_server()
 
 		util::delay_ms(100);
 		_server->end_game();
-		// delete _server;
+		Glib::signal_timeout().connect(sigc::bind_return(
+			sigc::mem_fun(*_server, &GameServer::dispose), false), 0);
 		_server = NULL;
 
 		update_menus();
@@ -924,12 +962,19 @@ void main_win::on_leave_game_activate()
 		_client->leave_game();
 		_current_player = 0;
 		_game_status = GameServer::End;
-		_setup_bot_win.setup(_game_status, _client);
+		// The setup-bot dialog keeps the client pointer between games; hand
+		// it a NULL one so it cannot reach the client being disposed below.
+		_setup_bot_win.setup(_game_status, NULL);
 		_move_count = 1;
 		move_counter->set_text("");
 		_last_move.clear();
 
-		// delete _client;
+		// Free the client on a later main-loop iteration: this handler may
+		// be running from the client's own evt_disconnected emission, and
+		// its slots must stay valid until the emission returns.
+		GameClient *client = _client;
+		Glib::signal_timeout().connect(sigc::bind_return(
+			sigc::mem_fun(*client, &GameClient::dispose), false), 0);
 		_client = NULL;
 
 		update_menus();
@@ -998,7 +1043,8 @@ void main_win::on_change_name_activate()
 
 void main_win::on_resync_activate()
 {
-	_client->resync_game();
+	if (_client)
+		_client->resync_game();
 }
 
 
@@ -1105,6 +1151,11 @@ void main_win::on_remove_computer_players_activate()
 		bot = _bots.back();
 		_bots.pop_back();
 		bot->leave_game();
+		// Free the bot on a later main-loop iteration: leave_game() may be
+		// emitting the bot's own evt_disconnected right now.  The bot is no
+		// longer in _bots, so bot_disconnected() will not dispose it too.
+		Glib::signal_timeout().connect(sigc::bind_return(
+			sigc::mem_fun(*bot, &BotBase::dispose), false), 0);
 	}
 }
 
@@ -1125,10 +1176,15 @@ void main_win::bot_disconnected(BotBase *bot)
 {
 	for (std::vector<BotBase*>::iterator b = _bots.begin();
 		b < _bots.end(); b++)
-			if (*b == bot)
-				_bots.erase(b);
-
-	// delete bot;
+		if (*b == bot)
+		{
+			_bots.erase(b);
+			// Free the bot on a later main-loop iteration: this handler may
+			// be running from the bot's own evt_disconnected emission.
+			Glib::signal_timeout().connect(sigc::bind_return(
+				sigc::mem_fun(*bot, &BotBase::dispose), false), 0);
+			break;
+		}
 }
 
 
@@ -1261,7 +1317,7 @@ void main_win::confirm_then(sigc::slot<void()> action)
 		return;
 	}
 
-	_pending_confirm = action;
+	_pending_confirm.push_back(action);
 
 	if (!_confirm_quit_dialog)
 	{
@@ -1281,11 +1337,18 @@ void main_win::on_confirm_quit_response(int response)
 {
 	_confirm_quit_dialog->hide();
 
-	sigc::slot<void()> action = _pending_confirm;
-	_pending_confirm = sigc::slot<void()>();
-
-	if (response == (int)Gtk::ResponseType::YES && !action.empty())
+	if (response == (int)Gtk::ResponseType::YES && !_pending_confirm.empty())
+	{
+		sigc::slot<void()> action = _pending_confirm.front();
+		_pending_confirm.pop_front();
 		action();
+	}
+	else
+		_pending_confirm.clear();
+
+	// A request that arrived while the dialog was up is answered next.
+	if (!_pending_confirm.empty())
+		_confirm_quit_dialog->show();
 }
 
 
@@ -1339,6 +1402,9 @@ void main_win::show_message(Glib::ustring message)
 
 void main_win::set_player_label(unsigned int posn, bool bold)
 {
+	if (!_client || !_client->get_board() || posn < 1 || posn > 6)
+		return;
+
 	Glib::ustring num_str = "";
 	if (_client->get_board()->player_finished(posn) &&
 		_finished_in_moves[posn-1])
@@ -1391,6 +1457,9 @@ void main_win::on_anim_idle()
 void main_win::on_cmd_player_add(unsigned int posn,
 								 Glib::ustring name, int color)
 {
+	if (posn < 1 || posn > 6)
+		return;
+
 	// A rejoin reuses the slot's color; queued replays of the previous
 	// occupant's moves would animate in the wrong color.  Snap instead.
 	game_view->rebuild_board();
@@ -1414,6 +1483,9 @@ void main_win::on_cmd_player_add(unsigned int posn,
 
 void main_win::on_cmd_player_remove(unsigned int posn)
 {
+	if (posn < 1 || posn > 6)
+		return;
+
 	// A departing player's color is gone; replays of their moves would
 	// animate as colorless ghosts.  Snap the view board to the truth.
 	game_view->rebuild_board();
@@ -1431,6 +1503,9 @@ void main_win::on_cmd_player_remove(unsigned int posn)
 
 void main_win::on_cmd_player_finish(unsigned int posn, unsigned int move_count)
 {
+	if (posn < 1 || posn > 6)
+		return;
+
 	_finished_in_moves[posn-1] = move_count;
 	set_player_label(posn, false);
 }

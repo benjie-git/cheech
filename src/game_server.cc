@@ -92,27 +92,29 @@ GameServer::GameServer(unsigned int port, unsigned int num_players,
 
 GameServer::~GameServer()
 {
-#if defined(CHEECH_IOS)
-	// The iOS event loop keeps running after the server is destroyed, so the
-	// accepted connections (owned by the player/spectator entries) must be
-	// closed and freed here.  Otherwise their still-registered fd watches
-	// would later invoke remove_client() on this freed server.
+	// Close every accepted connection so its fd watch can never call into
+	// this partly-destroyed object.  The sockets null themselves out of the
+	// player/spectator tables first, so each close()'s evt_closed lands in
+	// remove_client()'s anonymous path, which frees the connection on a
+	// later main-loop iteration (never here: deleting a Conn inside its own
+	// signal is a use-after-free).
 	_socket.close();
 
 	for (unsigned int i = 1; i <= 6; i++)
 	{
 		Net::Conn *c = _players[i].socket;
 		_players[i].socket = NULL;
-		if (c) { c->close(); delete c; }
+		if (c)
+			c->close();
 	}
 
 	for (unsigned int i = 0; i < _spectators.size(); i++)
 	{
 		Net::Conn *c = _spectators[i].socket;
 		_spectators[i].socket = NULL;
-		if (c) { c->close(); delete c; }
+		if (c)
+			c->close();
 	}
-#endif
 
 	if (_board)
 		delete _board;
@@ -142,9 +144,9 @@ void GameServer::parse_command(Glib::ustring message)
 	util::trim(message);
 
 	Glib::ustring command, arguments;
-	u_long seperator = message.find_first_of(" ");
+	Glib::ustring::size_type seperator = message.find_first_of(" ");
 
-	if (seperator < 0)
+	if (seperator == Glib::ustring::npos)
 		command = message;
 	else
 	{
@@ -656,6 +658,15 @@ void GameServer::add_client(Conn* socket)
 	socket->evt_data_available.connect(sigc::bind(sigc::mem_fun(*this,
 		&GameServer::read_client), socket));
 
+	// Attach the disconnect/error handlers right away so that even a
+	// connection that never registers itself gets cleaned up (the old code
+	// attached these only in command_PLAYER_ADD/SPECTATOR_ADD, leaking the
+	// Conn and its file descriptor for every anonymous connection).
+	socket->evt_closed.connect(sigc::bind(sigc::mem_fun(*this,
+		&GameServer::remove_client), socket));
+	socket->evt_error.connect(sigc::bind(sigc::mem_fun(*this,
+		&GameServer::error_client), socket));
+
 	*socket << "HELLO " PROTO_VERSION "\n";
 
 	*socket << "CLIENT_MESSAGE GameServer is version " PROTO_VERSION
@@ -666,15 +677,22 @@ void GameServer::add_client(Conn* socket)
 
 void GameServer::remove_client(Conn* socket)
 {
+	// Never delete the socket here directly: close() emits evt_closed
+	// synchronously, so this handler may be running from inside the very
+	// Conn being removed.  Always free it on a later main-loop iteration.
 	Player *sad_player = get_client_player(socket);
 
 	if (!sad_player)
+	{
+		// An anonymous connection that never registered.
+		socket->delete_later();
 		return;
+	}
 
 	if (sad_player->spectator)
 	{
-		delete sad_player->socket;
 		sad_player->socket = NULL;
+		socket->delete_later();
 
 		Glib::ustring message = "Spectator " + sad_player->name + " from "
 			+ sad_player->location + " has disconnected.";
@@ -684,14 +702,17 @@ void GameServer::remove_client(Conn* socket)
 		for (std::vector<Player>::iterator pl = _spectators.begin();
 			pl < _spectators.end(); pl++)
 				if (&(*pl) == sad_player)
-					_spectators.erase(pl, pl);
+				{
+					_spectators.erase(pl);
+					break;
+				}
 	}
 	else
 	{
 		unsigned int posn = get_client_posn(socket);
 
-		delete sad_player->socket;
 		sad_player->socket = NULL;
+		socket->delete_later();
 
 		Glib::ustring message = "Player " + sad_player->name
 			+ " (#" + util::to_str(posn) + ") from " + sad_player->location
@@ -714,8 +735,8 @@ void GameServer::read_client(Glib::ustring message, Conn* socket)
 {
 	Glib::ustring command, arguments;
 
-    u_long seperator = message.find_first_of(" ");
-	if (seperator < 0)
+    Glib::ustring::size_type seperator = message.find_first_of(" ");
+	if (seperator == Glib::ustring::npos)
 		command = message.substr(0, message.length());
 	else
 	{
@@ -726,6 +747,14 @@ void GameServer::read_client(Glib::ustring message, Conn* socket)
 #ifdef DEBUG_SERVER
 		cerr << "SERVER RECEIVED : " << message << endl;
 #endif
+
+	// A connection is anonymous until it registers itself with PLAYER_ADD or
+	// SPECTATOR_ADD.  Every other command assumes a registered player, so
+	// refuse them all from unregistered connections (they would otherwise
+	// dereference a NULL Player).
+	if (command != "PLAYER_ADD" && command != "SPECTATOR_ADD"
+		&& get_client_player(socket) == NULL)
+			return;
 
 	if (command == "PLAYER_ADD")
 		command_PLAYER_ADD(socket, arguments);
@@ -795,18 +824,36 @@ void GameServer::command_PLAYER_ADD(Conn *socket,
 		return;
 	}
 
-	socket->evt_closed.connect(sigc::bind(sigc::mem_fun(*this,
-		&GameServer::remove_client), socket));
-	socket->evt_error.connect(sigc::bind(sigc::mem_fun(*this,
-		&GameServer::error_client), socket));
+	istringstream argStream(std::string(arguments.c_str()));
+	int color = 0;
+	std::string name;
 
-	int color = util::from_str<int>(arguments);
-	Glib::ustring name = arguments.substr(2);
+	argStream >> color;
+	std::getline(argStream, name);
+	if (argStream.fail())
+	{
+		*socket << "CLIENT_MESSAGE Bad PLAYER_ADD arguments.\n";
+		return;
+	}
 
-	unsigned int posn = get_client_posn_from_name(name);
+	Glib::ustring player_name(name);
+	util::trim(player_name);
+
+	unsigned int posn = get_client_posn_from_name(player_name);
 	// if no player by that name, or that player is already connected,
 	if (!posn || _players[posn].socket)
 		posn = get_client_posn(NULL);
+
+	if (posn == 0)
+	{
+		// No free slot despite the connected count (accounting drift); treat
+		// it as a full game.
+		*socket << "CLIENT_MESSAGE "
+			<< "Sorry, this Chinese Checkers game is full.\n";
+		Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(*socket,
+			&Conn::close), false), 100);
+		return;
+	}
 
 	_players[posn] = Player(socket,
 							Glib::ustring("Player ") + util::to_str(posn),
@@ -814,7 +861,7 @@ void GameServer::command_PLAYER_ADD(Conn *socket,
 							 ++_next_player_id);
 	_num_connected_players++;
 
-	attempt_set_player_name(&_players[posn], name);
+	attempt_set_player_name(&_players[posn], player_name);
 
 	attempt_set_player_color(&_players[posn], color);
 
@@ -843,9 +890,6 @@ void GameServer::command_SPECTATOR_ADD(Conn *socket,
 
 	_spectators.push_back(Player(socket, name, 0, socket->get_host_name(),
 						  _heartbeat, true));
-
-	socket->evt_closed.connect(sigc::bind(sigc::mem_fun(*this,
-		&GameServer::remove_client), socket));
 
 	prepare_player(socket);
 
@@ -884,8 +928,17 @@ void GameServer::send_player_ids(Conn *socket)
 void GameServer::command_PLAYER_CHAT(Conn *socket,
 									 const Glib::ustring& arguments)
 {
-	*this << "PLAYER_CHAT <<" + get_client_player(socket)->name + ">> "
-		+ arguments + "\n";
+	Player *player = get_client_player(socket);
+
+	if (!player)
+		return;
+
+	// Cap the length so a single client cannot flood everyone's buffers.
+	Glib::ustring chat = arguments;
+	if (chat.length() > 512)
+		chat = chat.substr(0, 512);
+
+	*this << "PLAYER_CHAT <<" + player->name + ">> " + chat + "\n";
 }
 
 
@@ -916,7 +969,12 @@ void GameServer::command_PLAYER_NAME(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
+	if (!player)
+		return;
+
 	Glib::ustring name = arguments;
+	if (name.length() > 64)
+		name = name.substr(0, 64);
 
 	attempt_set_player_name(player, name);
 
@@ -931,7 +989,7 @@ void GameServer::command_PLAYER_COLOR(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
 	int color = util::from_str<int>(arguments);
@@ -951,12 +1009,36 @@ void GameServer::command_GAME_SHOWMOVE(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
 	if (_num_connected_players >= _board->get_num_players()
 		&& get_client_posn(socket) == _current_player)
-			*this << "GAME_SHOWMOVE " + arguments + "\n";
+	{
+		// The arguments are relayed to every client, and every client parses
+		// them with the same (bounded) move-list parser, so validate them
+		// here and relay only a sanitized copy.
+		istringstream argStream(std::string(arguments.c_str()));
+		int numMoves = 0;
+
+		argStream >> numMoves;
+		if (argStream.fail() || numMoves < 0 || numMoves > 64)
+			return;
+
+		Glib::ustring relayed = util::to_str(numMoves);
+		for (int i = 0; i < numMoves; i++)
+		{
+			int j;
+			argStream >> j;
+			if (argStream.fail() || j < 0
+				|| j >= static_cast<int>(GameBoard::SIZE)
+				|| (*_board)[j] == NULL)
+					return;
+			relayed += " " + util::to_str(j);
+		}
+
+		*this << "GAME_SHOWMOVE " + relayed + "\n";
+	}
 }
 
 
@@ -965,7 +1047,7 @@ void GameServer::command_GAME_HIDEMOVE(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
 	if (_num_connected_players >= _board->get_num_players() &&
@@ -979,18 +1061,40 @@ void GameServer::command_GAME_MAKEMOVE(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
-	istringstream argStream(arguments);
+	istringstream argStream(std::string(arguments.c_str()));
 	MoveList move_list;
 	int numMoves;
 
 	argStream >> numMoves;
+
+	// The move count is client-supplied: bound it before looping, stop at the
+	// first failed extraction, and validate every hole index before the board
+	// ever sees the list.
+	if (argStream.fail() || numMoves < 0 || numMoves > 64)
+	{
+		*socket << "CLIENT_MESSAGE " << "Invalid move! Try again.\n";
+		*this << "GAME_HIDEMOVE \n";
+		return;
+	}
+
 	for (int i = 0; i < numMoves; i++)
 	{
 		int j;
 		argStream >> j;
+		if (argStream.fail())
+			break;
+
+		if (j < 0 || j >= static_cast<int>(GameBoard::SIZE)
+			|| (*_board)[j] == NULL)
+		{
+			*socket << "CLIENT_MESSAGE " << "Invalid move! Try again.\n";
+			*this << "GAME_HIDEMOVE \n";
+			return;
+		}
+
 		move_list.push_back(j);
 	}
 
@@ -1098,7 +1202,7 @@ void GameServer::command_GAME_RESTART(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
 	restart_game();
@@ -1110,7 +1214,7 @@ void GameServer::command_GAME_ROTATE(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
 	rotate_players();
@@ -1122,7 +1226,7 @@ void GameServer::command_GAME_SHUFFLE(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
 	shuffle_players();
@@ -1134,13 +1238,25 @@ void GameServer::command_GAME_RECONFIG(Conn *socket,
 {
 	Player *player = get_client_player(socket);
 
-	if (player->spectator)
+	if (!player || player->spectator)
 		return;
 
-	unsigned int num_players = util::from_str<unsigned int>(arguments);
-	bool long_jumps = (bool)((int)util::from_str<int>(arguments.substr(2)));
-	bool hop_others = (bool)((int)util::from_str<int>(arguments.substr(4)));
-	bool stop_others = (bool)((int)util::from_str<int>(arguments.substr(6)));
+	istringstream argStream(std::string(arguments.c_str()));
+	unsigned int num_players = 0;
+	int long_jumps = 0, hop_others = 0, stop_others = 0;
 
-	reconfigure_game(num_players, long_jumps, hop_others, stop_others);
+	argStream >> num_players >> long_jumps >> hop_others >> stop_others;
+	if (argStream.fail())
+		return;
+
+	// num_players indexes START_MAP[7][7] and _pegs[6][]; anything outside
+	// 1..6 would corrupt memory.
+	if (num_players < 1 || num_players > 6)
+	{
+		*socket << "CLIENT_MESSAGE Invalid player count.\n";
+		return;
+	}
+
+	reconfigure_game(num_players, long_jumps != 0, hop_others != 0,
+					 stop_others != 0);
 }

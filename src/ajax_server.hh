@@ -40,15 +40,22 @@ public:
 		Glib::ustring cheechd_hostname, unsigned int cheechd_port);
 	void close();
 
+	// Frees the server on a later main-loop iteration (used instead of a
+	// direct delete so pending disconnect processing can never touch a
+	// freed server).
+	void dispose() { delete this; }
+
 	Glib::ustring get_cheechd_hostname();
 	unsigned int get_cheechd_port();
 
 	void on_client_disconnect(AjaxServerConn *client);
+	void schedule_client_sweep();
 
 private:
 	void connection_open(Net::Conn* socket);
 	void connection_closed(Net::Conn* socket);
 	AjaxServerConn* get_client_by_id(unsigned int id);
+	bool sweep_dead_clients();
 
 	// Handle messages from Ajax Frontend to GameClient
 	void handle_request(Glib::ustring message, Net::Conn *conn);
@@ -65,7 +72,6 @@ private:
 	unsigned int						_cheechd_port;
 	Net::Server						_socket;
 	std::list<AjaxServerConn>			_clients;
-	unsigned int						_next_id;
 };
 
 #endif   // #ifndef INCL_AJAX_SERVER_HH

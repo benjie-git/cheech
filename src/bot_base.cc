@@ -454,6 +454,26 @@ GameClient* BotBase::get_game_client()
 }
 
 
+// Frees the bot.  The deferred-dispose timers in main_win can fire while a
+// search is still on the C++ stack: score_moves()'s worker-join wait and the
+// _think_delay previews pump the main loop, so the 0ms dispose timer runs
+// from inside the very search it would free.  Deleting then frees the bot
+// (and its search clones) out from under the running search and its worker
+// threads.  leave_game() has already set _abort, so the search aborts and
+// unwinds quickly; retry until _searching is clear, then delete.
+void BotBase::dispose()
+{
+	if (_searching)
+	{
+		Glib::signal_timeout().connect(sigc::bind_return(
+			sigc::mem_fun(*this, &BotBase::dispose), false), 20);
+		return;
+	}
+
+	delete this;
+}
+
+
 void BotBase::join_game(Glib::ustring host, unsigned int port)
 {
 	if (_client.get_my_name() == "")
@@ -643,6 +663,9 @@ void BotBase::make_best_move()
 		_search_pending = true;
 		return;
 	}
+
+	if (_abort || !_client.get_board())
+		return;
 
 	_searching = true;
 

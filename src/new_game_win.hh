@@ -55,6 +55,7 @@ class new_game_win : public new_game_win_glade
 {
 	public:
 		new_game_win();
+		~new_game_win();
 
 		void show_join_page(bool joining);
 

@@ -40,7 +40,8 @@ AjaxServerConn::AjaxServerConn(GameClient *client,
 	:_game_client(client),
 	 _wait_conn(NULL),
 	 _id(id),
-	 _timeout_counter(0)
+	 _timeout_counter(0),
+	 _disconnecting(false)
 {
 }
 
@@ -51,6 +52,7 @@ void AjaxServerConn::init(AjaxServer *server, unsigned int id,
 	_ajax_server = server;
 	_id = id;
 	_client_hostname = client_hostname;
+	_disconnecting = false;
 }
 
 
@@ -129,6 +131,10 @@ void AjaxServerConn::on_connect()
 
 void AjaxServerConn::disconnect()
 {
+	if (_disconnecting)
+		return;
+	_disconnecting = true;
+
 	// Tell Ajax that we're done, close GameClient
 	_timeout.disconnect();
 	_disconnect.disconnect();
@@ -138,11 +144,16 @@ void AjaxServerConn::disconnect()
 	if (_game_client)
 	{
 		_game_client->leave_game();
-		//delete _game_client;
+		GameClient *client = _game_client;
 		_game_client = NULL;
+		// leave_game() may have run close()/evt_disconnected on the stack;
+		// free the client on a later main-loop iteration instead.
+		Glib::signal_timeout().connect(
+			sigc::bind_return(sigc::mem_fun(*client, &GameClient::dispose), false), 0);
 	}
 
 	on_disconnect();
+	_ajax_server->schedule_client_sweep();
 }
 
 
@@ -469,12 +480,16 @@ void AjaxServerConn::ajax_change_color(Glib::ustring arguments)
 
 void AjaxServerConn::ajax_game_setup(Glib::ustring arguments)
 {
-	unsigned int num = util::from_str<unsigned int>(arguments);
-	unsigned int longs = util::from_str<unsigned int>(arguments.substr(2,1));
-	unsigned int hops = util::from_str<unsigned int>(arguments.substr(4,1));
-	unsigned int stops = util::from_str<unsigned int>(arguments.substr(6,1));
+	std::istringstream argStream(std::string(arguments.c_str()));
+	unsigned int num = 0;
+	unsigned int longs = 0, hops = 0, stops = 0;
 
-	_game_client->reconfigure_game(num, longs, hops, stops);
+	argStream >> num >> longs >> hops >> stops;
+
+	if (argStream.fail() || num < 1 || num > 6)
+		return;
+
+	_game_client->reconfigure_game(num, longs != 0, hops != 0, stops != 0);
 }
 
 
@@ -482,13 +497,19 @@ void AjaxServerConn::ajax_click(Glib::ustring arguments)
 {
 	unsigned int i = util::from_str<unsigned int>(arguments);
 
+	// The index comes straight from an HTTP request; reject anything that is
+	// not an actual hole before it reaches the board.
+	GameBoard *board = _game_client ? _game_client->get_board() : NULL;
+	if (!board || i >= GameBoard::SIZE || (*board)[i] == NULL)
+		return;
+
 	if (!move_list_contains(i))
 	{
 		_move_list.push_back(i);
 		if (!((_move_list.size() == 1 &&
-			(*_game_client->get_board())[i]->get_current_player() ==
+			(*board)[i]->get_current_player() ==
 			_game_client->get_my_player_number()) ||
-			_game_client->get_board()->valid_move_list(_move_list, false)))
+			board->valid_move_list(_move_list, false)))
 		{
 			_move_list.pop_back();
 		}
@@ -520,7 +541,11 @@ void AjaxServerConn::ajax_dblclick(Glib::ustring arguments)
 {
 	unsigned int i = util::from_str<unsigned int>(arguments);
 
-	if (_move_list.back() != i)
+	GameBoard *board = _game_client ? _game_client->get_board() : NULL;
+	if (!board || i >= GameBoard::SIZE || (*board)[i] == NULL)
+		return;
+
+	if (_move_list.empty() || _move_list.back() != i)
 		_move_list.push_back(i);
 
 	ajax_commit("");
@@ -672,6 +697,8 @@ void AjaxServerConn::ajax_removebots()
 		bot = _bots.back();
 		_bots.pop_back();
 		bot->leave_game();
+		Glib::signal_timeout().connect(
+			sigc::bind_return(sigc::mem_fun(*bot, &BotBase::dispose), false), 0);
 	}
 }
 
@@ -691,11 +718,21 @@ void AjaxServerConn::ajax_redo()
 void AjaxServerConn::bot_disconnected(BotBase *bot)
 {
 	for (std::vector<BotBase*>::iterator b = _bots.begin();
-		b < _bots.end(); b++)
-			if (*b == bot)
-				_bots.erase(b);
+		b < _bots.end(); )
+	{
+		if (*b == bot)
+		{
+			_bots.erase(b);
 
-	// delete bot;
+			// Deleting the bot here would destroy the Net::Conn whose close()
+			// is still on the stack (evt_disconnected is emitted from within
+			// close()); free it on a later main-loop iteration instead.
+			Glib::signal_timeout().connect(
+				sigc::bind_return(sigc::mem_fun(*bot, &BotBase::dispose), false), 0);
+		}
+		else
+			++b;
+	}
 }
 
 

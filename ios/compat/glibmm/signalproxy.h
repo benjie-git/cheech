@@ -63,7 +63,10 @@ public:
 
 	bool emit(Args... args)
 	{
-		for (std::shared_ptr<entry>& e : *_entries)
+		// Snapshot the entries so a handler that connects or disconnects
+		// during the emission can't invalidate the iteration.
+		std::vector<std::shared_ptr<entry>> snapshot = *_entries;
+		for (std::shared_ptr<entry>& e : snapshot)
 		{
 			if (!e->active)
 				continue;

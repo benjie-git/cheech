@@ -75,6 +75,8 @@ class BotBase : public sigc::trackable
 
 		GameClient *get_game_client();
 
+		void dispose();
+
 		sigc::signal<void(Glib::ustring)> evt_message;
 		sigc::signal<void()> evt_connected;
 		sigc::signal<void()> evt_cancelled;

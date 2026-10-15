@@ -53,12 +53,15 @@ void printMessage(Glib::ustring msg)
 
 void gameOver(GameServer *server, Glib::RefPtr<Glib::MainLoop> m)
 {
-	num_games--;
-
-	if (num_games)
-		server->rotate_players();
-	else
+	// num_games <= 0 means "no limit" (the handler is only connected when
+	// num_games is non-zero, so guard the countdown here).
+	if (num_games > 0 && --num_games == 0)
+	{
 		m->quit();
+		return;
+	}
+
+	server->rotate_players();
 }
 
 

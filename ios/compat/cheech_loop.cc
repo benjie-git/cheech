@@ -57,8 +57,16 @@ void Loop::stop()
 	_stop_requested.store(true);
 	wake();
 
-	if (_thread.joinable() && std::this_thread::get_id() != _loop_thread_id)
-		_thread.join();
+	if (_thread.joinable())
+	{
+		if (std::this_thread::get_id() != _loop_thread_id)
+			_thread.join();
+		else
+			// Called from the loop thread itself (e.g. a handler); joining
+			// would deadlock, and leaving the thread joinable would make the
+			// destructor terminate.  The thread exits on its own anyway.
+			_thread.detach();
+	}
 }
 
 bool Loop::on_loop_thread() const
