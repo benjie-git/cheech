@@ -98,7 +98,10 @@ if [ -n "$prefix" ] && [ -d "$prefix/share/glib-2.0/schemas" ]; then
 	done
 fi
 
-# DLLs that ship with Windows and are never copied.
+# DLLs that ship with Windows and are never copied.  vulkan-1.dll is
+# also skipped: libepoxy loads it opportunistically and GTK renders
+# fine without it, and the copy found in the toolchain PATH may be a
+# GPU-driver version not present on the target machine.
 system_dlls="\
 advapi32.dll bcrypt.dll cfgmgr32.dll comctl32.dll comdlg32.dll \
 crypt32.dll dbghelp.dll d3d11.dll dbeng.dll dhcpcsvc.dll dnsapi.dll \
@@ -107,7 +110,7 @@ iphlpapi.dll kernel32.dll msimg32.dll msvcrt.dll netapi32.dll \
 normaliz.dll ntdll.dll ole32.dll oleaut32.dll opengl32.dll powrprof.dll \
 psapi.dll secur32.dll setupapi.dll shcore.dll shell32.dll shlwapi.dll \
 synch.dll ucrtbase.dll user32.dll userenv.dll uxtheme.dll version.dll \
-winmm.dll winspool.drv wintrust.dll ws2_32.dll wtsapi32.dll"
+vulkan-1.dll winmm.dll winspool.drv wintrust.dll ws2_32.dll wtsapi32.dll"
 
 is_system_dll() {
 	case "$1" in
