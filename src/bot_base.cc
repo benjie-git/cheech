@@ -27,9 +27,8 @@
 #include "bot_base.hh"
 #if !defined(CHEECH_IOS)
 #include "game_images.hh"
-#else
-#include "cheech_move_gate.hh"
 #endif
+#include "cheech_move_gate.hh"
 #include "utility.hh"
 
 #include "bot_random.hh"
@@ -58,8 +57,9 @@ namespace {
 BotBase::BotBase()
 {
 	_think_delay = 0;
-	_move_step_delay = 400;
-	_move_done_delay = 600;
+	// Per-hop commit pacing.  The old flat 500 ms per move becomes ~125 ms
+	// per hop so the average cadence stays about the same.
+	_move_step_delay = 125;
 	_smarts = 100;
 	_abort = FALSE;
 	_searching = false;
@@ -137,10 +137,9 @@ void BotBase::set_think_delay(int delay)
 }
 
 
-void BotBase::set_move_delay(int delay, int done_delay)
+void BotBase::set_move_delay(int step_delay)
 {
-	_move_step_delay = delay;
-	_move_done_delay = done_delay;
+	_move_step_delay = step_delay;
 }
 
 
@@ -1087,55 +1086,26 @@ void BotBase::make_move(MoveList *list)
 	if (list->empty())
 		return;
 
-#if defined(CHEECH_IOS) || defined(CHEECH_PORTABLE)
-	// Non-blocking pacing: the move is committed on a timer once the previous
-	// move's UI animation has finished.  This lets the next player's search
-	// start as soon as the turn arrives, while its commit waits for the gate.
+	// Non-blocking pacing: the move is committed on a timer once the
+	// previous move's UI animation has finished.  This lets the next
+	// player's search start as soon as the turn arrives, while its commit
+	// waits for the gate.  A configured step delay paces headless bots by
+	// holding the gate open themselves, one step per hop plus a rest, the
+	// same shape as the UI's replay window; UI-hosted bots run with the
+	// delay at zero and the animation window is set by the UI instead.
+	if (_move_step_delay > 0)
+		cheech::extend_move_gate(_move_step_delay * ((int)list->size() + 1));
+
+	// Abort if it's not my turn anymore (undo/etc)
 	if (!is_still_my_turn())
 		return;
 
 	MoveList move_copy = *list;
 	Glib::signal_timeout().connect(sigc::bind(
 		sigc::mem_fun(*this, &BotBase::try_commit_move), move_copy), 30);
-	return;
-#else
-	if (_move_step_delay > 0)
-	{
-		MoveList partial(0);
-
-		for (MoveList::iterator h = list->begin();
-			h < list->end(); h++)
-		{
-			// Abort if it's not my turn anymore (undo/etc)
-			if (!is_still_my_turn()) return;
-
-			partial.push_back(*h);
-			_client.show_move(&partial);
-			util::delay_ms(_move_step_delay);
-		}
-		util::delay_ms(_move_done_delay - _move_step_delay);
-	}
-	else
-	{
-		// Abort if it's not my turn anymore (undo/etc)
-		if (!is_still_my_turn()) return;
-
-		_client.show_move(list);
-		util::delay_ms(_move_done_delay);
-	}
-
-	// Abort if it's not my turn anymore (undo/etc)
-	if (!is_still_my_turn()) return;
-
-	_client.make_move(list);
-
-	Glib::signal_timeout().connect(sigc::bind_return(sigc::mem_fun(_client,
-								   &GameClient::hide_move), false), 0);
-#endif
 }
 
 
-#if defined(CHEECH_IOS)
 bool BotBase::try_commit_move(MoveList move)
 {
 	if (!is_still_my_turn())
@@ -1152,7 +1122,6 @@ bool BotBase::try_commit_move(MoveList move)
 
 	return false;
 }
-#endif
 
 
 // True when `hole` holds an opponent's peg and all four holes around it —

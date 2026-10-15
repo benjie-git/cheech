@@ -88,9 +88,13 @@ struct Snapshot
 	int pegsInGoal[7] = {0};
 	int holes[GameBoard::SIZE] = {0};
 	std::vector<int> selected;
+	std::vector<int> telegraph;
 	std::vector<int> lastMove;
 	unsigned int moveSerial = 0;
 	int moveNumber = 0;
+	// The move was telegraphed before it was committed, so the UI already
+	// watched it being planned and should snap it instead of replaying it.
+	bool skipReplay = false;
 };
 
 struct Seat
@@ -931,7 +935,7 @@ LocalSave parseLocalSave(const std::string &text)
 		{
 			// Let the bot apply its move immediately; the UI replays it.
 			bot->set_think_delay(0);
-			bot->set_move_delay(0, 0);
+			bot->set_move_delay(0);
 			bot->set_smarts(seat.smarts);
 			if (!seat.name.empty())
 				bot->set_name(seat.name);
@@ -1207,7 +1211,7 @@ LocalSave parseLocalSave(const std::string &text)
 		if (!bot) return;
 
 		bot->set_think_delay(0);
-		bot->set_move_delay(0, 0);
+		bot->set_move_delay(0);
 		bot->set_smarts(impl->computerSmarts);
 		if (!nameStr.empty()) bot->set_name(nameStr);
 		if (color > 0) bot->set_color((int)color);
@@ -1629,12 +1633,22 @@ LocalSave parseLocalSave(const std::string &text)
 			impl->selection = *move;
 			[s rebuildAndNotify];
 		}
+		else if (owner != 0
+				 && impl->clientByNumber.count((unsigned int)owner) == 0)
+		{
+			// Another player's in-progress move, telegraphed through the
+			// server.  Local human seats are skipped: their selections are
+			// already tracked and drawn from local state.
+			impl->snap.telegraph.assign(move->begin(), move->end());
+			[s rebuildAndNotify];
+		}
 	});
 
 	client->cmd_game_hide_move.connect([weakSelf]()
 	{
 		CheechSession *s = weakSelf; if (!s) return;
 		s->_impl->selection.clear();
+		s->_impl->snap.telegraph.clear();
 		[s rebuildAndNotify];
 	});
 
@@ -1648,6 +1662,14 @@ LocalSave parseLocalSave(const std::string &text)
 			impl->snap.moveSerial++;
 			impl->snap.moveNumber++;
 			impl->selection.clear();
+
+			// If this exact path was telegraphed, the UI has already watched
+			// it being planned: skip the replay and let the peg land.
+			impl->snap.skipReplay =
+				impl->snap.telegraph.size() == move->size() &&
+				std::equal(impl->snap.telegraph.begin(),
+					impl->snap.telegraph.end(), move->begin());
+			impl->snap.telegraph.clear();
 
 			// The peg now sits on the final hole of the move, so its owner is
 			// the player who just moved; count one move for them.
@@ -1665,7 +1687,8 @@ LocalSave parseLocalSave(const std::string &text)
 				// the animation actually starts the UI calls
 				// -holdComputerMovesForAnimationHops: to re-anchor the gate to
 				// the on-screen animation.
-				if (mover != (int)impl->client->get_my_player_number())
+				if (!impl->snap.skipReplay &&
+					mover != (int)impl->client->get_my_player_number())
 					cheech::extend_move_gate(impl->animStepMs * ((int)move->size() - 1)
 											 + impl->animDoneMs);
 			}
@@ -1793,7 +1816,9 @@ LocalSave parseLocalSave(const std::string &text)
 		std::lock_guard<std::mutex> lock(impl->mutex);
 		impl->snap.moveNumber = 0;
 		impl->snap.moveSerial = 0;
+		impl->snap.skipReplay = false;
 		impl->snap.lastMove.clear();
+		impl->snap.telegraph.clear();
 		for (int i = 0; i < 7; i++)
 		{
 			impl->snap.movesTaken[i] = 0;
@@ -1849,7 +1874,7 @@ LocalSave parseLocalSave(const std::string &text)
 	std::fill(std::begin(snap.pegsInGoal), std::end(snap.pegsInGoal), 0);
 
 	GameClient *client = impl->client;
-	if (!client) { snap.selected.clear(); return; }
+	if (!client) { snap.selected.clear(); snap.telegraph.clear(); return; }
 
 	snap.connected = client->ready();
 	snap.myPlayerNumber = (int)client->get_my_player_number();
@@ -2146,6 +2171,26 @@ LocalSave parseLocalSave(const std::string &text)
 	for (int h : _impl->snap.selected)
 		[array addObject:@(h)];
 	return array;
+}
+
+- (NSArray<NSNumber *> *)telegraphHoles
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	NSMutableArray *array = [NSMutableArray array];
+	for (int h : _impl->snap.telegraph)
+		[array addObject:@(h)];
+	return array;
+}
+
+// Returns and clears the skip-replay flag for the newest move: YES when the
+// move was telegraphed before it was committed, so the UI should snap it
+// instead of replaying it.
+- (BOOL)consumeReplaySkip
+{
+	std::lock_guard<std::mutex> lock(_impl->mutex);
+	bool skip = _impl->snap.skipReplay;
+	_impl->snap.skipReplay = false;
+	return skip ? YES : NO;
 }
 
 - (NSArray<NSNumber *> *)lastMove

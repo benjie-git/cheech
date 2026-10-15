@@ -15,7 +15,6 @@ struct BoardView: View {
 				let players = model.holes
 				let showPegs = model.session.connected && model.session.status != .waiting
 				let playerColor = (0...6).map { $0 == 0 ? 0 : Int(model.session.color(forPlayer: $0)) }
-				let selected = Set(model.session.selectedHoles().map { $0.intValue })
 				let unit = min(geo.size.width / 14.5, geo.size.height / 18.0)
 				let movingTo = animator.destination
 				let movingPoint = animator.position(points: points, at: timeline.date)
@@ -53,23 +52,32 @@ struct BoardView: View {
 							drawPeg(&context, at: p, color: PegColor.swiftUIColor(playerColor[players[i]]), unit: unit)
 						}
 
-						// Selection path
-						let ordered = model.session.selectedHoles().map { $0.intValue }
-						if ordered.count > 1 {
-							var path = Path()
-							if let first = points[ordered[0]] { path.move(to: first) }
-							for h in ordered.dropFirst() {
-								if let p = points[h] { path.addLine(to: p) }
+						// Selection paths: a yellow polyline through the holes
+						// plus a ring on each one (used for the local
+						// selection and for other players' telegraphed
+						// moves, which share the look).
+						func strokeHolePath(_ holes: [Int]) {
+							if holes.count > 1 {
+								var path = Path()
+								if let first = points[holes[0]] { path.move(to: first) }
+								for h in holes.dropFirst() {
+									if let p = points[h] { path.addLine(to: p) }
+								}
+								context.stroke(path, with: .color(.yellow), style: StrokeStyle(lineWidth: max(2, unit * 0.12), lineCap: .round, lineJoin: .round))
 							}
-							context.stroke(path, with: .color(.yellow), style: StrokeStyle(lineWidth: max(2, unit * 0.12), lineCap: .round, lineJoin: .round))
+							for h in Set(holes) {
+								guard let p = points[h] else { continue }
+								let r = unit * 0.42
+								let rect = CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)
+								context.stroke(Path(ellipseIn: rect), with: .color(.yellow), lineWidth: max(2, unit * 0.10))
+							}
 						}
 
-						for h in selected {
-							guard let p = points[h] else { continue }
-							let r = unit * 0.42
-							let rect = CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)
-							context.stroke(Path(ellipseIn: rect), with: .color(.yellow), lineWidth: max(2, unit * 0.10))
-						}
+						strokeHolePath(model.session.selectedHoles().map { $0.intValue })
+
+						// Another player's in-progress move, telegraphed
+						// through the server; same look as a selection.
+						strokeHolePath(model.session.telegraphHoles().map { $0.intValue })
 
 						// The peg in flight, drawn on top of everything else.
 						if showPegs, let dest = movingTo, let p = movingPoint, players[dest] > 0 {

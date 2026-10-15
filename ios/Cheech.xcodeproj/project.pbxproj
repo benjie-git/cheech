@@ -61,7 +61,6 @@
 		7E5D6AEDED6DD18212EBDA1A /* socketaddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socketaddress.h; sourceTree = "<group>"; };
 		84F81ACCF3A3D392E4E3A59D /* bot_random.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_random.cc; path = ../src/bot_random.cc; sourceTree = "<group>"; };
 		9682D75E5AF207419F01BD81 /* GameViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViews.swift; sourceTree = "<group>"; };
-		9B015182237E4F02407BE079 /* cheech_move_gate.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_move_gate.hh; sourceTree = "<group>"; };
 		9B091D1E5B9BD13612022CCC /* net_conn.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = net_conn.cc; path = ../src/net_conn.cc; sourceTree = "<group>"; };
 		9C2DBF0FF3FC95B12BAA5CEC /* cheech_loop.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cheech_loop.hh; sourceTree = "<group>"; };
 		9CD913F1F407B7D6CAFC2EC8 /* outputstream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = outputstream.h; sourceTree = "<group>"; };
@@ -229,7 +228,6 @@
 			children = (
 				0FEE4A94E7940033F2CDB5E1 /* cheech_loop.cc */,
 				9C2DBF0FF3FC95B12BAA5CEC /* cheech_loop.hh */,
-				9B015182237E4F02407BE079 /* cheech_move_gate.hh */,
 				4E22C9A0C11460F0BF3F332F /* config.h */,
 				F8B823D14EB778B142E42641 /* glib.h */,
 				6975ABB3726E4F7BD041F6BC /* glibmm.h */,

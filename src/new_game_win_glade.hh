@@ -31,6 +31,7 @@
 #include <gtkmm/notebook.h>
 #include <gtkmm/popover.h>
 #include <gtkmm/expander.h>
+#include <gtkmm/scale.h>
 #include <gtkmm/scrolledwindow.h>
 #include "color_picker.hh"
 
@@ -46,6 +47,8 @@ class new_game_win_glade : public Gtk::Window
 		class Gtk::CheckButton *long_jumps;
 		class Gtk::CheckButton *hop_others;
 		class Gtk::CheckButton *stop_others;
+
+		class Gtk::Scale *move_scale;
 		class Gtk::Entry *host_port_entry;
 		class Gtk::CheckButton *cheechweb;
 		class Gtk::Entry *cheechweb_port_entry;

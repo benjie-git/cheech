@@ -27,6 +27,7 @@
 #include "game_images.hh"
 #include "utility.hh"
 #include "bot_lookahead.hh"
+#include "cheech_move_gate.hh"
 
 #define PI 3.14159265359
 #define MULTIPLIER 1.5
@@ -35,6 +36,7 @@
 game_view::~game_view()
 {
 	destroy_holes();
+	delete _view_board;
 }
 
 
@@ -42,10 +44,19 @@ game_view::game_view() : Gtk::DrawingArea()
 {
 	_client = NULL;
 	_board = NULL;
+	_view_board = new GameBoard(1, false, false, false);
 	_locked = true;
 	_center = GamePoint();
 	_board_center = GamePoint();
 	_scale = 1.0;
+	_anim_step_ms = 0;
+	_anim_done_ms = 0;
+	_anim_start_us = 0;
+	_anim_player = 0;
+	_anim_pending_valid = false;
+	_anim_x = 0.0;
+	_anim_y = 0.0;
+	_anim_tick_id = 0;
 
 	double peg_x = GameImages::get_peg_size().get_x();
 	double peg_y = GameImages::get_peg_size().get_y();
@@ -176,15 +187,38 @@ void game_view::set_client(GameClient *c)
 }
 
 
+void game_view::set_input_client(GameClient *c)
+{
+	_client = c;
+	_board = (c && c->get_board()) ? c->get_board() : NULL;
+
+	// Re-point the holes at the new client, but keep drawing from the
+	// lagged view board: its state is still valid (all seat clients hold
+	// the same board) and any running or parked replay keeps running.
+	for (unsigned int i = 0; i < _view_board->get_size(); i++)
+		if (_holes[i])
+			_holes[i]->setup(c, (*_view_board)[i]);
+}
+
+
 void game_view::rebuild_board()
 {
+	// The board is being replaced wholesale: drop any replay state.  If a
+	// replay was actually running, let the turn label re-sync.
+	bool was_active = stop_anim();
+	_anim_pending_valid = false;
+
 	if (_client && _client->get_board())
 	{
 		_board = _client->get_board();
-	
+
+		// The view draws from its own lagged copy of the board so a
+		// replay always plays over the exact state its move was made in.
+		*_view_board = *_board;
+
 		for (unsigned int i=0; i < _board->get_size(); i++)
 			if (_holes[i])
-				_holes[i]->setup(_client, (*_board)[i]);
+				_holes[i]->setup(_client, (*_view_board)[i]);
 	}
 	else
 	{
@@ -194,6 +228,9 @@ void game_view::rebuild_board()
 
 		_board = NULL;
 	}
+
+	if (was_active)
+		sig_anim_idle.emit();
 }
 
 
@@ -205,7 +242,9 @@ void game_view::set_locked(bool l)
 
 // Any button press clears/rebuilds the selection; double-click on the last
 // hole of a path commits the move.  The click count comes from ClickCounter
-// (see click_counter.hh).
+// (see click_counter.hh).  A double click with no move in progress acts
+// like a single click: rapid clicking while waiting for a turn must not
+// swallow the first selection made after the board unlocks.
 void game_view::on_view_clicked(unsigned int clicks, double x, double y)
 {
 	grab_focus();
@@ -218,16 +257,18 @@ void game_view::on_view_clicked(unsigned int clicks, double x, double y)
 	{
 		if (_holes[i] && _holes[i]->in_bounds((int)x, (int)y))
 		{
-			if (clicks == 1)
+			if (clicks > 1 && _move_list.size() > 0)
 			{
-				read_move(i);
-			}
-			else if (clicks == 2)
-			{
-				if (_move_list.size() > 0 && _move_list.back() != i)
+				// Double-click extends a path in progress, or commits it
+				// when repeated on its last hole.
+				if (_move_list.back() != i)
 					read_move(i);
 				if (_move_list.size() >= 2 && i == _move_list.back())
 					write_move();
+			}
+			else
+			{
+				read_move(i);
 			}
 
 			return;
@@ -373,6 +414,221 @@ void game_view::hide_move()
 }
 
 
+// Queues a replay of a move the server has already applied.  The view
+// board still shows the pre-move state; the moving peg is lifted from its
+// source hole and glides along the path while the move is applied to the
+// view board only when the replay lands, keeping every replay honest even
+// when further moves have arrived meanwhile.
+void game_view::replay_move(const MoveList &list, int step_ms, int done_ms)
+{
+	if (list.size() < 2 || step_ms <= 0 || !_client || !_view_board)
+		return;
+
+	if (_anim_tick_id)
+	{
+		// A replay is running: park this move and start it when the
+		// current one lands, like the iOS app.  At most one move waits:
+		// a newer arrival replaces it, and the superseded move is applied
+		// to the view board silently, since it will never be animated.
+		if (_anim_pending_valid)
+			_view_board->make_move_list(_anim_pending.list);
+
+		_anim_pending.list = list;
+		_anim_pending.step_ms = step_ms;
+		_anim_pending.done_ms = done_ms;
+		_anim_pending_valid = true;
+
+		// Hold bots off until this replay actually runs.  The start
+		// re-anchors with the same window; extend_move_gate never
+		// shortens, so the two together cover the wait.
+		cheech::extend_move_gate(step_ms * ((int)list.size() - 1) + done_ms);
+		return;
+	}
+
+	start_replay(list, step_ms, done_ms);
+}
+
+
+// Begins replaying one move over the view board, which is in the exact
+// pre-move state: lift the moving peg from its source hole and animate it
+// along the path.  The animation gate is anchored here, where the replay
+// actually runs, so waiting bots commit exactly when the board is idle
+// again -- not when the move happened to arrive.  Returns false when the
+// move was applied silently instead: a peg missing on the view board
+// cannot be drawn (the view board would fall behind), and neither can a
+// peg whose player has left the game and taken their color with them
+// (animating it would draw a ghost).
+bool game_view::start_replay(const MoveList &list, int step_ms, int done_ms)
+{
+	unsigned int mover = ((*_view_board)[list.front()])
+		? (*_view_board)[list.front()]->get_current_player() : 0;
+	if (mover == 0 ||
+		!_client || _client->get_player_color(mover) == 0)
+	{
+		_view_board->make_move_list(list);
+		return false;
+	}
+
+	_anim_path = list;
+	_anim_step_ms = step_ms;
+	_anim_done_ms = done_ms;
+	_anim_player = mover;
+	_anim_start_us = g_get_monotonic_time();
+
+	GamePoint start = _holes[list.front()]->get_offset();
+	_anim_x = start.get_x();
+	_anim_y = start.get_y();
+
+	_holes[list.front()]->set_suppress_peg(true);
+
+	_anim_tick_id = add_tick_callback(sigc::mem_fun(*this,
+		&game_view::on_anim_tick));
+	cheech::extend_move_gate(_anim_step_ms *
+		((int)list.size() - 1) + _anim_done_ms);
+	queue_draw();
+
+	sig_anim_started.emit();
+	return true;
+}
+
+
+// Tears down a running replay: removes the tick callback, un-suppresses
+// the source hole, and applies the move to the view board silently.
+// Returns true when a replay was actually in progress.
+bool game_view::stop_anim()
+{
+	bool was_active = _anim_tick_id || !_anim_path.empty();
+
+	if (_anim_tick_id)
+	{
+		remove_tick_callback(_anim_tick_id);
+		_anim_tick_id = 0;
+	}
+
+	if (!_anim_path.empty())
+	{
+		if (_holes[_anim_path.front()])
+			_holes[_anim_path.front()]->set_suppress_peg(false);
+		_view_board->make_move_list(_anim_path);
+		_anim_path.clear();
+	}
+
+	return was_active;
+}
+
+
+// Fast-forwards the view board to the true board: applies the running
+// replay's move and the parked one, in order.  Used when the board is
+// being replaced anyway (resync/undo/leave) or when the local player
+// commits mid-replay and everything should snap to its final position.
+void game_view::flush_replays()
+{
+	bool was_active = stop_anim();
+
+	if (_anim_pending_valid)
+	{
+		_view_board->make_move_list(_anim_pending.list);
+		_anim_pending_valid = false;
+	}
+
+	if (was_active)
+		sig_anim_idle.emit();
+
+	queue_draw();
+}
+
+
+// flush_replays() plus the move itself: the local player's own move
+// lands on the view board at once, after everything queued before it.
+void game_view::apply_move_now(const MoveList &list)
+{
+	flush_replays();
+
+	if (_view_board && list.size() > 1)
+		_view_board->make_move_list(list);
+}
+
+
+void game_view::finish_anim()
+{
+	bool was_active = stop_anim();
+
+	// The parked replay starts only now, so the moves play one after
+	// another without overlapping (like the iOS app).
+	if (_anim_pending_valid)
+	{
+		MoveList next = _anim_pending.list;
+		int next_step = _anim_pending.step_ms;
+		int next_done = _anim_pending.done_ms;
+		_anim_pending_valid = false;
+
+		if (start_replay(next, next_step, next_done))
+		{
+			queue_draw();
+			return;
+		}
+	}
+
+	if (was_active)
+		sig_anim_idle.emit();
+
+	queue_draw();
+}
+
+
+// Position of the in-flight peg along the move path: progress is measured
+// in hop units, each hop eased in and out.
+GamePoint game_view::anim_point(double progress)
+{
+	int hops = (int)_anim_path.size() - 1;
+	if (hops < 1)
+		return _holes[_anim_path.front()]->get_offset();
+
+	if (progress < 0.0)
+		progress = 0.0;
+	if (progress > hops)
+		progress = hops;
+
+	int seg = (progress >= hops) ? hops - 1 : (int)progress;
+	double local = progress - seg;
+	double t = (local < 0.5) ?
+		4.0 * local * local * local :
+		1.0 - pow(-2.0 * local + 2.0, 3.0) / 2.0;
+
+	GamePoint a = _holes[_anim_path[seg]]->get_offset();
+	GamePoint b = _holes[_anim_path[seg + 1]]->get_offset();
+
+	return GamePoint((int)lround(a.get_x() +
+		(b.get_x() - a.get_x()) * t),
+		(int)lround(a.get_y() + (b.get_y() - a.get_y()) * t));
+}
+
+
+bool game_view::on_anim_tick(const Glib::RefPtr<Gdk::FrameClock>&)
+{
+	int hops = (int)_anim_path.size() - 1;
+	double elapsed = (g_get_monotonic_time() - _anim_start_us) / 1000.0;
+	double total = hops * _anim_step_ms + _anim_done_ms;
+
+	if (elapsed >= total)
+	{
+		// Returning false removes the callback; clear the id first so
+		// finish_anim() does not remove it twice.
+		_anim_tick_id = 0;
+		finish_anim();
+		return false;
+	}
+
+	double progress = elapsed / (double)_anim_step_ms;
+	GamePoint p = anim_point(progress);
+	_anim_x = p.get_x();
+	_anim_y = p.get_y();
+	queue_draw();
+
+	return true;
+}
+
+
 bool game_view::move_list_contains(unsigned int i)
 {
 	for (MoveList::iterator move = _move_list.begin();
@@ -483,6 +739,11 @@ void game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int)
 			move < _move_list.end(); move++)
 				_holes[*move]->draw(cr);
 	}
+
+	// The peg in flight, drawn on top of everything else.
+	if (_anim_tick_id && _client && !_anim_path.empty())
+		GameViewHole::draw_peg_at(cr, _anim_x, _anim_y,
+			_client->get_player_color(_anim_player));
 
 	cr->restore();
 

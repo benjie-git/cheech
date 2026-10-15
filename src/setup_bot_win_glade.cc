@@ -44,14 +44,8 @@ setup_bot_win_glade::setup_bot_win_glade(
    type_box = new GtkComboBoxText();
 
    Gtk::Grid *table8 = Gtk::make_managed<Gtk::Grid>();
-   Gtk::Label *label62 = Gtk::make_managed<Gtk::Label>(_("Move Delay:"));
    Gtk::Label *label63 = Gtk::make_managed<Gtk::Label>(_("Depth:"));
    Gtk::Label *label64 = Gtk::make_managed<Gtk::Label>(_("Smarts:"));
-
-   Glib::RefPtr<Gtk::Adjustment> move_scale_adj =
-       Gtk::Adjustment::create(0.40000000596, 0, 2, 0.10000000149, 0.5, 0);
-   move_scale = Gtk::make_managed<Gtk::Scale>(move_scale_adj,
-       Gtk::Orientation::HORIZONTAL);
 
    depth_box = new GtkComboBoxText();
    smarts_box = new GtkComboBoxText();
@@ -82,19 +76,12 @@ setup_bot_win_glade::setup_bot_win_glade(
    table8->set_column_spacing(3);
    table8->attach(*label59, 0, 0);
    table8->attach(*type_box, 1, 0);
-   label62->set_justify(Gtk::Justification::RIGHT);
    label63->set_justify(Gtk::Justification::RIGHT);
    label64->set_justify(Gtk::Justification::RIGHT);
-   move_scale->set_digits(3);
-   move_scale->set_draw_value(true);
-   move_scale->set_value_pos(Gtk::PositionType::TOP);
    table9->attach(*label63, 0, 0);
    table9->attach(*label64, 0, 1);
-   table9->attach(*label62, 0, 2);
    table9->attach(*depth_box, 1, 0);
    table9->attach(*smarts_box, 1, 1);
-   table9->attach(*move_scale, 1, 2);
-   move_scale->set_hexpand(true);
    hbuttonbox11->append(*defaults);
    vbox16->append(*table9);
    vbox16->append(*hbuttonbox11);

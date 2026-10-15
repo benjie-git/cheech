@@ -138,6 +138,11 @@ class main_win : public main_win_glade
 
 		void show_message(Glib::ustring message);
 		void set_player_label(unsigned int posn, bool bold);
+		// Moves the bold "current turn" label to `posn`, un-bolding the
+		// previously bolded one; keeps track across lagged turn display.
+		void set_turn_label(unsigned int posn);
+		void on_anim_started();
+		void on_anim_idle();
 
 		void on_cmd_player_add(unsigned int posn,
 			Glib::ustring name, int color);
@@ -152,7 +157,10 @@ class main_win : public main_win_glade
 		void on_cmd_game_undo_move(unsigned int from, unsigned int to);
 		void on_cmd_game_show_move(MoveList *list);
 		void on_cmd_game_hide_move();
-		void on_cmd_game_make_move(MoveList *list);
+		// `from` is the client whose signal fired (bound in
+		// connect_client); only the client the board is viewed through
+		// starts a replay, so hot-seat broadcasts are not triple-counted.
+		void on_cmd_game_make_move(MoveList *list, GameClient *from);
 
 		unsigned int	_current_player;
 		unsigned int	_move_count;
@@ -164,6 +172,12 @@ class main_win : public main_win_glade
 		PegColorSwatch	*_player_peg[6];
 		MoveList		_last_move;
 		unsigned int	_finished_in_moves[6];
+		// Milliseconds per hop of the move replay, picked up in
+		// connect_client (0 disables the replay).
+		int				_anim_step_ms;
+		// The player whose label is currently bolded; lags the server's
+		// turn while a move replay runs (like the iOS app).
+		unsigned int	_label_player;
 
 		about_win		_about_win;
 		help_win		_help_win;

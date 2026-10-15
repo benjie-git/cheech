@@ -32,6 +32,7 @@
 #include "main_win.hh"
 
 #include "bot_catalog.hh"
+#include "cheech_move_gate.hh"
 #include "utility.hh"
 
 
@@ -71,6 +72,13 @@ main_win::main_win() : main_win_glade()
 	_hosted_port = 0;
 	_active_input_client = NULL;
 	_confirm_quit_dialog = NULL;
+	_anim_step_ms = 0;
+	_label_player = 0;
+
+	game_view->sig_anim_started.connect(
+		sigc::mem_fun(*this, &main_win::on_anim_started));
+	game_view->sig_anim_idle.connect(
+		sigc::mem_fun(*this, &main_win::on_anim_idle));
 
 	_player_name[0]=player_name1;
 	_player_name[1]=player_name2;
@@ -288,6 +296,15 @@ bool main_win::do_start_server(unsigned int port, unsigned int cheechweb_port,
 // the conflict dialogs; secondary seat clients resolve conflicts themselves.
 void main_win::connect_client(GameClient *client, bool primary)
 {
+	// The replay's per-hop pace, as saved by the New Game dialog
+	// (0 disables the replay).  Prefs can only change between games, so
+	// one read per connection covers every bot-joining path.
+	{
+		Prefs prefs;
+		prefs.read();
+		_anim_step_ms = prefs.move_delay;
+	}
+
 	client->evt_disconnected.connect(sigc::mem_fun(*this,
 		&main_win::on_leave_game_activate));
 	client->evt_cancelled.connect(sigc::mem_fun(*this,
@@ -317,8 +334,8 @@ void main_win::connect_client(GameClient *client, bool primary)
 		&main_win::on_cmd_game_show_move));
 	client->cmd_game_hide_move.connect(sigc::mem_fun(*this,
 		&main_win::on_cmd_game_hide_move));
-	client->cmd_game_make_move.connect(sigc::mem_fun(*this,
-		&main_win::on_cmd_game_make_move));
+	client->cmd_game_make_move.connect(sigc::bind(sigc::mem_fun(*this,
+		&main_win::on_cmd_game_make_move), client));
 }
 
 
@@ -540,15 +557,11 @@ void main_win::join_next_seat()
 		seat.bot->set_name(seat.name);
 		seat.bot->set_color(seat.color);
 		seat.bot->set_smarts(BotUI::skill_smarts(seat.level));
-		// Match the Add Computer Player dialog's saved default (or its
-		// built-in default when nothing has been saved yet).  Think delay
-		// stays at 0.
-		{
-			Prefs prefs;
-			prefs.read();
-			seat.bot->set_move_delay(prefs.move_delay,
-				2 * prefs.move_delay);
-		}
+		// The engine's pacing now comes from the UI's move replay (the
+		// animation gate holds each commit until the previous move has
+		// finished animating), so the bot itself commits without delay.
+		// The replay's pace was picked up in connect_client.
+		seat.bot->set_move_delay(0);
 		_bots.push_back(seat.bot);
 		seat.bot->evt_disconnected.connect(sigc::bind(sigc::mem_fun(*this,
 			&main_win::bot_disconnected), seat.bot));
@@ -733,8 +746,10 @@ void main_win::route_input()
 	if (input != _active_input_client)
 	{
 		_active_input_client = input;
-		game_view->set_client(input);
-		game_view->rebuild_board();
+		// Re-point the input without replacing the board: all seat clients
+		// hold the same board, so a running or parked replay keeps playing
+		// across the handoff instead of being cancelled mid-flight.
+		game_view->set_input_client(input);
 	}
 
 	game_view->set_locked(seat == NULL);
@@ -897,6 +912,7 @@ void main_win::on_leave_game_activate()
 
 	if (_client)
 	{
+		_label_player = 0;
 		game_view->hide_move();
 		game_view->queue_draw();
 		game_view->set_client(NULL);
@@ -1029,7 +1045,9 @@ void main_win::on_add_computer_player_activate()
 			show_message("Cannot create a computer player of type " + type);
 			return;
 		}
-		bot->set_move_delay(prefs.move_delay, 2 * prefs.move_delay);
+		// See the seat-joining path: bots commit without delay and the UI
+		// paces them with the move replay.
+		bot->set_move_delay(0);
 		bot->set_think_delay(prefs.think_delay);
 		bot->set_smarts(BotUI::skill_smarts(prefs.bot_level));
 		// A bot without a name is never added: the server rejects the empty
@@ -1342,10 +1360,48 @@ void main_win::set_player_label(unsigned int posn, bool bold)
 }
 
 
+// Moves the bold "current turn" label to `posn`, un-bolding the one that
+// had it before (tracked separately, since the label can lag the server's
+// turn while a move replay runs).
+void main_win::set_turn_label(unsigned int posn)
+{
+	if (_label_player && _label_player != posn)
+		set_player_label(_label_player, false);
+	if (posn)
+		set_player_label(posn, true);
+	_label_player = posn;
+}
+
+
+// A move replay has started (fresh or chained onto a finished one): show
+// the mover until it ends.
+void main_win::on_anim_started()
+{
+	set_turn_label(game_view->anim_player());
+}
+
+
+// The board is idle again: catch the label up to the server's turn.
+void main_win::on_anim_idle()
+{
+	set_turn_label(_current_player);
+}
+
+
 void main_win::on_cmd_player_add(unsigned int posn,
 								 Glib::ustring name, int color)
 {
-	set_player_label(posn, _current_player == posn);
+	// A rejoin reuses the slot's color; queued replays of the previous
+	// occupant's moves would animate in the wrong color.  Snap instead.
+	game_view->rebuild_board();
+
+	if (posn == _current_player && game_view->anim_player())
+	{
+		// The turn label lags behind while a replay runs; don't steal it.
+		set_player_label(posn, false);
+	}
+	else
+		set_player_label(posn, _current_player == posn);
 
 	_player_peg[posn-1]->set_color(color);
 	game_view->queue_draw();
@@ -1358,6 +1414,10 @@ void main_win::on_cmd_player_add(unsigned int posn,
 
 void main_win::on_cmd_player_remove(unsigned int posn)
 {
+	// A departing player's color is gone; replays of their moves would
+	// animate as colorless ghosts.  Snap the view board to the truth.
+	game_view->rebuild_board();
+
 	_player_name[posn-1]->set_text("");
 	_player_peg[posn-1]->clear();
 
@@ -1417,10 +1477,7 @@ void main_win::on_cmd_game_resync()
 
 	game_view->queue_draw();
 
-	if (_current_player)
-	{
-		set_player_label(_current_player, true);
-	}
+	set_turn_label(_current_player);
 }
 
 
@@ -1442,10 +1499,11 @@ void main_win::on_cmd_game_turn(unsigned int posn,
 								GameServer::GameStatus status,
 								unsigned int move_count)
 {
-	if (_current_player)
-		set_player_label(_current_player, false);
-	if (posn)
-		set_player_label(posn, true);
+	// While a move replay runs, the label keeps showing the player who
+	// made that move (like the iOS app); it catches up when the replay
+	// and any queued replays end.
+	if (!game_view->anim_player())
+		set_turn_label(posn);
 
 	_current_player = posn;
 	_game_status = status;
@@ -1478,6 +1536,10 @@ void main_win::on_cmd_game_turn(unsigned int posn,
 
 void main_win::on_cmd_game_undo_move(unsigned int from, unsigned int to)
 {
+	// The client board has already been reverted: re-copy it into the
+	// view (dropping any queued replays, which would otherwise re-apply
+	// the undone move).
+	game_view->rebuild_board();
 	game_view->queue_draw();
 }
 
@@ -1496,7 +1558,70 @@ void main_win::on_cmd_game_hide_move()
 }
 
 
-void main_win::on_cmd_game_make_move(MoveList *list)
+void main_win::on_cmd_game_make_move(MoveList *list, GameClient *from)
 {
-		_last_move = *list;
+	_last_move = *list;
+
+	// Replay other players' moves as an animation so the next player (a
+	// human selecting pegs or a bot searching) can plan while it plays;
+	// the view board applies each move only when its replay lands.  The
+	// local player's own move snaps into place, like the iOS app.
+	if (from && from == game_view->get_client() && from->get_board() &&
+		list->size() > 1)
+	{
+		unsigned int mover =
+			(*from->get_board())[list->back()]->get_current_player();
+
+		if (mover && mover == from->get_my_player_number())
+		{
+			// The local player committed while a replay was still running:
+			// snap everything to its final position and release the
+			// animation gate so the next bot is not held back by a window
+			// that no longer exists.
+			game_view->apply_move_now(*list);
+			cheech::open_move_gate();
+		}
+		else if (mover)
+		{
+			// Drop the rest delay when this move hands the turn to a
+			// human: the peg lands and they can play at once (like the
+			// iOS app).
+			unsigned int next =
+				from->get_board()->get_next_player(mover);
+			bool human_next = false;
+			if (!_seats.empty())
+			{
+				for (size_t i = 0; i < _seats.size() && !human_next; i++)
+					if (_seats[i].kind == HostSeat::SEAT_HUMAN &&
+						_seats[i].player_number == next)
+							human_next = true;
+			}
+			else
+				human_next = (next != 0 &&
+					next == _client->get_my_player_number());
+
+			if (_anim_step_ms > 0 &&
+				game_view->shown_move() != *list)
+			{
+				game_view->replay_move(*list, _anim_step_ms,
+					human_next ? 0 : 2 * _anim_step_ms);
+			}
+			else
+			{
+				// The mover telegraphed this exact path, so we already
+				// watched it being planned: snap instead of replaying it,
+				// and release the gate like a local commit.
+				game_view->apply_move_now(*list);
+				cheech::open_move_gate();
+			}
+		}
+		else
+		{
+			// The mover's peg has already moved on: just catch the view
+			// board up.
+			game_view->apply_move_now(*list);
+		}
+	}
+
+	game_view->queue_draw();
 }

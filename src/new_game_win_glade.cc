@@ -21,6 +21,7 @@
 #include "new_game_win_glade.hh"
 #include <glibmm/i18n.h>
 #include <gtkmm/label.h>
+#include <gtkmm/adjustment.h>
 #include <gtkmm/box.h>
 
 
@@ -68,6 +69,31 @@ new_game_win_glade::new_game_win_glade()
 	rules_box->append(*long_jumps);
 	rules_box->append(*hop_others);
 	rules_box->append(*stop_others);
+
+	Gtk::Label *speed_label =
+		Gtk::make_managed<Gtk::Label>(_("Animation Speed:"));
+	speed_label->set_halign(Gtk::Align::START);
+	Glib::RefPtr<Gtk::Adjustment> move_scale_adj =
+		Gtk::Adjustment::create(250, 0, 500, 10, 50, 0);
+	move_scale = Gtk::make_managed<Gtk::Scale>(move_scale_adj,
+		Gtk::Orientation::HORIZONTAL);
+	move_scale->set_digits(0);
+	move_scale->set_draw_value(true);
+	move_scale->set_value_pos(Gtk::PositionType::RIGHT);
+	move_scale->set_hexpand(true);
+	move_scale->set_valign(Gtk::Align::CENTER);
+	move_scale->set_format_value_func(
+		[](double value) -> Glib::ustring {
+			if (value < 1)
+				return _("Instant");
+			return Glib::ustring::format((int)(value + 0.5)) + " ms";
+		});
+	Gtk::Box *speed_box = Gtk::make_managed<Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 12);
+	speed_box->set_margin_top(6);
+	speed_box->append(*speed_label);
+	speed_box->append(*move_scale);
+	rules_box->append(*speed_box);
 
 	Gtk::Label *rules_label =
 		Gtk::make_managed<Gtk::Label>(_("<b>Game Setup</b>"));

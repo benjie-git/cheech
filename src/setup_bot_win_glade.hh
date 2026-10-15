@@ -19,7 +19,6 @@ class setup_bot_win_glade : public Gtk::Window
 {
 protected:
         class GtkComboBoxText * type_box;
-        class Gtk::Scale * move_scale;
         class GtkComboBoxText * depth_box;
         class GtkComboBoxText * smarts_box;
         class Gtk::Button * add_button;

@@ -1,15 +1,16 @@
 /*
- *  Cross-thread "animation gate" for the iOS build of cheech.
+ *  Cross-thread "animation gate" for cheech.
  *
  *  Moves are applied to the core immediately, but the UI replays them as an
- *  animation.  To keep consecutive computer moves from overlapping, the bridge
- *  (which owns the animation timing) records the time until which an animation
- *  is expected to run.  A computer player refuses to commit its move while the
- *  gate is closed, so the next animation only starts once the previous one has
- *  finished.
+ *  animation.  To keep consecutive computer moves from overlapping, the UI
+ *  (which owns the animation timing) records the time until which an
+ *  animation is expected to run.  A computer player refuses to commit its
+ *  move while the gate is closed, so the next animation only starts once the
+ *  previous one has finished.
  *
- *  The gate is a header-only atomic so both the bridge (CheechSession.mm) and
- *  the core bot code (bot_base.cc) share the same instance.
+ *  The gate is a header-only atomic so the UI code (CheechSession.mm on iOS,
+ *  main_win.cc on the desktop) and the core bot code (bot_base.cc) share the
+ *  same instance.
  */
 
 #ifndef CHEECH_MOVE_GATE_HH
@@ -56,6 +57,13 @@ inline bool move_gate_open()
 	return now_ms() >= move_gate_until().load();
 }
 
+// Forces the gate open, e.g. when a human move ends an animation early and
+// waiting bots should commit right away.
+inline void open_move_gate()
+{
+	move_gate_until().store(0);
+}
+
 } // namespace cheech
 
-#endif /* CHEECH_MOVE_GATE_HH */
+#endif // CHEECH_MOVE_GATE_HH

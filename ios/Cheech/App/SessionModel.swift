@@ -375,6 +375,10 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		guard serial != lastMoveSerial else { return }
 		lastMoveSerial = serial
 
+		// A move that was telegraphed before it was committed was already
+		// watched being planned: the snapshot shows it landed, so no replay.
+		let skipReplay = session.consumeReplaySkip()
+
 		let path = session.lastMove().map { $0.intValue }
 		guard path.count > 1 else { return }
 
@@ -383,6 +387,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		// it mid-flight.
 		let mover = session.player(atHole: path[path.count - 1])
 		guard mover != session.myPlayerNumber else { return }
+		guard !skipReplay else { return }
 
 		animatingPlayer = Int(mover)
 		// Re-anchor the gate to the on-screen animation: hold local computers

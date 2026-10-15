@@ -218,6 +218,8 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 
 - (NSInteger)playerAtHole:(NSInteger)hole;
 - (NSArray<NSNumber *> *)selectedHoles;
+- (NSArray<NSNumber *> *)telegraphHoles;
+- (BOOL)consumeReplaySkip;
 - (NSArray<NSNumber *> *)lastMove;
 
 // Bumped once for every move applied to the board.  The UI uses this to

@@ -22,8 +22,10 @@
 #include "new_game_win.hh"
 #include "bot_catalog.hh"
 #include <gtkmm/eventcontrollerkey.h>
+#include <gtkmm/adjustment.h>
 #include <gdkmm/event.h>
 #include <glibmm/i18n.h>
+#include <cmath>
 #include "utility.hh"
 
 
@@ -170,6 +172,18 @@ new_game_win::new_game_win() : new_game_win_glade()
 	long_jumps->set_active(prefs.long_jumps);
 	hop_others->set_active(prefs.hop_others);
 	stop_others->set_active(prefs.stop_others);
+	move_scale->set_value(prefs.move_delay);
+
+	// The pointer drag bypasses the adjustment's step increment, so snap
+	// the value to the 10 ms grid ourselves.  Re-rounding an already
+	// snapped value is a no-op, so this settles after one pass.
+	Glib::RefPtr<Gtk::Adjustment> move_adj = move_scale->get_adjustment();
+	move_adj->signal_value_changed().connect([move_adj]()
+	{
+		double snapped = std::round(move_adj->get_value() / 10.0) * 10.0;
+		if (snapped != move_adj->get_value())
+			move_adj->set_value(snapped);
+	});
 
 	refresh_join_hostnames();
 	join_host_entry->signal_activate().connect(sigc::mem_fun(*this,
@@ -893,6 +907,7 @@ void new_game_win::on_host_button_clicked()
 		prefs.long_jumps = lj;
 		prefs.hop_others = ho;
 		prefs.stop_others = so;
+		prefs.move_delay = (int)(move_scale->get_value() + 0.5);
 		prefs.write();
 		save_seats();
 	}

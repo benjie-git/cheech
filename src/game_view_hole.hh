@@ -42,8 +42,13 @@ class GameViewHole : public sigc::trackable
 		void set_offset(GamePoint p);
 		void set_scale(double s);
 		void set_hilighted(bool h);
+		// Draws the hole as empty while a replayed move is in flight to
+		// this hole (the moving peg is drawn on top by game_view).
+		void set_suppress_peg(bool s);
 		void recenter(GamePoint view_center);
 		void draw(const Cairo::RefPtr<Cairo::Context>& cr);
+		static void draw_peg_at(const Cairo::RefPtr<Cairo::Context>& cr,
+			double cx, double cy, unsigned int id);
 		bool in_bounds(int x, int y);
 		void rotate(double theta);
 
@@ -55,6 +60,7 @@ class GameViewHole : public sigc::trackable
 		GamePoint _offset;  // location with middle peg as 0,0
 		double _scale;  // board scale factor applied by game_view
 		bool _hilighted;
+		bool _suppress_peg;
 };
 
 #endif // _GAME_VIEW_HOLE_HH

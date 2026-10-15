@@ -30,7 +30,8 @@ GameViewHole::GameViewHole(GamePoint *view_center, GamePoint *orig_offset)
 	 _orig_offset(*orig_offset),
 	 _offset(*orig_offset),
 	 _scale(1.0),
-	 _hilighted(false)
+	 _hilighted(false),
+	 _suppress_peg(false)
 {
 }
 
@@ -73,6 +74,12 @@ void GameViewHole::set_hilighted(bool h)
 }
 
 
+void GameViewHole::set_suppress_peg(bool s)
+{
+	_suppress_peg = s;
+}
+
+
 void GameViewHole::set_offset(GamePoint p)
 {
 	_offset = GamePoint(p.get_x(), p.get_y());
@@ -85,16 +92,14 @@ void GameViewHole::set_scale(double s)
 }
 
 
-void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
+// Draws one peg (or an empty hole when id is 0) centered on cx, cy.  Static
+// so game_view can draw a peg in flight with the exact same style.
+void GameViewHole::draw_peg_at(const Cairo::RefPtr<Cairo::Context>& cr,
+	double cx, double cy, unsigned int id)
 {
 	const double PI = 3.14159265359;
 
 	double r = GameImages::get_peg_size().get_x() / 2.0;
-	double cx = _offset.get_x();
-	double cy = _offset.get_y();
-
-	unsigned int id = (!_hole) ? 0 :
-		_client->get_player_color(_hole->get_current_player());
 
 	const GameColor fill = GameImages::get_peg_fill(id);
 	const GameColor edge = GameImages::get_peg_edge(id);
@@ -107,18 +112,29 @@ void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
 	cr->arc(cx, cy, r * 0.88, 0, 2.0 * PI);
 	cr->fill();
 
-	if (_hole && id)
+	if (id)
 	{
 		cr->set_source_rgba(1.0, 1.0, 1.0, 0.35);
 		cr->arc(cx - r * 0.28, cy - r * 0.34, r * 0.30, 0, 2.0 * PI);
 		cr->fill();
 	}
+}
+
+
+void GameViewHole::draw(const Cairo::RefPtr<Cairo::Context>& cr)
+{
+	unsigned int id = (!_hole || _suppress_peg) ? 0 :
+		_client->get_player_color(_hole->get_current_player());
+
+	draw_peg_at(cr, _offset.get_x(), _offset.get_y(), id);
 
 	if (_hilighted)
 	{
+		const double PI = 3.14159265359;
+		double r = GameImages::get_peg_size().get_x() / 2.0;
 		cr->set_source_rgba(1.0, 0.9, 0.0, 1.0);
 		cr->set_line_width(r * 0.28);
-		cr->arc(cx, cy, r * 1.25, 0, 2.0 * PI);
+		cr->arc(_offset.get_x(), _offset.get_y(), r * 1.25, 0, 2.0 * PI);
 		cr->stroke();
 	}
 }

@@ -72,7 +72,6 @@ setup_bot_win::setup_bot_win()
 	type_box->set_active_text(prefs.bot_type);
 	depth_box->set_active_text(BotUI::depth_label(prefs.bot_depth));
 	smarts_box->set_active_text(BotUI::skill_label(prefs.bot_level));
-	move_scale->set_value(prefs.move_delay * 0.0010001);
 }
 
 
@@ -130,14 +129,15 @@ void setup_bot_win::on_add_button_activate()
 	prefs.bot_type = family;
 	prefs.bot_level = level;
 	prefs.bot_depth = depth;
-	prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
 	prefs.smarts = BotUI::skill_smarts(level);
 
 	// Use the engine's cute default (Rosie, Earl, Jimbo, ...), matching the
 	// iOS setup.  An empty name would be rejected by the server and the bot
 	// would never be added.
 	_bot->set_name(_bot->get_default_name());
-	_bot->set_move_delay(prefs.move_delay, 2 * prefs.move_delay);
+	// Bots commit without delay; the UI paces them with the move replay
+	// (see main_win's seat-joining path).
+	_bot->set_move_delay(0);
 	_bot->set_think_delay(prefs.think_delay);
 	_bot->set_smarts(prefs.smarts);
 
@@ -181,7 +181,6 @@ void setup_bot_win::on_ok_button_activate()
 		prefs.bot_type = family;
 	prefs.bot_level = level_from_label(smarts_box->get_active_text());
 	prefs.bot_depth = depth_from_label(depth_box->get_active_text());
-	prefs.move_delay = (int)(move_scale->get_value()*1000 + 0.5);
 	prefs.smarts = BotUI::skill_smarts(prefs.bot_level);
 
 	prefs.write();
@@ -192,7 +191,6 @@ void setup_bot_win::on_ok_button_activate()
 
 void setup_bot_win::on_defaults_activate()
 {
-	move_scale->set_value(0.4);
 	depth_box->set_active_text(BotUI::depth_label(0));
 	smarts_box->set_active_text(BotUI::skill_label(1));
 

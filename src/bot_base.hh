@@ -42,7 +42,7 @@ class BotBase : public sigc::trackable
 		void set_name(Glib::ustring name);
 		void set_color(unsigned int color);
 		void set_think_delay(int delay);
-		void set_move_delay(int delay, int done_delay);
+		void set_move_delay(int step_delay);
 
 		// How smart the bot plays, as a percentage (0...100).  At 100 it
 		// plays its single best choice (all moves tied for the best score);
@@ -185,10 +185,8 @@ class BotBase : public sigc::trackable
 
 		void make_best_move();
 		void make_move(MoveList *list);
-#if defined(CHEECH_IOS)
 		// Returns true while still waiting for the animation gate to open.
 		bool try_commit_move(MoveList move);
-#endif
 
 		void find_better_move(GameBoard *board, unsigned int player,
 			MoveList *move,	std::vector<MoveList> *best_moves, long *best_score);
@@ -235,7 +233,6 @@ class BotBase : public sigc::trackable
 		GameClient 		_client;
 		int				_think_delay;
 		int				_move_step_delay;
-		int				_move_done_delay;
 		int				_smarts;
 		bool			_abort;
 		bool			_searching;

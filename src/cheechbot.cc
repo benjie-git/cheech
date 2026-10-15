@@ -38,8 +38,7 @@ Glib::ustring name;
 int color;
 Glib::ustring bot_type;
 int thinking_delay;
-int move_step_delay;
-int move_done_delay;
+int move_step_delay = 250;
 int smarts;
 Glib::ustring friends_str;
 Glib::ustring enemies_str;
@@ -181,21 +180,15 @@ void process_options(int &argc, char **&argv)
 			"time to show each move while thinking bout it in ms (0)");
 		opt_group.add_entry(opt_think_delay, thinking_delay);
 
-		Glib::OptionEntry opt_step_delay;
-		opt_step_delay.set_long_name("step-delay");
-		opt_step_delay.set_short_name('S');
-		opt_step_delay.set_arg_description("ms");
-		opt_step_delay.set_description(
-			"time to show each step of a move in ms (300)");
-		opt_group.add_entry(opt_step_delay, move_step_delay);
-
 		Glib::OptionEntry opt_move_delay;
 		opt_move_delay.set_long_name("move-delay");
 		opt_move_delay.set_short_name('M');
 		opt_move_delay.set_arg_description("ms");
 		opt_move_delay.set_description(
-			"time to show each completed move in ms (600)");
-		opt_group.add_entry(opt_move_delay, move_done_delay);
+			"ms per hop to pace committing moves so the host's move "
+			"animation can keep up (250); 0 commits as soon as the "
+			"search finishes");
+		opt_group.add_entry(opt_move_delay, move_step_delay);
 
 		opt_context.set_main_group(opt_group);
 
@@ -212,9 +205,6 @@ void process_options(int &argc, char **&argv)
 	if (port == 0) port = 3838;
 	if (bot_type == "") bot_type = "l3";
 	if (color == 0) color = 5;
-	if (thinking_delay == 0) thinking_delay = 0;
-	if (move_step_delay == 0) move_step_delay = 300;
-	if (move_done_delay == 0) move_done_delay = 600;
 	if (smarts == 0) smarts = 100;
 
 	host_name = "";
@@ -265,7 +255,7 @@ int main(int argc, char **argv)
 	std::cout << " port " << port << " as Chong... ";
 
 	bot->set_think_delay(thinking_delay);
-	bot->set_move_delay(move_step_delay, move_done_delay);
+	bot->set_move_delay(move_step_delay);
 	bot->set_smarts(smarts);
 	if (!friends_str.empty())
 		bot->set_friends(parse_player_list(friends_str));

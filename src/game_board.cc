@@ -155,10 +155,12 @@ GameBoard& GameBoard::operator=(const GameBoard& board)
 	{
 		delete _board[i];
 		if (BOARD_MAP[i] >= 0)
-			*_board[i] = *board[i];
+			_board[i] = new GameHole(*board[i]);
 		else
 			_board[i] = NULL;
 	}
+
+	init_neighbors();
 
 	for (int i = 0; i < 6; i++)
 		_pegs_in_goal[i] = board._pegs_in_goal[i];
