@@ -65,7 +65,7 @@ void Prefs::set_defaults()
 	start_cheechweb = false;
 	cheechweb_port = 3839;
 	num_players = 2;
-	long_jumps = false;
+	long_jumps = true;
 	hop_others = true;
 	stop_others = true;
 

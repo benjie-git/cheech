@@ -37,6 +37,10 @@ struct NewGameSeat
 {
 	int kind;
 	Glib::ustring name;
+	// The name the seat had while it was Human (kind 0), remembered for
+	// computer seats so switching back to Human restores it (like the iOS
+	// app's SeatConfig.humanName).  Empty for seats that were never Human.
+	Glib::ustring human_name;
 	unsigned int color;
 	Glib::ustring family;
 	unsigned int level;

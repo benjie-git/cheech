@@ -94,6 +94,23 @@ namespace
 		}
 		return field;
 	}
+
+	Glib::ustring unescape_field(Glib::ustring field)
+	{
+		Glib::ustring::size_type pos = 0;
+		while ((pos = field.find("\\|", pos)) != Glib::ustring::npos)
+		{
+			field.replace(pos, 2, "|");
+			pos += 1;
+		}
+		pos = 0;
+		while ((pos = field.find("\\\\", pos)) != Glib::ustring::npos)
+		{
+			field.replace(pos, 2, "\\");
+			pos += 1;
+		}
+		return field;
+	}
 }
 
 
@@ -310,8 +327,11 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	_loading_seat = false;
 
 	// Remember the name this seat uses as a Human.
-	_human_names[row->id] = (seat.kind == 0 && !seat.name.empty()) ?
-		seat.name : _player_name;
+	if (!seat.human_name.empty())
+		_human_names[row->id] = seat.human_name;
+	else
+		_human_names[row->id] = (seat.kind == 0 && !seat.name.empty()) ?
+			seat.name : _player_name;
 
 	seats_box->append(*row->box);
 	// In GTK4 widgets are visible by default; sync_seat_row() below hides
@@ -404,10 +424,6 @@ Glib::ustring new_game_win::default_name_for(SeatRow *row)
 void new_game_win::on_seat_kind_changed(SeatRow *row)
 {
 	int kind = row->kind_box->get_active_row_number();
-	int old_kind = GPOINTER_TO_INT(row->kind_box->get_data("prev-kind"));
-
-	if (old_kind == 0)
-		_human_names[row->id] = row->name_entry->get_text();
 
 	// A seat switched to a computer starts out configured like the last
 	// bot the user set up; suppress the name follower while the combos
@@ -428,24 +444,39 @@ void new_game_win::on_seat_kind_changed(SeatRow *row)
 		_loading_seat = false;
 	}
 
+	// Make the row's fields match the new kind before any text changes, so
+	// a name set on a visible widget sticks.
+	sync_seat_row(*row);
+
 	if (kind == 0)
-		row->name_entry->set_text(_human_names.count(row->id) ?
-			_human_names[row->id] : _player_name);
+	{
+		std::map<unsigned int, Glib::ustring>::const_iterator found =
+			_human_names.find(row->id);
+		Glib::ustring name = found != _human_names.end() ?
+			found->second : _player_name;
+
+		// The programmatic set is not a user edit; tracking it would clobber
+		// the remembered name with the empty delete step.
+		_loading_seat = true;
+		row->name_entry->set_text(name);
+		_loading_seat = false;
+	}
 	else if (kind == 1 && !row->name_entry->get_text().empty())
 	{
 		// Follow the cute default only while the name still is one.
 		Glib::ustring current = row->name_entry->get_text();
-		if (current == _human_names[row->id] ||
-			_default_names.count(row->id) == 0 ||
-			current == _default_names[row->id])
+		std::map<unsigned int, Glib::ustring>::const_iterator human =
+			_human_names.find(row->id);
+		std::map<unsigned int, Glib::ustring>::const_iterator def =
+			_default_names.find(row->id);
+		if ((human != _human_names.end() && current == human->second) ||
+			def == _default_names.end() || current == def->second)
 		{
 			Glib::ustring name = default_name_for(row);
 			row->name_entry->set_text(name);
 			_default_names[row->id] = name;
 		}
 	}
-
-	row->kind_box->set_data("prev-kind", GINT_TO_POINTER(kind));
 
 	// A seat that used to be remote has no color; players need a real one.
 	if (kind != 2 && row->color == 0)
@@ -496,8 +527,15 @@ void new_game_win::on_seat_family_changed(SeatRow *row)
 
 void new_game_win::on_seat_name_changed(SeatRow *row)
 {
-	// Nothing to do; the name is read when the game starts.
-	(void)row;
+	// Programmatic text sets (loading, kind switches) are not user edits.
+	if (_loading_seat)
+		return;
+
+	// A Human seat's name edits keep the remembered Human name current, so
+	// any later kind switch (to computer or remote and back) restores the
+	// last name the user typed for this seat.
+	if (row->kind_box->get_active_row_number() == 0)
+		_human_names[row->id] = row->name_entry->get_text();
 }
 
 
@@ -725,6 +763,17 @@ std::vector<NewGameSeat> new_game_win::collect_seats()
 		{
 			seat.name = default_name_for(row);
 			_default_names[row->id] = seat.name;
+		}
+
+		// A computer seat carries the name it had as a Human, so a seat
+		// saved as a computer comes back with the player's own name when
+		// switched back to Human.
+		if (seat.kind == 1)
+		{
+			std::map<unsigned int, Glib::ustring>::const_iterator found =
+				_human_names.find(row->id);
+			seat.human_name = found != _human_names.end() ?
+				found->second : Glib::ustring();
 		}
 
 		// A computer seat with a partially- or fully-unchecked focus row
@@ -988,14 +1037,16 @@ void new_game_win::load_seats()
 		else if (fields[0] == "C" && fields.size() >= 7)
 		{
 			seat.kind = 1;
-			seat.family = fields[1];
+			seat.family = unescape_field(fields[1]);
 			seat.level = util::from_str<unsigned int>(fields[2]);
 			seat.depth = util::from_str<unsigned int>(fields[3]);
-			seat.name = fields[4];
+			seat.name = unescape_field(fields[4]);
 			seat.color = util::from_str<unsigned int>(fields[5]);
 			seat.focus_all = (fields[6] == "all");
 			if (!seat.focus_all)
 				seat.focus_ids = split_indices(fields[6]);
+			if (fields.size() >= 8)
+				seat.human_name = unescape_field(fields[7]);
 		}
 		else if (fields[0] == "R")
 		{
@@ -1055,7 +1106,8 @@ void new_game_win::save_seats()
 			line = "C|" + escape_field(seat.family) + "|" +
 				util::to_str(seat.level) + "|" + util::to_str(seat.depth) +
 				"|" + escape_field(seat.name) + "|" +
-				util::to_str(seat.color) + "|" + focus;
+				util::to_str(seat.color) + "|" + focus + "|" +
+				escape_field(seat.human_name);
 		}
 		else
 			line = "R";
