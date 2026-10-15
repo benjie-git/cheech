@@ -46,6 +46,12 @@ protected:
         class Gtk::PopoverMenuBar * menubar1;
         // The Show Chat item's label is toggled at runtime by main_win.
         Glib::RefPtr<Gio::MenuItem> show_chat_item;
+        // Its position within show_chat_section ("Change Game Settings...",
+        // "Restart Game", Show Chat).
+        static const int SHOW_CHAT_INDEX = 2;
+        // The section containing it (needed to swap the item: menu
+        // trackers snapshot items, so only structural changes propagate).
+        Glib::RefPtr<Gio::Menu> show_chat_section;
         class game_view * game_view;
         class Gtk::Label * player_name1;
         class Gtk::Label * player_name2;

@@ -158,7 +158,8 @@ main_win_glade::main_win_glade(
       Glib::RefPtr<Gio::MenuItem> restart_item =
           Gio::MenuItem::create(_("Restart Game"), restart_submenu_menu);
       section->append_item(restart_item);
-      show_chat_item = Gio::MenuItem::create(_("Show Chat"), "");
+      show_chat_item = Gio::MenuItem::create(_("Show Chat"), "win.show_chat");
+      show_chat_section = section;
       section->append_item(show_chat_item);
       menuitem1_menu->append_section(section);
    }
@@ -347,12 +348,18 @@ main_win_glade::main_win_glade(
    chat_area->set_margin_end(3);
    chat_area->set_margin_top(3);
    chat_area->set_margin_bottom(3);
+   // The chat history absorbs any extra height when the pane is resized;
+   // the entry keeps its natural fixed height at the bottom.
+   scrolledwindow1->set_vexpand(true);
    chat_area->append(*scrolledwindow1);
    chat_area->append(*chat_entry);
    vpaned1->set_start_child(*overlay1);
    vpaned1->set_end_child(*chat_area);
    vpaned1->set_resize_start_child(true);
    vpaned1->set_resize_end_child(true);
+   // Never shrink the chat pane below its minimum (history 120px + entry),
+   // so the entry can't be pushed off the bottom of the window.
+   vpaned1->set_shrink_end_child(false);
    // The paned must claim the vertical slack itself; GtkBox only gives extra
    // space to expanding children.
    vpaned1->set_vexpand(true);

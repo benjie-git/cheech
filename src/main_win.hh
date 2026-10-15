@@ -141,6 +141,7 @@ class main_win : public main_win_glade
 		void append_to_chat_entry(unsigned int keyval);
 
 		void show_message(Glib::ustring message);
+		void on_chat_vadjustment_changed();
 		void set_player_label(unsigned int posn, bool bold);
 		// Moves the bold "current turn" label to `posn`, un-bolding the
 		// previously bolded one; keeps track across lagged turn display.
@@ -211,6 +212,9 @@ class main_win : public main_win_glade
 		Glib::RefPtr<Gio::SimpleActionGroup>	_win_actions;
 
 		Gtk::MessageDialog * _confirm_quit_dialog;
+		// Set by show_message, consumed when the chat view's adjustment
+		// reports its range grew (the new line has been laid out).
+		bool _chat_scroll_pending;
 		// The actions a Yes on the confirm dialog should perform, in the
 		// order they were requested (a second request while the dialog is
 		// up queues instead of replacing the first).

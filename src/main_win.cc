@@ -72,6 +72,7 @@ main_win::main_win() : main_win_glade()
 	_hosted_port = 0;
 	_active_input_client = NULL;
 	_confirm_quit_dialog = NULL;
+	_chat_scroll_pending = false;
 	_anim_step_ms = 0;
 	_label_player = 0;
 
@@ -108,6 +109,12 @@ main_win::main_win() : main_win_glade()
 
 	game_view->evt_unhandled_key.connect(sigc::mem_fun(*this,
 		&main_win::append_to_chat_entry));
+
+	// Scroll the chat history to the bottom only when its vertical
+	// adjustment's range actually grows (i.e. after GTK4 has laid out the
+	// new text), not straight after inserting, when the layout is stale.
+	message_view->get_vadjustment()->signal_changed().connect(
+		sigc::mem_fun(*this, &main_win::on_chat_vadjustment_changed));
 
 	// The win.* actions referenced by the Gio::Menu model built in
 	// main_win_glade.
@@ -323,8 +330,9 @@ void main_win::connect_client(GameClient *client, bool primary)
 		&main_win::on_leave_game_activate));
 	client->evt_cancelled.connect(sigc::mem_fun(*this,
 		&main_win::on_leave_game_activate));
-	client->evt_message.connect(sigc::mem_fun(*this,
-		&main_win::show_message));
+	// Only the primary client drives the chat display; each extra human
+	// seat's client also receives every broadcast, which would show
+	// messages twice.
 	client->cmd_player_add.connect(sigc::mem_fun(*this,
 		&main_win::on_cmd_player_add));
 	client->cmd_player_remove.connect(sigc::mem_fun(*this,
@@ -335,6 +343,8 @@ void main_win::connect_client(GameClient *client, bool primary)
 		&main_win::on_cmd_game_resync));
 	if (primary)
 	{
+		client->evt_message.connect(sigc::mem_fun(*this,
+			&main_win::show_message));
 		client->cmd_choose_new_name.connect(sigc::mem_fun(*this,
 			&main_win::on_cmd_choose_new_name));
 		client->cmd_choose_new_color.connect(sigc::mem_fun(*this,
@@ -1129,15 +1139,25 @@ void main_win::on_setup_computer_player_activate()
 
 void main_win::on_show_chat_activate()
 {
+	// Swap the item instead of just set_label: menu trackers snapshot
+	// items at insertion and ignore attribute-only model changes, so only
+	// a remove+insert updates the label (in the popover and the native
+	// macOS menubar alike).
 	if (chat_area->get_visible())
 	{
 		chat_area->hide();
-		show_chat_item->set_label(_("Show Chat"));
+		show_chat_section->remove(SHOW_CHAT_INDEX);
+		show_chat_item = Gio::MenuItem::create(_("Show Chat"),
+			"win.show_chat");
+		show_chat_section->insert_item(SHOW_CHAT_INDEX, show_chat_item);
 	}
 	else
 	{
 		chat_area->show();
-		show_chat_item->set_label(_("Hide Chat"));
+		show_chat_section->remove(SHOW_CHAT_INDEX);
+		show_chat_item = Gio::MenuItem::create(_("Hide Chat"),
+			"win.show_chat");
+		show_chat_section->insert_item(SHOW_CHAT_INDEX, show_chat_item);
 	}
 }
 
@@ -1395,8 +1415,20 @@ void main_win::show_message(Glib::ustring message)
 	iter = message_view->get_buffer()->end();
 	message_view->get_buffer()->insert(iter, message + "\n");
 
-	iter = message_view->get_buffer()->end();
-	message_view->scroll_to(iter);
+	// The scroll happens in on_chat_vadjustment_changed, once the text view
+	// has been laid out with the new line.
+	_chat_scroll_pending = true;
+}
+
+
+void main_win::on_chat_vadjustment_changed()
+{
+	if (!_chat_scroll_pending)
+		return;
+	_chat_scroll_pending = false;
+
+	Glib::RefPtr<Gtk::Adjustment> adj = message_view->get_vadjustment();
+	adj->set_value(adj->get_upper() - adj->get_page_size());
 }
 
 
