@@ -256,6 +256,14 @@ int main(int argc, char **argv)
 
 		app->add_window(*main_win);
 
+		// Without a command-line game, land on the New Game dialog so the
+		// first thing a player sees is how to start (or join) a game.
+		if (!host && host_name == "")
+		{
+			main_win->present();
+			main_win->activate_action("win.new_game");
+		}
+
 // GTK4 dropped the GTK3 <Primary>-to-Command mapping; on macOS the Command
 // key is the Meta modifier, and the GTK4 docs say apps must register
 // macOS-specific shortcuts themselves.
