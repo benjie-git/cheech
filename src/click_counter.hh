@@ -27,12 +27,6 @@ class ClickCounter : public Gtk::GestureClick
 			new ClickCounter());
 	}
 
-	// Out-of-line so the class has a key function: with MinGW+LTO the
-	// vague-linkage destructor/vtable/thunks are not deduplicated by PE
-	// ld (GCC PR 94156).  Public so Glib::ObjectBase::unreference() can
-	// delete the instance.
-	~ClickCounter() override;
-
 	// Emitted for every press: number of successive clicks (capped at
 	// two), and the press position.
 	sigc::signal<void(unsigned int, double, double)> &signal_counted()

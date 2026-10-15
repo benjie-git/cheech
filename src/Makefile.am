@@ -64,12 +64,6 @@ cheech_SOURCES = \
 	color_win.hh \
 	color_win_glade.cc \
 	color_win_glade.hh \
-	click_counter.cc \
-	click_counter.hh \
-	combo_drop_down.cc \
-	combo_drop_down.hh \
-	color_picker.cc \
-	color_picker.hh \
 	name_win.cc \
 	name_win.hh \
 	name_win_glade.cc \
