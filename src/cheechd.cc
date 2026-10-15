@@ -153,7 +153,7 @@ void process_options(int &argc, char **&argv)
 
 		opt_context.parse(argc, argv);
 	}
-	catch (Glib::OptionError er)
+	catch (const Glib::OptionError&)
 	{
 		std::cout << "Bad command line arguments.  Try cheechd --help"
 			<< std::endl;

@@ -118,7 +118,7 @@ void Prefs::read(void)
 	{
 		pfile = Glib::IOChannel::create_from_file(get_filename(), "r");
 	}
-	catch (Glib::Error)
+	catch (const Glib::Error&)
 	{
 		write();
 		return;
@@ -213,7 +213,7 @@ void Prefs::read(void)
 			smarts = util::from_str<unsigned int>(strip_grouping(value));
 		}
 		// A damaged or non-UTF-8 line shouldn't abort the whole app.
-		catch (Glib::Error)
+		catch (const Glib::Error&)
 		{
 		}
 	}
@@ -244,7 +244,7 @@ void Prefs::write(void)
 	{
 		pfile = Glib::IOChannel::create_from_file(get_filename(), "w");
 	}
-	catch (Glib::Error)
+	catch (const Glib::Error&)
 	{
 		std::cerr << "Can't open preferences at '"
 			<< get_filename() << "'." << std::endl;

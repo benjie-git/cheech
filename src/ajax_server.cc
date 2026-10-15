@@ -239,7 +239,7 @@ void AjaxServer::send_file(Glib::ustring f, Net::Conn *conn)
 		{
 			pfile = Glib::IOChannel::create_from_file(f, "r");
 		}
-		catch (Glib::FileError)
+		catch (const Glib::FileError&)
 		{
 			(*conn) << "HTTP/1.0 404 Not Found\r\n";
 			send_content_type("", conn);
@@ -259,7 +259,7 @@ void AjaxServer::send_file(Glib::ustring f, Net::Conn *conn)
 		while (pfile->read(buffer, 1024, bytes_read) == Glib::IOStatus::NORMAL)
 			conn->write(buffer, bytes_read);
 	}
-	catch (Glib::IOChannelError)
+	catch (const Glib::IOChannelError&)
 	{
 		(*conn) << "<h1>404 Not Found</h1>\r\n";
 		(*conn) << "reqested file '" << f << "' not found.\n";
