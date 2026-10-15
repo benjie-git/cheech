@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Cheech
+GenericName=Chinese Checkers
+Comment=Play Chinese Checkers against friends and bots
+Exec=cheech
+TryExec=cheech
+Icon=cheech
+Terminal=false
+Categories=Game;BoardGame;
+Keywords=checkers;halma;board;game;
+StartupNotify=true
