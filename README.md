@@ -76,7 +76,7 @@ To build a self-contained Cheech.app instead of installing system-wide:
 - install gtk-mac-integration (on a mac, run: brew install gtk-mac-integration)
 - run the below commands in the root directory of the cheech project.
   - autoreconf -i
-  - ./configure --enable-macos-app
+  - ./configure
   - make
   - make bundle
 - the resulting Cheech.app is in the build directory and can be dragged to
@@ -94,7 +94,7 @@ To build a self-contained Cheech.app instead of installing system-wide:
   - autoreconf -i
   - ./configure
   - make
-  - make install
+  - make bundle
 
 The non-standard libraries (glib/glibmm/gtkmm and everything they pull in,
 plus libgcc/libstdc++) are linked statically on Windows, so the resulting
@@ -104,9 +104,5 @@ prefer to link them dynamically instead.)
 For a server-only build, leave out the mingw-w64-ucrt-x86_64-gtkmm-4.0
 package and run ./configure with the --disable-gui flag.
 
-cheechwebd serves the web client from a cheechweb directory: copy or symlink
-the ajax/www/com.benjie.cheech directory as cheechweb, in the same folder as
-the binaries.
 
-
-Ben Levitt 2005-2020
+Ben Levitt 2005-2026
