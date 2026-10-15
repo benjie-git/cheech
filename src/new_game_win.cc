@@ -266,6 +266,9 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	row->depth_box->signal_changed().connect(
 		sigc::bind(sigc::mem_fun(*this,
 			&new_game_win::on_seat_depth_changed), row));
+	row->smarts_box->signal_changed().connect(
+		sigc::bind(sigc::mem_fun(*this,
+			&new_game_win::on_seat_smarts_changed), row));
 
 	// Populate the family/depth/smarts/focus selections without triggering
 	// the default-name followers: a loaded name is taken as-is.
@@ -330,12 +333,18 @@ void new_game_win::on_add_seat_button_clicked()
 
 	NewGameSeat seat;
 
-	seat.kind = 0;
+	// New seats default to computer players, set up like the last bot the
+	// user configured (here or in the in-game Computer Players window).
+	Prefs prefs;
+	prefs.read();
+
+	seat.kind = 1;
 	seat.name = "";
 	seat.color = first_unused_color();
-	seat.family = BotUI::NEUTRAL;
-	seat.level = 1;
-	seat.depth = 0;
+	seat.family = prefs.bot_type.empty() ? BotUI::NEUTRAL : prefs.bot_type;
+	seat.level = prefs.bot_level >= 1 && prefs.bot_level <= 4 ?
+		prefs.bot_level : 1;
+	seat.depth = prefs.bot_depth;
 	seat.focus_all = true;
 	seat.id = 0;
 
@@ -370,6 +379,25 @@ void new_game_win::on_seat_kind_changed(SeatRow *row)
 
 	if (old_kind == 0)
 		_human_names[row->id] = row->name_entry->get_text();
+
+	// A seat switched to a computer starts out configured like the last
+	// bot the user set up; suppress the name follower while the combos
+	// catch up, so the name logic below sees the new family.
+	if (kind == 1)
+	{
+		Prefs prefs;
+		prefs.read();
+
+		_loading_seat = true;
+		row->family_box->set_active_text(prefs.bot_type.empty() ?
+			BotUI::NEUTRAL : prefs.bot_type);
+		row->depth_box->set_active_text(
+			BotUI::depth_label(prefs.bot_depth));
+		unsigned int level = prefs.bot_level;
+		row->smarts_box->set_active_text(BotUI::skill_label(
+			level >= 1 && level <= 4 ? level : 1));
+		_loading_seat = false;
+	}
 
 	if (kind == 0)
 		row->name_entry->set_text(_human_names.count(row->id) ?
@@ -433,6 +461,7 @@ void new_game_win::on_seat_family_changed(SeatRow *row)
 	}
 
 	refresh_focus_rows();
+	remember_last_bot(row);
 }
 
 
@@ -446,6 +475,36 @@ void new_game_win::on_seat_name_changed(SeatRow *row)
 void new_game_win::on_seat_depth_changed(SeatRow *row)
 {
 	on_seat_family_changed(row);
+}
+
+
+void new_game_win::on_seat_smarts_changed(SeatRow *row)
+{
+	if (_loading_seat)
+		return;
+
+	remember_last_bot(row);
+}
+
+
+// Treat this computer seat's settings as what the next bot starts from:
+// the + button in this dialog and the in-game Add Computer Player both
+// read them back from the saved preferences.
+void new_game_win::remember_last_bot(SeatRow *row)
+{
+	if (_loading_seat || row->kind_box->get_active_row_number() != 1)
+		return;
+
+	Prefs prefs;
+	prefs.read();
+
+	prefs.bot_type = row->family_box->get_active_text();
+	prefs.bot_level = std::max(row->smarts_box->get_active_row_number(), 0) + 1;
+	prefs.bot_depth = BotUI::depth_values()[
+		std::max(row->depth_box->get_active_row_number(), 0)];
+	prefs.smarts = BotUI::skill_smarts(prefs.bot_level);
+
+	prefs.write();
 }
 
 

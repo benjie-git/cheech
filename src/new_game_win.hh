@@ -101,11 +101,13 @@ class new_game_win : public new_game_win_glade
 		void on_seat_name_changed(SeatRow *row);
 		void on_seat_color_changed(unsigned int color, SeatRow *row);
 		void on_seat_depth_changed(SeatRow *row);
+		void on_seat_smarts_changed(SeatRow *row);
 
 		void add_seat(const NewGameSeat &seat);
 		void remove_seat(size_t index);
 		SeatRow *find_row(unsigned int id);
 		void sync_seat_row(SeatRow &row);
+		void remember_last_bot(SeatRow *row);
 		void refresh_focus_rows();
 		Glib::ustring other_label(SeatRow *row);
 		Glib::ustring default_name_for(SeatRow *row);

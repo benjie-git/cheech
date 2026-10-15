@@ -76,7 +76,7 @@ void Prefs::set_defaults()
 	bot_type = "Neutral";
 	bot_level = 1;
 	bot_depth = 0;
-	move_delay = 400;
+	move_delay = 200;
 	think_delay = 0;
 	smarts = 100;
 }
