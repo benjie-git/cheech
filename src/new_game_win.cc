@@ -129,6 +129,39 @@ new_game_win::new_game_win() : new_game_win_glade()
 
 	load_seats();
 
+	// Default the Players scroll area to about 3.5 human seat rows so
+	// there is spare room without looking empty at the usual seat count.
+	int row_height = 0;
+	for (SeatRow *row : _rows)
+	{
+		int minimum = 0, natural = 0, min_base = 0, nat_base = 0;
+		row->box->measure(Gtk::Orientation::VERTICAL, -1, minimum,
+			natural, min_base, nat_base);
+		if (row->kind_box->get_active_row_number() == 0)
+		{
+			row_height = natural;
+			break;
+		}
+		if (row_height == 0)
+			row_height = natural;
+	}
+	if (row_height > 0)
+	{
+		// Count the row's full footprint in the list: the spacing around
+		// it in seats_box plus the separator between seats, not just the
+		// row's own content.
+		int sep_height = 0;
+		if (_rows.size() > 1 && _rows.back()->sep)
+		{
+			int minimum = 0, natural = 0, min_base = 0, nat_base = 0;
+			_rows.back()->sep->measure(Gtk::Orientation::VERTICAL, -1,
+				minimum, natural, min_base, nat_base);
+			sep_height = natural + _rows.back()->sep->get_margin_top();
+		}
+		row_height += seats_box->get_spacing() + sep_height;
+		seats_scroll->set_size_request(-1, row_height * 3.5);
+	}
+
 	host_port_entry->set_text(util::to_str(prefs.host_port));
 	cheechweb->set_active(prefs.start_cheechweb);
 	cheechweb_port_entry->set_text(util::to_str(prefs.cheechweb_port));
@@ -276,6 +309,12 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 			BotUI::skill_label(BotUI::skill_levels()[i]));
 	smarts_box->append(*row->smarts_box);
 
+	// Depth and Smarts share one row to keep the details area compact.
+	Gtk::Box *settings_box = Gtk::make_managed<class Gtk::Box>(
+		Gtk::Orientation::HORIZONTAL, 12);
+	settings_box->append(*depth_box);
+	settings_box->append(*smarts_box);
+
 	row->focus_box = Gtk::make_managed<class Gtk::Box>(
 		Gtk::Orientation::HORIZONTAL, 6);
 
@@ -285,8 +324,7 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	details_box->set_margin_bottom(3);
 	details_box->set_margin_start(3);
 	details_box->set_margin_end(3);
-	details_box->append(*depth_box);
-	details_box->append(*smarts_box);
+	details_box->append(*settings_box);
 	details_box->append(*row->focus_box);
 
 	row->details = Gtk::make_managed<class Gtk::Expander>(_("Details"));
