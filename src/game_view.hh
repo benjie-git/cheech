@@ -49,6 +49,16 @@ class game_view : public Gtk::DrawingArea
 		// another player's telegraph); empty when nothing is shown.
 		const MoveList &shown_move() const { return _move_list; }
 
+		// Commits the current move path (same as double-clicking the last
+		// hole of the path or pressing Enter); used by the Move overlay
+		// button.
+		void commit_move() { write_move(); }
+
+		// True when the local player has a move path in progress (their own
+		// selection, not another player's telegraph); the Move overlay
+		// button tracks this to show/hide itself.
+		sigc::signal<void(bool)> sig_move_path_changed;
+
 		// Replays a move the server has already applied.  The view keeps
 		// its own lagged copy of the board: each move is applied to it only
 		// when its replay finishes, so a replay always plays over the exact
@@ -98,6 +108,8 @@ class game_view : public Gtk::DrawingArea
 		void read_move(unsigned int i);
 		void write_move();
 		void erase_move();
+		// Emits sig_move_path_changed for the current state.
+		void update_move_button();
 
 		bool move_list_contains(unsigned int i);
 		void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width,

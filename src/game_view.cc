@@ -195,6 +195,8 @@ void game_view::set_input_client(GameClient *c)
 	for (unsigned int i = 0; i < _view_board->get_size(); i++)
 		if (_holes[i])
 			_holes[i]->setup(c, (*_view_board)[i]);
+
+	update_move_button();
 }
 
 
@@ -238,6 +240,7 @@ void game_view::rebuild_board()
 void game_view::set_locked(bool l)
 {
 	_locked = l;
+	update_move_button();
 }
 
 
@@ -361,6 +364,8 @@ void game_view::read_move(unsigned int i)
 		else
 			_client->hide_move();
 	}
+
+	update_move_button();
 }
 
 
@@ -374,6 +379,8 @@ void game_view::write_move()
 		_client->make_move(&_move_list);
 		erase_move();
 	}
+
+	update_move_button();
 }
 
 
@@ -390,6 +397,22 @@ void game_view::erase_move()
 	}
 
 	_client->hide_move();
+
+	update_move_button();
+}
+
+
+// The Move overlay button is visible exactly while the local player has
+// their own move path in progress.  Another player's telegraphed move also
+// occupies _move_list (it arrives via show_move), so ownership of the path's
+// first hole distinguishes a local selection from a telegraph.
+void game_view::update_move_button()
+{
+	bool active = !_locked && !_move_list.empty() && _board && _client &&
+		(*_board)[_move_list.front()]->get_current_player() ==
+			_client->get_my_player_number();
+
+	sig_move_path_changed.emit(active);
 }
 
 
@@ -406,6 +429,8 @@ void game_view::show_move(MoveList *list)
 		_holes[(*move)]->set_hilighted(true);
 		_move_list.push_back((*move));
 	}
+
+	update_move_button();
 }
 
 
@@ -416,6 +441,8 @@ void game_view::hide_move()
 		_holes[_move_list.back()]->set_hilighted(false);
 		_move_list.pop_back();
 	}
+
+	update_move_button();
 }
 
 

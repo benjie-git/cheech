@@ -33,6 +33,7 @@
 #include "main_win_glade.hh"
 #include <cmath>
 #include <gtk/gtk.h>
+#include <gtkmm/button.h>
 #include <giomm/menu.h>
 #include <gtkmm/popovermenubar.h>
 #include <gtkmm/overlay.h>
@@ -105,6 +106,13 @@ main_win_glade::main_win_glade(
    game_view = new class game_view();
 
    Gtk::Overlay *overlay1 = Gtk::make_managed<Gtk::Overlay>();
+
+   // The Move button appears over the board's bottom right while the local
+   // player has a move path in progress (game_view::sig_move_path_changed).
+   Gtk::Button *move_button = Gtk::make_managed<Gtk::Button>(_("Move"));
+   move_button->set_visible(false);
+   move_button->set_halign(Gtk::Align::END);
+   move_button->set_valign(Gtk::Align::END);
 
    Gtk::Box *vbox13 = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 6);
    Gtk::Box *vbox12 = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 6);
@@ -313,7 +321,12 @@ main_win_glade::main_win_glade(
    vbox12->set_can_target(false);
    overlay1->add_overlay(*vbox13);
    vbox13->set_can_target(false);
-   game_view->evt_board_resized.connect([this, vbox12, vbox13]() {
+   overlay1->add_overlay(*move_button);
+   move_button->signal_clicked().connect(sigc::mem_fun(*game_view,
+      &game_view::commit_move));
+   game_view->sig_move_path_changed.connect(sigc::mem_fun(*move_button,
+      &Gtk::Button::set_visible));
+   game_view->evt_board_resized.connect([this, vbox12, vbox13, move_button]() {
       double s = game_view->get_scale();
       double bw = game_view->get_base_width() * s;
       double bh = game_view->get_base_height() * s;
@@ -325,6 +338,9 @@ main_win_glade::main_win_glade(
       vbox12->set_margin_top((int)by + inset);
       vbox13->set_margin_end((int)(game_view->get_width() - (bx + bw)) + inset + 20);
       vbox13->set_margin_top((int)by + inset);
+      // Hug the bottom right corner of the board background.
+      move_button->set_margin_end((int)(game_view->get_width() - (bx + bw)) + inset);
+      move_button->set_margin_bottom((int)(game_view->get_height() - (by + bh)) + inset);
    });
    message_view->set_editable(false);
    message_view->set_cursor_visible(false);
