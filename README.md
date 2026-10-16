@@ -12,7 +12,7 @@ cheech runs on on *nix systems, Windows, and MacOS, and there is a
 web-based client as well.
 
 cheech is based on Loban Rahman's Gnome Chinese Checkers
-(https://github.com/benjie-git/cheech).
+(https://sourceforge.net/projects/gchch/).
 
 
 ## Using cheech
@@ -101,4 +101,5 @@ To build a self-contained Cheech.app instead of installing system-wide:
   needed parts, and can be safely zipped up and moved to other machines.
 
 
-Ben Levitt 2005-2026
+Ben Levitt 2005-2026  
+with support from [Octopilot Electronics](https://octopilot.com)
