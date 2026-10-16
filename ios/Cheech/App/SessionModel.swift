@@ -261,6 +261,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	@Published var fullScreen = false
 	// In-game "Setup Game" sheet (change rules/player count, add bots).
 	@Published var showGameSetup = false
+	// How to Play overlay, opened from the (i) button on the game setup page.
+	@Published var showHowToPlay = false
 	// A destructive action awaiting confirmation (only when a game is
 	// underway).  The game screen presents a dialog while this is non-nil.
 	@Published var confirmAction: GameAction? = nil

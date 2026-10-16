@@ -152,7 +152,7 @@ struct GameSetupView: View {
 				}
 
 				if model.setupMode == .start {
-					Section("Game Settings") {
+					Section {
 						RulesRows(
 							numPlayers: $model.numPlayers,
 							longJumps: $model.longJumps,
@@ -172,6 +172,19 @@ struct GameSetupView: View {
 							), in: 0...500, step: 10)
 						}
 						.padding(.vertical, 2)
+					} header: {
+						HStack {
+							Text("Game")
+							Spacer()
+							Button {
+								model.showHowToPlay = true
+							} label: {
+								Image(systemName: "info.circle")
+									.foregroundStyle(.primary)
+							}
+							.buttonStyle(.plain)
+							.accessibilityLabel("How to Play")
+						}
 					}
 					Section("Players") {
 						ForEach($model.seats) { $seat in
@@ -200,7 +213,7 @@ struct GameSetupView: View {
 								.multilineTextAlignment(.trailing)
 						}
 					}
-					Section("You") {
+					Section("Player") {
 						HStack {
 							Text("Name")
 							TextField("Name", text: $model.playerName)
@@ -216,6 +229,9 @@ struct GameSetupView: View {
 		}
 		.sheet(isPresented: $model.showInvite) {
 			InviteView().environmentObject(model)
+		}
+		.sheet(isPresented: $model.showHowToPlay) {
+			HowToPlayView().environmentObject(model)
 		}
 	}
 }
@@ -309,6 +325,77 @@ struct InviteView: View {
 					Button("Done") { model.showInvite = false }
 				}
 			}
+		}
+	}
+}
+
+// The How to Play overlay, opened from the (i) button next to the "Game"
+// header on the setup page.  Ported from the desktop How to Play window.
+struct HowToPlayView: View {
+	@EnvironmentObject var model: SessionModel
+
+	var body: some View {
+		NavigationStack {
+			ScrollView {
+				VStack(alignment: .leading, spacing: 20) {
+					HowToPlaySection("Using Cheech") {
+						Text("Use the Players area to decide who's playing: each seat can be a human player, a computer player, or a remote seat, waiting for someone to connect from another device.  Watch out, the computer players aren't super smart, but they are thorough!")
+						Text("To let a friend join your game, tap \"Invite a Friend\" and share the invite link with them.  To join a game someone else is hosting, switch to \"Join a Game\" and enter the host and port they gave you, or simply open the invite link they shared.")
+						Text("To make a move, tap the peg you want to move, then tap the empty hole to move your peg to.  If you're making a multiple-hop move, tap each hole that you're hopping through along your chain of hops.  When you've finished tapping out your hopping path, tap the Move button to make your move.")
+					}
+
+					HowToPlaySection("Rules") {
+						Text("The object of the game is to get all 10 of your pieces from your starting triangle into the triangle opposite.  Players take turns moving one piece at a time.  On each move you can:")
+						bullet("move a piece to any adjacent position (which must be empty)")
+						bullet("hop a piece over an adjacent piece into the next position in the same direction (which must be empty)")
+						bullet("chain together multiple hops")
+					}
+
+					HowToPlaySection("Variations") {
+						Text("Cheech currently supports 3 rule variations.")
+						bullet("Long Jumps: with this rule variation enabled, each hop can be longer.  Normally, hops always move from one position, over an adjacent position to the next position in the same direction (which must be empty).  With Long Jumps, you can hop from one position, over any number (0 or more) of empty positions, followed by a piece, followed by the same number of empty positions again, and into the next position (which must be empty).  Multiple hops of different lengths can be chained together in one move.")
+						bullet("Hopping Through Other Players' Triangles: if this is disabled, then you're not allowed to end a move in, or pass through any other player's starting or ending triangle.")
+						bullet("Stopping In Other Players' Triangles: if this is disabled, then you're not allowed to end a move in any other player's starting or ending triangle.")
+						Text("For a more detailed discussion of the rules (including diagrams!), check out the Wikipedia entry on Chinese Checkers.")
+							.foregroundStyle(.secondary)
+					}
+				}
+				.padding(20)
+				.frame(maxWidth: .infinity, alignment: .leading)
+			}
+			.navigationTitle("How to Play")
+			.navigationBarTitleDisplayMode(.inline)
+			.toolbar {
+				ToolbarItem(placement: .confirmationAction) {
+					Button("Done") { model.showHowToPlay = false }
+				}
+			}
+		}
+	}
+
+	private func bullet(_ text: String) -> some View {
+		HStack(alignment: .top, spacing: 8) {
+			Text("•")
+			Text(text)
+		}
+	}
+}
+
+private struct HowToPlaySection<Content: View>: View {
+	let title: String
+	let content: Content
+
+	init(_ title: String, @ViewBuilder content: () -> Content) {
+		self.title = title
+		self.content = content()
+	}
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 10) {
+			Text(title)
+				.font(.title3.bold())
+			content
+				.font(.callout)
 		}
 	}
 }
