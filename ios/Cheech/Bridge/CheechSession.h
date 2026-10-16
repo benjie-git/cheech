@@ -6,6 +6,10 @@
 //  dedicated background thread (cheech::Loop); this object is safe to use from
 //  the main thread and reports changes through CheechSessionDelegate.
 //
+//  Copyright (c) 2005-2026 Ben Levitt
+//
+//  SPDX-License-Identifier: MIT
+//
 
 #import <Foundation/Foundation.h>
 

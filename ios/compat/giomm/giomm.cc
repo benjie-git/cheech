@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal giomm networking shim for the iOS build of cheech.
  *
  *  Implements the small slice of Gio::SocketClient / SocketConnection /

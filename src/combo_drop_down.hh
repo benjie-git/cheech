@@ -1,4 +1,7 @@
 //
+//    Copyright (C) 2005-2026 Ben Levitt
+//    SPDX-License-Identifier: MIT
+//
 //    ComboDropDown: a Gtk::DropDown wearing Gtk::ComboBoxText's API.
 //
 //    The selection widgets were migrated from Gtk::ComboBoxText to

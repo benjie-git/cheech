@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal Glib::SignalProxy shim for the iOS build of cheech.
  *
  *  giomm uses Glib::SignalProxy for signals with a non-void return value

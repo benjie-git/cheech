@@ -1,4 +1,7 @@
 //
+// Copyright (C) 2005-2026 Ben Levitt
+// SPDX-License-Identifier: MIT
+//
 // Needed to work around 2 shortcomings of libglade--
 //
 // 1) It gets confused about a Gtk::Image with no predefined pixmap in it

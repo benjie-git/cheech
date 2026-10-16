@@ -1,3 +1,8 @@
+/*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ */
+
 #ifndef CHEECH_COMPAT_GLIBMM_H
 #define CHEECH_COMPAT_GLIBMM_H
 

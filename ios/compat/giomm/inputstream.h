@@ -1,3 +1,8 @@
+/*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ */
+
 #ifndef INCL_COMPAT_GIOMM_INPUTSTREAM_H
 #define INCL_COMPAT_GIOMM_INPUTSTREAM_H
 

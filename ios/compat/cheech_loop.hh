@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  A tiny poll()-based event loop for the iOS build of cheech.
  *
  *  The desktop game relies on the GLib main loop for socket readiness and

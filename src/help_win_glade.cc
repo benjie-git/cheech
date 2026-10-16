@@ -1,4 +1,7 @@
 // generated 2006/6/6 16:06:08 PDT by benjie@paddy.(none)
+// Copyright (C) 2005-2026 Ben Levitt
+// SPDX-License-Identifier: MIT
+//
 // using glademm V2.6.0
 //
 // converted to gtkmm 4

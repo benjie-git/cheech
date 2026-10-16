@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal Glib::Rand shim for the iOS build of cheech.
  *
  *  The core uses Glib::Rand only for get_int_range(), to pick uniformly

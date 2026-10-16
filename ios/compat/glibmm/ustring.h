@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal Glib::ustring shim for the iOS build of cheech.
  *
  *  The game core only treats ustring as a UTF-8 std::string: it never

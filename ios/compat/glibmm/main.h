@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal glibmm main-loop shim for the iOS build of cheech.
  *
  *  Glib::signal_timeout() schedules a callback on the cheech event loop and

@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal GLib type shim for the iOS build of cheech.
  *
  *  The game core only needs a handful of GLib scalar typedefs; this header

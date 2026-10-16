@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Cross-thread "animation gate" for cheech.
  *
  *  Moves are applied to the core immediately, but the UI replays them as an

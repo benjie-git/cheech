@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Minimal libsigc++ shim for the iOS build of cheech.
  *
  *  The game core uses only a small slice of sigc++:

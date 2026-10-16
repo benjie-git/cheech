@@ -1,3 +1,8 @@
+/*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ */
+
 package com.benjie.client;
 
 import com.google.gwt.core.client.EntryPoint;

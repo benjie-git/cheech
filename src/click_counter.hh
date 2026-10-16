@@ -1,4 +1,7 @@
 //
+//    Copyright (C) 2005-2026 Ben Levitt
+//    SPDX-License-Identifier: MIT
+//
 //    ClickCounter: a Gtk::GestureClick that counts successive clicks
 //    itself.
 //

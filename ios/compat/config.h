@@ -1,4 +1,7 @@
 /*
+ *  Copyright (C) 2005-2026 Ben Levitt
+ *  SPDX-License-Identifier: MIT
+ *
  *  Stand-in for the autotools-generated config.h for the iOS build.
  *
  *  The game core includes "config.h" but only relies on it for build metadata;

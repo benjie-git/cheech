@@ -1,4 +1,7 @@
 //
+//    Copyright (C) 2005-2026 Ben Levitt
+//    SPDX-License-Identifier: MIT
+//
 //    The About window (GTK4 version; originally glademm-generated).
 //
 

@@ -1,3 +1,12 @@
+//
+//  BoardView.swift
+//  Cheech
+//
+//  Copyright (c) 2005-2026 Ben Levitt
+//
+//  SPDX-License-Identifier: MIT
+//
+
 import SwiftUI
 
 struct BoardView: View {
