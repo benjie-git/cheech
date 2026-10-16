@@ -85,7 +85,7 @@ chmod 755 "$macos/cheech-bin"
 # Application icon, generated from the artwork that ships with the old
 # Xcode project, if it is available.
 icon_file=""
-icon_src="$srcdir/cheech/cheech/Assets.xcassets/AppIcon.appiconset/cheechApp128.png"
+icon_src="$srcdir/resources/cheechApp128.png"
 if [ -f "$icon_src" ] && command -v sips >/dev/null 2>&1; then
 	if sips -s format icns "$icon_src" --out "$res/$name.icns" >/dev/null 2>&1; then
 		icon_file="$name.icns"
