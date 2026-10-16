@@ -358,6 +358,8 @@ struct HowToPlayView: View {
 						bullet("Stopping In Other Players' Triangles: if this is disabled, then you're not allowed to end a move in any other player's starting or ending triangle.")
 						Text("For a more detailed discussion of the rules (including diagrams!), check out the Wikipedia entry on Chinese Checkers.")
 							.foregroundStyle(.secondary)
+						Text("For more info on the Cheech ecosystem, visit https://github.com/benjie-git/cheech/.")
+							.foregroundStyle(.secondary)
 					}
 				}
 				.padding(20)
