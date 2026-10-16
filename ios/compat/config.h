@@ -13,13 +13,13 @@
 
 #define PACKAGE          "cheech"
 #define PACKAGE_NAME     "cheech"
-#define PACKAGE_VERSION  "1.1"
-#define PACKAGE_STRING   "cheech v1.1"
+#define PACKAGE_VERSION  "1.2"
+#define PACKAGE_STRING   "cheech v1.2"
 #define PACKAGE_TARNAME  "cheech"
 #define PACKAGE_BUGREPORT "https://github.com/benjie-git/cheech"
 #define PACKAGE_URL      "https://github.com/benjie-git/cheech"
 #define GETTEXT_PACKAGE  "cheech"
-#define VERSION          "1.1"
+#define VERSION          "1.2"
 
 #define CHEECH_IOS 1
 

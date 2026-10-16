@@ -114,7 +114,7 @@ nodist_cheech_SOURCES = cheech_resources.c
 CLEANFILES = cheech_resources.c
 
 cheech_resources.c: $(top_srcdir)/resources/cheech.gresource.xml $(top_srcdir)/resources/cheech.png \
-	$(top_srcdir)/resources/acknowledgements.txt
+	$(top_srcdir)/resources/acknowledgements.pango
 	$(GLIB_COMPILE_RESOURCES) --generate-source --target=$@ \
 		--sourcedir=$(top_srcdir)/resources \
 		$(top_srcdir)/resources/cheech.gresource.xml

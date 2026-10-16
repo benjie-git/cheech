@@ -38,7 +38,6 @@
 #include <gtkmm/button.h>
 #include <gtkmm/box.h>
 #include <gtkmm/scrolledwindow.h>
-#include <gtkmm/textview.h>
 
 about_win_glade::about_win_glade()
 {
@@ -83,11 +82,12 @@ about_win_glade::about_win_glade()
    vbox9->append(*label12);
 
    // The acknowledgements/licence text is also compiled in as a
-   // GResource, for the same reason.
+   // GResource, for the same reason.  It holds Pango markup so its
+   // links are clickable, just like the About page's.
    Glib::ustring acknowledgements;
    try {
       Glib::RefPtr<const Glib::Bytes> data =
-         Gio::Resource::lookup_data_global("/cheech/acknowledgements.txt");
+         Gio::Resource::lookup_data_global("/cheech/acknowledgements.pango");
       gsize size = 0;
       auto text = static_cast<const char*>(data->get_data(size));
       acknowledgements.assign(text, text + size);
@@ -95,18 +95,22 @@ about_win_glade::about_win_glade()
       // The binary is mis-built; better to say so than to show nothing.
       acknowledgements = _("The acknowledgements could not be loaded.");
    }
-   Gtk::TextView *ack_view = Gtk::make_managed<Gtk::TextView>();
-   ack_view->set_editable(false);
-   ack_view->set_cursor_visible(false);
-   ack_view->set_wrap_mode(Gtk::WrapMode::WORD);
-   ack_view->set_left_margin(8);
-   ack_view->set_right_margin(8);
-   ack_view->set_top_margin(8);
-   ack_view->set_bottom_margin(8);
-   ack_view->get_buffer()->set_text(acknowledgements);
+   Gtk::Label *ack_label = Gtk::make_managed<Gtk::Label>();
+   ack_label->set_use_markup(true);
+   ack_label->set_markup(acknowledgements);
+   ack_label->set_wrap(true);
+   // Break long words (like URLs) when needed.
+   ack_label->set_wrap_mode(Pango::WrapMode::WORD_CHAR);
+   ack_label->set_xalign(0.0);
+   ack_label->set_selectable(true);
+   ack_label->set_margin_start(8);
+   ack_label->set_margin_end(8);
+   ack_label->set_margin_top(8);
+   ack_label->set_margin_bottom(8);
    Gtk::ScrolledWindow *ack_scroll = Gtk::make_managed<Gtk::ScrolledWindow>();
-   ack_scroll->set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::AUTOMATIC);
-   ack_scroll->set_child(*ack_view);
+   // Fixed viewport width; the label wraps and the page scrolls down only.
+   ack_scroll->set_policy(Gtk::PolicyType::NEVER, Gtk::PolicyType::AUTOMATIC);
+   ack_scroll->set_child(*ack_label);
 
    Gtk::Notebook *notebook = Gtk::make_managed<Gtk::Notebook>();
    notebook->set_expand(true);

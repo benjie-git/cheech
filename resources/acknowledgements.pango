@@ -1,10 +1,8 @@
-Cheech — Acknowledgements and Licences
-======================================
+<span size="larger" weight="bold">Cheech — Acknowledgements and Licences</span>
 
-Cheech
-------
+<b>Cheech</b>
 Copyright (C) 2005-2026 Ben Levitt
-https://github.com/benjie-git/cheech
+<a href="https://github.com/benjie-git/cheech">https://github.com/benjie-git/cheech</a>
 
 Cheech is released under the MIT License:
 
@@ -29,57 +27,51 @@ Cheech is released under the MIT License:
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
     OTHER DEALINGS IN THE SOFTWARE.
 
-Origin
-------
+<b>Origin</b>
 Cheech is based on Gnome Chinese Checkers by Loban Rahman. The game
 engine derives from his code:
 
     Gnome Chinese Checkers (gchch)
     Copyright (C) 1999-2003 Loban Rahman
     GNU General Public License, version 2 or later
-    https://sourceforge.net/projects/gchch/
+    <a href="https://sourceforge.net/projects/gchch/">https://sourceforge.net/projects/gchch/</a>
 
-Linked libraries
-----------------
+<b>Linked libraries</b>
 Cheech is built with and links against many free software libraries.
 The macOS bundle includes copies of the libraries listed below; on
 other systems they are provided by your operating system. All are
 copyright their respective authors.
 
-  GNU LGPL 2.1 or later
-      gtkmm, glibmm, giomm, pangomm, cairomm, libsigc++
-      GTK, GLib, Pango, GDK-Pixbuf
-      FriBidi, libthai, libdatrie
-      gettext (libintl)
+<b>GNU LGPL 2.1 or later</b>
+• gtkmm, glibmm, giomm, pangomm, cairomm, libsigc++
+• GTK, GLib, Pango, GDK-Pixbuf
+• FriBidi, libthai, libdatrie
+• gettext (libintl)
 
-  Dual-licensed
-      Cairo ............ LGPL 2.1 or MPL 1.1
-      FreeType ......... FreeType License (BSD-style) or GPL 2
-      zstd ............. BSD 3-clause or GPL 2
+<b>Dual-licensed</b>
+• Cairo — LGPL 2.1 or MPL 1.1
+• FreeType — FreeType License (BSD-style) or GPL 2
+• zstd — BSD 3-clause or GPL 2
 
-  Permissive licences
-      HarfBuzz ......... Old MIT license
-      Graphene ......... MIT
-      libepoxy ......... MIT
-      pixman ........... MIT-style
-      fontconfig ....... MIT-style
-      libtiff .......... MIT-style
-      libwebp .......... BSD 3-clause
-      pcre2 ............ BSD 3-clause
-      brotli ........... MIT
-      liblzma (xz) ..... 0BSD / public domain
-      X11 and xcb ...... MIT/X11
-      libpng ........... PNG Reference Library License
-      libjpeg .......... BSD 3-clause and IJG-style
+<b>Permissive licences</b>
+• HarfBuzz — Old MIT license
+• Graphene, libepoxy — MIT
+• pixman, fontconfig, libtiff — MIT-style
+• libwebp, pcre2 — BSD 3-clause
+• brotli — MIT
+• liblzma (xz) — 0BSD / public domain
+• X11 and xcb — MIT/X11
+• libpng — PNG Reference Library License
+• libjpeg — BSD 3-clause and IJG-style
 
-  GNU GPL 2 or later
-      liblzo2 .......... a dependency of GTK's copy of cairo; its
-                        source is available from
-                        https://www.oberhumer.com/opensource/lzo/
+<b>GNU GPL 2 or later</b>
+• liblzo2 — a dependency of GTK's copy of cairo; its source is
+  available at
+  <a href="https://www.oberhumer.com/opensource/lzo/">https://www.oberhumer.com/opensource/lzo/</a>
 
-The full licence texts are distributed with each library, and can be
-found at the projects' web sites and at:
+The full licence texts are distributed with each library, and can
+be found at:
 
-    GNU GPL 2 ..... https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-    GNU LGPL 2.1 .. https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-    MPL 1.1 ....... https://www.mozilla.org/MPL/1.1/
+• <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GNU GPL 2</a>
+• <a href="https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">GNU LGPL 2.1</a>
+• <a href="https://www.mozilla.org/MPL/1.1/">MPL 1.1</a>
