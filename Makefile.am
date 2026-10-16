@@ -1,18 +1,17 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src pixmaps ajax
+SUBDIRS = src resources ajax
 
 docdir = ${prefix}/doc/cheech
 dist_doc_DATA = \
 	README.md \
-	COPYING \
+	LICENSE \
 	AUTHORS \
-	ChangeLog \
 	INSTALL \
 	NEWS \
 	TODO
 
-EXTRA_DIST = m4/ChangeLog macos/make-bundle.sh windows/make-bundle.sh
+EXTRA_DIST = macos/make-bundle.sh windows/make-bundle.sh
 
 # Build a relocatable Mac OS X .app bundle containing the GUI.
 # Requires configure --enable-macos-app and dylibbundler.

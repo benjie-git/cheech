@@ -378,7 +378,7 @@ AC_SUBST([CHEECH_GUI_LIBS])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
-  pixmaps/Makefile
+  resources/Makefile
   ajax/Makefile
   ajax/www/Makefile
   ajax/www/com.benjie.cheech/Makefile

@@ -16,7 +16,7 @@ dist_desktop_DATA = cheech.desktop
 dist_hicoloricon_DATA = cheech.png
 endif
 
-EXTRA_DIST = cheech.gresource.xml
+EXTRA_DIST = cheech.gresource.xml acknowledgements.txt
 
 install-data-hook:
 	-update-desktop-database "$(DESTDIR)$(desktopdir)"

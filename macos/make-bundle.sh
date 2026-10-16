@@ -78,8 +78,9 @@ mkdir -p "$macos" "$res" "$frameworks"
 cp "$bin" "$macos/cheech-bin"
 chmod 755 "$macos/cheech-bin"
 
-# (The About dialog's cheech.png is compiled into the binary as a GResource;
-# pixmaps on disk are only used by the Linux make-install desktop icon.)
+# (The About dialog's cheech.png and acknowledgements.txt are compiled into
+# the binary as a GResource; the PNG installed to $(datadir)/pixmaps by
+# make install is only used by the Linux desktop icon.)
 
 # Application icon, generated from the artwork that ships with the old
 # Xcode project, if it is available.

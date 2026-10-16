@@ -31,10 +31,14 @@
 #endif
 #include "about_win_glade.hh"
 #include <gdkmm/pixbuf.h>
+#include <giomm/resource.h>
 #include <gtkmm/label.h>
+#include <gtkmm/notebook.h>
 #include <gtkmm/picture.h>
 #include <gtkmm/button.h>
 #include <gtkmm/box.h>
+#include <gtkmm/scrolledwindow.h>
+#include <gtkmm/textview.h>
 
 about_win_glade::about_win_glade()
 {
@@ -61,9 +65,9 @@ about_win_glade::about_win_glade()
    hbuttonbox6->set_margin_top(6);
    hbuttonbox6->set_margin_bottom(6);
    hbuttonbox6->set_halign(Gtk::Align::END);
-   hbuttonbox6->append(*close_button);
+
    // Show the app icon at the top.  It is compiled into the binary as a
-   // GResource (pixmaps/cheech.gresource.xml), so this works the same on
+   // GResource (resources/cheech.gresource.xml), so this works the same on
    // every platform with no path lookup.
    try {
       Glib::RefPtr<Gdk::Pixbuf> icon =
@@ -77,12 +81,47 @@ about_win_glade::about_win_glade()
       // A missing or unreadable icon is not worth failing over.
    }
    vbox9->append(*label12);
-   vbox9->append(*hbuttonbox6);
+
+   // The acknowledgements/licence text is also compiled in as a
+   // GResource, for the same reason.
+   Glib::ustring acknowledgements;
+   try {
+      Glib::RefPtr<const Glib::Bytes> data =
+         Gio::Resource::lookup_data_global("/cheech/acknowledgements.txt");
+      gsize size = 0;
+      auto text = static_cast<const char*>(data->get_data(size));
+      acknowledgements.assign(text, text + size);
+   } catch (const Glib::Error&) {
+      // The binary is mis-built; better to say so than to show nothing.
+      acknowledgements = _("The acknowledgements could not be loaded.");
+   }
+   Gtk::TextView *ack_view = Gtk::make_managed<Gtk::TextView>();
+   ack_view->set_editable(false);
+   ack_view->set_cursor_visible(false);
+   ack_view->set_wrap_mode(Gtk::WrapMode::WORD);
+   ack_view->set_left_margin(8);
+   ack_view->set_right_margin(8);
+   ack_view->set_top_margin(8);
+   ack_view->set_bottom_margin(8);
+   ack_view->get_buffer()->set_text(acknowledgements);
+   Gtk::ScrolledWindow *ack_scroll = Gtk::make_managed<Gtk::ScrolledWindow>();
+   ack_scroll->set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::AUTOMATIC);
+   ack_scroll->set_child(*ack_view);
+
+   Gtk::Notebook *notebook = Gtk::make_managed<Gtk::Notebook>();
+   notebook->set_expand(true);
+   notebook->append_page(*vbox9, _("About"));
+   notebook->append_page(*ack_scroll, _("Acknowledgements"));
+
+   Gtk::Box *top_vbox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL, 0);
+   top_vbox->append(*notebook);
+   top_vbox->append(*hbuttonbox6);
+
    about_win->set_title(_("About Cheech"));
    about_win->set_modal(false);
    about_win->set_resizable(true);
-   about_win->set_default_size(320, 350);
-   about_win->set_child(*vbox9);
+   about_win->set_default_size(420, 420);
+   about_win->set_child(*top_vbox);
    close_button->signal_clicked().connect(sigc::mem_fun(*this, &about_win_glade::on_close_button_clicked));
 }
 

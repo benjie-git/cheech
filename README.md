@@ -1,4 +1,4 @@
-![cheech icon](pixmaps/cheech.png)
+![cheech icon](resources/cheech.png)
 
 # cheech - Chinese Checkers
 

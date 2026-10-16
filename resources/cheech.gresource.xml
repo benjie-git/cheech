@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/cheech">
     <file alias="cheech.png">cheech.png</file>
+    <file alias="acknowledgements.txt">acknowledgements.txt</file>
   </gresource>
 </gresources>
