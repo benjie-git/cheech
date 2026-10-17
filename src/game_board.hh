@@ -17,6 +17,7 @@
  *
  *  Gnome Chinese Checkers
  *  Copyright (C) 1999-2003 Loban Rahman
+ *  Copyright (C) 2005-2026 Ben Levitt
  */
 
 #ifndef INCL_GAME_BOARD_HH
@@ -69,24 +70,51 @@ public:
 						   bool hop_others, bool stop_others);
 	void recompute_zobrist();
 
-	unsigned int get_num_players() const;
-	bool get_long_jumps_allowed() const;
-	bool get_hop_others_allowed() const;
-	bool get_stop_others_allowed() const;
-	unsigned int *get_pegs(unsigned int player);
-	unsigned int get_size() const;
-	uint64_t get_zobrist() const;
-	GameHole* operator[](unsigned int i) const;
+	unsigned int get_num_players() const { return _num_players; }
+	bool get_long_jumps_allowed() const { return _long_jumps; }
+	bool get_hop_others_allowed() const { return _hop_others; }
+	bool get_stop_others_allowed() const { return _stop_others; }
+	unsigned int *get_pegs(unsigned int player) { return _pegs[player-1]; }
+	unsigned int get_size() const { return SIZE; }
+	uint64_t get_zobrist() const { return _zobrist; }
+
+	GameHole* operator[](unsigned int i) const
+	{
+		if (i >= SIZE)
+			return NULL;
+		return _board[i];
+	}
 
 	double get_distance(unsigned int from, unsigned int to);
 	int get_goal(unsigned int posn) const;
 	unsigned int get_next_player(unsigned int from_player) const;
-	bool player_finished(unsigned int player) const;
+
+	bool player_finished(unsigned int player) const
+	{
+		return (player > 0 && _pegs_in_goal[player-1] == 10);
+	}
 	bool game_finished() const;
-	unsigned int get_num_pegs_in_goal(unsigned int player) const;
+
+	unsigned int get_num_pegs_in_goal(unsigned int player) const
+	{
+		if (player < 1 || player > 6)
+			return 0;
+		return _pegs_in_goal[player-1];
+	}
 
 	bool is_other_player_triangle(unsigned int player, unsigned int hole) const;
-	bool valid_move_to(unsigned int start, unsigned int to) const;
+
+	bool valid_move_to(unsigned int start, unsigned int to) const
+	{
+		if (start >= SIZE || to >= SIZE || _board[start] == NULL)
+			return false;
+
+		if (!_hop_others &&
+			is_other_player_triangle(_board[start]->get_current_player(), to))
+				return false;
+
+		return (_board[to] && _board[to]->get_current_player() == 0);
+	}
 	bool valid_move(unsigned int from, unsigned int to,
 					int check_dir = -1) const;
 	bool valid_move_list(const MoveList& move_list,

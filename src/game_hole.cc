@@ -17,6 +17,7 @@
  *
  *  Gnome Chinese Checkers
  *  Copyright (C) 1999-2003 Loban Rahman
+ *  Copyright (C) 2005-2026 Ben Levitt
  */
 
 #include <math.h>
@@ -72,93 +73,10 @@ GameHole::~GameHole()
 }
 
 
-unsigned int GameHole::get_id() const
-{ 
-	return _id;
-}
-
-
-unsigned int GameHole::get_start_player() const
-{
-	return _start_player;
-}
-
-
-unsigned int GameHole::get_end_player() const
-{
-	return _end_player;
-}
-
-
-unsigned int GameHole::get_current_player() const
-{
-	return _current_player;
-}
-
-
-unsigned int GameHole::get_peg_list_index() const
-{
-	return _peg_list_index;
-}
-
-
-GameHole* GameHole::get_neighbor(unsigned int dir, unsigned int dist) const 
-{
-	if (dist == 1 || _neighbor[dir] == NULL)
-		return _neighbor[dir];
-
-	return _neighbor[dir]->get_neighbor(dir, dist-1);
-}
-
-
-double GameHole::get_location_x() const
-{
-	return _location_x;
-}
-
-
-double GameHole::get_location_y() const
-{
-	return _location_y;
-}
-
-
-void GameHole::set_current_player(unsigned int current_player) 
-{
-	_current_player = current_player; 
-	evt_player_changed(_current_player);
-}
-
-
-void GameHole::set_start_player(unsigned int start_player) 
-{
-	_start_player = start_player; 
-}
-
-
-void GameHole::set_end_player(unsigned int end_player) 
-{
-	_end_player = end_player; 
-}
-
-
-void GameHole::set_peg_list_index(unsigned int index) 
-{
-	_peg_list_index = index; 
-}
-
-
 void GameHole::set_neighbor(unsigned int i, GameHole* neighbor) 
 {
 	if (neighbor && get_distance_to(neighbor) < 2)
 		_neighbor[i] = neighbor;
-}
-
-
-void GameHole::set_location(double x, double y)
-{
-	_location_x = x;
-	_location_y = y;
 }
 
 

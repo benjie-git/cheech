@@ -17,6 +17,7 @@
  *
  *  Gnome Chinese Checkers
  *  Copyright (C) 1999-2003 Loban Rahman
+ *  Copyright (C) 2005-2026 Ben Levitt
  */
 
 #ifndef INCL_GAME_HOLE_HH
@@ -41,24 +42,41 @@ public:
 	GameHole& operator=(const GameHole& hole);
 	virtual ~GameHole();
 
-	sigc::signal<void(int)> evt_player_changed;
+	unsigned int get_id() const { return _id; }
+	unsigned int get_start_player() const { return _start_player; }
+	unsigned int get_end_player() const { return _end_player; }
+	unsigned int get_current_player() const { return _current_player; }
+	unsigned int get_peg_list_index() const { return _peg_list_index; }
 
-	unsigned int get_id() const;
-	unsigned int get_start_player() const;
-	unsigned int get_end_player() const;
-	unsigned int get_current_player() const;
-	unsigned int get_peg_list_index() const;
-	GameHole* get_neighbor(unsigned int dir, unsigned int dist = 1) const;
-	double get_location_x() const;
-	double get_location_y() const;
+	// Hot path: the search calls this hundreds of millions of times, so it
+	// lives in the header and keeps the dist == 1 case to a single load.
+	GameHole* get_neighbor(unsigned int dir, unsigned int dist = 1) const
+	{
+		GameHole *hole = _neighbor[dir];
+
+		while (dist > 1 && hole)
+		{
+			hole = hole->_neighbor[dir];
+			--dist;
+		}
+
+		return hole;
+	}
+
+	double get_location_x() const { return _location_x; }
+	double get_location_y() const { return _location_y; }
 	double get_distance_to(GameHole *to) const;
 
-	void set_current_player(unsigned int current_player);
-	void set_peg_list_index(unsigned int index);
-	void set_start_player(unsigned int start_player);
-	void set_end_player(unsigned int end_player);
+	void set_current_player(unsigned int current_player) { _current_player = current_player; }
+	void set_peg_list_index(unsigned int index) { _peg_list_index = index; }
+	void set_start_player(unsigned int start_player) { _start_player = start_player; }
+	void set_end_player(unsigned int end_player) { _end_player = end_player; }
 	void set_neighbor(unsigned int i, GameHole* neighbor);
-	void set_location(double x, double y);
+	void set_location(double x, double y)
+	{
+		_location_x = x;
+		_location_y = y;
+	}
 
 private:
 	unsigned int		_id;

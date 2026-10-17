@@ -18,6 +18,7 @@
  *
  *  Gnome Chinese Checkers
  *  Copyright (C) 1999-2003 Loban Rahman
+ *  Copyright (C) 2005-2026 Ben Levitt
  */
 
 #include <glibmm.h>

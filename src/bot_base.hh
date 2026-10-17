@@ -190,9 +190,16 @@ class BotBase : public sigc::trackable
 		// the list to score_moves()/select_top_moves().
 		void collect_root_moves(GameBoard *board, unsigned int player,
 			std::vector<MoveList> *moves);
+
+		// Append variant used by the alpha-beta kernel: *count is advanced
+		// past the new moves, and existing vector slots are overwritten in
+		// place so their buffers are reused across nodes.  The vector is
+		// never shrunk; only the first *count entries are valid.
+		void collect_root_moves(GameBoard *board, unsigned int player,
+			std::vector<MoveList> *moves, unsigned int *count);
 		void collect_peg_moves(GameBoard *board, unsigned int player,
 			MoveList *move, std::bitset<GameBoard::SIZE> *tos,
-			std::vector<MoveList> *moves);
+			std::vector<MoveList> *moves, unsigned int *count);
 
 		// Scores the given root moves, filling *scores in the same order.
 		// Uses the worker-clone pool when allow_parallel permits, otherwise

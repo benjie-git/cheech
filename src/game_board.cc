@@ -17,6 +17,7 @@
  *
  *  Gnome Chinese Checkers
  *  Copyright (C) 1999-2003 Loban Rahman
+ *  Copyright (C) 2005-2026 Ben Levitt
  */
 
 #include <math.h>
@@ -33,6 +34,26 @@ static uint64_t zobrist_piece(unsigned int player, unsigned int hole)
 	x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ULL;
 	x = (x ^ (x >> 27)) * 0x94D049BB133111EBULL;
 	return x ^ (x >> 31);
+}
+
+
+namespace {
+	// The search hashes two squares per simulated move; precompute the
+	// per-(player, hole) contribution once instead of running the mix
+	// function hundreds of millions of times.
+	struct ZobristTable
+	{
+		uint64_t value[7][GameBoard::SIZE];
+
+		ZobristTable()
+		{
+			for (unsigned int p = 0; p < 7; p++)
+				for (unsigned int h = 0; h < GameBoard::SIZE; h++)
+					value[p][h] = zobrist_piece(p, h);
+		}
+	};
+
+	const ZobristTable zobrist_table;
 }
 
 
@@ -241,7 +262,7 @@ void GameBoard::recompute_zobrist()
 		{
 			unsigned int player = _board[i]->get_current_player();
 			if (player)
-				_zobrist ^= zobrist_piece(player, i);
+				_zobrist ^= zobrist_table.value[player][i];
 		}
 	}
 }
@@ -286,56 +307,7 @@ void GameBoard::reset_peg_lists()
 			}
 		}
 	}
-}
 
-
-unsigned int GameBoard::get_num_players() const 
-{ 
-	return _num_players; 
-}
-
-
-bool GameBoard::get_long_jumps_allowed() const
-{
-	return _long_jumps;
-}
-
-
-bool GameBoard::get_hop_others_allowed() const
-{
-	return _hop_others;
-}
-
-
-bool GameBoard::get_stop_others_allowed() const
-{
-	return _stop_others;
-}
-
-
-unsigned int *GameBoard::get_pegs(unsigned int player)
-{
-	return _pegs[player-1];
-}
-
-
-unsigned int GameBoard::get_size() const 
-{ 
-	return SIZE; 
-}
-
-
-uint64_t GameBoard::get_zobrist() const
-{
-	return _zobrist;
-}
-
-
-GameHole* GameBoard::operator[](unsigned int i) const 
-{
-	if (i >= SIZE)
-		return NULL;
-	return _board[i]; 
 }
 
 
@@ -351,19 +323,6 @@ bool GameBoard::is_other_player_triangle(unsigned int player,
 			_board[hole]->get_end_player() <= _num_players &&
 			(_board[hole]->get_start_player() != 0 ||
 			 _board[hole]->get_end_player() != 0));
-}
-
-
-bool GameBoard::valid_move_to(unsigned int start, unsigned int to) const
-{
-	if (start >= SIZE || to >= SIZE || _board[start] == NULL)
-		return false;
-
-	if (!_hop_others &&
-		is_other_player_triangle(_board[start]->get_current_player(), to))
-			return false;
-	
-	return (_board[to] && _board[to]->get_current_player() == 0);
 }
 
 
@@ -534,23 +493,28 @@ void GameBoard::move_peg(unsigned int from, unsigned int to)
 		|| _board[to] == NULL)
 			return;
 
-	unsigned int player = _board[from]->get_current_player();
+	GameHole *from_hole = _board[from];
+	GameHole *to_hole = _board[to];
+
+	unsigned int player = from_hole->get_current_player();
 
 	if (player < 1 || player > 6)
 		return;
 
-	_board[to]->set_current_player(player);
-	_board[from]->set_current_player(0);
+	to_hole->set_current_player(player);
+	from_hole->set_current_player(0);
 
-	if (_board[from]->get_end_player() == player)
+	if (from_hole->get_end_player() == player)
 		_pegs_in_goal[player-1]--;
-	if (_board[to]->get_end_player() == player)
+	if (to_hole->get_end_player() == player)
 		_pegs_in_goal[player-1]++;
 
-	_pegs[player-1][_board[from]->get_peg_list_index()] = to;
-	_board[to]->set_peg_list_index(_board[from]->get_peg_list_index());
+	unsigned int peg_index = from_hole->get_peg_list_index();
+	_pegs[player-1][peg_index] = to;
+	to_hole->set_peg_list_index(peg_index);
 
-	_zobrist ^= zobrist_piece(player, from) ^ zobrist_piece(player, to);
+	_zobrist ^= zobrist_table.value[player][from]
+			  ^ zobrist_table.value[player][to];
 }
 
 
@@ -569,12 +533,6 @@ unsigned int GameBoard::get_next_player(unsigned int from_player) const
 }
 
 
-bool GameBoard::player_finished(unsigned int player) const
-{
-	return (player > 0 && _pegs_in_goal[player-1] == 10);
-}
-
-
 bool GameBoard::game_finished() const
 {
 	for (unsigned int player = 1; player <= _num_players; player++)
@@ -582,14 +540,6 @@ bool GameBoard::game_finished() const
 			return false;
 
 	return true;
-}
-
-
-unsigned int GameBoard::get_num_pegs_in_goal(unsigned int player) const
-{
-	if (player < 1 || player > 6)
-		return 0;
-	return _pegs_in_goal[player-1];
 }
 
 

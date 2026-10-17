@@ -734,17 +734,21 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 	std::bitset<GameBoard::SIZE> *tos)
 {
 	unsigned int from_hole = move->back();
+	GameHole *from = (*board)[from_hole];
+	bool first_hop = (move->size() == 1);
 
 	for (int dir = 0; dir < 6; dir++)
 	{
-		// Potential non-jumping move
-		if (move->size() == 1 && (*board)[from_hole]->get_neighbor(dir))
-		{
-			unsigned int to_hole =
-				(*board)[from_hole]->get_neighbor(dir)->get_id();
+		GameHole *neighbor = from->get_neighbor(dir);
 
+		// Potential non-jumping move
+		if (first_hop && neighbor)
+		{
+			unsigned int to_hole = neighbor->get_id();
+
+			// to_hole is by construction the neighbor in this direction,
+			// so the valid_move(from, to, dir) check would always pass.
 			if (board->valid_move_to(move->front(), to_hole) &&
-				board->valid_move(from_hole, to_hole, dir) &&
 				(board->get_stop_others_allowed() ||
 				!board->is_other_player_triangle(player, to_hole)))
 			{
@@ -821,8 +825,35 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 }
 
 
+// Store a move at index *count, reusing an existing slot's buffer when the
+// vector has already grown to that size (the alpha-beta kernel keeps its
+// per-depth pools alive across nodes).
+static inline void append_move(std::vector<MoveList> *moves,
+							   unsigned int *count, const MoveList &move)
+{
+	if (*count < moves->size())
+		(*moves)[*count] = move;
+	else
+		moves->push_back(move);
+
+	(*count)++;
+}
+
+
 void BotBase::collect_root_moves(GameBoard *board, unsigned int player,
 								 std::vector<MoveList> *moves)
+{
+	moves->clear();
+
+	unsigned int count = 0;
+	collect_root_moves(board, player, moves, &count);
+	moves->resize(count);
+}
+
+
+void BotBase::collect_root_moves(GameBoard *board, unsigned int player,
+								 std::vector<MoveList> *moves,
+								 unsigned int *count)
 {
 	moves->reserve(64);
 
@@ -838,7 +869,7 @@ void BotBase::collect_root_moves(GameBoard *board, unsigned int player,
 		tos.reset();
 		tos.set(pegs[i]);
 
-		collect_peg_moves(board, player, &move, &tos, moves);
+		collect_peg_moves(board, player, &move, &tos, moves, count);
 
 		move.pop_back();
 	}
@@ -847,25 +878,29 @@ void BotBase::collect_root_moves(GameBoard *board, unsigned int player,
 
 void BotBase::collect_peg_moves(GameBoard *board, unsigned int player,
 	MoveList *move, std::bitset<GameBoard::SIZE> *tos,
-	std::vector<MoveList> *moves)
+	std::vector<MoveList> *moves, unsigned int *count)
 {
 	unsigned int from_hole = move->back();
+	GameHole *from = (*board)[from_hole];
+	bool first_hop = (move->size() == 1);
 
 	for (int dir = 0; dir < 6; dir++)
 	{
-		// Potential non-jumping move
-		if (move->size() == 1 && (*board)[from_hole]->get_neighbor(dir))
-		{
-			unsigned int to_hole =
-				(*board)[from_hole]->get_neighbor(dir)->get_id();
+		GameHole *neighbor = from->get_neighbor(dir);
 
+		// Potential non-jumping move
+		if (first_hop && neighbor)
+		{
+			unsigned int to_hole = neighbor->get_id();
+
+			// to_hole is by construction the neighbor in this direction,
+			// so the valid_move(from, to, dir) check would always pass.
 			if (board->valid_move_to(move->front(), to_hole) &&
-				board->valid_move(from_hole, to_hole, dir) &&
 				(board->get_stop_others_allowed() ||
 				!board->is_other_player_triangle(player, to_hole)))
 			{
 				move->push_back(to_hole);
-				moves->push_back(*move);
+				append_move(moves, count, *move);
 				move->pop_back();
 				tos->set(to_hole);
 			}
@@ -882,12 +917,12 @@ void BotBase::collect_peg_moves(GameBoard *board, unsigned int player,
 			if (board->get_stop_others_allowed() ||
 				!board->is_other_player_triangle(player, to_hole))
 			{
-				moves->push_back(*move);
+				append_move(moves, count, *move);
 			}
 			tos->set(to_hole);
 
 			// Recurse
-			collect_peg_moves(board, player, move, tos, moves);
+			collect_peg_moves(board, player, move, tos, moves, count);
 			move->pop_back();
 		}
 	}

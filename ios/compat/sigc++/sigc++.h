@@ -184,6 +184,8 @@ public:
 
 	void operator()(Args... args) const { emit(args...); }
 
+	bool empty() const { return _slots.empty(); }
+
 private:
 	mutable std::vector<std::shared_ptr<entry>> _slots;
 };
