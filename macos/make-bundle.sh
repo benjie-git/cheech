@@ -139,19 +139,14 @@ fi
 # below exports CHEECH_RESOURCES, and AjaxServer::conv_filename looks in
 # share/cheech/cheechweb under it (same relative layout as make install).
 webdir="$res/share/cheech/cheechweb"
-if [ -d "$srcdir/ajax/www/com.benjie.cheech" ]; then
-	mkdir -p "$webdir/images"
-	for f in "$srcdir"/ajax/www/com.benjie.cheech/*; do
-		case "$f" in
-			*/Makefile*|*.bak)	continue ;;
-		esac
-		if [ -f "$f" ]; then
-			cp "$f" "$webdir/"
-		fi
-	done
-	for f in "$srcdir"/ajax/www/com.benjie.cheech/images/*.png; do
-		[ -e "$f" ] || continue
-		cp "$f" "$webdir/images/"
+if [ -d "$srcdir/web" ]; then
+	(
+		cd "$srcdir/web"
+		find . -type f ! -name 'Makefile*' ! -name '*.bak' -print
+	) | while IFS= read -r f; do
+		f="${f#./}"
+		mkdir -p "$webdir/$(dirname "$f")"
+		cp "$srcdir/web/$f" "$webdir/$f"
 	done
 fi
 

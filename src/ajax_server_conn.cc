@@ -494,6 +494,18 @@ void AjaxServerConn::ajax_click(Glib::ustring arguments)
 
 	if (!move_list_contains(i))
 	{
+		// Clicking another of the player's pegs clears any path built so
+		// far and starts a fresh selection from that peg.
+		if (_move_list.size() > 0 &&
+			(*board)[i]->get_current_player() ==
+			_game_client->get_my_player_number())
+		{
+			_move_list.clear();
+			_move_list.push_back(i);
+			_game_client->show_move(&_move_list);
+			return;
+		}
+
 		_move_list.push_back(i);
 		if (!((_move_list.size() == 1 &&
 			(*board)[i]->get_current_player() ==

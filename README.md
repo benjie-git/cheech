@@ -41,8 +41,8 @@ a separate cheech server on some publicly accessible server.  Run cheechd
 on that server, and everyone can Join to that server's address.
 
 You can also set up a cheechweb server so that people can join your game
-just by browsing to a web site.  This requires a web server that can serve php
-pages.
+just by browsing to a web site.  Cheech includes the web server it needs;
+no separate web server or PHP is required.
 - make sure the people trying to connect to cheechweb can access the cheechweb
   port of your computer (port 3839 by default)
 - start cheechd with the -W flag, or host a game from cheech.

@@ -379,9 +379,6 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   resources/Makefile
-  ajax/Makefile
-  ajax/www/Makefile
-  ajax/www/com.benjie.cheech/Makefile
-  ajax/www/com.benjie.cheech/images/Makefile
+  web/Makefile
 ])
 AC_OUTPUT

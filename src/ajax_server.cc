@@ -190,26 +190,35 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 		if (f[i] < 0x20)
 			return "";
 
-#ifdef WIN32
-	char module_path[PATH_MAX];
-	char *program_dir;
+	// A development-only override.  It lets a checkout serve the web client
+	// straight from the source tree without a make install.
+	const char *web_root = g_getenv("CHEECH_WEB_ROOT");
 
-	GetModuleFileName(NULL, module_path, PATH_MAX);
-	PathRemoveFileSpec(module_path);
-	program_dir = g_locale_to_utf8(module_path, -1, NULL, NULL, NULL);
-	filename = g_strdup_printf("%s\\cheechweb", program_dir) + f;
-
-    while ((pos = filename.find("/", 0)) < filename.size())
-		filename.replace(pos, 1, "\\");
-#else
-	// The macOS bundle launcher points CHEECH_RESOURCES at the app's
-	// Resources dir; the make-install layout lives under PACKAGE_DATA_DIR.
-	const char *resources = g_getenv("CHEECH_RESOURCES");
-	if (resources)
-		filename = Glib::ustring(resources) + "/share/cheech/cheechweb" + f;
+	if (web_root && *web_root)
+		filename = Glib::ustring(web_root) + f;
 	else
-		filename = PACKAGE_DATA_DIR "/" PACKAGE "/cheechweb" + f;
+	{
+#ifdef WIN32
+		char module_path[PATH_MAX];
+		char *program_dir;
+
+		GetModuleFileName(NULL, module_path, PATH_MAX);
+		PathRemoveFileSpec(module_path);
+		program_dir = g_locale_to_utf8(module_path, -1, NULL, NULL, NULL);
+		filename = g_strdup_printf("%s\\cheechweb", program_dir) + f;
+
+		while ((pos = filename.find("/", 0)) < filename.size())
+			filename.replace(pos, 1, "\\");
+#else
+		// The macOS bundle launcher points CHEECH_RESOURCES at the app's
+		// Resources dir; the make-install layout lives under PACKAGE_DATA_DIR.
+		const char *resources = g_getenv("CHEECH_RESOURCES");
+		if (resources)
+			filename = Glib::ustring(resources) + "/share/cheech/cheechweb" + f;
+		else
+			filename = PACKAGE_DATA_DIR "/" PACKAGE "/cheechweb" + f;
 #endif
+	}
 
 	while ((pos = filename.find("..", 0)) < filename.size())
 		filename.replace(pos, 2, "");
@@ -266,22 +275,36 @@ void AjaxServer::send_content_type(Glib::ustring f, Net::Conn *conn)
     if (pos < f.size())
 		ext = f.substr(pos+1);
 
-	if (ext == "txt")
-		(*conn) << "Content-Type: text/plain\r\n\r\n";
+	(*conn) << "Cache-Control: no-cache\r\n";
+
+	if (ext == "html" || ext == "htm")
+		(*conn) << "Content-Type: text/html; charset=utf-8\r\n\r\n";
+	else if (ext == "txt")
+		(*conn) << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
 	else if (ext == "xml")
-		(*conn) << "Content-Type: text/xml\r\n\r\n";
-	else if (ext == "js")
-		(*conn) << "Content-Type: text/javascript\r\n\r\n";
+		(*conn) << "Content-Type: text/xml; charset=utf-8\r\n\r\n";
+	else if (ext == "js" || ext == "mjs")
+		(*conn) << "Content-Type: text/javascript; charset=utf-8\r\n\r\n";
 	else if (ext == "css")
-		(*conn) << "Content-Type: text/css\r\n\r\n";
+		(*conn) << "Content-Type: text/css; charset=utf-8\r\n\r\n";
+	else if (ext == "json" || ext == "webmanifest")
+		(*conn) << "Content-Type: application/json; charset=utf-8\r\n\r\n";
+	else if (ext == "svg")
+		(*conn) << "Content-Type: image/svg+xml\r\n\r\n";
 	else if (ext == "png")
 		(*conn) << "Content-Type: image/png\r\n\r\n";
-	else if (ext == "jpg" || ext == "jepg")
+	else if (ext == "jpg" || ext == "jpeg")
 		(*conn) << "Content-Type: image/jpeg\r\n\r\n";
 	else if (ext == "gif")
 		(*conn) << "Content-Type: image/gif\r\n\r\n";
+	else if (ext == "ico")
+		(*conn) << "Content-Type: image/x-icon\r\n\r\n";
+	else if (ext == "woff")
+		(*conn) << "Content-Type: font/woff\r\n\r\n";
+	else if (ext == "woff2")
+		(*conn) << "Content-Type: font/woff2\r\n\r\n";
 	else
-		(*conn) << "Content-Type: text/html\r\n\r\n";
+		(*conn) << "Content-Type: text/html; charset=utf-8\r\n\r\n";
 }
 
 

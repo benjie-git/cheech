@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src resources ajax
+SUBDIRS = src resources web
 
 docdir = ${prefix}/doc/cheech
 dist_doc_DATA = \

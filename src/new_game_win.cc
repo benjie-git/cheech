@@ -392,6 +392,16 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 		seat.level >= 1 && seat.level <= 4 ? seat.level : 1));
 	_loading_seat = false;
 
+	// Bot names are not persisted: a computer seat starts every run with
+	// the cute default for its type/depth, registered so it keeps
+	// following type/depth changes until the user types a custom name.
+	if (seat.kind == 1)
+	{
+		Glib::ustring name = default_name_for(row);
+		row->name_entry->set_text(name);
+		_default_names[row->id] = name;
+	}
+
 	// Remember the name this seat uses as a Human.
 	if (!seat.human_name.empty())
 		_human_names[row->id] = seat.human_name;
@@ -898,6 +908,16 @@ void new_game_win::on_host_button_clicked()
 	bool ho = hop_others->get_active();
 	bool so = stop_others->get_active();
 
+	// The animation speed is saved up front: the game about to start
+	// reads it while connecting, and a re-host confirmed while another
+	// game is running returns false below and would skip the save.
+	{
+		Prefs prefs;
+		prefs.read();
+		prefs.move_delay = (int)(move_scale->get_value() + 0.5);
+		prefs.write();
+	}
+
 	if (signal_start_server(host_port, cheechweb_port, lj, ho, so, seats))
 	{
 		Prefs prefs;
@@ -921,7 +941,6 @@ void new_game_win::on_host_button_clicked()
 		prefs.long_jumps = lj;
 		prefs.hop_others = ho;
 		prefs.stop_others = so;
-		prefs.move_delay = (int)(move_scale->get_value() + 0.5);
 		prefs.write();
 		save_seats();
 	}
@@ -1170,10 +1189,11 @@ void new_game_win::save_seats()
 				}
 				focus = list;
 			}
+			// Bot names are not persisted; add_seat regenerates the
+			// default for the stored type/depth on load.
 			line = "C|" + escape_field(seat.family) + "|" +
 				util::to_str(seat.level) + "|" + util::to_str(seat.depth) +
-				"|" + escape_field(seat.name) + "|" +
-				util::to_str(seat.color) + "|" + focus + "|" +
+				"||" + util::to_str(seat.color) + "|" + focus + "|" +
 				escape_field(seat.human_name);
 		}
 		else
