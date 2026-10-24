@@ -28,13 +28,17 @@ struct BoardView: View {
 				let movingTo = animator.destination
 				let movingPoint = animator.position(points: points, at: timeline.date)
 				let bgRect = boardBackgroundRect(points: points, size: geo.size, unit: unit)
+				let backgroundPath = BoardGeometry.hexBoardPath(
+					points: points,
+					padding: unit * 0.8,
+					cornerRadius: unit * 0.8
+				)
 				let overlayInset = unit * 0.25
 
 				ZStack(alignment: .topLeading) {
 					Canvas { context, size in
-						// Background hugs the lattice so it stays close to square
-						// instead of filling the full (tall) canvas.
-						let background = Path(roundedRect: bgRect, cornerRadius: 24)
+						// A rounded hexagon just outside the six star points.
+						let background = backgroundPath ?? Path(roundedRect: bgRect, cornerRadius: 24)
 						context.fill(background, with: .color(Color(red: 0.55, green: 0.40, blue: 0.24)))
 
 						// Lattice
@@ -102,8 +106,8 @@ struct BoardView: View {
 						}
 					)
 
-					// Overlays sit in the top corners of the board background,
-					// where the hexagram has no holes.
+					// Overlays sit at the corners of the board's bounding box,
+					// outside the hexagonal slab.
 					if let leadingOverlay {
 						leadingOverlay
 							.padding([.top, .leading], overlayInset)

@@ -969,8 +969,8 @@ struct GameScreenView: View {
 		}
 	}
 
-	// Move/Cancel for the in-progress path, pinned to the bottom-right corner
-	// of the board (which has no holes).
+	// Move/Cancel for the in-progress path, pinned to the bottom-right
+	// corner of the board's bounding box.
 	@ViewBuilder private var moveControls: some View {
 		let canControl = !session.isSpectator && (!session.isHost || session.activeSeatKind == .human)
 		let selectedCount = session.selectedHoles().count
@@ -985,7 +985,7 @@ struct GameScreenView: View {
 		}
 	}
 
-	// Who's turn it is, pinned to the board corner (which has no holes).
+	// Who's turn it is, pinned to the board's top-left corner.
 	private var turnBadge: some View {
 		VStack(alignment: .leading, spacing: 8) {
 			HStack(spacing: 6) {

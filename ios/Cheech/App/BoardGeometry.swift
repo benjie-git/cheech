@@ -92,7 +92,8 @@ enum BoardGeometry {
 
 		let boardW = max(maxX - minX, 0.001)
 		let boardH = max(maxY - minY, 0.001)
-		let scale = min(Double(size.width) / boardW, Double(size.height) / boardH) * 0.94
+		// Leave room for the hexagonal board background beyond the star tips.
+		let scale = min(Double(size.width) / boardW, Double(size.height) / boardH) * 0.88
 		let offsetX = (Double(size.width) - boardW * scale) / 2.0
 		let offsetY = (Double(size.height) - boardH * scale) / 2.0
 
@@ -119,6 +120,108 @@ enum BoardGeometry {
 			}
 		}
 		return best
+	}
+
+	/// A rounded hexagonal board slab just outside the six star points.
+	static func hexBoardPath(points: [CGPoint?], padding: CGFloat, cornerRadius: CGFloat) -> Path? {
+		let hull = convexHull(points.compactMap { $0 })
+		guard hull.count == 6 else { return nil }
+
+		let cx = hull.reduce(CGFloat.zero) { $0 + $1.x } / CGFloat(hull.count)
+		let cy = hull.reduce(CGFloat.zero) { $0 + $1.y } / CGFloat(hull.count)
+		let vertices = hull.map { p -> CGPoint in
+			let dx = p.x - cx
+			let dy = p.y - cy
+			let length = sqrt(dx * dx + dy * dy)
+			guard length > 0 else { return p }
+			let scale = (length + padding) / length
+			return CGPoint(x: cx + dx * scale, y: cy + dy * scale)
+		}
+		return roundedPolygonPath(vertices, cornerRadius: cornerRadius)
+	}
+
+	private static func convexHull(_ points: [CGPoint]) -> [CGPoint] {
+		guard points.count > 2 else { return points }
+		let sorted = points.sorted {
+			if $0.x == $1.x { return $0.y < $1.y }
+			return $0.x < $1.x
+		}
+
+		func cross(_ o: CGPoint, _ a: CGPoint, _ b: CGPoint) -> CGFloat {
+			(a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
+		}
+
+		var lower: [CGPoint] = []
+		for p in sorted {
+			while lower.count >= 2 && cross(lower[lower.count - 2], lower[lower.count - 1], p) <= 0 {
+				lower.removeLast()
+			}
+			lower.append(p)
+		}
+
+		var upper: [CGPoint] = []
+		for p in sorted.reversed() {
+			while upper.count >= 2 && cross(upper[upper.count - 2], upper[upper.count - 1], p) <= 0 {
+				upper.removeLast()
+			}
+			upper.append(p)
+		}
+
+		lower.removeLast()
+		upper.removeLast()
+		return lower + upper
+	}
+
+	private static func roundedPolygonPath(_ vertices: [CGPoint], cornerRadius: CGFloat) -> Path {
+		var path = Path()
+		guard vertices.count > 2 else { return path }
+
+		if cornerRadius <= 0 {
+			path.move(to: vertices[0])
+			for p in vertices.dropFirst() {
+				path.addLine(to: p)
+			}
+			path.closeSubpath()
+			return path
+		}
+
+		var entries = [CGPoint](repeating: .zero, count: vertices.count)
+		var exits = [CGPoint](repeating: .zero, count: vertices.count)
+
+		for i in 0..<vertices.count {
+			let prev = vertices[(i + vertices.count - 1) % vertices.count]
+			let curr = vertices[i]
+			let next = vertices[(i + 1) % vertices.count]
+			let toPrev = unitVector(from: curr, to: prev)
+			let toNext = unitVector(from: curr, to: next)
+			let dot = max(-1, min(1, toPrev.x * toNext.x + toPrev.y * toNext.y))
+			let angle = CGFloat(acos(Double(dot)))
+			let maxTangent = min(
+				hypot(curr.x - prev.x, curr.y - prev.y),
+				hypot(curr.x - next.x, curr.y - next.y)
+			) * 0.5
+			let tangent = min(cornerRadius / CGFloat(tan(Double(angle * 0.5))), maxTangent)
+			entries[i] = CGPoint(x: curr.x + toPrev.x * tangent, y: curr.y + toPrev.y * tangent)
+			exits[i] = CGPoint(x: curr.x + toNext.x * tangent, y: curr.y + toNext.y * tangent)
+		}
+
+		path.move(to: entries[0])
+		path.addQuadCurve(to: exits[0], control: vertices[0])
+		for i in 1..<vertices.count {
+			path.addLine(to: entries[i])
+			path.addQuadCurve(to: exits[i], control: vertices[i])
+		}
+		path.addLine(to: entries[0])
+		path.closeSubpath()
+		return path
+	}
+
+	private static func unitVector(from a: CGPoint, to b: CGPoint) -> CGPoint {
+		let dx = b.x - a.x
+		let dy = b.y - a.y
+		let length = sqrt(dx * dx + dy * dy)
+		guard length > 0 else { return .zero }
+		return CGPoint(x: dx / length, y: dy / length)
 	}
 }
 
