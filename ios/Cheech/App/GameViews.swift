@@ -118,9 +118,19 @@ struct GameSetupView: View {
 						.font(.system(size: 44, weight: .bold, design: .rounded))
 						.lineLimit(1)
 						.minimumScaleFactor(0.6)
-					Text("Chinese Checkers")
-						.font(.headline)
-						.foregroundStyle(.secondary)
+					HStack(spacing: 6) {
+						Text("Chinese Checkers")
+							.font(.headline)
+							.foregroundStyle(.secondary)
+						Button {
+							model.showHowToPlay = true
+						} label: {
+							Image(systemName: "info.circle")
+								.foregroundStyle(.secondary)
+						}
+						.buttonStyle(.plain)
+						.accessibilityLabel("How to Play")
+					}
 				}
 				Spacer(minLength: 12)
 				Button {
@@ -173,18 +183,7 @@ struct GameSetupView: View {
 						}
 						.padding(.vertical, 2)
 					} header: {
-						HStack {
-							Text("Game")
-							Spacer()
-							Button {
-								model.showHowToPlay = true
-							} label: {
-								Image(systemName: "info.circle")
-									.foregroundStyle(.primary)
-							}
-							.buttonStyle(.plain)
-							.accessibilityLabel("How to Play")
-						}
+						Text("Game")
 					}
 					Section("Players") {
 						ForEach($model.seats) { $seat in
@@ -329,8 +328,9 @@ struct InviteView: View {
 	}
 }
 
-// The How to Play overlay, opened from the (i) button next to the "Game"
-// header on the setup page.  Ported from the desktop How to Play window.
+// The How to Play overlay, opened from the (i) button next to the "Chinese
+// Checkers" subtitle on the setup page.  Ported from the desktop How to Play
+// window.
 struct HowToPlayView: View {
 	@EnvironmentObject var model: SessionModel
 
