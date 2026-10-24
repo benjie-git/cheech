@@ -35,6 +35,10 @@ Examples
     ./tools/build_board_svg.py --flat '#f5f0e8' \
         --size 1024x1024 -o icon.svg
 
+    # Hexagonal board with rounded corners around the star
+    ./tools/build_board_svg.py --hex-board \
+        --size 1024x1024 -o hex.svg
+
     # Named triangles, custom hex colours and a transparent canvas
     ./tools/build_board_svg.py --top '#e20000' --bottom '#0095e2' \
         --upper-right none --lower-right none \
@@ -42,8 +46,8 @@ Examples
 
 Requires only the Python standard library (or use rsvg-convert to rasterise).
 
-Icon created using:
-./tools/build_board_svg.py --players 3 --colors none,blue,none,green,none,red --hole-size 0.3 --hole-color "#952" --lattice-color "#b74" --size 1024x1024 --flat '#c85' -o tools/board3.svg
+# Icon created using:
+./tools/build_board_svg.py --players 3 --colors none,blue,none,green,none,red --hole-size 0.3 --hole-color "#952" --lattice-color "#b74" --padding 1.6 --size 1024x1024 --hex-board --board-color '#c38858' -o board3.svg
 
 """
 
@@ -190,6 +194,59 @@ def rotated_points(degrees: float) -> dict[int, tuple[float, float]]:
     return result
 
 
+def convex_hull(points: dict[int, tuple[float, float]]) -> list[tuple[float, float]]:
+    """Convex hull of the hole centres, in order around the perimeter."""
+    pts = sorted(set(points.values()))
+    if len(pts) <= 2:
+        return pts
+
+    def cross(
+        origin: tuple[float, float],
+        a: tuple[float, float],
+        b: tuple[float, float],
+    ) -> float:
+        return (
+            (a[0] - origin[0]) * (b[1] - origin[1])
+            - (a[1] - origin[1]) * (b[0] - origin[0])
+        )
+
+    lower: list[tuple[float, float]] = []
+    for point in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], point) <= 0:
+            lower.pop()
+        lower.append(point)
+
+    upper: list[tuple[float, float]] = []
+    for point in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], point) <= 0:
+            upper.pop()
+        upper.append(point)
+
+    return lower[:-1] + upper[:-1]
+
+
+def hex_board_vertices(
+    points: dict[int, tuple[float, float]], padding: float
+) -> list[tuple[float, float]]:
+    """The six star points pushed outwards by padding, as a hexagon."""
+    hull = convex_hull(points)
+    if len(hull) != 6:
+        raise ValueError("a hex board requires six outer star points")
+
+    cx = sum(x for x, _ in hull) / 6.0
+    cy = sum(y for _, y in hull) / 6.0
+    vertices = []
+    for x, y in hull:
+        dx, dy = x - cx, y - cy
+        distance = math.hypot(dx, dy)
+        if distance == 0:
+            vertices.append((x, y))
+            continue
+        scale = (distance + padding) / distance
+        vertices.append((cx + dx * scale, cy + dy * scale))
+    return vertices
+
+
 def default_triangle_colors(num_players: int, palette: list[Color]) -> list[Color | None]:
     """Standard seating for num_players, using the core's START_MAP."""
     colors: list[Color | None] = [None] * 6
@@ -261,19 +318,82 @@ def _num(value: float) -> str:
     return "0" if text in {"", "-0"} else text
 
 
+def _rounded_polygon_path(
+    vertices: list[tuple[float, float]], radius: float
+) -> str:
+    """Closed path with quadratic-rounded corners."""
+    if len(vertices) < 3:
+        return ""
+    if radius <= 0:
+        return "M" + " L".join(
+            f"{_num(x)} {_num(y)}" for x, y in vertices
+        ) + " Z"
+
+    commands: list[str] = []
+    count = len(vertices)
+    for index, (x, y) in enumerate(vertices):
+        px, py = vertices[index - 1]
+        nx, ny = vertices[(index + 1) % count]
+        pvx, pvy = px - x, py - y
+        nvx, nvy = nx - x, ny - y
+        plen = math.hypot(pvx, pvy)
+        nlen = math.hypot(nvx, nvy)
+        if plen == 0 or nlen == 0:
+            continue
+
+        dot = (pvx * nvx + pvy * nvy) / (plen * nlen)
+        angle = math.acos(max(-1.0, min(1.0, dot)))
+        tangent = (
+            radius / math.tan(angle / 2.0) if angle > 1e-9 else 0.0
+        )
+        tangent = min(tangent, 0.5 * plen, 0.5 * nlen)
+
+        start_x = x + pvx / plen * tangent
+        start_y = y + pvy / plen * tangent
+        end_x = x + nvx / nlen * tangent
+        end_y = y + nvy / nlen * tangent
+
+        command = "M" if not commands else "L"
+        commands.append(f"{command}{_num(start_x)} {_num(start_y)}")
+        if tangent > 0:
+            commands.append(
+                f"Q{_num(x)} {_num(y)} {_num(end_x)} {_num(end_y)}"
+            )
+    if not commands:
+        return ""
+    commands.append("Z")
+    return " ".join(commands)
+
+
 def build_svg(args: argparse.Namespace, triangle_colors: list[Color | None]) -> str:
     points = rotated_points(args.rotation)
     edges = lattice_edges()
 
-    xs = [p[0] for p in points.values()]
-    ys = [p[1] for p in points.values()]
-    min_x, max_x = min(xs), max(xs)
-    min_y, max_y = min(ys), max(ys)
+    use_hex_board = (
+        args.hex_board
+        and not args.no_board
+        and args.board_color.lower() not in {"none", ""}
+    )
+    hex_board_path: Optional[str] = None
+    if use_hex_board:
+        hex_vertices = hex_board_vertices(points, args.padding)
+        slab_x = min(x for x, _ in hex_vertices)
+        slab_y = min(y for _, y in hex_vertices)
+        slab_w = max(x for x, _ in hex_vertices) - slab_x
+        slab_h = max(y for _, y in hex_vertices) - slab_y
+        hex_board_path = _rounded_polygon_path(
+            hex_vertices, max(0.0, args.corner_radius)
+        )
+    else:
+        xs = [p[0] for p in points.values()]
+        ys = [p[1] for p in points.values()]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+        slab_x = min_x - args.padding
+        slab_y = min_y - args.padding
+        slab_w = (max_x - min_x) + 2.0 * args.padding
+        slab_h = (max_y - min_y) + 2.0 * args.padding
 
-    slab_x = min_x - args.padding
-    slab_y = min_y - args.padding
-    slab_w = (max_x - min_x) + 2.0 * args.padding
-    slab_h = (max_y - min_y) + 2.0 * args.padding
     radius = max(0.0, min(args.corner_radius, slab_w / 2.0, slab_h / 2.0))
 
     view_x = slab_x - args.margin
@@ -361,21 +481,28 @@ def build_svg(args: argparse.Namespace, triangle_colors: list[Color | None]) -> 
             f'fill="{args.canvas}"/>'
         )
 
-    # Board slab, hugging the lattice as in BoardView.boardBackgroundRect().
+    # Board slab: a rounded rectangle hugging the lattice by default, or a
+    # rounded hexagon around the six star points with --hex-board.
     if not args.no_board and args.board_color.lower() not in {"none", ""}:
-        add(
-            f'<rect id="board" x="{_num(slab_x)}" y="{_num(slab_y)}" '
-            f'width="{_num(slab_w)}" height="{_num(slab_h)}" '
-            f'rx="{_num(radius)}" ry="{_num(radius)}" '
-            f'fill="{args.board_color}"'
-            + (
-                f' stroke="{args.board_outline}" '
-                f'stroke-width="{_num(args.board_outline_width)}"'
-                if args.board_outline.lower() not in {"none", ""}
-                else ""
-            )
-            + "/>"
+        outline = (
+            f' stroke="{args.board_outline}" '
+            f'stroke-width="{_num(args.board_outline_width)}" '
+            'stroke-linejoin="round"'
+            if args.board_outline.lower() not in {"none", ""}
+            else ""
         )
+        if hex_board_path is not None:
+            add(
+                f'<path id="board" d="{hex_board_path}" '
+                f'fill="{args.board_color}"{outline}/>'
+            )
+        else:
+            add(
+                f'<rect id="board" x="{_num(slab_x)}" y="{_num(slab_y)}" '
+                f'width="{_num(slab_w)}" height="{_num(slab_h)}" '
+                f'rx="{_num(radius)}" ry="{_num(radius)}" '
+                f'fill="{args.board_color}"{outline}/>'
+            )
 
     # Lattice edges.
     if not args.no_lattice and args.lattice_color.lower() not in {"none", ""}:
@@ -492,7 +619,11 @@ def build_parser() -> argparse.ArgumentParser:
     layout.add_argument("--margin", type=float, default=0.15, metavar="U",
                         help="extra space outside the board slab, in lattice units (default: 0.15)")
     layout.add_argument("--padding", type=float, default=0.8, metavar="U",
-                        help="space beyond the outermost hole centres (default: 0.8)")
+                        help=(
+                            "space beyond the outermost hole centres; with "
+                            "--hex-board, the radial gap to the hexagon "
+                            "corners (default: 0.8)"
+                        ))
     layout.add_argument("--corner-radius", type=float, default=0.8, metavar="U",
                         help="board slab corner radius (default: 0.8)")
     layout.add_argument("--rotation", type=float, default=0.0, metavar="DEG",
@@ -508,6 +639,9 @@ def build_parser() -> argparse.ArgumentParser:
                        help="board slab colour (default: #8c663d; 'none' also omits it)")
     style.add_argument("--no-board", action="store_true",
                        help="omit the rounded board slab and draw the lattice/holes/pegs directly")
+    style.add_argument("--hex-board", "--hexagonal-board", dest="hex_board",
+                       action="store_true",
+                       help="draw the board slab as a rounded hexagon around the six star points")
     style.add_argument("--board-outline", default="none", metavar="COLOR",
                        help="optional board slab outline (default: none)")
     style.add_argument("--board-outline-width", type=float, default=0.04, metavar="U",
