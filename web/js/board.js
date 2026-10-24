@@ -90,6 +90,133 @@ function roundedRect(ctx, x, y, w, h, radius) {
 	ctx.closePath();
 }
 
+function cross(a, b, c) {
+	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+}
+
+function convexHull(points) {
+	if (points.length <= 2) return points.slice();
+
+	const sorted = points.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+	const lower = [];
+	for (const point of sorted) {
+		while (
+			lower.length >= 2 &&
+			cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0
+		) {
+			lower.pop();
+		}
+		lower.push(point);
+	}
+
+	const upper = [];
+	for (let i = sorted.length - 1; i >= 0; i--) {
+		const point = sorted[i];
+		while (
+			upper.length >= 2 &&
+			cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0
+		) {
+			upper.pop();
+		}
+		upper.push(point);
+	}
+
+	lower.pop();
+	upper.pop();
+	return lower.concat(upper);
+}
+
+function unitVector(from, to) {
+	const dx = to.x - from.x;
+	const dy = to.y - from.y;
+	const length = Math.hypot(dx, dy);
+	if (!length) return { x: 0, y: 0 };
+	return { x: dx / length, y: dy / length };
+}
+
+function hexBoardVertices(points, padding) {
+	const hull = convexHull(points);
+	if (hull.length !== 6) return [];
+
+	let cx = 0;
+	let cy = 0;
+	for (const point of hull) {
+		cx += point.x;
+		cy += point.y;
+	}
+	cx /= hull.length;
+	cy /= hull.length;
+
+	return hull.map((point) => {
+		const dx = point.x - cx;
+		const dy = point.y - cy;
+		const distance = Math.hypot(dx, dy);
+		if (!distance) return { x: point.x, y: point.y };
+		const factor = (distance + padding) / distance;
+		return { x: cx + dx * factor, y: cy + dy * factor };
+	});
+}
+
+function roundedPolygonPath(ctx, vertices, radius) {
+	const count = vertices.length;
+	if (count < 3) return;
+
+	if (radius <= 0) {
+		ctx.beginPath();
+		ctx.moveTo(vertices[0].x, vertices[0].y);
+		for (let i = 1; i < count; i++) {
+			ctx.lineTo(vertices[i].x, vertices[i].y);
+		}
+		ctx.closePath();
+		return;
+	}
+
+	const entries = [];
+	const exits = [];
+	for (let i = 0; i < count; i++) {
+		const current = vertices[i];
+		const previous = vertices[(i + count - 1) % count];
+		const next = vertices[(i + 1) % count];
+		const toPrevious = unitVector(current, previous);
+		const toNext = unitVector(current, next);
+		const dot = Math.max(
+			-1,
+			Math.min(1, toPrevious.x * toNext.x + toPrevious.y * toNext.y)
+		);
+		const angle = Math.acos(dot);
+		const edgeLimit = 0.5 * Math.min(
+			Math.hypot(previous.x - current.x, previous.y - current.y),
+			Math.hypot(next.x - current.x, next.y - current.y)
+		);
+		const tangent =
+			angle > 0.0001
+				? Math.min(radius / Math.tan(angle / 2), edgeLimit)
+				: 0;
+
+		entries.push({
+			x: current.x + toPrevious.x * tangent,
+			y: current.y + toPrevious.y * tangent,
+		});
+		exits.push({
+			x: current.x + toNext.x * tangent,
+			y: current.y + toNext.y * tangent,
+		});
+	}
+
+	ctx.beginPath();
+	ctx.moveTo(entries[0].x, entries[0].y);
+	for (let i = 0; i < count; i++) {
+		if (i > 0) ctx.lineTo(entries[i].x, entries[i].y);
+		ctx.quadraticCurveTo(
+			vertices[i].x,
+			vertices[i].y,
+			exits[i].x,
+			exits[i].y
+		);
+	}
+	ctx.closePath();
+}
+
 function moveDuration(holes) {
 	return Math.max(220, Math.min(700, 170 + Math.max(0, holes - 1) * 80));
 }
@@ -114,6 +241,8 @@ export class BoardView {
 		this.points = new Array(HOLE_COUNT).fill(null);
 		this.unit = 1;
 		this.bgRect = null;
+		this.hexVertices = [];
+		this.hexRadius = 0;
 
 		this._rotation = null;
 		this._move = null;
@@ -135,6 +264,8 @@ export class BoardView {
 		this.rotationReady = false;
 		this._rotation = null;
 		this._move = null;
+		this.hexVertices = [];
+		this.hexRadius = 0;
 		this._requestDraw();
 	}
 
@@ -319,6 +450,8 @@ export class BoardView {
 			this.points = new Array(HOLE_COUNT).fill(null);
 			this.unit = 1;
 			this.bgRect = null;
+			this.hexVertices = [];
+			this.hexRadius = 0;
 			return;
 		}
 
@@ -352,6 +485,11 @@ export class BoardView {
 			w: boardW * scale + pad * 2 * scale,
 			h: boardH * scale + pad * 2 * scale,
 		};
+		this.hexVertices = hexBoardVertices(
+			points.filter(Boolean),
+			pad * scale
+		);
+		this.hexRadius = pad * scale;
 	}
 
 	draw() {
@@ -414,7 +552,12 @@ export class BoardView {
 
 		this._layout(this.rotation);
 
-		if (this.bgRect) {
+		// A rounded hexagonal slab just outside the six star points.
+		if (this.hexVertices.length === 6) {
+			roundedPolygonPath(ctx, this.hexVertices, this.hexRadius);
+			ctx.fillStyle = WOOD;
+			ctx.fill();
+		} else if (this.bgRect) {
 			roundedRect(
 				ctx,
 				this.bgRect.x,
