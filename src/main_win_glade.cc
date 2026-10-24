@@ -309,8 +309,8 @@ main_win_glade::main_win_glade(
       {
          board_info_css = Gtk::CssProvider::create();
          board_info_css->load_from_data(
-            ".board-info label { font-size: 150%; color: #000000; }\n"
-            ".board-info label:backdrop { color: #000000; opacity: 1; }");
+            ".board-info label { font-size: 150%; color: #ffffff; }\n"
+            ".board-info label:backdrop { color: #ffffff; opacity: 1; }");
          Gtk::StyleContext::add_provider_for_display(
             Gdk::Display::get_default(), board_info_css,
             GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -338,7 +338,7 @@ main_win_glade::main_win_glade(
       vbox12->set_margin_top((int)by + inset);
       vbox13->set_margin_end((int)(game_view->get_width() - (bx + bw)) + inset + 20);
       vbox13->set_margin_top((int)by + inset);
-      // Hug the bottom right corner of the board background.
+      // Hug the bottom right corner of the board's bounding box.
       move_button->set_margin_end((int)(game_view->get_width() - (bx + bw)) + inset);
       move_button->set_margin_bottom((int)(game_view->get_height() - (by + bh)) + inset);
    });

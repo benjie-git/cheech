@@ -9,6 +9,7 @@
 #include <gdk/gdk.h>
 #include "click_counter.hh"
 #include <gtkmm/eventcontrollerkey.h>
+#include <algorithm>
 #include <sstream>
 #include <cmath>
 
@@ -20,6 +21,163 @@
 
 #define PI 3.14159265359
 #define MULTIPLIER 1.5
+
+
+namespace {
+
+struct BoardPoint
+{
+	double x;
+	double y;
+};
+
+double cross(const BoardPoint& origin, const BoardPoint& a,
+			 const BoardPoint& b)
+{
+	return (a.x - origin.x) * (b.y - origin.y)
+		 - (a.y - origin.y) * (b.x - origin.x);
+}
+
+std::vector<BoardPoint> convex_hull(std::vector<BoardPoint> points)
+{
+	if (points.size() <= 2)
+		return points;
+
+	std::sort(points.begin(), points.end(),
+		[](const BoardPoint& a, const BoardPoint& b) {
+			return a.x == b.x ? a.y < b.y : a.x < b.x;
+		});
+
+	std::vector<BoardPoint> lower;
+	for (const BoardPoint& point : points)
+	{
+		while (lower.size() >= 2
+			&& cross(lower[lower.size() - 2], lower.back(), point) <= 0.0)
+			lower.pop_back();
+		lower.push_back(point);
+	}
+
+	std::vector<BoardPoint> upper;
+	for (auto point = points.rbegin(); point != points.rend(); point++)
+	{
+		while (upper.size() >= 2
+			&& cross(upper[upper.size() - 2], upper.back(), *point) <= 0.0)
+			upper.pop_back();
+		upper.push_back(*point);
+	}
+
+	lower.pop_back();
+	upper.pop_back();
+	lower.insert(lower.end(), upper.begin(), upper.end());
+	return lower;
+}
+
+std::vector<BoardPoint> hex_board_vertices(
+	const std::vector<BoardPoint>& points, double padding)
+{
+	std::vector<BoardPoint> vertices = convex_hull(points);
+	if (vertices.size() != 6)
+		return std::vector<BoardPoint>();
+
+	double cx = 0.0, cy = 0.0;
+	for (const BoardPoint& point : vertices)
+	{
+		cx += point.x;
+		cy += point.y;
+	}
+	cx /= 6.0;
+	cy /= 6.0;
+
+	for (BoardPoint& point : vertices)
+	{
+		double dx = point.x - cx;
+		double dy = point.y - cy;
+		double distance = std::hypot(dx, dy);
+		if (distance == 0.0)
+			continue;
+
+		double scale = (distance + padding) / distance;
+		point.x = cx + dx * scale;
+		point.y = cy + dy * scale;
+	}
+
+	return vertices;
+}
+
+void quadratic_to(const Cairo::RefPtr<Cairo::Context>& cr,
+				  const BoardPoint& start, const BoardPoint& control,
+				  const BoardPoint& end)
+{
+	double c1x = start.x + (control.x - start.x) * 2.0 / 3.0;
+	double c1y = start.y + (control.y - start.y) * 2.0 / 3.0;
+	double c2x = end.x + (control.x - end.x) * 2.0 / 3.0;
+	double c2y = end.y + (control.y - end.y) * 2.0 / 3.0;
+	cr->curve_to(c1x, c1y, c2x, c2y, end.x, end.y);
+}
+
+void rounded_polygon_path(const Cairo::RefPtr<Cairo::Context>& cr,
+						  const std::vector<BoardPoint>& vertices,
+						  double radius)
+{
+	if (vertices.size() < 3)
+		return;
+
+	cr->begin_new_path();
+	if (radius <= 0.0)
+	{
+		cr->move_to(vertices[0].x, vertices[0].y);
+		for (size_t i = 1; i < vertices.size(); i++)
+			cr->line_to(vertices[i].x, vertices[i].y);
+		cr->close_path();
+		return;
+	}
+
+	std::vector<BoardPoint> entries(vertices.size());
+	std::vector<BoardPoint> exits(vertices.size());
+
+	for (size_t i = 0; i < vertices.size(); i++)
+	{
+		const BoardPoint& prev =
+			vertices[(i + vertices.size() - 1) % vertices.size()];
+		const BoardPoint& curr = vertices[i];
+		const BoardPoint& next = vertices[(i + 1) % vertices.size()];
+
+		double pvx = prev.x - curr.x;
+		double pvy = prev.y - curr.y;
+		double nvx = next.x - curr.x;
+		double nvy = next.y - curr.y;
+		double plen = std::hypot(pvx, pvy);
+		double nlen = std::hypot(nvx, nvy);
+
+		entries[i] = curr;
+		exits[i] = curr;
+		if (plen == 0.0 || nlen == 0.0)
+			continue;
+
+		double dot = (pvx * nvx + pvy * nvy) / (plen * nlen);
+		dot = std::max(-1.0, std::min(1.0, dot));
+		double angle = std::acos(dot);
+		double tangent = angle > 1e-9
+			? radius / std::tan(angle / 2.0) : 0.0;
+		tangent = std::min(tangent, std::min(0.5 * plen, 0.5 * nlen));
+
+		entries[i].x = curr.x + pvx / plen * tangent;
+		entries[i].y = curr.y + pvy / plen * tangent;
+		exits[i].x = curr.x + nvx / nlen * tangent;
+		exits[i].y = curr.y + nvy / nlen * tangent;
+	}
+
+	cr->move_to(entries[0].x, entries[0].y);
+	for (size_t i = 0; i < vertices.size(); i++)
+	{
+		if (i > 0)
+			cr->line_to(entries[i].x, entries[i].y);
+		quadratic_to(cr, entries[i], vertices[i], exits[i]);
+	}
+	cr->close_path();
+}
+
+} // namespace
 
 
 game_view::~game_view()
@@ -682,27 +840,57 @@ bool game_view::move_list_contains(unsigned int i)
 void game_view::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int, int)
 {
 	// Fill the widget with black (the letterbox area around the board),
-	// then paint the board background as a rounded rectangle that hugs the
-	// lattice and is centered in the available space.
+	// then paint the board background as a rounded hexagon around the six
+	// star points, centered in the available space.
 	cr->set_source_rgb(0, 0, 0);
 	cr->paint();
 
-	double bw = _base_width * _scale;
-	double bh = _base_height * _scale;
-	double bx = _center.get_x() - bw / 2.0;
-	double by = _center.get_y() - bh / 2.0;
-	double r = 24.0;
-	if (r > bw / 2.0) r = bw / 2.0;
-	if (r > bh / 2.0) r = bh / 2.0;
+	double pad = GameImages::get_peg_size().get_x() * MULTIPLIER * 0.8;
+	std::vector<BoardPoint> hole_points;
+	hole_points.reserve(_holes.size());
+	for (std::vector<GameViewHole*>::iterator hole = _holes.begin();
+		hole < _holes.end(); hole++)
+	{
+		if (!*hole)
+			continue;
 
-	cr->set_source_rgb(0.55, 0.40, 0.24);
-	cr->begin_new_path();
-	cr->arc(bx + r, by + r, r, PI, 1.5 * PI);
-	cr->arc(bx + bw - r, by + r, r, 1.5 * PI, 2 * PI);
-	cr->arc(bx + bw - r, by + bh - r, r, 0, 0.5 * PI);
-	cr->arc(bx + r, by + bh - r, r, 0.5 * PI, PI);
-	cr->close_path();
-	cr->fill();
+		GamePoint offset = (*hole)->get_offset();
+		hole_points.push_back(
+			{(double)offset.get_x(), (double)offset.get_y()});
+	}
+
+	std::vector<BoardPoint> hex = hex_board_vertices(hole_points, pad);
+	if (!hex.empty())
+	{
+		for (BoardPoint& point : hex)
+		{
+			point.x = _center.get_x() + point.x * _scale;
+			point.y = _center.get_y() + point.y * _scale;
+		}
+
+		cr->set_source_rgb(0.55, 0.40, 0.24);
+		rounded_polygon_path(cr, hex, pad * _scale);
+		cr->fill();
+	}
+	else
+	{
+		double bw = _base_width * _scale;
+		double bh = _base_height * _scale;
+		double bx = _center.get_x() - bw / 2.0;
+		double by = _center.get_y() - bh / 2.0;
+		double r = 24.0;
+		if (r > bw / 2.0) r = bw / 2.0;
+		if (r > bh / 2.0) r = bh / 2.0;
+
+		cr->set_source_rgb(0.55, 0.40, 0.24);
+		cr->begin_new_path();
+		cr->arc(bx + r, by + r, r, PI, 1.5 * PI);
+		cr->arc(bx + bw - r, by + r, r, 1.5 * PI, 2 * PI);
+		cr->arc(bx + bw - r, by + bh - r, r, 0, 0.5 * PI);
+		cr->arc(bx + r, by + bh - r, r, 0.5 * PI, PI);
+		cr->close_path();
+		cr->fill();
+	}
 
 	cr->save();
 	cr->translate(_center.get_x(), _center.get_y());
