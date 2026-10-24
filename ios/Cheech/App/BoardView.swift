@@ -22,7 +22,14 @@ struct BoardView: View {
 			GeometryReader { geo in
 				let points = BoardGeometry.layout(in: geo.size, rotation: rotation)
 				let players = model.holes
-				let showPegs = model.session.connected && model.session.status != .waiting
+				// Match the desktop app: while remotes are still joining, show
+				// the pegs of players who have already connected, leaving the
+				// open seats empty. A host has remote seats; a joiner is
+				// waiting on the remote host.
+				let showPegs = model.session.connected
+					&& (model.session.status != .waiting
+						|| model.session.hasRemoteSeat
+						|| !model.session.isHost)
 				let playerColor = (0...6).map { $0 == 0 ? 0 : Int(model.session.color(forPlayer: $0)) }
 				let unit = min(geo.size.width / 14.5, geo.size.height / 18.0)
 				let movingTo = animator.destination
@@ -61,8 +68,10 @@ struct BoardView: View {
 						// Pegs (the destination peg is hidden while its move plays)
 						for i in 0..<BoardGeometry.count where showPegs && BoardGeometry.present[i] {
 							guard let p = points[i], players[i] > 0 else { continue }
+							let color = playerColor[players[i]]
+							guard color > 0 else { continue }
 							if i == movingTo { continue }
-							drawPeg(&context, at: p, color: PegColor.swiftUIColor(playerColor[players[i]]), unit: unit)
+							drawPeg(&context, at: p, color: PegColor.swiftUIColor(color), unit: unit)
 						}
 
 						// Selection paths: a yellow polyline through the holes
@@ -93,7 +102,8 @@ struct BoardView: View {
 						strokeHolePath(model.session.telegraphHoles().map { $0.intValue })
 
 						// The peg in flight, drawn on top of everything else.
-						if showPegs, let dest = movingTo, let p = movingPoint, players[dest] > 0 {
+						if showPegs, let dest = movingTo, let p = movingPoint,
+						   players[dest] > 0, playerColor[players[dest]] > 0 {
 							drawPeg(&context, at: p, color: PegColor.swiftUIColor(playerColor[players[dest]]), unit: unit)
 						}
 					}
