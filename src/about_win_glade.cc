@@ -72,7 +72,8 @@ about_win_glade::about_win_glade()
       Glib::RefPtr<Gdk::Pixbuf> icon =
          Gdk::Pixbuf::create_from_resource("/cheech/cheech.png");
       Gtk::Picture *icon_picture = Gtk::make_managed<Gtk::Picture>(icon);
-      icon_picture->set_can_shrink(false);
+      icon_picture->set_can_shrink(true);
+      icon_picture->set_size_request(256,256);
       icon_picture->set_halign(Gtk::Align::CENTER);
       icon_picture->set_margin_bottom(6);
       vbox9->append(*icon_picture);
