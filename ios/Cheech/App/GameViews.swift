@@ -104,6 +104,7 @@ struct RuleInfoButton: View {
 
 struct GameSetupView: View {
 	@EnvironmentObject var model: SessionModel
+	@Environment(\.verticalSizeClass) private var verticalSizeClass
 
 	private var speedLabel: String {
 		let ms = model.opponentStepMs
@@ -148,7 +149,9 @@ struct GameSetupView: View {
 				.controlSize(.large)
 			}
 			.padding(.horizontal, 20)
-			.padding(.top, 20)
+			// Landscape has no top safe area, so keep clear of the status bar
+			// and the system gesture edge.
+			.padding(.top, verticalSizeClass == .compact ? 36 : 20)
 			.padding(.bottom, 6)
 
 			Form {
@@ -947,7 +950,8 @@ struct GameScreenView: View {
 			)
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
 		}
-		.padding(.vertical, 8)
+		.padding(.top, 20)
+		.padding(.bottom, 8)
 	}
 
 	private var fullScreenBody: some View {
@@ -965,7 +969,7 @@ struct GameScreenView: View {
 
 			fullScreenExit
 				.padding(.trailing)
-				.padding(.top, 4)
+				.padding(.top, 20)
 		}
 	}
 
@@ -998,7 +1002,6 @@ struct GameScreenView: View {
 					.lineLimit(1)
 					.minimumScaleFactor(0.7)
 			}
-			.foregroundStyle(.white)
 			.padding(.horizontal, 10)
 			.padding(.vertical, 6)
 			.background(.ultraThinMaterial, in: Capsule())
