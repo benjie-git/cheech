@@ -10,6 +10,7 @@
 		09FCF6733703BDF8AEFA1E64 /* giomm.cc in Sources */ = {isa = PBXBuildFile; fileRef = CE61C373C91E0F6E2F4A9BE7 /* giomm.cc */; };
 		24FC4E0D144270C0AC1D4654 /* bot_friendly.cc in Sources */ = {isa = PBXBuildFile; fileRef = 07F91E3FD8296B16D384801B /* bot_friendly.cc */; };
 		2BC93DCEECCAACDC740D86E8 /* CheechSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9F7D20F2EEEA7290E3CA703F /* CheechSession.mm */; };
+		2E13E81F0673DEEE2F0D4B39 /* cheech_session_core.cc in Sources */ = {isa = PBXBuildFile; fileRef = 655D8798D385A7AD260858C8 /* cheech_session_core.cc */; };
 		2EEA7F95DAFCBEB9838776CD /* utility.cc in Sources */ = {isa = PBXBuildFile; fileRef = B55A9D589E2972950E4DA9D2 /* utility.cc */; };
 		32A9485275D562A7ABE47249 /* bot_mean.cc in Sources */ = {isa = PBXBuildFile; fileRef = 447C808B584AE3DAAD4C9559 /* bot_mean.cc */; };
 		3B3F7CED5FB174F201B8AC90 /* SessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49860C0319D6646DAAABBB2 /* SessionModel.swift */; };
@@ -23,6 +24,7 @@
 		8CFCC29A367BB90B70F752C6 /* BoardGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE62D51F3549948E0189E520 /* BoardGeometry.swift */; };
 		91F1C5DB6E4E87CFFDD40E58 /* game_board.cc in Sources */ = {isa = PBXBuildFile; fileRef = 400F69BEB88DB0C86F14EE4C /* game_board.cc */; };
 		989E636C20C3B71DE608822C /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 097D42CCE86746645C07DE88 /* BoardView.swift */; };
+		B21891483578E7621A31B6CC /* ajax_server_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2027A8D70BE64BB120A6228F /* ajax_server_conn.cc */; };
 		B75ACC5FF7EE070E4DBA687F /* GameViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9682D75E5AF207419F01BD81 /* GameViews.swift */; };
 		B831237FA49E91956CD83AA5 /* bot_simple.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1AC7352863126B1A1BB25C09 /* bot_simple.cc */; };
 		C7A71A0BF8C0BCBFE69FC9B7 /* bot_base.cc in Sources */ = {isa = PBXBuildFile; fileRef = D54821F57EF905F5EA9D6607 /* bot_base.cc */; };
@@ -30,6 +32,7 @@
 		D84DF6ADACFB57E7D54478C3 /* game_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 780ED87958C8C9D384FCF1DC /* game_server.cc */; };
 		D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */ = {isa = PBXBuildFile; fileRef = 84F81ACCF3A3D392E4E3A59D /* bot_random.cc */; };
 		F53CA6D2A2D1B2E016BAAE5F /* MoveAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */; };
+		F8C6EE1F897ACBAD6AFC79BA /* ajax_server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 64B737BF135D6C25F847EC16 /* ajax_server.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +44,7 @@
 		108B17528B6C1984070A2A6B /* bind.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind.h; sourceTree = "<group>"; };
 		1AC7352863126B1A1BB25C09 /* bot_simple.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = bot_simple.cc; path = ../src/bot_simple.cc; sourceTree = "<group>"; };
 		201DB82F8BFFDD0C65903290 /* refptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = refptr.h; sourceTree = "<group>"; };
+		2027A8D70BE64BB120A6228F /* ajax_server_conn.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server_conn.cc; path = ../src/ajax_server_conn.cc; sourceTree = "<group>"; };
 		213F9D189B189A2FBD06C918 /* inputstream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = inputstream.h; sourceTree = "<group>"; };
 		239B2D8E58AF1AEC99860400 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24D2EA16174B93D0CC5E91DA /* random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = random.h; sourceTree = "<group>"; };
@@ -55,6 +59,8 @@
 		540C0E0E8310728966F7B9EB /* socket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socket.h; sourceTree = "<group>"; };
 		576C28E40D255F8863D201D8 /* CheechApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheechApp.swift; sourceTree = "<group>"; };
 		61CE1AD2DE2105A1FF5CB75B /* MoveAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAnimator.swift; sourceTree = "<group>"; };
+		64B737BF135D6C25F847EC16 /* ajax_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ajax_server.cc; path = ../src/ajax_server.cc; sourceTree = "<group>"; };
+		655D8798D385A7AD260858C8 /* cheech_session_core.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = cheech_session_core.cc; path = ../src/mobile/cheech_session_core.cc; sourceTree = "<group>"; };
 		68A098F4E292BDC98D1ACF56 /* bind_return.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bind_return.h; sourceTree = "<group>"; };
 		6975ABB3726E4F7BD041F6BC /* glibmm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = glibmm.h; sourceTree = "<group>"; };
 		780ED87958C8C9D384FCF1DC /* game_server.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_server.cc; path = ../src/game_server.cc; sourceTree = "<group>"; };
@@ -206,12 +212,15 @@
 		F755B2088F03C30DA6AE9FEA /* CheechCore */ = {
 			isa = PBXGroup;
 			children = (
+				2027A8D70BE64BB120A6228F /* ajax_server_conn.cc */,
+				64B737BF135D6C25F847EC16 /* ajax_server.cc */,
 				D54821F57EF905F5EA9D6607 /* bot_base.cc */,
 				07F91E3FD8296B16D384801B /* bot_friendly.cc */,
 				C89A48EB168041539B0A3F4E /* bot_lookahead.cc */,
 				447C808B584AE3DAAD4C9559 /* bot_mean.cc */,
 				84F81ACCF3A3D392E4E3A59D /* bot_random.cc */,
 				1AC7352863126B1A1BB25C09 /* bot_simple.cc */,
+				655D8798D385A7AD260858C8 /* cheech_session_core.cc */,
 				400F69BEB88DB0C86F14EE4C /* game_board.cc */,
 				36CB4E0968B41423A9C36A65 /* game_client.cc */,
 				AE97CD579EC816ED8286C279 /* game_hole.cc */,
@@ -266,7 +275,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2710;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					447C04D667C9AFABFDF3C7E2 = {
 						ProvisioningStyle = Automatic;
@@ -315,6 +324,8 @@
 				B75ACC5FF7EE070E4DBA687F /* GameViews.swift in Sources */,
 				F53CA6D2A2D1B2E016BAAE5F /* MoveAnimator.swift in Sources */,
 				3B3F7CED5FB174F201B8AC90 /* SessionModel.swift in Sources */,
+				F8C6EE1F897ACBAD6AFC79BA /* ajax_server.cc in Sources */,
+				B21891483578E7621A31B6CC /* ajax_server_conn.cc in Sources */,
 				C7A71A0BF8C0BCBFE69FC9B7 /* bot_base.cc in Sources */,
 				24FC4E0D144270C0AC1D4654 /* bot_friendly.cc in Sources */,
 				615B93D7EDB61DA1DF2E3394 /* bot_lookahead.cc in Sources */,
@@ -322,6 +333,7 @@
 				D98C72652CD63C1B8C21E4CF /* bot_random.cc in Sources */,
 				B831237FA49E91956CD83AA5 /* bot_simple.cc in Sources */,
 				D57CFE04C5B48007A1F7C2C9 /* cheech_loop.cc in Sources */,
+				2E13E81F0673DEEE2F0D4B39 /* cheech_session_core.cc in Sources */,
 				91F1C5DB6E4E87CFFDD40E58 /* game_board.cc in Sources */,
 				7C16BE24C89133C5A6F68EBD /* game_client.cc in Sources */,
 				7F30679C2B722CB54DE8D96C /* game_hole.cc in Sources */,
@@ -344,6 +356,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"CHEECH_IOS=1",
@@ -371,7 +384,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -403,7 +415,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -419,7 +430,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -434,6 +444,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -462,7 +473,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -494,7 +504,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -517,7 +526,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;

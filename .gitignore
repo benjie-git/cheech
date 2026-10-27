@@ -49,3 +49,13 @@ xcuserdata/
 
 # Xcode user/scheme state
 ios/Cheech.xcodeproj/xcshareddata/xcschemes/
+
+# Android / Gradle
+.gradle/
+android/.gradle/
+android/local.properties
+android/.idea/
+android/.cxx/
+android/build/
+android/app/build/
+*.iml

@@ -1,0 +1,21 @@
+# ninja log v5
+0	502	1793123617003163864	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/game_hole.cc.o	92344bf384652bc0
+2	551	1793123617053656076	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/bot_random.cc.o	fab72574e57d27df
+1	555	1793123617056781579	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/utility.cc.o	e8101edc6a24e63c
+2	584	1793123617086297231	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/bot_simple.cc.o	17f4e10d86aeca84
+3	607	1793123617108774209	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/bot_friendly.cc.o	c7bcee7621f6dd38
+0	624	1793123617126929142	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/game_board.cc.o	67daf562c205d639
+3	633	1793123617134954441	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/bot_mean.cc.o	5cd4de0dc93c830f
+1	719	1793123617219648059	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/net_server.cc.o	eefab3122ceadd8d
+2	802	1793123617301361216	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/bot_lookahead.cc.o	33143ec6f16a61ee
+1	804	1793123617301847008	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/net_conn.cc.o	b6950c36d1bd3c54
+555	1053	1793123617551994233	CMakeFiles/cheech.dir/cheech_jni.cc.o	d92275c5aee49cb7
+504	1149	1793123617650067363	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/ios/compat/cheech_loop.cc.o	c0c915787275a545
+1	1194	1793123617691319108	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/game_client.cc.o	5bc0da93ffc06ff8
+5	1200	1793123617698674240	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/ajax_server.cc.o	c318447eb7ddade6
+552	1281	1793123617781053605	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/ios/compat/giomm/giomm.cc.o	40431cbbd154d701
+1	1422	1793123617917374895	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/game_server.cc.o	ff029203aa4676d
+1	1578	1793123618071929492	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/bot_base.cc.o	1a6f24e1e70144d6
+7	1852	1793123618343216028	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/ajax_server_conn.cc.o	a3aea77dc57e87ad
+5	3007	1793123619488860350	CMakeFiles/cheech.dir/Users/benjie/projects/cheech/src/mobile/cheech_session_core.cc.o	b8a6378a129f34a9
+3007	3076	1793123619564253459	/Users/benjie/projects/cheech/android/app/build/intermediates/cxx/Debug/5r396s42/obj/x86_64/libcheech.so	39919f34d9188edc

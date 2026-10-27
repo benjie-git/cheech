@@ -1,0 +1,6 @@
+-keep class com.octopilot.cheech.bridge.** { *; }
+-keepclassmembers class com.octopilot.cheech.bridge.** { *; }
+-keep class com.octopilot.cheech.model.** { *; }
+-keepclassmembers class kotlinx.serialization.** { *; }
+-keepattributes *Annotation*, InnerClasses
+-dontwarn kotlinx.serialization.**

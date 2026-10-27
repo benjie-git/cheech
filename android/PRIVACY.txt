@@ -1,0 +1,13 @@
+Cheech does not collect, store, or transmit personal data to the developer.
+
+Games are played directly between devices on the local network, or against a
+server address that you enter. Player names, colors, chat messages, and moves
+are sent only to the game server you connect to. They are not uploaded to any
+analytics, advertising, or crash-reporting service.
+
+The Android app requests network access so it can host and join games and serve
+the embedded web client. It does not request location, contacts, camera,
+microphone, or storage access.
+
+Local preferences and an optional local-game save are stored on the device.
+Uninstalling the app removes them.

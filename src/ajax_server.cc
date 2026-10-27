@@ -8,8 +8,12 @@
  *  SPDX-License-Identifier: MIT
  */
 
+#include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <random>
+#include <sstream>
+#include <string>
 #include <sigc++/bind.h>
 #include <sigc++/bind_return.h>
 #include <glibmm/main.h>
@@ -190,9 +194,9 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 		if (f[i] < 0x20)
 			return "";
 
-	// A development-only override.  It lets a checkout serve the web client
-	// straight from the source tree without a make install.
-	const char *web_root = g_getenv("CHEECH_WEB_ROOT");
+	// A caller-provided root (the mobile hosts extract the bundled web client
+	// into a directory) or the development-only CHEECH_WEB_ROOT override.
+	const char *web_root = std::getenv("CHEECH_WEB_ROOT");
 
 	if (web_root && *web_root)
 		filename = Glib::ustring(web_root) + f;
@@ -212,11 +216,13 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 #else
 		// The macOS bundle launcher points CHEECH_RESOURCES at the app's
 		// Resources dir; the make-install layout lives under PACKAGE_DATA_DIR.
-		const char *resources = g_getenv("CHEECH_RESOURCES");
+		const char *resources = std::getenv("CHEECH_RESOURCES");
 		if (resources)
 			filename = Glib::ustring(resources) + "/share/cheech/cheechweb" + f;
+#ifdef PACKAGE_DATA_DIR
 		else
 			filename = PACKAGE_DATA_DIR "/" PACKAGE "/cheechweb" + f;
+#endif
 #endif
 	}
 
@@ -229,82 +235,100 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 
 void AjaxServer::send_file(Glib::ustring f, Net::Conn *conn)
 {
-	Glib::RefPtr<Glib::IOChannel> pfile;
+	auto write_text = [conn](const std::string &text) {
+		if (!text.empty())
+			conn->write(const_cast<gchar *>(text.data()), text.size());
+	};
 
-	try
+	std::ifstream file(f.c_str(), std::ios::binary);
+	if (!file)
 	{
-		try
-		{
-			pfile = Glib::IOChannel::create_from_file(f, "r");
-		}
-		catch (const Glib::FileError&)
-		{
-			(*conn) << "HTTP/1.0 404 Not Found\r\n";
-			send_content_type("", conn);
-			(*conn) << "<h1>404 Not Found</h1>\r\n";
-			(*conn) << "reqested file not found.\n";
-			return;
-		}
-
-		pfile->set_encoding();
-
-		(*conn) << "HTTP/1.0 200 OK\r\n";
-		send_content_type(f, conn);
-
-		gchar buffer[1024];
-		gsize bytes_read;
-
-		while (pfile->read(buffer, 1024, bytes_read) == Glib::IOStatus::NORMAL)
-			conn->write(buffer, bytes_read);
-	}
-	catch (const Glib::IOChannelError&)
-	{
-		(*conn) << "<h1>404 Not Found</h1>\r\n";
-		(*conn) << "reqested file '" << f << "' not found.\n";
+		write_text("HTTP/1.1 404 Not Found\r\n"
+			"Content-Type: text/plain; charset=utf-8\r\n"
+			"Content-Length: 14\r\n"
+			"Connection: close\r\n\r\n"
+			"404 Not Found\n");
 		return;
 	}
-	pfile->close();
+
+	file.seekg(0, std::ios::end);
+	std::streamoff size = file.tellg();
+	file.seekg(0, std::ios::beg);
+	if (size < 0)
+	{
+		write_text("HTTP/1.1 404 Not Found\r\n"
+			"Content-Type: text/plain; charset=utf-8\r\n"
+			"Content-Length: 14\r\n"
+			"Connection: close\r\n\r\n"
+			"404 Not Found\n");
+		return;
+	}
+
+	std::ostringstream header;
+	header << "HTTP/1.1 200 OK\r\n";
+	header << content_type_header(f);
+	header << "Content-Length: " << size << "\r\n";
+	header << "Connection: close\r\n\r\n";
+	write_text(header.str());
+
+	char buffer[8192];
+	while (file.good())
+	{
+		file.read(buffer, sizeof(buffer));
+		std::streamsize got = file.gcount();
+		if (got > 0)
+			conn->write(buffer, (unsigned long)got);
+	}
 }
 
 
 void AjaxServer::send_content_type(Glib::ustring f, Net::Conn *conn)
 {
+	std::string header = content_type_header(f) + "\r\n";
+	conn->write(const_cast<gchar *>(header.data()), header.size());
+}
+
+
+std::string AjaxServer::content_type_header(Glib::ustring f)
+{
 	unsigned int pos = f.rfind(".");
 	Glib::ustring ext = "";
 
-    if (pos < f.size())
-		ext = f.substr(pos+1);
+	if (pos < f.size())
+		ext = f.substr(pos + 1);
 
-	(*conn) << "Cache-Control: no-cache\r\n";
+	std::string header = "Cache-Control: no-cache\r\n";
 
 	if (ext == "html" || ext == "htm")
-		(*conn) << "Content-Type: text/html; charset=utf-8\r\n\r\n";
+		header += "Content-Type: text/html; charset=utf-8\r\n";
 	else if (ext == "txt")
-		(*conn) << "Content-Type: text/plain; charset=utf-8\r\n\r\n";
+		header += "Content-Type: text/plain; charset=utf-8\r\n";
 	else if (ext == "xml")
-		(*conn) << "Content-Type: text/xml; charset=utf-8\r\n\r\n";
+		header += "Content-Type: text/xml; charset=utf-8\r\n";
 	else if (ext == "js" || ext == "mjs")
-		(*conn) << "Content-Type: text/javascript; charset=utf-8\r\n\r\n";
+		header += "Content-Type: text/javascript; charset=utf-8\r\n";
 	else if (ext == "css")
-		(*conn) << "Content-Type: text/css; charset=utf-8\r\n\r\n";
+		header += "Content-Type: text/css; charset=utf-8\r\n";
 	else if (ext == "json" || ext == "webmanifest")
-		(*conn) << "Content-Type: application/json; charset=utf-8\r\n\r\n";
+		header += "Content-Type: application/json; charset=utf-8\r\n";
 	else if (ext == "svg")
-		(*conn) << "Content-Type: image/svg+xml\r\n\r\n";
+		header += "Content-Type: image/svg+xml\r\n";
 	else if (ext == "png")
-		(*conn) << "Content-Type: image/png\r\n\r\n";
+		header += "Content-Type: image/png\r\n";
 	else if (ext == "jpg" || ext == "jpeg")
-		(*conn) << "Content-Type: image/jpeg\r\n\r\n";
+		header += "Content-Type: image/jpeg\r\n";
 	else if (ext == "gif")
-		(*conn) << "Content-Type: image/gif\r\n\r\n";
+		header += "Content-Type: image/gif\r\n";
 	else if (ext == "ico")
-		(*conn) << "Content-Type: image/x-icon\r\n\r\n";
+		header += "Content-Type: image/x-icon\r\n";
 	else if (ext == "woff")
-		(*conn) << "Content-Type: font/woff\r\n\r\n";
+		header += "Content-Type: font/woff\r\n";
 	else if (ext == "woff2")
-		(*conn) << "Content-Type: font/woff2\r\n\r\n";
+		header += "Content-Type: font/woff2\r\n";
 	else
-		(*conn) << "Content-Type: text/html; charset=utf-8\r\n\r\n";
+		header += "Content-Type: text/html; charset=utf-8\r\n";
+
+	return header;
 }
 
 

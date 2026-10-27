@@ -52,6 +52,7 @@ private:
 	// Send files
 	void send_file(Glib::ustring f, Net::Conn *conn);
 	void send_content_type(Glib::ustring f, Net::Conn *conn);
+	std::string content_type_header(Glib::ustring f);
 	Glib::ustring conv_filename(Glib::ustring f);
 
 	void handle_ajax_message(Glib::ustring message, Net::Conn *conn);

@@ -53,6 +53,12 @@ targets:
         group: CheechCore
       - path: ../src/bot_mean.cc
         group: CheechCore
+      - path: ../src/mobile/cheech_session_core.cc
+        group: CheechCore
+      - path: ../src/ajax_server.cc
+        group: CheechCore
+      - path: ../src/ajax_server_conn.cc
+        group: CheechCore
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.octopilot.cheech

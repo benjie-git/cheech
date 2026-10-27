@@ -8,7 +8,7 @@ cheech is a networked, cross-platform Chinese Checkers game supporting a few
 rule variations (please tell me if you know of other fun rule variations!),
 chatting with other players, and AI computer players.
 
-cheech runs on on *nix systems, Windows, and MacOS, and there is a
+cheech runs on *nix systems, Windows, macOS, iOS, and Android, and there is a
 web-based client as well.
 
 cheech is based on Loban Rahman's Gnome Chinese Checkers
@@ -83,6 +83,18 @@ To build a self-contained Cheech.app instead of installing system-wide:
   /Applications if desired.  It pulls in all needed parts, and 
   can be safely be copied to other machines.
 
+
+### Build on Android:
+
+- Install JDK 17+, Android SDK platform 35, Build-Tools 35.0.1,
+  NDK 27.2.12479018, and CMake 3.22.1.
+- Open the `android/` directory in Android Studio, or build from the command
+  line:
+  - `cd android`
+  - `./gradlew assembleDebug`
+  - `./gradlew installDebug`
+- The app hosts a normal cheech server on port 3838 and the web client on
+  port 3839. See `android/README.md` for emulator, invite, and web details.
 
 ### Build on Windows (MSYS2 / UCRT64):
 
