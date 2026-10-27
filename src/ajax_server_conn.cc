@@ -323,7 +323,7 @@ void AjaxServerConn::handle_ajax_message(Glib::ustring message, Net::Conn *conn)
 	Glib::ustring command;
 	Glib::ustring arguments;
 
-	int seperator = message.find_first_of(" ");
+	int seperator = (int)message.find_first_of(" ");
 
 	if (seperator < 0)
 		command = message;

@@ -226,7 +226,7 @@ Glib::ustring AjaxServer::conv_filename(Glib::ustring f)
 #endif
 	}
 
-	while ((pos = filename.find("..", 0)) < filename.size())
+	while ((pos = (unsigned int)filename.find("..", 0)) < filename.size())
 		filename.replace(pos, 2, "");
 
 	return filename;
@@ -291,7 +291,7 @@ void AjaxServer::send_content_type(Glib::ustring f, Net::Conn *conn)
 
 std::string AjaxServer::content_type_header(Glib::ustring f)
 {
-	unsigned int pos = f.rfind(".");
+	unsigned int pos = (unsigned int)f.rfind(".");
 	Glib::ustring ext = "";
 
 	if (pos < f.size())
