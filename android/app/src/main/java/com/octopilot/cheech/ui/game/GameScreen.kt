@@ -70,6 +70,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -383,11 +384,68 @@ private fun FullscreenGame(
     }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         BoardView(model, Modifier.fillMaxSize())
+        TurnBadge(
+            model,
+            snapshot,
+            Modifier
+                .align(Alignment.TopStart)
+                .statusBarsPadding()
+                .padding(start = 12.dp, top = 12.dp, end = 64.dp),
+        )
         IconButton(
             onClick = onExit,
             modifier = Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(8.dp),
         ) { Icon(Icons.Default.FullscreenExit, contentDescription = "Exit full screen", tint = Color.White) }
         MoveControls(model, snapshot, Modifier.align(Alignment.BottomEnd).padding(18.dp))
+    }
+}
+
+@Composable
+private fun TurnBadge(
+    model: SessionModel,
+    snapshot: com.octopilot.cheech.bridge.CheechSnapshot,
+    modifier: Modifier = Modifier,
+) {
+    val winner = model.winner(snapshot)
+    val turn = model.displayedPlayer(snapshot)
+    val colorPlayer = if (winner > 0) winner else turn
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(50))
+            .background(Color.Black.copy(alpha = 0.55f))
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(10.dp).background(PegColors.of(snapshot.colorForPlayer(colorPlayer)), CircleShape))
+        Spacer(Modifier.width(6.dp))
+        Text(
+            turnLabel(model, snapshot),
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+private fun turnLabel(
+    model: SessionModel,
+    snapshot: com.octopilot.cheech.bridge.CheechSnapshot,
+): String {
+    val winner = model.winner(snapshot)
+    if (winner > 0) {
+        val name = snapshot.nameForPlayer(winner)
+        return if (name.isEmpty()) "Player $winner wins!" else "$name wins!"
+    }
+    if (snapshot.status == 0) return "Waiting for players"
+    val turn = model.displayedPlayer(snapshot)
+    if (turn <= 0) return "Waiting for players"
+    val name = snapshot.nameForPlayer(turn)
+    return when {
+        !snapshot.isHost && !snapshot.isSpectator && turn == snapshot.myPlayerNumber -> "Your turn"
+        name.isEmpty() -> "Player $turn's turn"
+        else -> "$name's turn"
     }
 }
 
