@@ -554,7 +554,7 @@ struct DepthPickerRow: View {
 				selection: $selection,
 				trigger: { BotSkill.depthLabel(for: $0) },
 				rowLabel: { BotSkill.depthLabel(for: $0) },
-				rowDetail: { $0 == nil ? "Family default" : "" }
+				rowDetail: { _ in "" }
 			)
 		}
 	}

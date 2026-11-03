@@ -4,9 +4,9 @@
  *
  *  Minimal Glib::Rand shim for the iOS build of cheech.
  *
- *  The core uses Glib::Rand only for get_int_range(), to pick uniformly
- *  among equally good bot moves, so an mt19937 with a uniform distribution
- *  is a faithful replacement.
+ *  The core uses Glib::Rand for get_int_range() (uniform choice among
+ *  equally good bot moves) and get_double() (per-step search skips), so an
+ *  mt19937 with matching uniform distributions is a faithful replacement.
  */
 
 #ifndef CHEECH_COMPAT_GLIBMM_RANDOM_H
@@ -37,6 +37,13 @@ public:
 			return begin;
 
 		std::uniform_int_distribution<int> dist(begin, end - 1);
+		return dist(_engine);
+	}
+
+	// Returns a value in [0, 1).
+	double get_double()
+	{
+		std::uniform_real_distribution<double> dist(0.0, 1.0);
 		return dist(_engine);
 	}
 

@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "mobile/cheech_session_core.hh"
+#include "bot_deskilling.hh"
 
 namespace
 {
@@ -58,7 +59,7 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	seat.botType = @"";
 	seat.name = name;
 	seat.color = color;
-	seat.smarts = 100;
+	seat.skipChance = 0.0;
 	return seat;
 }
 
@@ -71,7 +72,7 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	seat.botType = type;
 	seat.name = name;
 	seat.color = color;
-	seat.smarts = 100;
+	seat.skipChance = 0.0;
 	return seat;
 }
 
@@ -82,7 +83,7 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	seat.botType = @"";
 	seat.name = @"";
 	seat.color = 0;
-	seat.smarts = 100;
+	seat.skipChance = 0.0;
 	return seat;
 }
 
@@ -166,6 +167,11 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	return to_ns(SessionCore::type_name_for_computer_type(from_ns(type)));
 }
 
++ (double)skipChanceForSkillLevel:(NSInteger)level
+{
+	return BotDeskilling::skill_skip_chance((unsigned int)level);
+}
+
 #pragma mark - Setup
 
 - (void)joinHost:(NSString *)host
@@ -194,7 +200,7 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 		spec.bot_type = from_ns(seat.botType);
 		spec.name = from_ns(seat.name);
 		spec.color = (int)seat.color;
-		spec.smarts = (int)seat.smarts;
+		spec.skip_chance = seat.skipChance;
 		spec.friend_seats = seat_indices(seat.friendSeats);
 		spec.enemy_seats = seat_indices(seat.enemySeats);
 		specs.push_back(spec);
@@ -240,9 +246,9 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	_core->set_animation_step_ms((int)stepMs);
 }
 
-- (void)setComputerSmarts:(NSInteger)percent
+- (void)setComputerSkipChance:(double)chance
 {
-	_core->set_computer_smarts((int)percent);
+	_core->set_computer_skip_chance(chance);
 }
 
 #pragma mark - In-game setup
@@ -460,6 +466,6 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	_core->hold_computer_moves_for_animation_hops((int)hops);
 }
 
-- (NSInteger)computerSmarts { return _core->snapshot().computer_smarts; }
+- (double)computerSkipChance { return _core->snapshot().computer_skip_chance; }
 
 @end

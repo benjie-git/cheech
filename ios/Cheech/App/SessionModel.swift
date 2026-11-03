@@ -82,13 +82,10 @@ struct SeatConfig: Identifiable, Equatable, Codable {
 	var enemySeats: [UUID]?
 }
 
-// A computer seat's skill is a level 1...4 (Best/Great/Mid/Nerfed).  How a
-// level weakens a bot depends on the family: Mean and Friendly keep their
-// four-move search and widen the tier count (1,2,4,8), while LookAhead drops
-// from a four-move to a one-move search for the weaker two levels, because a
-// shallow LookAhead is the only thing that reads as plausibly weak rather than
-// random.  The core still speaks in smarts percentages, so this maps a level
-// to an effective (type, smarts) pair just before the seat is created.
+// A computer seat's skill is a level 1...4 (Best/Great/Mid/Nerfed).  A level
+// weakens a bot by giving it a chance to skip individual search steps.  Every
+// family keeps its full depth; the level maps to a skip chance just before the
+// seat is created.
 enum BotSkill {
 	static func level(_ raw: Int?) -> Int {
 		min(max(raw ?? 1, 1), 4)
@@ -102,26 +99,17 @@ enum BotSkill {
 		type.hasPrefix("LookAhead")
 	}
 
-	// Number of distinct score tiers the level allows, for display.
-	static func tiers(type: String, level: Int) -> Int {
+	// Effective bot type and skip chance for a level.
+	static func resolved(type: String, level: Int) -> (type: String, skipChance: Double) {
 		let l = Self.level(level)
-		return isLookAhead(type) ? [1, 2, 4, 6][l - 1] : (1 << (l - 1))
+		return (type, CheechSession.skipChance(forSkillLevel: l))
 	}
 
-	// Effective bot type and smarts percentage for a level.
-	static func resolved(type: String, level: Int) -> (type: String, smarts: Int) {
-		let l = Self.level(level)
-		if isLookAhead(type) {
-			return (l <= 2 ? "LookAhead(3)" : "LookAhead(2)", [100, 90, 100, 80][l - 1])
-		}
-		return (type, [100, 90, 80, 70][l - 1])
-	}
-
-	// Detail shown in the skill dropdown: how many top-scoring moves the level
-	// lets the bot choose among.
+	// Detail shown in the skill dropdown.
 	static func detail(for level: Int, type: String) -> String {
-		let tiers = Self.tiers(type: type, level: level)
-		return tiers <= 1 ? "Best Move" : "Top \(tiers) Moves"
+		let chance = Self.resolved(type: type, level: level).skipChance
+		if chance <= 0 { return "Considers every option" }
+		return String(format: "Overlooks ~%d%% of options", Int(chance * 100))
 	}
 
 	// All skill levels, for the skill dropdown.
@@ -155,7 +143,7 @@ enum BotCatalog {
 
 	// The family name for a type, e.g. "Neutral" or "Mean", independent of
 	// depth; an unknown type stands in for itself.  Setup UI shows bots by
-	// family only, so tweaking depth/smarts never changes what a seat reads.
+	// family only, so tweaking depth/skill never changes what a seat reads.
 	static func familyName(_ type: String) -> String {
 		let name = CheechSession.typeName(forComputerType: type)
 		return name.isEmpty ? type : name
@@ -517,7 +505,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 					name: BotCatalog.cuteName(effectiveType),
 					color: seat.color
 				)
-				spec.smarts = resolved.smarts
+				spec.skipChance = resolved.skipChance
 				spec.friendSeats = seat.friendSeats.map { indices(forSeatIDs: $0) }
 				spec.enemySeats = seat.enemySeats.map { indices(forSeatIDs: $0) }
 				return spec

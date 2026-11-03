@@ -40,8 +40,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 @property (nonatomic, copy) NSString *botType;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic) NSInteger color;
-// Computer-seat skill (50...100); 100 = always play the single best move.
-@property (nonatomic) NSInteger smarts;
+// Computer-seat skill: chance (0...1) to skip any search step.  0 always
+// plays the single best move.
+@property (nonatomic) double skipChance;
 // For Computer seats: the other seats this bot should treat as friends
 // (Friendly bots) or enemies (Mean bots), as indices into the seats array.
 // nil means "everyone" (the default, so an unconfigured bot behaves as
@@ -79,6 +80,10 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // The family name for a bot type, independent of depth or skill (e.g.
 // "LookAhead(4)" -> "Neutral", "Mean(3)" -> "Mean"), or "" if unknown.
 + (NSString *)typeNameForComputerType:(NSString *)type;
+
+// Skip chance (0...1) for a 1...4 skill level, from the shared
+// BotDeskilling::kSkillSkipChance ladder.
++ (double)skipChanceForSkillLevel:(NSInteger)level;
 
 // Connection / setup
 - (void)joinHost:(NSString *)host
@@ -122,10 +127,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // resting time at the destination is always twice this value.
 - (void)setAnimationStepMs:(NSInteger)stepMs;
 
-// How smart locally played computer seats are, as a percentage (50...100).
-// At 100 each bot plays its single best choice; lower values make it choose
-// at random from its top-N moves (see BotBase::set_smarts).
-- (void)setComputerSmarts:(NSInteger)percent;
+// How smart locally played computer seats are: the chance (0...1) that any
+// individual search step is skipped (see BotBase::set_skip_chance).
+- (void)setComputerSkipChance:(double)chance;
 
 // In-game setup for a hosted or joined game.  -reconfigureGame... applies new
 // rules and player count to the running server (which restarts the board), and
@@ -243,9 +247,9 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // applied the move.
 - (void)holdComputerMovesForAnimationHops:(NSInteger)hops;
 
-// The current computer-smarts percentage (50...100); see
-// -setComputerSmarts:.
-@property (nonatomic, readonly) NSInteger computerSmarts;
+// The current computer skip chance (0...1); see
+// -setComputerSkipChance:.
+@property (nonatomic, readonly) double computerSkipChance;
 
 @end
 
