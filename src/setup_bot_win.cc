@@ -21,7 +21,7 @@ static unsigned int focus_mask_from_checks(
 static unsigned int count_bits(unsigned int mask);
 
 // Maps combo text back onto its value; unknown text falls back to the
-// default (Default depth, Best smarts).
+// default (Default depth, Best skill).
 static unsigned int depth_from_label(const Glib::ustring &text);
 static unsigned int level_from_label(const Glib::ustring &text);
 
@@ -52,7 +52,7 @@ setup_bot_win::setup_bot_win()
 
 	std::vector<unsigned int> levels = BotUI::skill_levels();
 	for (size_t i = 0; i < levels.size(); i++)
-		smarts_box->append(BotUI::skill_label(levels[i]));
+		skill_box->append(BotUI::skill_label(levels[i]));
 
 	Prefs prefs;
 
@@ -60,7 +60,7 @@ setup_bot_win::setup_bot_win()
 
 	type_box->set_active_text(prefs.bot_type);
 	depth_box->set_active_text(BotUI::depth_label(prefs.bot_depth));
-	smarts_box->set_active_text(BotUI::skill_label(prefs.bot_level));
+	skill_box->set_active_text(BotUI::skill_label(prefs.skill));
 }
 
 
@@ -92,7 +92,7 @@ void setup_bot_win::on_add_button_activate()
 
 	Glib::ustring family = type_box->get_active_text();
 	unsigned int depth = depth_from_label(depth_box->get_active_text());
-	unsigned int level = level_from_label(smarts_box->get_active_text());
+	unsigned int level = level_from_label(skill_box->get_active_text());
 
 	// The checkboxes are parallel to player numbers 1..N; only the family's
 	// own list is meaningful, but setting both is harmless.
@@ -116,9 +116,8 @@ void setup_bot_win::on_add_button_activate()
 		return;
 
 	prefs.bot_type = family;
-	prefs.bot_level = level;
+	prefs.skill = level;
 	prefs.bot_depth = depth;
-	prefs.smarts = BotUI::skill_smarts(level);
 
 	// Use the engine's cute default (Rosie, Earl, Jimbo, ...), matching the
 	// iOS setup.  An empty name would be rejected by the server and the bot
@@ -128,7 +127,7 @@ void setup_bot_win::on_add_button_activate()
 	// (see main_win's seat-joining path).
 	_bot->set_move_delay(0);
 	_bot->set_think_delay(prefs.think_delay);
-	_bot->set_smarts(prefs.smarts);
+	_bot->set_skip_chance(BotUI::skill_skip_chance(level));
 
 	if (_bot->get_type_name() == "Friendly")
 		_bot->set_friends(_focus_mask);
@@ -168,9 +167,8 @@ void setup_bot_win::on_ok_button_activate()
 
 	if (!family.empty())
 		prefs.bot_type = family;
-	prefs.bot_level = level_from_label(smarts_box->get_active_text());
+	prefs.skill = level_from_label(skill_box->get_active_text());
 	prefs.bot_depth = depth_from_label(depth_box->get_active_text());
-	prefs.smarts = BotUI::skill_smarts(prefs.bot_level);
 
 	prefs.write();
 
@@ -181,7 +179,7 @@ void setup_bot_win::on_ok_button_activate()
 void setup_bot_win::on_defaults_activate()
 {
 	depth_box->set_active_text(BotUI::depth_label(0));
-	smarts_box->set_active_text(BotUI::skill_label(1));
+	skill_box->set_active_text(BotUI::skill_label(1));
 
 	_focus_mask = BotBase::ALL_PLAYERS;
 	for (size_t i = 0; i < _focus_checks.size(); i++)

@@ -16,6 +16,7 @@
 #include <glibmm/ustring.h>
 
 #include "bot_base.hh"
+#include "bot_deskilling.hh"
 #include "bot_lookahead.hh"
 #include "bot_friendly.hh"
 #include "bot_mean.hh"
@@ -159,22 +160,12 @@ inline Glib::ustring skill_label(unsigned int level)
 }
 
 
-// Smarts percentage for a skill level.  With an explicit Depth dropdown
-// there is no hidden depth swap, so every family uses the same ladder.
-inline unsigned int skill_smarts(unsigned int level)
+// Per-step search skip chance for a skill level.  With an explicit Depth
+// dropdown there is no hidden depth swap, so every family uses the same
+// ladder.
+inline double skill_skip_chance(unsigned int level)
 {
-	switch (level)
-	{
-		case 2:
-			return 90;
-		case 3:
-			return 80;
-		case 4:
-			return 70;
-		case 1:
-		default:
-			return 100;
-	}
+	return BotDeskilling::skill_skip_chance(level);
 }
 
 

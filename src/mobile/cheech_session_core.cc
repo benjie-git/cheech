@@ -27,6 +27,7 @@
 #include "game_board.hh"
 #include "game_hole.hh"
 #include "bot_base.hh"
+#include "bot_deskilling.hh"
 #include "ajax_server.hh"
 #include "cheech_move_gate.hh"
 #include <glibmm/main.h>
@@ -68,7 +69,7 @@ struct SessionCore::Impl
 		std::string bot_type;
 		std::string name;
 		int color = 0;
-		int smarts = 100;
+		double skip_chance = 0.0;
 		GameClient *client = nullptr; // when kind == SeatHuman
 		BotBase *bot = nullptr;       // when kind == SeatComputer
 		int player_number = 0;
@@ -86,7 +87,7 @@ struct SessionCore::Impl
 		std::string type;
 		std::string name;
 		int color = 0;
-		int smarts = 100;
+		double skip_chance = 0.0;
 		bool focus_configured = false;
 		std::vector<std::string> friend_names;
 		std::vector<std::string> enemy_names;
@@ -115,7 +116,7 @@ struct SessionCore::Impl
 	int name_counter = 0;
 	int anim_step_ms = k_animate_step_ms;
 	int anim_done_ms = k_animate_step_ms * 2;
-	int computer_smarts = 100;
+	double computer_skip_chance = 0.0;
 	int host_port = 0;
 	unsigned int web_port = 0;
 
@@ -405,7 +406,7 @@ std::string build_local_save(SessionCore::Impl *impl)
 	for (const Seat &seat : impl->seats)
 	{
 		out << "seat " << (int)seat.kind << " " << seat.color << " "
-			<< seat.smarts << " "
+			<< seat.skip_chance << " "
 			<< (seat.bot_type.empty() ? std::string("-") : seat.bot_type) << " "
 			<< seat.name << "\n";
 		if (seat.focus_configured)
@@ -416,7 +417,7 @@ std::string build_local_save(SessionCore::Impl *impl)
 	for (const ExtraBotInfo &bot : impl->extra_bot_infos)
 	{
 		out << "seat " << (int)SeatComputer << " " << bot.color << " "
-			<< bot.smarts << " "
+			<< bot.skip_chance << " "
 			<< (bot.type.empty() ? std::string("-") : bot.type) << " "
 			<< bot.name << "\n";
 		if (bot.focus_configured)
@@ -494,16 +495,17 @@ LocalSave parse_local_save(const std::string &text)
 		else if (key == "seat")
 		{
 			Seat seat;
-			int kind = SeatHuman, color = 0, smarts = 100;
+			int kind = SeatHuman, color = 0;
+			double skip_chance = 0.0;
 			std::string bot_type;
-			in >> kind >> color >> smarts >> bot_type;
+			in >> kind >> color >> skip_chance >> bot_type;
 			std::string name;
 			std::getline(in, name);
 			if (!name.empty() && name[0] == ' ')
 				name.erase(0, 1);
 			seat.kind = (SeatKind)kind;
 			seat.color = color;
-			seat.smarts = smarts;
+			seat.skip_chance = BotDeskilling::normalize_skip_chance(skip_chance);
 			seat.bot_type = (bot_type == "-") ? "" : bot_type;
 			seat.name = name;
 			save.seats.push_back(seat);
@@ -700,7 +702,7 @@ void SessionCore::Impl::join_hosted_seats_from_index(int index)
 		{
 			bot->set_think_delay(0);
 			bot->set_move_delay(0);
-			bot->set_smarts(seat.smarts);
+			bot->set_skip_chance(seat.skip_chance);
 			if (!seat.name.empty())
 				bot->set_name(seat.name);
 			bot->set_color(seat.color);
@@ -897,7 +899,7 @@ void SessionCore::start_game(unsigned int port, int num_players,
 		seat.bot_type = spec.bot_type;
 		seat.name = spec.name;
 		seat.color = spec.color;
-		seat.smarts = spec.smarts;
+		seat.skip_chance = spec.skip_chance;
 		if (spec.friend_seats || spec.enemy_seats)
 		{
 			seat.focus_configured = true;
@@ -1030,14 +1032,14 @@ void SessionCore::set_animation_step_ms(int step_ms)
 	});
 }
 
-void SessionCore::set_computer_smarts(int percent)
+void SessionCore::set_computer_skip_chance(double chance)
 {
-	percent = std::max(0, std::min(percent, 100));
+	chance = BotDeskilling::clamp_skip_chance(chance);
 	auto impl = impl_;
-	cheech::Loop::instance().post([impl, percent]()
+	cheech::Loop::instance().post([impl, chance]()
 	{
 		std::lock_guard<std::mutex> lock(impl->mutex);
-		impl->computer_smarts = percent;
+		impl->computer_skip_chance = chance;
 	});
 }
 
@@ -1110,7 +1112,7 @@ void SessionCore::add_computer_player(const std::string &type,
 
 		bot->set_think_delay(0);
 		bot->set_move_delay(0);
-		bot->set_smarts(impl->computer_smarts);
+		bot->set_skip_chance(impl->computer_skip_chance);
 		if (!name_str.empty())
 			bot->set_name(name_str);
 		if (color > 0)
@@ -1122,7 +1124,7 @@ void SessionCore::add_computer_player(const std::string &type,
 		info.type = type_str;
 		info.name = name_str;
 		info.color = color;
-		info.smarts = impl->computer_smarts;
+		info.skip_chance = impl->computer_skip_chance;
 		if (focus_configured)
 		{
 			info.focus_configured = true;
@@ -1688,7 +1690,7 @@ void SessionCore::Impl::rebuild_snapshot()
 	s.status = status;
 	s.animation_step_ms = anim_step_ms;
 	s.animation_done_ms = anim_done_ms;
-	s.computer_smarts = computer_smarts;
+	s.computer_skip_chance = computer_skip_chance;
 	s.current_player = 0;
 	s.my_player_number = 0;
 	s.num_players = configured_players;

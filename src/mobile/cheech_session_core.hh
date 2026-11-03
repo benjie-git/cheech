@@ -44,7 +44,7 @@ struct SeatSpec
 	std::string bot_type;
 	std::string name;
 	int color = 0;
-	int smarts = 100;
+	double skip_chance = 0.0;
 	std::optional<std::vector<int>> friend_seats;
 	std::optional<std::vector<int>> enemy_seats;
 };
@@ -90,7 +90,7 @@ struct Snapshot
 	bool skip_replay = false;
 	int animation_step_ms = 250;
 	int animation_done_ms = 500;
-	int computer_smarts = 100;
+	double computer_skip_chance = 0.0;
 	int web_port = 0;
 	bool web_ready = false;
 };
@@ -134,7 +134,7 @@ public:
 	void send_chat(const std::string &text);
 
 	void set_animation_step_ms(int step_ms);
-	void set_computer_smarts(int percent);
+	void set_computer_skip_chance(double chance);
 
 	void reconfigure_game(int num_players, bool long_jumps, bool hop_others,
 		bool stop_others);

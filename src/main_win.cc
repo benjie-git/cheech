@@ -579,7 +579,7 @@ void main_win::join_next_seat()
 		}
 		seat.bot->set_name(seat.name);
 		seat.bot->set_color(seat.color);
-		seat.bot->set_smarts(BotUI::skill_smarts(seat.level));
+		seat.bot->set_skip_chance(BotUI::skill_skip_chance(seat.level));
 		// The engine's pacing now comes from the UI's move replay (the
 		// animation gate holds each commit until the previous move has
 		// finished animating), so the bot itself commits without delay.
@@ -1079,7 +1079,7 @@ void main_win::on_add_computer_player_activate()
 		if (!bot)
 		{
 			prefs.bot_type = BotUI::NEUTRAL;
-			prefs.bot_level = 1;
+			prefs.skill = 1;
 			prefs.bot_depth = 0;
 			prefs.write();
 			bot = BotBase::new_bot_of_type(BotUI::bot_type(prefs.bot_type,
@@ -1094,7 +1094,7 @@ void main_win::on_add_computer_player_activate()
 		// paces them with the move replay.
 		bot->set_move_delay(0);
 		bot->set_think_delay(prefs.think_delay);
-		bot->set_smarts(BotUI::skill_smarts(prefs.bot_level));
+		bot->set_skip_chance(BotUI::skill_skip_chance(prefs.skill));
 		// A bot without a name is never added: the server rejects the empty
 		// name and nothing answers its request for a new one.
 		bot->set_name(bot->get_default_name());

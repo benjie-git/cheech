@@ -43,14 +43,13 @@ class Prefs
 		bool spectator;
 
 		Glib::ustring bot_type;
-		unsigned int bot_level;
+		unsigned int skill;
 		unsigned int bot_depth;
 
 		// Saved New Game seats (encoded by new_game_win, one line per seat).
 		std::vector<Glib::ustring> seats;
 		unsigned int move_delay;
 		unsigned int think_delay;
-		unsigned int smarts;
 };
 
 #endif   // #ifndef INCL_PREFS_HH

@@ -33,11 +33,12 @@ class BotBase : public sigc::trackable
 		void set_think_delay(int delay);
 		void set_move_delay(int step_delay);
 
-		// How smart the bot plays, as a percentage (0...100).  At 100 it
-		// plays its single best choice (all moves tied for the best score);
-		// lower values widen the choice to the top-N distinct score tiers.
-		void set_smarts(int percent);
-		int get_smarts() const;
+		// Chance (0...1) that any individual search step is ignored.  At 0
+		// the bot searches every candidate and plays its single best choice
+		// (all moves tied for the best score); higher values make it miss
+		// lines more often.
+		void set_skip_chance(double chance);
+		double get_skip_chance() const;
 
 		// Player-focus bitmasks (bit i = player i+1).  ALL_PLAYERS is the
 		// default and means "everyone", so an unconfigured bot behaves as
@@ -187,7 +188,7 @@ class BotBase : public sigc::trackable
 
 		// Enumerates every legal root move in the same order
 		// find_better_move() would score them, so make_best_move() can hand
-		// the list to score_moves()/select_top_moves().
+		// the list to score_moves()/select_best_move().
 		void collect_root_moves(GameBoard *board, unsigned int player,
 			std::vector<MoveList> *moves);
 
@@ -209,29 +210,34 @@ class BotBase : public sigc::trackable
 			std::vector<MoveList> *moves, std::vector<long> *scores,
 			bool allow_parallel);
 
-		// Fills *best_moves with every move whose score falls in the top
-		// `tiers` distinct score values (tiers >= 1), excluding any move that
-		// is far enough below the best one that it is clearly dominant (see
-		// kDetuneGapPerTier, capped by kMaxDetuneGap).  When at least one
-		// move scores above zero,
-		// zero- and negative-scoring moves are excluded; when the best score
-		// is zero, negatives are excluded but zeros still compete; if every
-		// move is negative they are still considered.  *best_score is set to
-		// the best score.
-		// Moves that were never scored (LONG_MIN) are skipped.
-		void select_top_moves(const std::vector<MoveList> &root_moves,
-			const std::vector<long> &scores, int tiers,
+		// Fills *best_moves with every move tied for the highest score.
+		// *best_score is set to that score.  Moves that were never scored
+		// (LONG_MIN) are skipped.
+		void select_best_move(const std::vector<MoveList> &root_moves,
+			const std::vector<long> &scores,
 			std::vector<MoveList> *best_moves, long *best_score);
 
-		// Number of distinct top score tiers to choose from for the current
-		// smarts setting: 1 at 100%, doubling every 10% (32 at 60% and
-		// below).
-		int top_move_tiers() const;
+		// True for a plain one-hole step.  These are obvious enough that
+		// de-skilling never skips them; only jumping moves are eligible.
+		static bool is_single_step_move(const GameBoard &board,
+										const MoveList &move);
+
+		// Distance-to-goal change for a step: positive is progress toward
+		// this player's goal.  Bots without a distance model return 0.
+		virtual long search_progress(unsigned int player, unsigned int from,
+									 unsigned int to) const;
+
+		// True when this individual search step should be ignored.  Always
+		// false for a zero skip chance and for plain single-step moves.
+		// Backward steps are more likely to be skipped and forward steps
+		// less likely, scaled between 4x and 1/4x.
+		bool skip_search_step(unsigned int player, unsigned int from,
+							  unsigned int to);
 
 		GameClient 		_client;
 		int				_think_delay;
 		int				_move_step_delay;
-		int				_smarts;
+		double			_skip_chance;
 		bool			_abort;
 		bool			_searching;
 		bool			_search_pending;

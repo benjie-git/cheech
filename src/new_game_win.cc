@@ -328,20 +328,20 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 			BotUI::depth_label(BotUI::depth_values()[i]));
 	depth_box->append(*row->depth_box);
 
-	Gtk::Box *smarts_box = Gtk::make_managed<class Gtk::Box>(
+	Gtk::Box *skill_box = Gtk::make_managed<class Gtk::Box>(
 		Gtk::Orientation::HORIZONTAL, 6);
-	smarts_box->append(*Gtk::make_managed<class Gtk::Label>(_("Smarts:")));
-	row->smarts_box = Gtk::make_managed<ComboDropDown>();
+	skill_box->append(*Gtk::make_managed<class Gtk::Label>(_("Skill:")));
+	row->skill_box = Gtk::make_managed<ComboDropDown>();
 	for (size_t i = 0; i < BotUI::skill_levels().size(); i++)
-		row->smarts_box->append(
+		row->skill_box->append(
 			BotUI::skill_label(BotUI::skill_levels()[i]));
-	smarts_box->append(*row->smarts_box);
+	skill_box->append(*row->skill_box);
 
-	// Depth and Smarts share one row to keep the details area compact.
+	// Depth and Skill share one row to keep the details area compact.
 	Gtk::Box *settings_box = Gtk::make_managed<class Gtk::Box>(
 		Gtk::Orientation::HORIZONTAL, 12);
 	settings_box->append(*depth_box);
-	settings_box->append(*smarts_box);
+	settings_box->append(*skill_box);
 
 	row->focus_box = Gtk::make_managed<class Gtk::Box>(
 		Gtk::Orientation::HORIZONTAL, 6);
@@ -378,17 +378,17 @@ void new_game_win::add_seat(const NewGameSeat &seat)
 	row->depth_box->signal_changed().connect(
 		sigc::bind(sigc::mem_fun(*this,
 			&new_game_win::on_seat_depth_changed), row));
-	row->smarts_box->signal_changed().connect(
+	row->skill_box->signal_changed().connect(
 		sigc::bind(sigc::mem_fun(*this,
-			&new_game_win::on_seat_smarts_changed), row));
+			&new_game_win::on_seat_skill_changed), row));
 
-	// Populate the family/depth/smarts/focus selections without triggering
+	// Populate the family/depth/skill/focus selections without triggering
 	// the default-name followers: a loaded name is taken as-is.
 	_loading_seat = true;
 	row->family_box->set_active_text(seat.family.empty() ?
 		BotUI::NEUTRAL : seat.family);
 	row->depth_box->set_active_text(BotUI::depth_label(seat.depth));
-	row->smarts_box->set_active_text(BotUI::skill_label(
+	row->skill_box->set_active_text(BotUI::skill_label(
 		seat.level >= 1 && seat.level <= 4 ? seat.level : 1));
 	_loading_seat = false;
 
@@ -467,8 +467,8 @@ void new_game_win::on_add_seat_button_clicked()
 	seat.name = "";
 	seat.color = first_unused_color();
 	seat.family = prefs.bot_type.empty() ? BotUI::NEUTRAL : prefs.bot_type;
-	seat.level = prefs.bot_level >= 1 && prefs.bot_level <= 4 ?
-		prefs.bot_level : 1;
+	seat.level = prefs.skill >= 1 && prefs.skill <= 4 ?
+		prefs.skill : 1;
 	seat.depth = prefs.bot_depth;
 	seat.focus_all = true;
 	seat.id = 0;
@@ -514,8 +514,8 @@ void new_game_win::on_seat_kind_changed(SeatRow *row)
 			BotUI::NEUTRAL : prefs.bot_type);
 		row->depth_box->set_active_text(
 			BotUI::depth_label(prefs.bot_depth));
-		unsigned int level = prefs.bot_level;
-		row->smarts_box->set_active_text(BotUI::skill_label(
+		unsigned int level = prefs.skill;
+		row->skill_box->set_active_text(BotUI::skill_label(
 			level >= 1 && level <= 4 ? level : 1));
 		_loading_seat = false;
 	}
@@ -621,7 +621,7 @@ void new_game_win::on_seat_depth_changed(SeatRow *row)
 }
 
 
-void new_game_win::on_seat_smarts_changed(SeatRow *row)
+void new_game_win::on_seat_skill_changed(SeatRow *row)
 {
 	if (_loading_seat)
 		return;
@@ -642,10 +642,9 @@ void new_game_win::remember_last_bot(SeatRow *row)
 	prefs.read();
 
 	prefs.bot_type = row->family_box->get_active_text();
-	prefs.bot_level = std::max(row->smarts_box->get_active_row_number(), 0) + 1;
+	prefs.skill = std::max(row->skill_box->get_active_row_number(), 0) + 1;
 	prefs.bot_depth = BotUI::depth_values()[
 		std::max(row->depth_box->get_active_row_number(), 0)];
-	prefs.smarts = BotUI::skill_smarts(prefs.bot_level);
 
 	prefs.write();
 }
@@ -801,7 +800,7 @@ std::vector<NewGameSeat> new_game_win::collect_seats()
 		seat.name = row->name_entry->get_text();
 		seat.color = row->color;
 		seat.family = row->family_box->get_active_text();
-		seat.level = std::max(row->smarts_box->get_active_row_number(), 0) + 1;
+		seat.level = std::max(row->skill_box->get_active_row_number(), 0) + 1;
 		seat.depth = BotUI::depth_values()[
 			std::max(row->depth_box->get_active_row_number(), 0)];
 		seat.focus_all = true;
@@ -1094,7 +1093,7 @@ void new_game_win::load_seats()
 		computer.name = "";
 		computer.color = first_unused_color();
 		computer.family = prefs.bot_type.empty() ? BotUI::NEUTRAL : prefs.bot_type;
-		computer.level = prefs.bot_level;
+		computer.level = prefs.skill;
 		computer.depth = prefs.bot_depth;
 		computer.focus_all = true;
 		computer.id = 0;

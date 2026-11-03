@@ -36,6 +36,7 @@ cheechwebd_LDADD = $(CHEECH_CORE_LIBS) -lpthread $(WIN32_LIBS)
 bot_sources = \
 	bot_base.cc \
 	bot_base.hh \
+	bot_deskilling.hh \
 	bot_random.cc \
 	bot_random.hh \
 	bot_simple.cc \

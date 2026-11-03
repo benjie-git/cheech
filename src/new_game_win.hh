@@ -70,7 +70,7 @@ class new_game_win : public new_game_win_glade
 			ColorPicker *color_picker;
 			Gtk::Expander *details;
 			ComboDropDown *depth_box;
-			ComboDropDown *smarts_box;
+			ComboDropDown *skill_box;
 			Gtk::Box *focus_box;
 			std::vector<Gtk::CheckButton *> focus_checks;
 			// The seat ids the checkboxes were built for, parallel to
@@ -100,7 +100,7 @@ class new_game_win : public new_game_win_glade
 		void on_seat_name_changed(SeatRow *row);
 		void on_seat_color_changed(unsigned int color, SeatRow *row);
 		void on_seat_depth_changed(SeatRow *row);
-		void on_seat_smarts_changed(SeatRow *row);
+		void on_seat_skill_changed(SeatRow *row);
 
 		void add_seat(const NewGameSeat &seat);
 		void remove_seat(size_t index);

@@ -65,11 +65,10 @@ void Prefs::set_defaults()
 	spectator = false;
 
 	bot_type = "Neutral";
-	bot_level = 1;
+	skill = 1;
 	bot_depth = 0;
 	move_delay = 250;
 	think_delay = 0;
-	smarts = 100;
 }
 
 
@@ -118,7 +117,10 @@ void Prefs::read(void)
 	join_hostnames.clear();
 	seats.clear();
 
-	bool have_level = false;
+	bool have_skill = false;
+	bool have_bot_level = false;
+	unsigned int legacy_bot_level = 1;
+	unsigned int legacy_smarts = 100;
 
 	Glib::ustring line, key, value;
 
@@ -189,10 +191,15 @@ void Prefs::read(void)
 			else
 				bot_type = value;
 		}
+		else if (key == "skill")
+		{
+			skill = util::from_str<unsigned int>(strip_grouping(value));
+			have_skill = true;
+		}
 		else if (key == "bot_level")
 		{
-			bot_level = util::from_str<unsigned int>(strip_grouping(value));
-			have_level = true;
+			legacy_bot_level = util::from_str<unsigned int>(strip_grouping(value));
+			have_bot_level = true;
 		}
 		else if (key == "bot_depth")
 			bot_depth = util::from_str<unsigned int>(strip_grouping(value));
@@ -201,7 +208,7 @@ void Prefs::read(void)
 		else if (key == "think_delay")
 			think_delay = util::from_str<unsigned int>(strip_grouping(value));
 		else if (key == "smarts")
-			smarts = util::from_str<unsigned int>(strip_grouping(value));
+			legacy_smarts = util::from_str<unsigned int>(strip_grouping(value));
 		}
 		// A damaged or non-UTF-8 line shouldn't abort the whole app.
 		catch (const Glib::Error&)
@@ -211,19 +218,24 @@ void Prefs::read(void)
 
 	pfile->close();
 
-	// Files written before skill levels existed stored a raw smarts
-	// percentage; map it back onto the nearest level.
-	if (!have_level)
+	// Older files used bot_level, and older still stored a raw smarts
+	// percentage; both are migration inputs for the current skill level.
+	if (!have_skill)
 	{
-		if (smarts >= 98)
-			bot_level = 1;
-		else if (smarts >= 85)
-			bot_level = 2;
-		else if (smarts >= 75)
-			bot_level = 3;
+		if (have_bot_level)
+			skill = legacy_bot_level;
+		else if (legacy_smarts >= 98)
+			skill = 1;
+		else if (legacy_smarts >= 85)
+			skill = 2;
+		else if (legacy_smarts >= 75)
+			skill = 3;
 		else
-			bot_level = 4;
+			skill = 4;
 	}
+
+	if (skill < 1 || skill > 4)
+		skill = 1;
 }
 
 
@@ -277,11 +289,10 @@ void Prefs::write(void)
 			pfile->write("seat " + *i + new_line);
 
 	pfile->write("bot_type " + bot_type + new_line);
-	pfile->write("bot_level " + util::to_str(bot_level) + new_line);
+	pfile->write("skill " + util::to_str(skill) + new_line);
 	pfile->write("bot_depth " + util::to_str(bot_depth) + new_line);
 	pfile->write("move_delay " + util::to_str(move_delay) + new_line);
 	pfile->write("think_delay " + util::to_str(think_delay) + new_line);
-	pfile->write("smarts " + util::to_str(smarts) + new_line);
 
 	pfile->close();
 }

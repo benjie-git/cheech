@@ -234,6 +234,13 @@ void BotLookAhead::update_distance_cache(GameBoard *board)
 }
 
 
+long BotLookAhead::search_progress(unsigned int player, unsigned int from,
+								   unsigned int to) const
+{
+	return _dist_to_goal[player][from] - _dist_to_goal[player][to];
+}
+
+
 long BotLookAhead::score_move(GameBoard *board, unsigned int player,
 							  MoveList *move)
 {
@@ -432,14 +439,25 @@ long BotLookAhead::paranoid_search(GameBoard *board, unsigned int player,
 
 	long best = maximizing ? LONG_MIN : LONG_MAX;
 	uint32_t best_move = 0;
+	bool searched = false;
 
 	for (unsigned int i = 0; i < move_count; i++)
 	{
+		// Ignore some search steps when detuned.  Always search at least one
+		// candidate at a node so alpha-beta never sees a degenerate value.
 		MoveList &m = moves[i];
+
+		if (_skip_chance > 0.0
+			&& !is_single_step_move(*board, m)
+			&& skip_search_step(player, m.front(), m.back())
+			&& (searched || i + 1 < move_count))
+			continue;
+
 		unsigned int front = m.front();
 		unsigned int back = m.back();
 
 		board->move_peg(front, back);
+		searched = true;
 
 		_current_depth = remaining;
 

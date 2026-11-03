@@ -62,6 +62,9 @@ class BotLookAhead : public BotBase
 
 		void update_distance_cache(GameBoard *board);
 
+		virtual long search_progress(unsigned int player, unsigned int from,
+									 unsigned int to) const;
+
 		// Paranoid alpha-beta search.  Returns the value of the remaining
 		// `remaining` plies from the point of view of `root`, with `player`
 		// to move.  The root player maximises and every other player

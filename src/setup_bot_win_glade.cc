@@ -48,10 +48,10 @@ setup_bot_win_glade::setup_bot_win_glade(
 
    Gtk::Grid *table8 = Gtk::make_managed<Gtk::Grid>();
    Gtk::Label *label63 = Gtk::make_managed<Gtk::Label>(_("Depth:"));
-   Gtk::Label *label64 = Gtk::make_managed<Gtk::Label>(_("Smarts:"));
+   Gtk::Label *label64 = Gtk::make_managed<Gtk::Label>(_("Skill:"));
 
    depth_box = new GtkComboBoxText();
-   smarts_box = new GtkComboBoxText();
+   skill_box = new GtkComboBoxText();
 
    Gtk::Grid *table9 = Gtk::make_managed<Gtk::Grid>();
    Gtk::Button *defaults = Gtk::make_managed<Gtk::Button>(_("Reset to Defaults"));
@@ -84,7 +84,7 @@ setup_bot_win_glade::setup_bot_win_glade(
    table9->attach(*label63, 0, 0);
    table9->attach(*label64, 0, 1);
    table9->attach(*depth_box, 1, 0);
-   table9->attach(*smarts_box, 1, 1);
+   table9->attach(*skill_box, 1, 1);
    hbuttonbox11->append(*defaults);
    vbox16->append(*table9);
    vbox16->append(*hbuttonbox11);
@@ -131,5 +131,5 @@ setup_bot_win_glade::setup_bot_win_glade(
 setup_bot_win_glade::~setup_bot_win_glade()
 {  delete type_box;
    delete depth_box;
-   delete smarts_box;
+   delete skill_box;
 }

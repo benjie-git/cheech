@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "bot_base.hh"
+#include "bot_deskilling.hh"
 #if !defined(CHEECH_IOS)
 #include "game_images.hh"
 #endif
@@ -27,29 +28,13 @@
 #include "bot_mean.hh"
 
 
-namespace {
-	// Detuned bots normally choose among the top score tiers.  This rail stops
-	// them from ever considering a move that is far worse than the best one, so
-	// a clearly dominant line (e.g. one that finishes the player, worth tens of
-	// thousands) is always played alone instead of being diluted by the tier
-	// selection.  It scales with detune: 0 at 100% smarts, 5000 at 50%.
-	const long kDetuneGapPerTier = 1000;
-
-	// Total cap on the rail.  With tiers now doubling to 32, the per-tier
-	// scaling alone would reach 31000; the rail must stay bounded so a detuned
-	// bot never considers a move far below the best (0 at 100% smarts (1 tier), 5000 at
-	// 6 or more tiers).
-	const long kMaxDetuneGap = 5000;
-}
-
-
 BotBase::BotBase()
 {
 	_think_delay = 0;
 	// Per-hop commit pacing.  The old flat 500 ms per move becomes ~125 ms
 	// per hop so the average cadence stays about the same.
 	_move_step_delay = 125;
-	_smarts = 100;
+	_skip_chance = BotDeskilling::kDefaultSkipChance;
 	_abort = FALSE;
 	_searching = false;
 	_search_pending = false;
@@ -132,20 +117,41 @@ void BotBase::set_move_delay(int step_delay)
 }
 
 
-void BotBase::set_smarts(int percent)
+void BotBase::set_skip_chance(double chance)
 {
-	if (percent < 0)
-		percent = 0;
-	if (percent > 100)
-		percent = 100;
-
-	_smarts = percent;
+	_skip_chance = BotDeskilling::clamp_skip_chance(chance);
 }
 
 
-int BotBase::get_smarts() const
+double BotBase::get_skip_chance() const
 {
-	return _smarts;
+	return _skip_chance;
+}
+
+
+long BotBase::search_progress(unsigned int, unsigned int, unsigned int) const
+{
+	return 0;
+}
+
+
+bool BotBase::is_single_step_move(const GameBoard &board,
+								  const MoveList &move)
+{
+	return move.size() == 2 && board.valid_move(move.front(), move.back());
+}
+
+
+bool BotBase::skip_search_step(unsigned int player, unsigned int from,
+							   unsigned int to)
+{
+	if (_skip_chance <= 0.0)
+		return false;
+
+	long progress = search_progress(player, from, to);
+	double chance = BotDeskilling::skip_scale(_skip_chance, progress);
+
+	return _rand.get_double() < chance;
 }
 
 
@@ -411,20 +417,6 @@ unsigned int BotBase::next_focused_player(GameBoard *board,
 }
 
 
-int BotBase::top_move_tiers() const
-{
-	// 100% -> 1 tier (play the best move), 90% -> 2, 80% -> 4, ... 70% -> 8.
-	int step = (100 - _smarts) / 10;
-
-	if (step < 0)
-		step = 0;
-	if (step > 5)
-		step = 5;
-
-	return 1 << step;
-}
-
-
 BotBase::~BotBase()
 {
 	_abort = TRUE;
@@ -662,18 +654,15 @@ void BotBase::make_best_move()
 	GameBoard board(*_client.get_board());
 	long best_score = LONG_MIN;
 
-	int tiers = top_move_tiers();
-
-	// Gather every legal root move and its score, then either play the best
-	// move or, when detuned, choose at random from the top `tiers` score
-	// tiers (one tier means the single best move, ties included).
+	// Gather every legal root move and its score, then play the single best
+	// move actually found (exact ties are still chosen at random).
 	std::vector<MoveList> root_moves;
 	std::vector<long> scores;
 
 	collect_root_moves(&board, _client.get_my_player_number(), &root_moves);
 	score_moves(&board, _client.get_my_player_number(),
 				&root_moves, &scores, true);
-	select_top_moves(root_moves, scores, tiers, &best_moves, &best_score);
+	select_best_move(root_moves, scores, &best_moves, &best_score);
 
 	_searching = false;
 
@@ -753,6 +742,7 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 				!board->is_other_player_triangle(player, to_hole)))
 			{
 				move->push_back(to_hole);
+
 				long score = score_move(board, player, move);
 				if (score > *best_score)
 				{
@@ -787,8 +777,10 @@ void BotBase::find_better_move_for_peg(GameBoard *board, unsigned int player,
 		{
 			move->push_back(to_hole);
 
-			if (board->get_stop_others_allowed() ||
-				!board->is_other_player_triangle(player, to_hole))
+			if ((board->get_stop_others_allowed() ||
+				 !board->is_other_player_triangle(player, to_hole))
+				&& (_skip_chance <= 0.0
+					|| !skip_search_step(player, move->front(), to_hole)))
 			{
 				long score = score_move(board, player, move);
 				if (score > *best_score)
@@ -935,6 +927,35 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 {
 	scores->assign(moves->size(), LONG_MIN);
 
+	// The direction bias uses the look-ahead distance cache, so make sure
+	// this bot's cache is ready before deciding which root steps to skip.
+	// With no skip chance there is nothing to decide, and the serial path
+	// below (or each worker clone) prepares the cache itself.
+	bool use_skip = (_skip_chance > 0.0 && !moves->empty());
+
+	std::vector<char> skipped;
+
+	if (use_skip)
+	{
+		prepare_search(board);
+		skipped.assign(moves->size(), 0);
+		unsigned int searched = 0;
+
+		for (unsigned int i = 0; i < moves->size(); i++)
+		{
+			const MoveList &move = (*moves)[i];
+
+			if (!is_single_step_move(*board, move)
+				&& skip_search_step(player, move.front(), move.back()))
+				skipped[i] = 1;
+			else
+				searched++;
+		}
+
+		if (searched == 0)
+			skipped[_rand.get_int_range(0, (int)moves->size())] = 0;
+	}
+
 	if (allow_parallel && supports_parallel_search() && _think_delay <= 0
 		&& moves->size() >= 2)
 	{
@@ -977,11 +998,13 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 				// (which renumbers players) cannot leave them stale.
 				unsigned int friends = get_friends();
 				unsigned int enemies = get_enemies();
+				double skip_chance = get_skip_chance();
 
 				for (unsigned int t = 0; t < num_threads; t++)
 				{
 					_search_clones[t]->set_friends(friends);
 					_search_clones[t]->set_enemies(enemies);
+					_search_clones[t]->set_skip_chance(skip_chance);
 				}
 
 				auto worker = [&](unsigned int t)
@@ -996,6 +1019,9 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 					while (!abort_flag.load() &&
 						   (i = next.fetch_add(1)) < (unsigned int)moves->size())
 					{
+						if (use_skip && skipped[i])
+							continue;
+
 						MoveList move = (*moves)[i];
 						(*scores)[i] = clone->score_move(&local, player, &move);
 					}
@@ -1034,6 +1060,9 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 
 	for (unsigned int i = 0; i < moves->size(); i++)
 	{
+		if (use_skip && skipped[i])
+			continue;
+
 		MoveList move = (*moves)[i];
 		(*scores)[i] = score_move(board, player, &move);
 
@@ -1054,76 +1083,29 @@ bool BotBase::score_moves(GameBoard *board, unsigned int player,
 }
 
 
-void BotBase::select_top_moves(const std::vector<MoveList> &root_moves,
-							   const std::vector<long> &scores, int tiers,
+void BotBase::select_best_move(const std::vector<MoveList> &root_moves,
+							   const std::vector<long> &scores,
 							   std::vector<MoveList> *best_moves,
 							   long *best_score)
 {
 	*best_score = LONG_MIN;
 	best_moves->clear();
 
-	std::vector<unsigned int> order;
-	order.reserve(root_moves.size());
-
-	for (unsigned int i = 0; i < root_moves.size(); i++)
-		if (scores[i] != LONG_MIN)
-			order.push_back(i);
-
-	std::stable_sort(order.begin(), order.end(),
-		[&scores](unsigned int a, unsigned int b)
-		{
-			return scores[a] > scores[b];
-		});
-
-	if (order.empty())
-		return;
-
-	long best = scores[order[0]];
-
-	// Dominance safety rail: never consider a move that is this far below the
-	// best one, however many tiers are in play.
-	long max_gap = kDetuneGapPerTier * (tiers - 1);
-
-	if (max_gap > kMaxDetuneGap)
-		max_gap = kMaxDetuneGap;
-
-	long limit = best - max_gap;
-
-	// If any move actually improves the position, never pick one that scores
-	// zero or below (shuffling a peg backwards, leaving a goal, etc.) just
-	// because detuning widened the tier selection.  When the best move only
-	// scores zero the player cannot improve, so keep the usual tier choice
-	// among the non-negative moves; when every move is negative the player is
-	// stuck and the negatives are all that is left.
-	if (best > 0 && limit <= 0)
-		limit = 1;
-	else if (best == 0 && limit < 0)
-		limit = 0;
-
-	int tier = -1;
-	long current = LONG_MIN;
-
-	for (unsigned int k = 0; k < order.size(); k++)
+	for (unsigned int i = 0; i < root_moves.size() && i < scores.size(); i++)
 	{
-		unsigned int i = order[k];
+		if (scores[i] == LONG_MIN)
+			continue;
 
-		if (scores[i] < limit)
-			break;
-
-		if (tier < 0 || scores[i] != current)
+		if (scores[i] > *best_score)
 		{
-			tier++;
-
-			if (tier >= tiers)
-				break;
-
-			current = scores[i];
-
-			if (tier == 0)
-				*best_score = current;
+			*best_score = scores[i];
+			best_moves->clear();
+			best_moves->push_back(root_moves[i]);
 		}
-
-		best_moves->push_back(root_moves[i]);
+		else if (scores[i] == *best_score)
+		{
+			best_moves->push_back(root_moves[i]);
+		}
 	}
 }
 

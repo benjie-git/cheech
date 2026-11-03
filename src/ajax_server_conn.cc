@@ -16,6 +16,7 @@
 #include <glibmm.h>
 
 #include "ajax_server_conn.hh"
+#include "bot_deskilling.hh"
 #include "utility.hh"
 #include "config.h"
 
@@ -651,10 +652,10 @@ static unsigned int parse_player_list(const Glib::ustring &list)
 
 void AjaxServerConn::ajax_addbot(Glib::ustring arguments)
 {
-	// The command may be a bot type ("l3"), optionally followed by a smarts
-	// percentage ("l3 80") and/or focus lists ("friends=2,3 enemies=4").
+	// The command may be a bot type ("l3"), optionally followed by a skip
+	// chance ("l3 0.1") and/or focus lists ("friends=2,3 enemies=4").
 	Glib::ustring type = arguments;
-	int smarts = 100;
+	double skip_chance = 0.0;
 	unsigned int friends = BotBase::ALL_PLAYERS;
 	unsigned int enemies = BotBase::ALL_PLAYERS;
 
@@ -664,21 +665,35 @@ void AjaxServerConn::ajax_addbot(Glib::ustring arguments)
 	if (iss >> token)
 	{
 		type = token;
-		iss >> smarts;
+
+		// Read the remaining tokens one at a time so a focus list after the
+		// type does not make a failed numeric extraction swallow the rest.
+		while (iss >> token)
+		{
+			if (token.compare(0, 8, "friends=") == 0)
+				friends = parse_player_list(token.substr(8));
+			else if (token.compare(0, 8, "enemies=") == 0)
+				enemies = parse_player_list(token.substr(8));
+			else
+			{
+				std::istringstream chance_stream(token);
+				double chance = 0.0;
+
+				if (chance_stream >> chance)
+					skip_chance = chance;
+			}
+		}
 	}
 
-	while (iss >> token)
-	{
-		if (token.compare(0, 8, "friends=") == 0)
-			friends = parse_player_list(token.substr(8));
-		else if (token.compare(0, 8, "enemies=") == 0)
-			enemies = parse_player_list(token.substr(8));
-	}
+	// Older clients sent a 50...100 smarts percentage; map it to the nearest
+	// skip chance.
+	if (skip_chance > 1.0)
+		skip_chance = BotDeskilling::legacy_smarts_skip_chance(skip_chance);
 
 	BotBase *bot = BotBase::new_bot_of_type(type);
 	if (!bot)
 		bot = BotBase::new_bot_of_type("l3");
-	bot->set_smarts(smarts);
+	bot->set_skip_chance(skip_chance);
 	bot->set_friends(friends);
 	bot->set_enemies(enemies);
 	_bots.push_back(bot);
