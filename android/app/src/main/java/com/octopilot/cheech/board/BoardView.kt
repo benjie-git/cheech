@@ -99,15 +99,17 @@ fun BoardView(model: SessionModel, modifier: Modifier = Modifier) {
             }
         }
 
-        val holeRadius = max(2f, layout.unit * 0.46f - 2f)
+        val showPegs = snapshot.connected &&
+            (snapshot.status != 0 || snapshot.hasRemoteSeat || !snapshot.isHost)
+        val owners = snapshot.holes
+
+        val holeRadius = max(2f, layout.unit * 0.46f - 6f)
         for (i in 0 until BoardGeometry.COUNT) {
             if (!BoardGeometry.present[i]) continue
             drawCircle(Color(0xFF664228), radius = holeRadius, center = layout.points[i])
             drawCircle(Color(0xFF4A2E18), radius = holeRadius, center = layout.points[i], style = Stroke(width = max(1f, layout.unit * 0.03f)))
         }
 
-        val showPegs = snapshot.connected &&
-            (snapshot.status != 0 || snapshot.hasRemoteSeat || !snapshot.isHost)
         if (showPegs) {
             val animatingPath = model.animator.active?.path
             val movingTo = if (animatingPath != null && animatingPath.isNotEmpty()) {
@@ -117,18 +119,18 @@ fun BoardView(model: SessionModel, modifier: Modifier = Modifier) {
             }
             for (i in 0 until BoardGeometry.COUNT) {
                 if (i == movingTo) continue
-                val owner = snapshot.playerAtHole(i)
+                val owner = owners[i]
                 if (owner <= 0) continue
                 val color = snapshot.colorForPlayer(owner)
                 if (color <= 0) continue
-                drawPeg(layout.points[i], PegColors.of(color), layout.unit)
+                drawPeg(layout.points[i], color, layout.unit)
             }
             val moving = model.animator.position(pointsList)
             if (moving != null && movingTo >= 0) {
-                val owner = snapshot.playerAtHole(movingTo)
+                val owner = owners[movingTo]
                 val color = if (owner > 0) snapshot.colorForPlayer(owner) else 0
                 if (color > 0) {
-                    drawPeg(moving, PegColors.of(color), layout.unit)
+                    drawPeg(moving, color, layout.unit)
                 }
             }
         }
@@ -139,11 +141,10 @@ fun BoardView(model: SessionModel, modifier: Modifier = Modifier) {
     }
 }
 
-private fun DrawScope.drawPeg(center: Offset, color: Color, unit: Float) {
-    val radius = max(3f, unit * 0.36f)
+private fun DrawScope.drawPeg(center: Offset, color: Int, unit: Float) {
+    val radius = max(3f, unit * 0.46f - 2f)
     drawCircle(Color.Black.copy(alpha = 0.18f), radius = radius * 1.05f, center = center + Offset(0f, radius * 0.12f))
-    drawCircle(color, radius = radius, center = center)
-    drawCircle(Color.White.copy(alpha = 0.75f), radius = radius, center = center, style = Stroke(width = max(1f, unit * 0.035f)))
+    drawCircle(PegColors.of(color), radius = radius, center = center)
     drawCircle(Color.White.copy(alpha = 0.4f), radius = radius * 0.28f, center = center - Offset(radius * 0.25f, radius * 0.3f))
 }
 

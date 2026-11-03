@@ -55,7 +55,11 @@ ios/Cheech.xcodeproj/xcshareddata/xcschemes/
 android/.gradle/
 android/local.properties
 android/.idea/
-android/.cxx/
+android/app/.cxx/
 android/build/
 android/app/build/
 *.iml
+
+# Ninja incremental build state
+.ninja_deps
+.ninja_log

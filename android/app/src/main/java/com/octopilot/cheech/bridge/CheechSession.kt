@@ -14,7 +14,7 @@ class CheechSeatSpec(
     @JvmField val botType: String,
     @JvmField val name: String,
     @JvmField val color: Int,
-    @JvmField val smarts: Int,
+    @JvmField val skipChance: Double,
     @JvmField val friendSeats: IntArray? = null,
     @JvmField val enemySeats: IntArray? = null,
 )
@@ -51,7 +51,7 @@ class CheechSnapshot(
     val moveNumber get() = ints[MOVE_NUMBER]
     val animationStepMs get() = ints[ANIMATION_STEP_MS]
     val animationDoneMs get() = ints[ANIMATION_DONE_MS]
-    val computerSmarts get() = ints[COMPUTER_SMARTS]
+    val computerSkipChance get() = ints[COMPUTER_SKIP_CHANCE] / 1_000_000.0
     val webPort get() = ints[WEB_PORT]
     val webReady get() = ints[WEB_READY] != 0
 
@@ -114,7 +114,7 @@ class CheechSnapshot(
         const val MOVE_NUMBER = 19
         const val ANIMATION_STEP_MS = 20
         const val ANIMATION_DONE_MS = 21
-        const val COMPUTER_SMARTS = 22
+        const val COMPUTER_SKIP_CHANCE = 22
         const val WEB_PORT = 23
         const val WEB_READY = 24
         const val SELECTED_COUNT = 25
@@ -177,7 +177,7 @@ class CheechSession(private val listener: Listener) : CheechListener, AutoClosea
     fun changeColor(color: Int) = nativeChangeColor(handle, color)
     fun sendChat(text: String) = nativeSendChat(handle, text)
     fun setAnimationStepMs(ms: Int) = nativeSetAnimationStepMs(handle, ms)
-    fun setComputerSmarts(percent: Int) = nativeSetComputerSmarts(handle, percent)
+    fun setComputerSkipChance(chance: Double) = nativeSetComputerSkipChance(handle, chance)
 
     fun reconfigureGame(numPlayers: Int, longJumps: Boolean, hopOthers: Boolean, stopOthers: Boolean) =
         nativeReconfigureGame(handle, numPlayers, longJumps, hopOthers, stopOthers)
@@ -226,7 +226,7 @@ class CheechSession(private val listener: Listener) : CheechListener, AutoClosea
     private external fun nativeChangeColor(handle: Long, color: Int)
     private external fun nativeSendChat(handle: Long, text: String)
     private external fun nativeSetAnimationStepMs(handle: Long, ms: Int)
-    private external fun nativeSetComputerSmarts(handle: Long, percent: Int)
+    private external fun nativeSetComputerSkipChance(handle: Long, chance: Double)
     private external fun nativeReconfigureGame(handle: Long, numPlayers: Int, longJumps: Boolean, hopOthers: Boolean, stopOthers: Boolean)
     private external fun nativeAddComputerPlayer(
         handle: Long, type: String, name: String, color: Int,

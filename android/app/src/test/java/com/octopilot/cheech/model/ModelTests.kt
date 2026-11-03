@@ -27,24 +27,24 @@ class BotCatalogTest {
     }
 
     @Test
-    fun lookAheadSkillMappingMatchesIos() {
-        assertEquals("LookAhead(3)" to 100, BotCatalog.resolvedType("LookAhead(3)", 1))
-        assertEquals("LookAhead(3)" to 90, BotCatalog.resolvedType("LookAhead(3)", 2))
-        assertEquals("LookAhead(2)" to 100, BotCatalog.resolvedType("LookAhead(3)", 3))
-        assertEquals("LookAhead(2)" to 80, BotCatalog.resolvedType("LookAhead(3)", 4))
+    fun lookAheadSkillMappingKeepsDepth() {
+        assertEquals("LookAhead(3)" to 0.0, BotCatalog.resolvedType("LookAhead(3)", 1))
+        assertEquals("LookAhead(3)" to 0.10, BotCatalog.resolvedType("LookAhead(3)", 2))
+        assertEquals("LookAhead(3)" to 0.20, BotCatalog.resolvedType("LookAhead(3)", 3))
+        assertEquals("LookAhead(3)" to 0.40, BotCatalog.resolvedType("LookAhead(3)", 4))
     }
 
     @Test
     fun adversarialSkillMappingPreservesDepth() {
-        assertEquals("Mean(4)" to 100, BotCatalog.resolvedType("Mean(4)", 1))
-        assertEquals("Mean(4)" to 70, BotCatalog.resolvedType("Mean(4)", 4))
-        assertEquals("Friendly(3)" to 90, BotCatalog.resolvedType("Friendly(3)", 2))
+        assertEquals("Mean(4)" to 0.0, BotCatalog.resolvedType("Mean(4)", 1))
+        assertEquals("Mean(4)" to 0.40, BotCatalog.resolvedType("Mean(4)", 4))
+        assertEquals("Friendly(3)" to 0.10, BotCatalog.resolvedType("Friendly(3)", 2))
     }
 
     @Test
     fun skillIsClamped() {
-        assertEquals("Mean(4)" to 100, BotCatalog.resolvedType("Mean(4)", 0))
-        assertEquals("Mean(4)" to 70, BotCatalog.resolvedType("Mean(4)", 99))
+        assertEquals("Mean(4)" to 0.0, BotCatalog.resolvedType("Mean(4)", 0))
+        assertEquals("Mean(4)" to 0.40, BotCatalog.resolvedType("Mean(4)", 99))
         assertEquals(BotSkill.BEST, BotSkill.fromLevel(0))
         assertEquals(BotSkill.NERFED, BotSkill.fromLevel(4))
     }

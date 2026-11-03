@@ -1,6 +1,7 @@
 #include <jni.h>
 
 #include <algorithm>
+#include <cmath>
 #include <csignal>
 #include <codecvt>
 #include <locale>
@@ -28,7 +29,7 @@ jfieldID g_seat_kind = nullptr;
 jfieldID g_seat_bot_type = nullptr;
 jfieldID g_seat_name = nullptr;
 jfieldID g_seat_color = nullptr;
-jfieldID g_seat_smarts = nullptr;
+jfieldID g_seat_skip_chance = nullptr;
 jfieldID g_seat_friend_seats = nullptr;
 jfieldID g_seat_enemy_seats = nullptr;
 
@@ -141,7 +142,7 @@ jobject build_snapshot(JNIEnv *env, const Snapshot &snapshot)
 	values[19] = snapshot.move_number;
 	values[20] = snapshot.animation_step_ms;
 	values[21] = snapshot.animation_done_ms;
-	values[22] = snapshot.computer_smarts;
+	values[22] = (jint)std::lround(snapshot.computer_skip_chance * 1000000.0);
 	values[23] = snapshot.web_port;
 	values[24] = snapshot.web_ready ? 1 : 0;
 	values[25] = (jint)std::min<size_t>(snapshot.selected.size(), 64);
@@ -258,7 +259,7 @@ std::vector<SeatSpec> read_seats(JNIEnv *env, jobjectArray seats)
 		spec.bot_type = jstring_to_utf8(env, bot_type);
 		spec.name = jstring_to_utf8(env, name);
 		spec.color = env->GetIntField(seat, g_seat_color);
-		spec.smarts = env->GetIntField(seat, g_seat_smarts);
+		spec.skip_chance = env->GetDoubleField(seat, g_seat_skip_chance);
 		auto friends = reinterpret_cast<jintArray>(env->GetObjectField(seat, g_seat_friend_seats));
 		auto enemies = reinterpret_cast<jintArray>(env->GetObjectField(seat, g_seat_enemy_seats));
 		spec.friend_seats = read_int_array(env, friends);
@@ -310,7 +311,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *)
 	g_seat_bot_type = env->GetFieldID(seat_class, "botType", "Ljava/lang/String;");
 	g_seat_name = env->GetFieldID(seat_class, "name", "Ljava/lang/String;");
 	g_seat_color = env->GetFieldID(seat_class, "color", "I");
-	g_seat_smarts = env->GetFieldID(seat_class, "smarts", "I");
+	g_seat_skip_chance = env->GetFieldID(seat_class, "skipChance", "D");
 	g_seat_friend_seats = env->GetFieldID(seat_class, "friendSeats", "[I");
 	g_seat_enemy_seats = env->GetFieldID(seat_class, "enemySeats", "[I");
 	env->DeleteLocalRef(seat_class);
@@ -413,9 +414,9 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *)
 			if (auto *session = native_session(handle))
 				session->core->set_animation_step_ms(ms);
 		}},
-		{"nativeSetComputerSmarts", "(JI)V", (void *)+[](JNIEnv *, jobject, jlong handle, jint percent) {
+		{"nativeSetComputerSkipChance", "(JD)V", (void *)+[](JNIEnv *, jobject, jlong handle, jdouble chance) {
 			if (auto *session = native_session(handle))
-				session->core->set_computer_smarts(percent);
+				session->core->set_computer_skip_chance(chance);
 		}},
 		{"nativeReconfigureGame", "(JIZZZ)V",
 			(void *)+[](JNIEnv *, jobject, jlong handle, jint players, jboolean long_jumps,

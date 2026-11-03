@@ -150,18 +150,18 @@ class SessionModel(application: android.app.Application) :
                         botType = type,
                         name = seat.name.ifEmpty { BotCatalog.cuteName(type) },
                         color = seat.color,
-                        smarts = resolved.second,
+                        skipChance = resolved.second,
                         friendSeats = focusIndices(seat.friendSeats),
                         enemySeats = focusIndices(seat.enemySeats),
                     )
                 }
-                SEAT_REMOTE -> CheechSeatSpec(SEAT_REMOTE, "", "", 0, 100)
+                SEAT_REMOTE -> CheechSeatSpec(SEAT_REMOTE, "", "", 0, 0.0)
                 else -> CheechSeatSpec(
                     kind = SEAT_HUMAN,
                     botType = "",
                     name = seat.humanName?.ifEmpty { "Player ${index + 1}" } ?: "Player ${index + 1}",
                     color = seat.color,
-                    smarts = 100,
+                    skipChance = 0.0,
                 )
             }
         }

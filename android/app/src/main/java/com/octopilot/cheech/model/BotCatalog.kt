@@ -25,9 +25,9 @@ data class SeatConfig(
 
 enum class BotSkill(val level: Int, val label: String, val detail: String) {
     BEST(1, "Best", "Best move"),
-    GREAT(2, "Great", "Top moves"),
-    MID(3, "Mid", "Top moves"),
-    NERFED(4, "Nerfed", "More variety");
+    GREAT(2, "Great", "Skips ~10% of steps"),
+    MID(3, "Mid", "Skips ~20% of steps"),
+    NERFED(4, "Nerfed", "Skips ~40% of steps");
 
     companion object {
         fun fromLevel(level: Int): BotSkill = entries.firstOrNull { it.level == level } ?: BEST
@@ -60,20 +60,17 @@ object BotCatalog {
         return if (depth > 3) withDepth(type, 3) else type
     }
 
-    fun resolvedType(type: String, skill: Int): Pair<String, Int> {
+    fun resolvedType(type: String, skill: Int): Pair<String, Double> {
         val level = skill.coerceIn(1, 4)
+        // Mirrors the de-skilling ladder in src/bot_deskilling.hh.
+        val skipChance = doubleArrayOf(0.0, 0.10, 0.20, 0.40)[level - 1]
         val base = type.substringBefore('(')
         val depth = type.substringAfter('(', "4").substringBefore(')').toIntOrNull() ?: 4
         return when (base) {
-            "LookAhead" -> when (level) {
-                1 -> "LookAhead(3)" to 100
-                2 -> "LookAhead(3)" to 90
-                3 -> "LookAhead(2)" to 100
-                else -> "LookAhead(2)" to 80
-            }
-            "Mean" -> "Mean($depth)" to intArrayOf(100, 90, 80, 70)[level - 1]
-            "Friendly" -> "Friendly($depth)" to intArrayOf(100, 90, 80, 70)[level - 1]
-            else -> type to 100
+            "LookAhead" -> "LookAhead(3)" to skipChance
+            "Mean" -> "Mean($depth)" to skipChance
+            "Friendly" -> "Friendly($depth)" to skipChance
+            else -> type to 0.0
         }
     }
 }
