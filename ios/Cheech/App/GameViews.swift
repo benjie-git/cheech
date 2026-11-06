@@ -359,22 +359,34 @@ struct InviteView: View {
 					}
 					Section {
 						ShareLink(item: inviteMessage) {
-							Text("Share Invite").frame(maxWidth: .infinity)
+							Text("Share Invite")
+								.frame(maxWidth: .infinity, alignment: .center)
 						}
-						Button("Copy Invite Message") {
+                        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                        .alignmentGuide(.listRowSeparatorTrailing) { dimensions in dimensions.width }
+						Button {
 							UIPasteboard.general.string = inviteMessage
+						} label: {
+							Text("Copy Invite Message")
+								.frame(maxWidth: .infinity, alignment: .center)
 						}
-						.frame(maxWidth: .infinity)
-						.listRowSeparator(.hidden, edges: .top)
-						Button("Copy App Join Link") {
+                        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                        .alignmentGuide(.listRowSeparatorTrailing) { dimensions in dimensions.width }
+						Button {
 							UIPasteboard.general.string = inviteURL
+						} label: {
+							Text("Copy App Join Link")
+								.frame(maxWidth: .infinity, alignment: .center)
 						}
-						.frame(maxWidth: .infinity)
+                        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+                        .alignmentGuide(.listRowSeparatorTrailing) { dimensions in dimensions.width }
 						if let browserURL {
-							Button("Copy Web Join Link") {
+							Button {
 								UIPasteboard.general.string = browserURL
+							} label: {
+								Text("Copy Web Join Link")
+									.frame(maxWidth: .infinity, alignment: .center)
 							}
-							.frame(maxWidth: .infinity)
 						}
 					} footer: {
 						Text("Opening the iOS link joins this game directly.")
