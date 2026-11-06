@@ -96,12 +96,19 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // is assigned according to its kind: Human seats are played on this device,
 // Computer seats by a bot, and Remote seats are left open for other devices to
 // fill via joinHost:.  No networking setup is required on the host device.
+// When webPort is non-zero, a Cheechweb server is also started on that port and
+// serves the web client from the directory given to +setWebRoot:.
 - (void)startGameOnPort:(uint16_t)port
+				webPort:(uint16_t)webPort
 			 numPlayers:(NSInteger)numPlayers
 			  longJumps:(BOOL)longJumps
 			  hopOthers:(BOOL)hopOthers
 			 stopOthers:(BOOL)stopOthers
 				  seats:(NSArray<CheechSeat *> *)seats;
+
+// Directory containing the web client (index.html, css/, js/, ...) served by
+// the embedded Cheechweb server.  Process-wide; call before starting a game.
++ (void)setWebRoot:(NSString *)path;
 
 // Opaque snapshot of a fully local hosted game in progress (no remote seats),
 // suitable for persisting across launches.  Returns nil when the current game
@@ -112,7 +119,7 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // in-process server and seats and restoring the board and turn.  Only valid for
 // fully local games.  Returns NO (and does nothing) if the snapshot cannot be
 // parsed.
-- (BOOL)resumeLocalGame:(NSString *)save;
+- (BOOL)resumeLocalGame:(NSString *)save webPort:(uint16_t)webPort;
 
 - (void)leave;
 
@@ -203,6 +210,11 @@ typedef NS_ENUM(NSInteger, CheechSeatKind) {
 // invite more players once a game is joined.
 @property (nonatomic, readonly) NSString *serverHost;
 @property (nonatomic, readonly) NSInteger serverPort;
+
+// The port the embedded Cheechweb server is listening on, or 0 when it is not
+// running.  webReady is YES only after the server started successfully.
+@property (nonatomic, readonly) NSInteger webPort;
+@property (nonatomic, readonly) BOOL webReady;
 
 // Current game rules as reported by the server's board.  Before a board exists
 // these default to longJumps=NO, hopOthers=YES, stopOthers=YES.

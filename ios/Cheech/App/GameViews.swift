@@ -194,7 +194,22 @@ struct GameSetupView: View {
 						}
 					}
 					if model.seats.contains(where: { $0.kind == .remote }) {
-						Section {
+						Section("Server") {
+							HStack {
+								Text("Server Port")
+								TextField("Port", value: $model.hostPort, format: .number.grouping(.never))
+									.keyboardType(.numberPad)
+									.multilineTextAlignment(.trailing)
+							}
+							Toggle("Run Cheechweb Server", isOn: $model.runWebServer)
+							if model.runWebServer {
+								HStack {
+									Text("Cheechweb Port")
+									TextField("Port", value: $model.webPort, format: .number.grouping(.never))
+										.keyboardType(.numberPad)
+										.multilineTextAlignment(.trailing)
+								}
+							}
 							Button("Invite a Friend") { model.showInvite = true }
 								.frame(maxWidth: .infinity)
 						}
@@ -268,6 +283,39 @@ struct InviteView: View {
 		]
 		return components.string ?? "cheech://join?host=\(host)&port=\(port)"
 	}
+	// The Cheechweb port to advertise, or nil when no browser link is available.
+	// A running hosted game reports the port it actually bound; before starting,
+	// the setup page's choice is used.  When joined to someone else's game we
+	// cannot know whether their host runs a web server.
+	private var browserPort: Int? {
+		let active = Int(model.session.webPort)
+		if model.session.webReady && active > 0 {
+			return active
+		}
+		if !model.session.connected && model.runWebServer && model.webPort >= 1 {
+			return model.webPort
+		}
+		return nil
+	}
+	private var browserURL: String? {
+		guard canInvite, let browserPort else { return nil }
+		var components = URLComponents()
+		components.scheme = "http"
+		components.host = host
+		components.port = browserPort
+		components.path = "/"
+		return components.string
+	}
+	private var inviteMessage: String {
+		var lines = [
+			"Please join my Chinese Checkers game.",
+			"Play in iOS app: \(inviteURL)",
+		]
+		if let browserURL {
+			lines.append("Play in browser: \(browserURL)")
+		}
+		return lines.joined(separator: "\n")
+	}
 
 	var body: some View {
 		NavigationStack {
@@ -295,23 +343,41 @@ struct InviteView: View {
 					}
 				}
 				if canInvite {
-					Section("Invite link") {
-						Text(inviteURL)
-							.font(.footnote)
-							.textSelection(.enabled)
-							.foregroundStyle(.secondary)
+					Section("Invite message") {
+						VStack(alignment: .leading, spacing: 6) {
+							Text("Please join my Chinese Checkers game.")
+								.font(.callout)
+								.foregroundStyle(.primary)
+							Text("Play in iOS app: \(inviteURL)")
+							if let browserURL {
+								Text("Play in browser: \(browserURL)")
+							}
+						}
+						.font(.footnote)
+						.foregroundStyle(.secondary)
+						.textSelection(.enabled)
 					}
 					Section {
-						ShareLink(item: inviteURL) {
+						ShareLink(item: inviteMessage) {
 							Text("Share Invite").frame(maxWidth: .infinity)
 						}
-						Button("Copy Invite Link") {
-							UIPasteboard.general.string = inviteURL
+						Button("Copy Invite Message") {
+							UIPasteboard.general.string = inviteMessage
 						}
 						.frame(maxWidth: .infinity)
 						.listRowSeparator(.hidden, edges: .top)
+						Button("Copy App Join Link") {
+							UIPasteboard.general.string = inviteURL
+						}
+						.frame(maxWidth: .infinity)
+						if let browserURL {
+							Button("Copy Web Join Link") {
+								UIPasteboard.general.string = browserURL
+							}
+							.frame(maxWidth: .infinity)
+						}
 					} footer: {
-						Text("Opening the link joins this game directly.")
+						Text("Opening the iOS link joins this game directly.")
 					}
 				} else {
 					Section {

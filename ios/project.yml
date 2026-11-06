@@ -59,6 +59,10 @@ targets:
         group: CheechCore
       - path: ../src/ajax_server_conn.cc
         group: CheechCore
+      - path: ../web
+        group: WebClient
+        type: folder
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.octopilot.cheech

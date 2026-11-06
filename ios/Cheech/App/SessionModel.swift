@@ -199,6 +199,8 @@ private enum PrefKey {
 	static let playerName = "playerName"
 	static let playerColor = "playerColor"
 	static let hostPort = "hostPort"
+	static let runWebServer = "runWebServer"
+	static let webPort = "webPort"
 	static let numPlayers = "numPlayers"
 	static let longJumps = "longJumps"
 	static let hopOthers = "hopOthers"
@@ -262,6 +264,10 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 	@Published var playerName: String { didSet { save(playerName, PrefKey.playerName) } }
 	@Published var playerColor: Int { didSet { save(playerColor, PrefKey.playerColor) } }
 	@Published var hostPort: Int { didSet { save(hostPort, PrefKey.hostPort) } }
+	// Serve the bundled web client while hosting; it joins the game through
+	// the in-process server like any other client.
+	@Published var runWebServer: Bool { didSet { save(runWebServer, PrefKey.runWebServer) } }
+	@Published var webPort: Int { didSet { save(webPort, PrefKey.webPort) } }
 	@Published var numPlayers: Int {
 		didSet {
 			save(numPlayers, PrefKey.numPlayers)
@@ -296,6 +302,8 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		playerName = defaults.string(forKey: PrefKey.playerName) ?? "Player"
 		playerColor = defaults.object(forKey: PrefKey.playerColor) as? Int ?? 1
 		hostPort = defaults.object(forKey: PrefKey.hostPort) as? Int ?? 3838
+		runWebServer = defaults.object(forKey: PrefKey.runWebServer) as? Bool ?? false
+		webPort = defaults.object(forKey: PrefKey.webPort) as? Int ?? 3839
 		longJumps = defaults.object(forKey: PrefKey.longJumps) as? Bool ?? true
 		hopOthers = defaults.object(forKey: PrefKey.hopOthers) as? Bool ?? true
 		stopOthers = defaults.object(forKey: PrefKey.stopOthers) as? Bool ?? true
@@ -313,6 +321,9 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 			numPlayers = defaults.object(forKey: PrefKey.numPlayers) as? Int ?? 3
 		}
 		super.init()
+		if let webRoot = Bundle.main.resourceURL?.appendingPathComponent("web").path {
+			CheechSession.setWebRoot(webRoot)
+		}
 		session.delegate = self
 		syncSeatCount()
 		resumeSavedGameIfNeeded()
@@ -326,6 +337,15 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		if let data = try? JSONEncoder().encode(seats) {
 			UserDefaults.standard.set(data, forKey: PrefKey.seats)
 		}
+	}
+
+	// The port to serve the web client on, or 0 when the web server is off.
+	// The setup page only shows this option when a remote seat is available,
+	// so never bind the port without one.
+	private var activeWebPort: UInt16 {
+		guard runWebServer, seats.contains(where: { $0.kind == .remote }),
+		      webPort >= 1, webPort <= 65535 else { return 0 }
+		return UInt16(webPort)
 	}
 
 	private func syncSeatCount() {
@@ -516,6 +536,7 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		session.setAnimationStepMs(opponentStepMs)
 		session.startGame(
 			onPort: hostPort >= 1 ? UInt16(clamping: hostPort) : 0,
+			webPort: activeWebPort,
 			numPlayers: numPlayers,
 			longJumps: longJumps,
 			hopOthers: hopOthers,
@@ -556,7 +577,9 @@ final class SessionModel: NSObject, ObservableObject, CheechSessionDelegate {
 		      !save.isEmpty else { return }
 		resetTransients()
 		session.setAnimationStepMs(opponentStepMs)
-		guard session.resumeLocalGame(save) else {
+		// A saved game is always fully local (no remote seats), so it never
+		// needs the web server.
+		guard session.resumeLocalGame(save, webPort: 0) else {
 			clearSavedGame()
 			return
 		}

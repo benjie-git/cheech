@@ -172,6 +172,11 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	return BotDeskilling::skill_skip_chance((unsigned int)level);
 }
 
++ (void)setWebRoot:(NSString *)path
+{
+	SessionCore::set_web_root(from_ns(path));
+}
+
 #pragma mark - Setup
 
 - (void)joinHost:(NSString *)host
@@ -185,6 +190,7 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 }
 
 - (void)startGameOnPort:(uint16_t)port
+				webPort:(uint16_t)webPort
 			 numPlayers:(NSInteger)numPlayers
 			  longJumps:(BOOL)longJumps
 			  hopOthers:(BOOL)hopOthers
@@ -207,7 +213,7 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	}
 
 	_core->start_game(port, (int)numPlayers, longJumps == YES,
-		hopOthers == YES, stopOthers == YES, specs);
+		hopOthers == YES, stopOthers == YES, specs, webPort);
 }
 
 - (nullable NSString *)localGameSave
@@ -216,9 +222,9 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 	return save.empty() ? nil : to_ns(save);
 }
 
-- (BOOL)resumeLocalGame:(NSString *)save
+- (BOOL)resumeLocalGame:(NSString *)save webPort:(uint16_t)webPort
 {
-	return _core->resume_local_game(from_ns(save)) ? YES : NO;
+	return _core->resume_local_game(from_ns(save), webPort) ? YES : NO;
 }
 
 - (void)leave
@@ -354,6 +360,8 @@ std::optional<std::vector<int>> seat_indices(NSArray<NSNumber *> *numbers)
 
 - (NSString *)serverHost { return to_ns(_core->snapshot().server_host); }
 - (NSInteger)serverPort { return _core->snapshot().server_port; }
+- (NSInteger)webPort { return _core->snapshot().web_port; }
+- (BOOL)webReady { return _core->snapshot().web_ready; }
 - (BOOL)longJumps { return _core->snapshot().long_jumps; }
 - (BOOL)hopOthers { return _core->snapshot().hop_others; }
 - (BOOL)stopOthers { return _core->snapshot().stop_others; }

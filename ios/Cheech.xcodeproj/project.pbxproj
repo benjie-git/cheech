@@ -14,6 +14,7 @@
 		2EEA7F95DAFCBEB9838776CD /* utility.cc in Sources */ = {isa = PBXBuildFile; fileRef = B55A9D589E2972950E4DA9D2 /* utility.cc */; };
 		32A9485275D562A7ABE47249 /* bot_mean.cc in Sources */ = {isa = PBXBuildFile; fileRef = 447C808B584AE3DAAD4C9559 /* bot_mean.cc */; };
 		3B3F7CED5FB174F201B8AC90 /* SessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49860C0319D6646DAAABBB2 /* SessionModel.swift */; };
+		5D480D91CA2EF984F00B0F42 /* web in Resources */ = {isa = PBXBuildFile; fileRef = B37539DBD0BD6E8F2ABC20F5 /* web */; };
 		615B93D7EDB61DA1DF2E3394 /* bot_lookahead.cc in Sources */ = {isa = PBXBuildFile; fileRef = C89A48EB168041539B0A3F4E /* bot_lookahead.cc */; };
 		6668CF3566E023F44524BCB3 /* CheechApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 576C28E40D255F8863D201D8 /* CheechApp.swift */; };
 		684385373A0B6E7F81A059F4 /* net_conn.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9B091D1E5B9BD13612022CCC /* net_conn.cc */; };
@@ -74,6 +75,7 @@
 		AD10CD9DE57D32E85E00C198 /* enums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = enums.h; sourceTree = "<group>"; };
 		AE97CD579EC816ED8286C279 /* game_hole.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = game_hole.cc; path = ../src/game_hole.cc; sourceTree = "<group>"; };
 		B3210A8DFBCEC6E04C60A4B2 /* ustring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ustring.h; sourceTree = "<group>"; };
+		B37539DBD0BD6E8F2ABC20F5 /* web */ = {isa = PBXFileReference; lastKnownFileType = folder; name = web; path = ../web; sourceTree = SOURCE_ROOT; };
 		B55A9D589E2972950E4DA9D2 /* utility.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = utility.cc; path = ../src/utility.cc; sourceTree = "<group>"; };
 		B592A411D00899E7CE261A35 /* socketclient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = socketclient.h; sourceTree = "<group>"; };
 		B68A56CEB2AFA212BEE001C8 /* giomm-internal.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "giomm-internal.hh"; sourceTree = "<group>"; };
@@ -104,6 +106,14 @@
 				38B0C2053EE54F7951C08DB8 /* sigc++.h */,
 			);
 			path = "sigc++";
+			sourceTree = "<group>";
+		};
+		188F3C7F9B5C3B6ACEA0C0C8 /* WebClient */ = {
+			isa = PBXGroup;
+			children = (
+				B37539DBD0BD6E8F2ABC20F5 /* web */,
+			);
+			name = WebClient;
 			sourceTree = "<group>";
 		};
 		2CB69CC42AFC43D53A22FE91 /* Products */ = {
@@ -185,6 +195,7 @@
 				CAF5D486DDA0DC58D4D6A304 /* Cheech */,
 				F755B2088F03C30DA6AE9FEA /* CheechCore */,
 				F75D42D1428761AF717D1FC8 /* compat */,
+				188F3C7F9B5C3B6ACEA0C0C8 /* WebClient */,
 				2CB69CC42AFC43D53A22FE91 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -275,7 +286,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2710;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					447C04D667C9AFABFDF3C7E2 = {
 						ProvisioningStyle = Automatic;
@@ -307,6 +318,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F253E9CC59694BFE04ED97D /* Assets.xcassets in Resources */,
+				5D480D91CA2EF984F00B0F42 /* web in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +368,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"CHEECH_IOS=1",
@@ -383,7 +396,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -415,7 +427,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -431,7 +442,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -446,6 +456,7 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -474,7 +485,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -506,7 +516,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = WKVW8863DQ;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -529,7 +538,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;

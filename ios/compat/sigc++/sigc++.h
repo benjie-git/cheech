@@ -139,8 +139,13 @@ public:
 	connection connect(F&& f)
 	{
 		auto e = std::make_shared<entry>();
+
+		// Read the trackable state before moving the slot into std::function;
+		// otherwise moved-from mem_fun/bind wrappers have no state left and the
+		// slot is never invalidated when its owner dies.
+		auto state = internal::state_of(f, 0);
 		e->fn = std::function<void(Args...)>(std::forward<F>(f));
-		if (auto state = internal::state_of(f, 0))
+		if (state)
 		{
 			e->state = state;
 			e->has_state = true;
