@@ -34,7 +34,6 @@ const els = {
 	moveControls: $("moveControls"),
 	cancelMove: $("cancelMove"),
 	commitMove: $("commitMove"),
-	boardHint: $("boardHint"),
 	playerList: $("playerList"),
 	spectatorChip: $("spectatorChip"),
 	gameInfo: $("gameInfo"),
@@ -1078,15 +1077,6 @@ function updateMoveControls() {
 
 	els.moveControls.hidden = !(playing && selected > 0);
 	els.commitMove.disabled = selected < 2;
-
-	let hint = "";
-	if (playing) {
-		hint = selected > 0
-			? `${selected} hole${selected === 1 ? "" : "s"} selected — click another hole or press Enter.`
-			: "Select one of your pegs. Double-click a destination to move.";
-	}
-	els.boardHint.textContent = hint;
-	els.boardHint.hidden = !hint;
 }
 
 function boardInteraction(event, isDouble) {
