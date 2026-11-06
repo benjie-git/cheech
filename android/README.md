@@ -90,9 +90,10 @@ Compose UI (Kotlin)
 - `ios/compat/` provides the GLib/glibmm/sigc++/giomm subset and the POSIX
   event loop used by the mobile core. Both apps reuse it; there is no
   duplicated game logic.
-- `android/app/src/main/assets/web/` is the checked-in browser client. It is
-  copied to the app's files directory at startup and served by the embedded
-  AJAX web server.
+- The browser client lives only in the repository's top-level `web/` directory.
+  The Android build copies it into generated assets, and the app copies those
+  assets to its files directory at startup to serve with the embedded AJAX web
+  server.
 
 ## Feature parity
 

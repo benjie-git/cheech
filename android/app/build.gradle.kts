@@ -1,8 +1,20 @@
+import org.gradle.api.tasks.Sync
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+}
+
+val webAssetsDir = layout.buildDirectory.dir("generated/webAssets").get().asFile
+
+val copyWebAssets by tasks.registering(Sync::class) {
+    from(rootProject.file("../web")) {
+        exclude("Makefile*", ".DS_Store")
+        into("web")
+    }
+    into(webAssetsDir)
 }
 
 android {
@@ -81,10 +93,24 @@ android {
         unitTests.isReturnDefaultValues = true
     }
 
+    sourceSets {
+        getByName("main") {
+            assets.srcDir(webAssetsDir)
+        }
+    }
+
     lint {
         abortOnError = true
         checkReleaseBuilds = true
     }
+}
+
+tasks.named("preBuild") {
+    dependsOn(copyWebAssets)
+}
+
+tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.configureEach {
+    dependsOn(copyWebAssets)
 }
 
 dependencies {
