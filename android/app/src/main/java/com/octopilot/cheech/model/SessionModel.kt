@@ -33,6 +33,21 @@ class SessionModel(application: android.app.Application) :
     var playerName by mutableStateOf(prefs.playerName)
     var playerColor by mutableStateOf(prefs.playerColor)
     var hostPort by mutableStateOf(prefs.hostPort)
+    private var runWebServerState by mutableStateOf(prefs.runWebServer)
+    var runWebServer: Boolean
+        get() = runWebServerState
+        set(value) {
+            runWebServerState = value
+            prefs.runWebServer = value
+        }
+    private var webPortState by mutableStateOf(prefs.webPort)
+    var webPort: Int
+        get() = webPortState
+        set(value) {
+            val port = value.coerceIn(1, 65535)
+            webPortState = port
+            prefs.webPort = port
+        }
     var joinHost by mutableStateOf(prefs.joinHost)
     var joinPort by mutableStateOf(prefs.joinPort)
     var joinSpectator by mutableStateOf(false)
@@ -122,6 +137,9 @@ class SessionModel(application: android.app.Application) :
 
     private fun saveSeats() = prefs.saveSeats(seats)
 
+    private val activeWebPort: Int
+        get() = if (runWebServer && seats.any { it.kind == SEAT_REMOTE } && webPort in 1..65535) webPort else 0
+
     fun updateProfile(name: String, color: Int) {
         val trimmed = name.trim().ifEmpty { "Player" }
         playerName = trimmed
@@ -172,7 +190,7 @@ class SessionModel(application: android.app.Application) :
         prefs.opponentStepMs = opponentStepMs
         prefs.hostPort = hostPort
         session.setAnimationStepMs(opponentStepMs)
-        session.startGame(hostPort, count, longJumps, hopOthers, stopOthers, specs, WEB_PORT)
+        session.startGame(hostPort, count, longJumps, hopOthers, stopOthers, specs, activeWebPort)
         resetTransients()
         screen = Screen.Game
     }
@@ -273,15 +291,13 @@ class SessionModel(application: android.app.Application) :
 
     fun removeComputerPlayers() = session.removeComputerPlayers()
 
-    fun setWebPort(port: Int) = Unit
-
     fun persistLocalGame() {
         prefs.savedGame = session.localGameSave()
     }
 
     private fun resumeSavedGameIfNeeded() {
         val save = prefs.savedGame ?: return
-        if (session.resumeLocalGame(save, WEB_PORT)) {
+        if (session.resumeLocalGame(save, 0)) {
             resetTransients()
             screen = Screen.Game
         } else {
@@ -430,7 +446,4 @@ class SessionModel(application: android.app.Application) :
         return result.toIntArray()
     }
 
-    companion object {
-        const val WEB_PORT = 3839
-    }
 }

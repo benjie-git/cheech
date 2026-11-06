@@ -149,15 +149,39 @@ fun SetupScreen(model: SessionModel) {
                     }
                 }
                 item {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Players", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                        if (model.seats.any { it.kind == SEAT_REMOTE }) {
-                            OutlinedButton(onClick = { showInvite = true }) { Text("Invite a Friend") }
-                        }
-                    }
+                    Text("Players", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
                 }
                 itemsIndexed(model.seats) { index, seat ->
                     SeatEditor(model, index, seat)
+                }
+                if (model.seats.any { it.kind == SEAT_REMOTE }) {
+                    item {
+                        SectionCard("Server") {
+                            OutlinedTextField(
+                                value = model.hostPort.toString(),
+                                onValueChange = { text -> valueOrNull(text)?.let { model.hostPort = it.coerceIn(1, 65535) } },
+                                label = { Text("Server Port") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                                Text("Run Cheechweb Server", Modifier.weight(1f))
+                                Switch(checked = model.runWebServer, onCheckedChange = { model.runWebServer = it })
+                            }
+                            if (model.runWebServer) {
+                                OutlinedTextField(
+                                    value = model.webPort.toString(),
+                                    onValueChange = { text -> valueOrNull(text)?.let { model.webPort = it } },
+                                    label = { Text("Cheechweb Port") },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                            OutlinedButton(onClick = { showInvite = true }, modifier = Modifier.fillMaxWidth()) {
+                                Text("Share Invite")
+                            }
+                        }
+                    }
                 }
                 item { Spacer(Modifier.height(28.dp)) }
             } else {

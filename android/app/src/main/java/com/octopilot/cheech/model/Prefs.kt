@@ -20,6 +20,14 @@ class Prefs(context: Context) {
         get() = prefs.getInt("hostPort", 3838)
         set(value) = prefs.edit().putInt("hostPort", value.coerceIn(1, 65535)).apply()
 
+    var runWebServer: Boolean
+        get() = prefs.getBoolean("runWebServer", false)
+        set(value) = prefs.edit().putBoolean("runWebServer", value).apply()
+
+    var webPort: Int
+        get() = prefs.getInt("webPort", 3839)
+        set(value) = prefs.edit().putInt("webPort", value.coerceIn(1, 65535)).apply()
+
     var joinHost: String
         get() = prefs.getString("joinHost", "127.0.0.1") ?: "127.0.0.1"
         set(value) = prefs.edit().putString("joinHost", value).apply()

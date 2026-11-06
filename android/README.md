@@ -49,10 +49,12 @@ publishing.
   A seat can be **Human** (on this device), **Computer**, or **Remote** (left
   open for another phone or the web client).
 - **Join**: enter a host and port. Joining as a spectator is supported.
-- **Invite**: while hosting, open Invite to share
-  `cheech://join?host=<ip>&port=<port>`. The link opens the app directly.
-- **Web**: while hosting, the app also serves the browser client on port 3839,
-  bridging it to the game server on 3838. On the same device:
+- **Invite**: while hosting with a Remote seat, the Server section has Share
+  Invite. It offers a `cheech://join?host=<ip>&port=<port>` app link and, when
+  the Cheechweb server is enabled, an `http://<ip>:<port>/` browser link.
+- **Web**: enable Run Cheechweb Server in the Server section to serve the
+  browser client (default port 3839), bridging it to the game server on 3838.
+  On the same device:
 
   ```bash
   adb forward tcp:3839 tcp:3839
@@ -104,7 +106,7 @@ Compose UI (Kotlin)
 - Host controls: undo, restart, rotate, shuffle, reconfigure, add/remove bots,
   play again
 - Fullscreen board, rotation, deep links, save/resume
-- Embedded web client on port 3839
+- Optional embedded web client (default port 3839)
 
 ## Notes
 

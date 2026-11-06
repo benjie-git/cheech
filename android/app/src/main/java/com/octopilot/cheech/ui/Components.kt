@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
@@ -27,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -113,9 +113,29 @@ fun InviteDialog(model: SessionModel, onDismiss: () -> Unit) {
             localIPAddress() ?: "Unavailable"
         } else shown
     }
-    val port = if ((snapshot?.serverPort ?: 0) > 0) snapshot!!.serverPort else model.hostPort
-    val url = "cheech://join?host=$host&port=$port"
-    var editablePort by remember { mutableStateOf(port.toString()) }
+    val serverPort = snapshot?.serverPort ?: 0
+    val port = if (serverPort > 0) serverPort else model.hostPort
+    val canInvite = host != "Unavailable"
+    val appUrl = "cheech://join?host=$host&port=$port"
+    val browserPort = when {
+        snapshot != null && snapshot.webReady && snapshot.webPort > 0 -> snapshot.webPort
+        snapshot?.connected != true && model.runWebServer && model.webPort in 1..65535 -> model.webPort
+        else -> null
+    }
+    val browserUrl = if (canInvite && browserPort != null) "http://$host:$browserPort/" else null
+    val inviteMessage = buildString {
+        appendLine("Please join my Chinese Checkers game.")
+        append("Play in Android app: $appUrl")
+        if (browserUrl != null) {
+            appendLine()
+            append("Play in browser: $browserUrl")
+        }
+    }
+
+    fun copy(text: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("Cheech invite", text))
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -123,34 +143,47 @@ fun InviteDialog(model: SessionModel, onDismiss: () -> Unit) {
         title = { Text("Invite a Friend") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Share this address with another device on the same network.")
-                Text("Host: $host")
-                OutlinedTextField(
-                    value = editablePort,
-                    onValueChange = { value ->
-                        editablePort = value.filter { it.isDigit() }.take(5)
-                        editablePort.toIntOrNull()?.let { model.hostPort = it }
-                    },
-                    label = { Text("Port") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Text(url, style = MaterialTheme.typography.bodySmall)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = {
-                        val send = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, "Join my Cheech game: $url")
+                if (canInvite) {
+                    Text("Share this address with another device on the same network.")
+                    Text("Host: $host")
+                    SelectionContainer {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text("Please join my Chinese Checkers game.", fontWeight = FontWeight.SemiBold)
+                            Text("Play in Android app: $appUrl", style = MaterialTheme.typography.bodySmall)
+                            if (browserUrl != null) {
+                                Text("Play in browser: $browserUrl", style = MaterialTheme.typography.bodySmall)
+                            }
                         }
-                        context.startActivity(Intent.createChooser(send, "Invite a friend"))
-                    }) { Text("Share") }
-                    OutlinedButton(onClick = {
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboard.setPrimaryClip(ClipData.newPlainText("Cheech invite", url))
-                    }) { Text("Copy Link") }
-                }
-                if (host == "Unavailable") {
-                    Text("No local network address found. Connect to Wi-Fi to invite another device.", color = MaterialTheme.colorScheme.error)
+                    }
+                    Button(
+                        onClick = {
+                            val send = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, inviteMessage)
+                            }
+                            context.startActivity(Intent.createChooser(send, "Share invite"))
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Share Invite") }
+                    OutlinedButton(
+                        onClick = { copy(inviteMessage) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Copy Invite Message") }
+                    OutlinedButton(
+                        onClick = { copy(appUrl) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Copy App Join Link") }
+                    if (browserUrl != null) {
+                        OutlinedButton(
+                            onClick = { copy(browserUrl) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text("Copy Web Join Link") }
+                    }
+                } else {
+                    Text(
+                        "No local network address found. Connect to Wi-Fi to invite another device.",
+                        color = MaterialTheme.colorScheme.error,
+                    )
                 }
             }
         },
